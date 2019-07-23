@@ -1,11 +1,11 @@
 {
-  "name": "js-shopping-cart",
+  "name": "js-crdts",
   "version": "0.1.0",
-  "description": "Sample CloudState event sourced shopping cart application",
+  "description": "Sample CloudState CRDT application",
   "keywords": [
     "serverless",
     "cloudstate",
-    "event-sourcing"
+    "crdt"
   ],
   "homepage": "https://github.com/cloudstateio/cloudstate",
   "bugs": {
@@ -20,7 +20,7 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/cloudstateio/cloudstate",
-    "directory": "src/samples/js-shopping-cart"
+    "directory": "src/samples/js-crdts"
   },
   "//": "https://npm.community/t/npm-install-does-not-install-transitive-dependencies-of-local-dependency/2264",
   "dependencies": {
@@ -35,12 +35,12 @@
   },
   "scripts": {
     "test": "mocha",
-    "prestart": "compile-descriptor ../../protocols/example/shoppingcart/shoppingcart.proto",
-    "pretest": "compile-descriptor ../../protocols/example/shoppingcart/shoppingcart.proto",
+    "prestart": "compile-descriptor ../../protocols/example/crdts/crdt-example.proto",
+    "pretest": "compile-descriptor ../../protocols/example/crdts/crdt-example.proto",
     "start": "node index.js",
     "start-no-prestart": "node index.js",
-    "dockerbuild": "docker build -f ../../Dockerfile.js-shopping-cart -t gcr.io/stateserv/js-shopping-cart:$npm_package_version -t gcr.io/stateserv/js-shopping-cart:latest ../..",
-    "dockerpush": "docker push gcr.io/stateserv/js-shopping-cart:$npm_package_version && docker push gcr.io/stateserv/js-shopping-cart:latest",
+    "dockerbuild": "docker build -f ../../Dockerfile.js-crdts -t gcr.io/stateserv/crdt-example:$npm_package_version -t gcr.io/stateserv/js-crdts:latest ../..",
+    "dockerpush": "docker push gcr.io/stateserv/js-crdts:$npm_package_version && docker push gcr.io/stateserv/js-crdts:latest",
     "dockerbuildpush": "npm run dockerbuild && npm run dockerpush"
   }
 }

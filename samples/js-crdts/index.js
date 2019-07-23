@@ -14,6 +14,4 @@
  * limitations under the License.
  */
 
-module.exports.CloudState = require("./src/cloudstate");
-module.exports.EventSourced = require("./src/eventsourced");
-module.exports.crdt = require("./src/crdt");
+require("./crdt-example").start();

@@ -14,27 +14,23 @@
  * limitations under the License.
  */
 
-const path = require("path");
 const fs = require("fs");
 const protobufHelper = require("./protobuf-helper");
 const grpc = require("grpc");
 const protoLoader = require("@grpc/proto-loader");
-const EventSourcedServices = require("./eventsourced-support");
 const CloudState = require("./cloudstate");
+const crdts = require("./crdts");
+const support = require("./crdt-support");
 
-const eventSourcedServices = new EventSourcedServices();
+const crdtServices = new support.CrdtServices();
 
-module.exports = class EventSourced {
+class Crdt {
 
   constructor(desc, serviceName, options) {
 
     this.options = {
       ...{
-        persistenceId: "entity",
-        snapshotEvery: 100,
         includeDirs: ["."],
-        serializeAllowPrimitives: false,
-        serializeFallbackToJson: false
       },
       ...options
     };
@@ -48,7 +44,7 @@ module.exports = class EventSourced {
     // Eagerly lookup the service to fail early
     this.service = this.root.lookupService(serviceName);
 
-    if(!fs.existsSync("user-function.desc"))
+    if (!fs.existsSync("user-function.desc"))
       throw new Error("No 'user-function.desc' file found in application root folder.");
 
     const packageDefinition = protoLoader.loadSync(desc, {
@@ -58,24 +54,20 @@ module.exports = class EventSourced {
   }
 
   entityType() {
-    return eventSourcedServices.entityType();
+    return crdtServices.entityType();
   }
 
   lookupType(messageType) {
     return this.root.lookupType(messageType);
   }
 
-  setInitial(callback) {
-    this.initial = callback;
-  }
-
-  setBehavior(callback) {
-    this.behavior = callback;
+  setCommandHandlers(handlers) {
+    this.commandHandlers = handlers;
   }
 
   register(allEntities) {
-    eventSourcedServices.addService(this, allEntities);
-    return eventSourcedServices;
+    crdtServices.addService(this, allEntities);
+    return crdtServices;
   }
 
   start(options) {
@@ -84,4 +76,15 @@ module.exports = class EventSourced {
 
     return server.start(options);
   }
+}
+
+module.exports = {
+  Crdt: Crdt,
+  GCounter: crdts.GCounter,
+  PNCounter: crdts.PNCounter,
+  GSet: crdts.GSet,
+  ORSet: crdts.ORSet,
+  LWWRegister: crdts.LWWRegister,
+  Flag: crdts.Flag,
+  Clocks: crdts.Clocks
 };
