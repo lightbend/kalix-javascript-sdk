@@ -15,7 +15,7 @@
  */
 
 
-const crdt = require("cloudstate").crdt;
+const crdt = require("@lightbend/akkaserverless-javascript-sdk").crdt;
 
 const entity = new crdt.Crdt(
   "crdts/crdt-example.proto",

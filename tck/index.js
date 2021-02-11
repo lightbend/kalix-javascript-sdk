@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-const CloudState = require("cloudstate").CloudState;
-const server = new CloudState();
+const AkkaServerless = require("@lightbend/akkaserverless-javascript-sdk").AkkaServerless;
+const server = new AkkaServerless();
 const eventSourced = require("./eventsourced.js");
 server.addEntity(eventSourced.tckModel);
 server.addEntity(eventSourced.two);

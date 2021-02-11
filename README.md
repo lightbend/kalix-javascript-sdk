@@ -1,11 +1,11 @@
-# Cloudstate stateful service support
+# Akka Serverless JavaScript SDK
 
-This package provides support for writing Cloudstate stateful functions.
+This package provides support for writing Akka Serverless services with JavaScript and Node.js.
 
 An example event sourced function:
 
 ```javascript
-const EventSourced = require("cloudstate").EventSourced;
+const EventSourced = require("@lightbend/akkaserverless-javascript-sdk").EventSourced;
 
 const entity = new EventSourced(
   ["shoppingcart/shoppingcart.proto", "shoppingcart/persistence/domain.proto"],
@@ -98,7 +98,7 @@ entity.start();
 ```
 
 
-For more information see https://cloudstate.io/docs/javascript/.
+For more information see https://akkaserverless.com/docs/javascript/.
 
 # Node.js version support
 In this repo, we set default node.js version to 12 in package.json. Based on [Node.js website](https://nodejs.org/en/), version 12 is recommended for most user currently.

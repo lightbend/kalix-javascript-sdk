@@ -1,4 +1,6 @@
-# Releasing Cloudstate node-support
+# Releasing Akka Serverless JavaScript SDK
+
+**FIXME: publishing for JavaScript SDK**
 
 1. Bump the node-support version with `npm version [major|minor|patch]` and commit
 2. Create a `node-support-x.y.z` tag and [new release](https://github.com/cloudstateio/cloudstate/releases/new) for the new version

@@ -15,12 +15,12 @@
  */
 
 /**
- * The CloudState module.
+ * The AkkaServerless module.
  *
- * @module cloudstate
+ * @module akkaserverless
  */
 
-module.exports.CloudState = require("./src/cloudstate");
+module.exports.AkkaServerless = require("./src/akkaserverless");
 module.exports.EventSourced = require("./src/eventsourced");
 module.exports.crdt = require("./src/crdt");
 module.exports.Action = require("./src/action");

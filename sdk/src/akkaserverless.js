@@ -19,7 +19,7 @@ const grpc = require("grpc");
 const protoLoader = require("@grpc/proto-loader");
 const fs = require("fs");
 
-const debug = require("debug")("cloudstate");
+const debug = require("debug")("akkaserverless");
 // Bind to stdout
 debug.log = console.log.bind(console);
 
@@ -53,51 +53,51 @@ try {
 }
 
 /**
- * A CloudState server.
+ * An Akka Serverless server.
  *
- * @interface module:cloudstate.Server
+ * @interface module:akkaserverless.Server
  */
 
 /**
  * Start the server.
  *
- * @function module:cloudstate.Server#start
- * @param {module:cloudstate.Server~startOptions=} options The options for starting the server.
+ * @function module:akkaserverless.Server#start
+ * @param {module:akkaserverless.Server~startOptions=} options The options for starting the server.
  * @returns {number} The port number that the server bound to.
  */
 
 /**
  * Shutdown the server
  *
- * @function module:cloudstate.Server#shutdown
+ * @function module:akkaserverless.Server#shutdown
  */
 
 /**
  * Options for starting a server.
  *
- * @typedef module:cloudstate.Server~startOptions
+ * @typedef module:akkaserverless.Server~startOptions
  * @property {string} [bindAddress="0.0.0.0"] The address to bind to.
  * @property {number} [bindPort=8080] The port to bind to, specify zero for a random ephemeral port.
  */
 
 /**
- * A CloudState entity.
+ * An Akka Serverless entity.
  *
- * @interface module:cloudstate.Entity
- * @extends module:cloudstate.Server
+ * @interface module:akkaserverless.Entity
+ * @extends module:akkaserverless.Server
  */
 
 
 /**
- * A CloudState root server.
+ * An Akka Serverless root server.
  *
- * @memberOf module:cloudstate
- * @extends module:cloudstate.Server
+ * @memberOf module:akkaserverless
+ * @extends module:akkaserverless.Server
  */
-class CloudState {
+class AkkaServerless {
 
   /**
-   * @typedef module:cloudstate.CloudState~options
+   * @typedef module:akkaserverless.AkkaServerless~options
    * @property {string} [serviceName=<name from package.json>] The name of this service.
    * @property {string} [serviceVersion=<version from package.json>] The version of this service.
    * @property {string} [descriptorSetPath="user-function.desc"] A path to a compiled Protobuf FileDescriptor set,
@@ -106,9 +106,9 @@ class CloudState {
    */
 
   /**
-   * Create a new cloudstate server.
+   * Create a new akkaserverless server.
    *
-   * @param {module:cloudstate.CloudState~options=} options The options for this server.
+   * @param {module:akkaserverless.AkkaServerless~options=} options The options for this server.
    */
   constructor(options) {
     this.options = {
@@ -132,8 +132,8 @@ class CloudState {
   /**
    * Add an entity to this server.
    *
-   * @param {module:cloudstate.Entity} entities The entities to add.
-   * @returns {module:cloudstate.CloudState} This server.
+   * @param {module:akkaserverless.Entity} entities The entities to add.
+   * @returns {module:akkaserverless.AkkaServerless} This server.
    */
   addEntity(...entities) {
     this.entities = this.entities.concat(entities);
@@ -143,7 +143,7 @@ class CloudState {
   /**
    * Start this server.
    *
-   * @param {module:cloudstate.CloudState~startOptions=} options The options for starting.
+   * @param {module:akkaserverless.AkkaServerless~startOptions=} options The options for starting.
    * @returns {number} The port that was bound to, useful for when a random ephemeral port was requested.
    */
   start(options) {
@@ -173,12 +173,12 @@ class CloudState {
       path.join(__dirname, "..", "proto"),
       path.join(__dirname, "..", "protoc", "include")
     ];
-    const packageDefinition = protoLoader.loadSync(path.join("cloudstate", "entity.proto"), {
+    const packageDefinition = protoLoader.loadSync(path.join("akkaserverless", "entity.proto"), {
       includeDirs: includeDirs
     });
     const grpcDescriptor = grpc.loadPackageDefinition(packageDefinition);
 
-    const entityDiscovery = grpcDescriptor.cloudstate.EntityDiscovery.service;
+    const entityDiscovery = grpcDescriptor.akkaserverless.EntityDiscovery.service;
 
     this.server.addService(entityDiscovery, {
       discover: this.discover.bind(this),
@@ -230,4 +230,4 @@ class CloudState {
   }
 }
 
-module.exports = CloudState;
+module.exports = AkkaServerless;

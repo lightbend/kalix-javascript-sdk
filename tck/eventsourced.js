@@ -14,19 +14,19 @@
  * limitations under the License.
  */
 
-const EventSourced = require("cloudstate").EventSourced;
+const EventSourced = require("@lightbend/akkaserverless-javascript-sdk").EventSourced;
 
 const tckModel = new EventSourced(
   ["proto/eventsourced.proto"],
-  "cloudstate.tck.model.EventSourcedTckModel",
+  "akkaserverless.tck.model.EventSourcedTckModel",
   {
     persistenceId: "event-sourced-tck-model",
     snapshotEvery: 5
   }
 );
 
-const Response = tckModel.lookupType("cloudstate.tck.model.Response")
-const Persisted = tckModel.lookupType("cloudstate.tck.model.Persisted")
+const Response = tckModel.lookupType("akkaserverless.tck.model.Response")
+const Persisted = tckModel.lookupType("akkaserverless.tck.model.Persisted")
 
 tckModel.initial = entityId => Persisted.create({ value: "" });
 
@@ -66,7 +66,7 @@ function persisted(event, state) {
 
 const two = new EventSourced(
   ["proto/eventsourced.proto"],
-  "cloudstate.tck.model.EventSourcedTwo"
+  "akkaserverless.tck.model.EventSourcedTwo"
 );
 
 two.initial = entityId => Persisted.create({ value: "" });

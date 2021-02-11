@@ -5,4 +5,4 @@ metadata:
   name: crdts
 spec:
   containers:
-    - image: cloudstateio/js-crdts:latest
+    - image: akkaserverless/js-crdts:latest

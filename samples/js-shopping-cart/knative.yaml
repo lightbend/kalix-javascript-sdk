@@ -9,7 +9,7 @@ spec:
         force-upgrade: one
     spec:
       containers:
-      - image: cloudstateio/js-shopping-cart:latest
+      - image: akkaserverless/js-shopping-cart:latest
         ports:
         - name: h2c
           containerPort: 8080

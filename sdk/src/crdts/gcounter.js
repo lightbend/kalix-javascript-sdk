@@ -24,8 +24,8 @@ const Long = require("long");
  *
  * The value is stored as a 64-bit unsigned long, hence values over `2^64` can't be represented.
  *
- * @constructor module:cloudstate.crdt.GCounter
- * @implements module:cloudstate.crdt.CrdtState
+ * @constructor module:akkaserverless.crdt.GCounter
+ * @implements module:akkaserverless.crdt.CrdtState
  */
 function GCounter() {
   let currentValue = Long.UZERO;
@@ -34,7 +34,7 @@ function GCounter() {
   /**
    * The value as a long.
    *
-   * @name module:cloudstate.crdt.GCounter#longValue
+   * @name module:akkaserverless.crdt.GCounter#longValue
    * @type {Long}
    * @readonly
    */
@@ -46,10 +46,10 @@ function GCounter() {
 
   /**
    * The value as a number. Note that once the value exceeds `2^53`, this will not be an accurate
-   * representation of the value. If you expect it to exceed `2^53`, {@link module:cloudstate.crdt.GCounter#longValue} should be
+   * representation of the value. If you expect it to exceed `2^53`, {@link module:akkaserverless.crdt.GCounter#longValue} should be
    * used instead.
    *
-   * @name module:cloudstate.crdt.GCounter#value
+   * @name module:akkaserverless.crdt.GCounter#value
    * @type {number}
    * @readonly
    */
@@ -62,9 +62,9 @@ function GCounter() {
   /**
    * Increment the counter by the given number.
    *
-   * @function module:cloudstate.crdt.GCounter#increment
+   * @function module:akkaserverless.crdt.GCounter#increment
    * @param {Long|number} increment The amount to increment the counter by.
-   * @returns {module:cloudstate.crdt.GCounter} This counter.
+   * @returns {module:akkaserverless.crdt.GCounter} This counter.
    * @throws If the increment is less than zero.
    */
   this.increment = function (increment) {

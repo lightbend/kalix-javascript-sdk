@@ -1,5 +1,5 @@
-const cloudstate = require("cloudstate");
-const entity = new cloudstate.EventSourced("shoppingcart.proto", "example.ShoppingCartService");
+const akkaserverless = require("@lightbend/akkaserverless-javascript-sdk");
+const entity = new akkaserverless.EventSourced("shoppingcart.proto", "example.ShoppingCartService");
 entity.setInitial(() => {});
 entity.setBehavior(() => {
     return {

@@ -18,7 +18,7 @@ const util = require("util");
 const protobufHelper = require("../protobuf-helper");
 const AnySupport = require("../protobuf-any");
 
-const Clocks = protobufHelper.moduleRoot.cloudstate.crdt.CrdtClock;
+const Clocks = protobufHelper.moduleRoot.akkaserverless.crdt.CrdtClock;
 
 /**
  * @classdesc A Last-Write-Wins Register CRDT.
@@ -27,10 +27,10 @@ const Clocks = protobufHelper.moduleRoot.cloudstate.crdt.CrdtClock;
  * represented as a number. The default clock uses the proxies system time, custom clocks can supply a custom number
  * to be used. If two clock values are equal, the write from the node with the lowest address wins.
  *
- * @constructor module:cloudstate.crdt.LWWRegister
- * @implements module:cloudstate.crdt.CrdtState
- * @param {module:cloudstate.Serializable} value A value to hold in the register.
- * @param {module:cloudstate.crdt.Clock} [clock=Clocks.DEFAULT] The clock to use.
+ * @constructor module:akkaserverless.crdt.LWWRegister
+ * @implements module:akkaserverless.crdt.CrdtState
+ * @param {module:akkaserverless.Serializable} value A value to hold in the register.
+ * @param {module:akkaserverless.crdt.Clock} [clock=Clocks.DEFAULT] The clock to use.
  * @param {number} [customClockValue=0] The custom clock value, if using a custom clock.
  */
 function LWWRegister(value, clock = Clocks.DEFAULT, customClockValue = 0) {
@@ -52,8 +52,8 @@ function LWWRegister(value, clock = Clocks.DEFAULT, customClockValue = 0) {
    *
    * Setting it will cause it to be set with the default clock.
    *
-   * @name module:cloudstate.crdt.LWWRegister#value
-   * @type {module:cloudstate.Serializable}
+   * @name module:akkaserverless.crdt.LWWRegister#value
+   * @type {module:akkaserverless.Serializable}
    */
   Object.defineProperty(this, "value", {
     get: function () {
@@ -67,9 +67,9 @@ function LWWRegister(value, clock = Clocks.DEFAULT, customClockValue = 0) {
   /**
    * Set the the value using a custom clock.
    *
-   * @function module:cloudstate.crdt.LWWRegister#setWithClock
-   * @param {module:cloudstate.Serializable} value The value to set.
-   * @param {module:cloudstate.crdt.Clock} [clock=Clocks.DEFAULT] The clock.
+   * @function module:akkaserverless.crdt.LWWRegister#setWithClock
+   * @param {module:akkaserverless.Serializable} value The value to set.
+   * @param {module:akkaserverless.crdt.Clock} [clock=Clocks.DEFAULT] The clock.
    * @param {number} [customClockValue=0] Ignored if a custom clock isn't specified.
    */
   this.setWithClock = function (value, clock = Clocks.DEFAULT, customClockValue = 0) {

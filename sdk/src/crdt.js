@@ -18,7 +18,7 @@ const fs = require("fs");
 const protobufHelper = require("./protobuf-helper");
 const grpc = require("grpc");
 const protoLoader = require("@grpc/proto-loader");
-const CloudState = require("./cloudstate");
+const AkkaServerless = require("./akkaserverless");
 const crdts = require("./crdts");
 const support = require("./crdt-support");
 
@@ -27,7 +27,7 @@ const crdtServices = new support.CrdtServices();
 /**
  * Options for creating a CRDT entity.
  *
- * @typedef module:cloudstate.crdt.Crdt~options
+ * @typedef module:akkaserverless.crdt.Crdt~options
  * @property {array<string>} includeDirs The directories to include when looking up imported protobuf files.
  * @property {string} persistenceId The "persistence" id of this entity, used to namespace entities of different CRDT
  * types in the same service.
@@ -36,9 +36,9 @@ const crdtServices = new support.CrdtServices();
 /**
  * A command handler callback.
  *
- * @callback module:cloudstate.crdt.Crdt~commandHandler
+ * @callback module:akkaserverless.crdt.Crdt~commandHandler
  * @param {Object} command The command message, this will be of the type of the gRPC service call input type.
- * @param {module:cloudstate.crdt.CrdtCommandContext} context The command context.
+ * @param {module:akkaserverless.crdt.CrdtCommandContext} context The command context.
  * @returns {undefined|Object} The message to reply with, it must match the gRPC service call output type for this
  * command.
  */
@@ -50,15 +50,15 @@ const crdtServices = new support.CrdtServices();
  * properties and methods. This may be due to the state being set explicitly from a command handler on the command
  * context, or implicitly as the default value, or implicitly when a new state is received from the proxy.
  *
- * @callback module:cloudstate.crdt.Crdt~onStateSetCallback
- * @param {module:cloudstate.crdt.CrdtState} state The state that was set.
+ * @callback module:akkaserverless.crdt.Crdt~onStateSetCallback
+ * @param {module:akkaserverless.crdt.CrdtState} state The state that was set.
  * @param {string} entityId The id of the entity.
  */
 
 /**
- * A callback that is invoked to create a default value if the CloudState proxy doesn't send an existing one.
+ * A callback that is invoked to create a default value if the Akka Serverless proxy doesn't send an existing one.
  *
- * @callback module:cloudstate.crdt.Crdt~defaultValueCallback
+ * @callback module:akkaserverless.crdt.Crdt~defaultValueCallback
  * @param {string} entityId The id of the entity.
  * @returns {Object} The default value to use for this entity.
  */
@@ -66,8 +66,8 @@ const crdtServices = new support.CrdtServices();
 /**
  * A CRDT entity.
  *
- * @memberOf module:cloudstate.crdt
- * @extends module:cloudstate.Entity
+ * @memberOf module:akkaserverless.crdt
+ * @extends module:akkaserverless.Entity
  */
 class Crdt {
 
@@ -77,7 +77,7 @@ class Crdt {
    * @param desc {string|string[]} The file name of a protobuf descriptor or set of descriptors containing the
    * CRDT service.
    * @param serviceName {string} The fully qualified name of the gRPC service that this CRDT implements.
-   * @param options {module:cloudstate.crdt.Crdt~options=} The options.
+   * @param options {module:akkaserverless.crdt.Crdt~options=} The options.
    */
   constructor(desc, serviceName, options) {
 
@@ -112,7 +112,7 @@ class Crdt {
      * The names of the properties must match the names of the service calls specified in the gRPC descriptor for this
      * CRDTs service.
      *
-     * @type {Object.<string, module:cloudstate.crdt.Crdt~commandHandler>}
+     * @type {Object.<string, module:akkaserverless.crdt.Crdt~commandHandler>}
      */
     this.commandHandlers = {};
 
@@ -123,14 +123,14 @@ class Crdt {
      * properties and methods. This may be due to the state being set explicitly from a command handler on the command
      * context, or implicitly as the default value, or implicitly when a new state is received from the proxy.
      *
-     * @member {module:cloudstate.crdt.Crdt~onStateSetCallback} module:cloudstate.crdt.Crdt#onStateSet
+     * @member {module:akkaserverless.crdt.Crdt~onStateSetCallback} module:akkaserverless.crdt.Crdt#onStateSet
      */
     this.onStateSet = (state, entityId) => undefined;
 
     /**
-     * A callback that is invoked to create a default value if the CloudState proxy doesn't send an existing one.
+     * A callback that is invoked to create a default value if the Akka Serverless proxy doesn't send an existing one.
      *
-     * @member {module:cloudstate.crdt.Crdt~defaultValueCallback} module:cloudstate.crdt.Crdt#defaultValue
+     * @member {module:akkaserverless.crdt.Crdt~defaultValueCallback} module:akkaserverless.crdt.Crdt#defaultValue
      */
     this.defaultValue = (entityId) => null;
   }
@@ -160,7 +160,7 @@ class Crdt {
     if (this.server !== undefined) {
       throw new Error("Server already started!")
     }
-    this.server = new CloudState();
+    this.server = new AkkaServerless();
     this.server.addEntity(this);
 
     return this.server.start(options);

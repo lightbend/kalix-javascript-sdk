@@ -1,8 +1,10 @@
-# Make Cloudstate JavaScript documentation
+# Make Akka Serverless JavaScript SDK documentation
+
+# FIXME: set up new documentation building
 
 module   := javascript
-upstream := cloudstateio/cloudstate
-branch   := node-support/docs/current
+upstream := lightbend/akkaserverless-javascript-sdk
+branch   := javascript-sdk/docs/current
 sources  := src build/src/managed
 
 cloudstate_antora_download := https://github.com/cloudstateio/cloudstate-antora/raw/master/cloudstate-antora
@@ -37,7 +39,7 @@ managed: attributes apidocs
 
 attributes: ${cloudstate_antora}
 	mkdir -p "${managed_partials}"
-	${cloudstate_antora} version --prefix "node-support-" | xargs -0  printf ":cloudstate-node-support-version: %s" \
+	${cloudstate_antora} version --prefix "node-support-" | xargs -0  printf ":akkaserverless-javascript-sdk-version: %s" \
 		> "${managed_partials}/attributes.adoc"
 
 apidocs:

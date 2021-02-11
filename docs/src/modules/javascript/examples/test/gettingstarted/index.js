@@ -1,15 +1,15 @@
 
 const should = require('chai').should();
 
-describe("The CloudState class", () => {
+describe("The AkkaServerless class", () => {
 
     it("should allow creating and starting a server", () => {
 
         // tag::start[]
-        const cloudstate = require("cloudstate");
+        const akkaserverless = require("@lightbend/akkaserverless-javascript-sdk");
         const shoppingcart = require("./shoppingcart");
 
-        const server = new cloudstate.CloudState();
+        const server = new akkaserverless.AkkaServerless();
         server.addEntity(shoppingcart);
         server.start();
         // end::start[]
@@ -18,10 +18,10 @@ describe("The CloudState class", () => {
     });
 
     it("should allow using a custom descriptor name", () => {
-        const cloudstate = require("cloudstate");
+        const akkaserverless = require("@lightbend/akkaserverless-javascript-sdk");
 
         // tag::custom-desc[]
-        const server = new cloudstate.CloudState({
+        const server = new akkaserverless.AkkaServerless({
             descriptorSetPath: "my-descriptor.desc"
         });
         // end::custom-desc[]

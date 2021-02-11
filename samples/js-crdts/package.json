@@ -1,21 +1,21 @@
 {
   "name": "js-crdts",
   "version": "0.1.0",
-  "description": "Sample CloudState CRDT application",
+  "description": "Sample Akka Serverless CRDT application",
   "keywords": [
     "serverless",
-    "cloudstate",
+    "akka serverless",
     "crdt"
   ],
-  "homepage": "https://github.com/cloudstateio/cloudstate",
+  "homepage": "https://github.com/lightbend/akkaserverless-javascript-sdk",
   "bugs": {
-    "url": "https://github.com/cloudstateio/cloudstate/issues"
+    "url": "https://github.com/lightbend/akkaserverless-javascript-sdk/issues"
   },
   "license": "Apache-2.0",
   "author": {
-    "name": "James Roper",
-    "email": "jroper2@gmail.com",
-    "url": "https://jazzy.id.au"
+    "name": "Akka Serverless Team",
+    "email": "info@lightbend.com",
+    "url": "https://lightbend.com"
   },
   "engineStrict": true,
   "engines": {
@@ -23,15 +23,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/cloudstateio/cloudstate",
-    "directory": "src/samples/js-crdts"
+    "url": "https://github.com/lightbend/akkaserverless-javascript-sdk",
+    "directory": "samples/crdts"
   },
   "//": "https://npm.community/t/npm-install-does-not-install-transitive-dependencies-of-local-dependency/2264",
   "dependencies": {
     "@grpc/proto-loader": "^0.1.0",
     "google-protobuf": "^3.11.4",
     "grpc": "^1.24.2",
-    "cloudstate": "file:../../node-support"
+    "@lightbend/akkaserverless-javascript-sdk": "file:../../javascript-sdk"
   },
   "devDependencies": {
     "chai": "4.2.0",
@@ -44,8 +44,8 @@
     "postinstall": "compile-descriptor ../../protocols/example/crdts/crdt-example.proto",
     "start": "node index.js",
     "start-no-prestart": "node index.js",
-    "dockerbuild": "docker build -f ../../Dockerfile.js-crdts -t cloudstateio/js-crdts:latest ../..",
-    "dockerpush": "docker push cloudstateio/js-crdts:latest",
+    "dockerbuild": "docker build -f Dockerfile -t akkaserverless/js-crdts:latest ../..",
+    "dockerpush": "docker push akkaserverless/js-crdts:latest",
     "dockerbuildpush": "npm run dockerbuild && npm run dockerpush"
   }
 }

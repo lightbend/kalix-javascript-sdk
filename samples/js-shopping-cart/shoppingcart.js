@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-const EventSourced = require("cloudstate").EventSourced;
+const EventSourced = require("@lightbend/akkaserverless-javascript-sdk").EventSourced;
 
 const entity = new EventSourced(
   ["shoppingcart/shoppingcart.proto", "shoppingcart/persistence/domain.proto"],

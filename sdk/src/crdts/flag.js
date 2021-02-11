@@ -21,8 +21,8 @@ const util = require("util");
  *
  * A flag starts out as being false (disabled), and then can be set to true (enabled). Once set to true, it stays true.
  *
- * @constructor module:cloudstate.crdt.Flag
- * @implements module:cloudstate.crdt.CrdtState
+ * @constructor module:akkaserverless.crdt.Flag
+ * @implements module:akkaserverless.crdt.CrdtState
  */
 function Flag() {
   let currentValue = false;
@@ -31,7 +31,7 @@ function Flag() {
   /**
    * Whether this flag is enabled or not.
    *
-   * @name module:cloudstate.crdt.Flag#value
+   * @name module:akkaserverless.crdt.Flag#value
    * @type {boolean}
    * @readonly
    */
@@ -44,8 +44,8 @@ function Flag() {
   /**
    * Enable this flag.
    *
-   * @function module:cloudstate.crdt.Flag#enable
-   * @returns {module:cloudstate.crdt.Flag} This flag.
+   * @function module:akkaserverless.crdt.Flag#enable
+   * @returns {module:akkaserverless.crdt.Flag} This flag.
    */
   this.enable = function () {
     if (!currentValue) {

@@ -15,7 +15,7 @@
  */
 
 // tag::entity-class[]
-const EventSourced = require("cloudstate").EventSourced;
+const EventSourced = require("@lightbend/akkaserverless-javascript-sdk").EventSourced;
 
 const entity = new EventSourced(
     ["shoppingcart.proto", "domain.proto"],
@@ -151,10 +151,10 @@ describe("The Eventsourced class", () => {
         // end::start[]
         entity.shutdown();
     });
-    it("should allow adding the entity to the CloudState server", () => {
+    it("should allow adding the entity to the AkkaServerless server", () => {
         // tag::add-entity[]
-        const CloudState = require("cloudstate").CloudState;
-        const server = new CloudState();
+        const AkkaServerless = require("@lightbend/akkaserverless-javascript-sdk").AkkaServerless;
+        const server = new AkkaServerless();
         server.addEntity(entity);
         // end::add-entity[]
     })

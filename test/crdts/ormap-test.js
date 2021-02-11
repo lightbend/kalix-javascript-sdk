@@ -22,7 +22,7 @@ const ORMap = crdts.ORMap;
 const protobufHelper = require("../../src/protobuf-helper");
 const AnySupport = require("../../src/protobuf-any");
 
-const CrdtDelta = protobufHelper.moduleRoot.cloudstate.crdt.CrdtDelta;
+const CrdtDelta = protobufHelper.moduleRoot.akkaserverless.crdt.CrdtDelta;
 
 const root = new protobuf.Root();
 root.loadSync(path.join(__dirname, "..", "example.proto"));

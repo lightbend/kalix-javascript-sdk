@@ -17,7 +17,7 @@
 const path = require("path");
 const grpc = require("grpc");
 const protoLoader = require("@grpc/proto-loader");
-const debug = require("debug")("cloudstate-action");
+const debug = require("debug")("akkaserverless-action");
 // Bind to stdout
 debug.log = console.log.bind(console);
 const AnySupport = require("./protobuf-any");
@@ -58,19 +58,19 @@ class ActionHandler {
   /**
    * Context for an action command.
    *
-   * @interface module:cloudstate.Action.ActionCommandContext
-   * @extends module:cloudstate.CommandContext
+   * @interface module:akkaserverless.Action.ActionCommandContext
+   * @extends module:akkaserverless.CommandContext
    * @property {boolean} cancelled Whether the client is still connected.
-   * @property {module:cloudstate.Metadata} metadata The metadata associated with the command.
-   * @property {module:cloudstate.CloudEvent} cloudevent The CloudEvents metadata associated with the command.
+   * @property {module:akkaserverless.Metadata} metadata The metadata associated with the command.
+   * @property {module:akkaserverless.CloudEvent} cloudevent The CloudEvents metadata associated with the command.
    */
   createContext(metadata) {
     /**
      * Write a message.
      *
-     * @function module:cloudstate.Action.ActionCommandContext#write
+     * @function module:akkaserverless.Action.ActionCommandContext#write
      * @param {Object} message The protobuf message to write.
-     * @param {module:cloudstate.Metadata} metadata The metadata associated with the message.
+     * @param {module:akkaserverless.Metadata} metadata The metadata associated with the message.
      */
 
     const call = this.call;
@@ -94,7 +94,7 @@ class ActionHandler {
     /**
      * Register an event handler.
      *
-     * @function module:cloudstate.Action.ActionCommandContext#on
+     * @function module:akkaserverless.Action.ActionCommandContext#on
      * @param {string} eventType The type of the event.
      * @param {function} callback The callback to handle the event.
      */
@@ -123,8 +123,8 @@ class ActionHandler {
   /**
    * Context for a unary action command.
    *
-   * @interface module:cloudstate.Action.UnaryCommandContext
-   * @extends module:cloudstate.Action.ActionCommandContext
+   * @interface module:akkaserverless.Action.UnaryCommandContext
+   * @extends module:akkaserverless.Action.ActionCommandContext
    */
   handleUnary() {
     this.setupUnaryOutContext();
@@ -146,9 +146,9 @@ class ActionHandler {
   /**
    * Context for a streamed in action command.
    *
-   * @interface module:cloudstate.Action.StreamedInCommandContext
-   * @extends module:cloudstate.Action.StreamedInContext
-   * @extends module:cloudstate.Action.ActionCommandContext
+   * @interface module:akkaserverless.Action.StreamedInCommandContext
+   * @extends module:akkaserverless.Action.StreamedInContext
+   * @extends module:akkaserverless.Action.ActionCommandContext
    */
   handleStreamedIn() {
     this.setupUnaryOutContext();
@@ -170,8 +170,8 @@ class ActionHandler {
   /**
    * Context for a streamed out action command.
    *
-   * @interface module:cloudstate.Action.StreamedOutCommandContext
-   * @extends module:cloudstate.Action.StreamedOutContext
+   * @interface module:akkaserverless.Action.StreamedOutCommandContext
+   * @extends module:akkaserverless.Action.StreamedOutContext
    */
   handleStreamedOut() {
     this.setupStreamedOutContext();
@@ -182,9 +182,9 @@ class ActionHandler {
   /**
    * Context for a streamed action command.
    *
-   * @interface module:cloudstate.Action.StreamedCommandContext
-   * @extends module:cloudstate.Action.StreamedInContext
-   * @extends module:cloudstate.Action.StreamedOutContext
+   * @interface module:akkaserverless.Action.StreamedCommandContext
+   * @extends module:akkaserverless.Action.StreamedInContext
+   * @extends module:akkaserverless.Action.StreamedOutContext
    */
   handleStreamed() {
     this.setupStreamedInContext();
@@ -245,15 +245,15 @@ class ActionHandler {
   /**
    * Context for an action command that returns a streamed message out.
    *
-   * @interface module:cloudstate.Action.StreamedOutContext
-   * @extends module:cloudstate.Action.ActionCommandContext
+   * @interface module:akkaserverless.Action.StreamedOutContext
+   * @extends module:akkaserverless.Action.ActionCommandContext
    */
   setupStreamedOutContext() {
 
     /**
      * A cancelled event.
      *
-     * @event module:cloudstate.Action.StreamedOutContext#cancelled
+     * @event module:akkaserverless.Action.StreamedOutContext#cancelled
      */
     this.supportedEvents.push("cancelled");
 
@@ -265,7 +265,7 @@ class ActionHandler {
     /**
      * Terminate the outgoing stream of messages.
      *
-     * @function module:cloudstate.Action.StreamedOutContext#end
+     * @function module:akkaserverless.Action.StreamedOutContext#end
      */
     this.ctx.end = () => {
       if (this.call.cancelled) {
@@ -327,8 +327,8 @@ class ActionHandler {
   /**
    * Context for an action command that handles streamed messages in.
    *
-   * @interface module:cloudstate.Action.StreamedInContext
-   * @extends module:cloudstate.Action.ActionCommandContext
+   * @interface module:akkaserverless.Action.StreamedInContext
+   * @extends module:akkaserverless.Action.ActionCommandContext
    */
   setupStreamedInContext() {
     /**
@@ -336,7 +336,7 @@ class ActionHandler {
      *
      * Emitted when a new message arrives.
      *
-     * @event module:cloudstate.Action.StreamedInContext#data
+     * @event module:akkaserverless.Action.StreamedInContext#data
      * @type {Object}
      */
     this.supportedEvents.push("data");
@@ -346,7 +346,7 @@ class ActionHandler {
      *
      * Emitted when the input stream terminates.
      *
-     * @event module:cloudstate.Action.StreamedInContext#end
+     * @event module:akkaserverless.Action.StreamedInContext#end
      */
     this.supportedEvents.push("end");
 
@@ -364,7 +364,7 @@ class ActionHandler {
     /**
      * Cancel the incoming stream of messages.
      *
-     * @function module:cloudstate.Action.StreamedInContext#cancel
+     * @function module:akkaserverless.Action.StreamedInContext#cancel
      */
     this.ctx.cancel = () => {
       if (this.call.cancelled) {
@@ -411,7 +411,7 @@ module.exports = class ActionServices {
   }
 
   entityType() {
-    return "cloudstate.action.ActionProtocol";
+    return "akkaserverless.action.ActionProtocol";
   }
 
   register(server) {
@@ -419,12 +419,12 @@ module.exports = class ActionServices {
       path.join(__dirname, "..", "proto"),
       path.join(__dirname, "..", "protoc", "include")
     ];
-    const packageDefinition = protoLoader.loadSync(path.join("cloudstate", "action.proto"), {
+    const packageDefinition = protoLoader.loadSync(path.join("akkaserverless", "action.proto"), {
       includeDirs: includeDirs
     });
     const grpcDescriptor = grpc.loadPackageDefinition(packageDefinition);
 
-    const actionService = grpcDescriptor.cloudstate.action.ActionProtocol.service;
+    const actionService = grpcDescriptor.akkaserverless.action.ActionProtocol.service;
 
     server.addService(actionService, {
       handleUnary: this.handleUnary.bind(this),

@@ -32,9 +32,9 @@ const In = root.lookupType("com.example.In");
 const Out = root.lookupType("com.example.Out");
 const ExampleService = root.lookupService("com.example.ExampleService");
 
-const CrdtStreamIn = protobufHelper.moduleRoot.cloudstate.crdt.CrdtStreamIn;
-const CrdtStreamOut = protobufHelper.moduleRoot.cloudstate.crdt.CrdtStreamOut;
-const CrdtInit = protobufHelper.moduleRoot.cloudstate.crdt.CrdtInit;
+const CrdtStreamIn = protobufHelper.moduleRoot.akkaserverless.crdt.CrdtStreamIn;
+const CrdtStreamOut = protobufHelper.moduleRoot.akkaserverless.crdt.CrdtStreamOut;
+const CrdtInit = protobufHelper.moduleRoot.akkaserverless.crdt.CrdtInit;
 
 const outMsg = {
   field: "ok"

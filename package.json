@@ -1,27 +1,27 @@
 {
-  "name": "cloudstate",
+  "name": "@lightbend/akkaserverless-javascript-sdk",
   "version": "0.0.4",
-  "description": "Support for implementing CloudState functions",
+  "description": "Akka Serverless JavaScript SDK",
   "keywords": [
+    "akka",
     "serverless",
-    "cloudstate",
+    "akka serverless",
     "event-sourcing",
     "crdt"
   ],
-  "homepage": "https://github.com/cloudstateio/cloudstate",
+  "homepage": "https://github.com/lightbend/akkaserverless-javascript-sdk",
   "bugs": {
-    "url": "https://github.com/cloudstateio/cloudstate"
+    "url": "https://github.com/lightbend/akkaserverless-javascript-sdk"
   },
   "license": "Apache-2.0",
   "author": {
-    "name": "James Roper",
-    "email": "jroper2@gmail.com",
-    "url": "https://jazzy.id.au"
+    "name": "Akka Serverless Team",
+    "email": "info@lightbend.com",
+    "url": "https://lightbend.com"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/cloudstateio/cloudstate",
-    "directory": "src/node-support"
+    "url": "https://github.com/lightbend/akkaserverless-javascript-sdk"
   },
   "engineStrict": true,
   "engines": {

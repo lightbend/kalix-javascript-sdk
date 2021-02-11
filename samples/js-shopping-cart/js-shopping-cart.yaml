@@ -12,5 +12,5 @@ spec:
         name: inmemory
 
   containers:
-    - image: cloudstateio/samples-js-shopping-cart:latest
+    - image: akkaserverless/samples-js-shopping-cart:latest
       name: user-function

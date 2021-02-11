@@ -27,12 +27,12 @@ function valueFromEntry(entry) {
 /**
  * A metadata value. Can either be a string or a buffer.
  *
- * @typedef module:cloudstate.MetadataValue
+ * @typedef module:akkaserverless.MetadataValue
  * @type {string|Buffer}
  */
 
 /**
- * @classdesc Cloudstate metadata.
+ * @classdesc Akka Serverless metadata.
  *
  * Metadata is treated as case insensitive on lookup, and case sensitive on set. Multiple values per key are supported,
  * setting a value will add it to the current values for that key. You should delete first if you wish to replace a
@@ -41,7 +41,7 @@ function valueFromEntry(entry) {
  * Values can either be strings or byte buffers. If a non string or byte buffer value is set, it will be converted to
  * a string using toString.
  *
- * @interface module:cloudstate.Metadata
+ * @interface module:akkaserverless.Metadata
  * @param {array} entries The list of entries
  */
 function Metadata(entries) {
@@ -58,8 +58,8 @@ function Metadata(entries) {
    * are multiple values for a given key, the first one set for that key will be returned. Setting a value will add it
    * to the list of existing values for that key.
    *
-   * @name module:cloudstate.Metadata#getMap
-   * @type {Object<String, module:cloudstate.MetadataValue>}
+   * @name module:akkaserverless.Metadata#getMap
+   * @type {Object<String, module:akkaserverless.MetadataValue>}
    */
   this.getMap = new Proxy({}, {
     get: (target, key) => {
@@ -101,9 +101,9 @@ function Metadata(entries) {
    *
    * The key is case insensitive.
    *
-   * @function module:cloudstate.Metadata#get
+   * @function module:akkaserverless.Metadata#get
    * @param {string} key The key to get.
-   * @returns {Array<module:cloudstate.MetadataValue>} All the values, or an empty array if no values exist for the key.
+   * @returns {Array<module:akkaserverless.MetadataValue>} All the values, or an empty array if no values exist for the key.
    */
   this.get = key => {
     const values = [];
@@ -120,9 +120,9 @@ function Metadata(entries) {
    *
    * This will append the key value to the metadata, it won't replace any existing values for existing keys.
    *
-   * @function module:cloudstate.Metadata#set
+   * @function module:akkaserverless.Metadata#set
    * @param {string} key The key to set.
-   * @param {module:cloudstate.MetadataValue} value The value to set.
+   * @param {module:akkaserverless.MetadataValue} value The value to set.
    */
   this.set = (key, value) => {
     const entry = {key};
@@ -141,7 +141,7 @@ function Metadata(entries) {
    *
    * The key is case insensitive.
    *
-   * @function module:cloudstate.Metadata#delete
+   * @function module:akkaserverless.Metadata#delete
    * @param {string} key The key to delete.
    */
   this.delete = key => {
@@ -161,7 +161,7 @@ function Metadata(entries) {
    *
    * The key is case insensitive.
    *
-   * @function module:cloudstate.Metadata#has
+   * @function module:akkaserverless.Metadata#has
    * @param {string} key The key to check.
    */
   this.has = key => {
@@ -176,7 +176,7 @@ function Metadata(entries) {
   /**
    * Clear the metadata.
    *
-   * @function module:cloudstate.Metadata#clear
+   * @function module:akkaserverless.Metadata#clear
    */
   this.clear = () => {
     entries.splice(0, entries.length);
@@ -185,8 +185,8 @@ function Metadata(entries) {
   /**
    * The metadata, expressed as a CloudEvent.
    *
-   * @name module:cloudstate.Metadata#cloudevent
-   * @type {module:cloudstate.CloudEvent}
+   * @name module:akkaserverless.Metadata#cloudevent
+   * @type {module:akkaserverless.CloudEvent}
    */
   this.cloudevent = CloudEvents.toCloudevent(this.getMap);
 }

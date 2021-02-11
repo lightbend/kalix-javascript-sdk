@@ -1,8 +1,8 @@
 {
-  "name": "cloudstate-documentation-samples",
+  "name": "akkaserverless-documentation-samples",
   "version": "0.0.1",
-  "description": "Code samples for the CloudState documentation",
-  "homepage": "https://cloudstate.io",
+  "description": "Code samples for the Akka Serverless JavaScript documentation",
+  "homepage": "https://akkaserverless.com",
   "license": "Apache-2.0",
   "engineStrict": true,
   "engines": {
@@ -13,7 +13,7 @@
     "@grpc/proto-loader": "^0.1.0",
     "google-protobuf": "^3.0.0",
     "grpc": "^1.20.2",
-    "cloudstate": "file:../../../../.."
+    "@lightbend/akkaserverless-javascript-sdk": "file:../../../../.."
   },
   "devDependencies": {
     "chai": "4.2.0",

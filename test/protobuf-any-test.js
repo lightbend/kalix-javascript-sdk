@@ -31,33 +31,33 @@ describe("AnySupport", () => {
 
   it("should support serializing strings", () => {
     const serialized = AnySupport.serialize("foo", true, false);
-    serialized.type_url.should.equal("p.cloudstate.io/string");
+    serialized.type_url.should.equal("p.akkaserverless.com/string");
     anySupport.deserialize(serialized).should.equal("foo");
   });
 
   it("should support serializing long", () => {
     const value = Long.fromNumber(2789);
     const serialized = AnySupport.serialize(value, true, false);
-    serialized.type_url.should.equal("p.cloudstate.io/int64");
+    serialized.type_url.should.equal("p.akkaserverless.com/int64");
     anySupport.deserialize(serialized).should.eql(value);
   });
 
   it("should support serializing bytes", () => {
     const bytes = new Buffer("foo");
     const serialized = AnySupport.serialize(bytes, true, false);
-    serialized.type_url.should.equal("p.cloudstate.io/bytes");
+    serialized.type_url.should.equal("p.akkaserverless.com/bytes");
     anySupport.deserialize(serialized).should.eql(bytes);
   });
 
   it("should support serializing booleans", () => {
     const serialized = AnySupport.serialize(true, true, false);
-    serialized.type_url.should.equal("p.cloudstate.io/bool");
+    serialized.type_url.should.equal("p.akkaserverless.com/bool");
     anySupport.deserialize(serialized).should.equal(true);
   });
 
   it("should support serializing numbers", () => {
     const serialized = AnySupport.serialize(1.2345, true, false);
-    serialized.type_url.should.equal("p.cloudstate.io/double");
+    serialized.type_url.should.equal("p.akkaserverless.com/double");
     anySupport.deserialize(serialized).should.equal(1.2345);
   });
 
@@ -90,14 +90,14 @@ describe("AnySupport", () => {
 
   it("should support deserializing primitives when the field in not present", () => {
     anySupport.deserialize({
-      type_url: "p.cloudstate.io/string",
+      type_url: "p.akkaserverless.com/string",
       value: PrimitiveLike.encode({}).finish()
     }).should.equal("");
   });
 
   it("should support deserializing primitives when other fields are present", () => {
     anySupport.deserialize({
-      type_url: "p.cloudstate.io/string",
+      type_url: "p.akkaserverless.com/string",
       value: PrimitiveLike.encode({
         field1: "one",
         field2: "two",
@@ -113,7 +113,7 @@ describe("AnySupport", () => {
       field2: "bar"
     };
     const serialized = AnySupport.serialize(obj, false, true);
-    serialized.type_url.should.equal("json.cloudstate.io/MyType");
+    serialized.type_url.should.equal("json.akkaserverless.com/MyType");
     anySupport.deserialize(serialized).should.include(obj);
   });
 
@@ -123,7 +123,7 @@ describe("AnySupport", () => {
       field2: "bar"
     };
     const serialized = AnySupport.serialize(obj, false, true);
-    serialized.type_url.should.equal("json.cloudstate.io/object");
+    serialized.type_url.should.equal("json.akkaserverless.com/object");
     anySupport.deserialize(serialized).should.include(obj);
   });
 

@@ -17,7 +17,7 @@
 /**
  * CloudEvent data.
  *
- * @interface module:cloudstate.CloudEvent
+ * @interface module:akkaserverless.CloudEvent
  * @property {string} specversion The CloudEvent spec version
  */
 function toCloudevent(metadata) {

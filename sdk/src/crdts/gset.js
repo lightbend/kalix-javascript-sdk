@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-const debug = require("debug")("cloudstate-crdt");
+const debug = require("debug")("akkaserverless-crdt");
 const util = require("util");
 const AnySupport = require("../protobuf-any");
 
@@ -23,8 +23,8 @@ const AnySupport = require("../protobuf-any");
  *
  * A grow only set can have elements added to it, but not removed.
  *
- * @constructor module:cloudstate.crdt.GSet
- * @implements module:cloudstate.crdt.CrdtState
+ * @constructor module:akkaserverless.crdt.GSet
+ * @implements module:akkaserverless.crdt.CrdtState
  */
 function GSet() {
   // Map of a comparable form (that compares correctly using ===) of the elements to the elements
@@ -34,8 +34,8 @@ function GSet() {
   /**
    * Does this set contain the given element?
    *
-   * @function module:cloudstate.crdt.GSet#has
-   * @param {module:cloudstate.Serializable} element The element to check.
+   * @function module:akkaserverless.crdt.GSet#has
+   * @param {module:akkaserverless.Serializable} element The element to check.
    * @returns {boolean} True if the set contains the element.
    */
   this.has = function (element) {
@@ -45,7 +45,7 @@ function GSet() {
   /**
    * The size of this set.
    *
-   * @name module:cloudstate.crdt.GSet#size
+   * @name module:akkaserverless.crdt.GSet#size
    * @type {number}
    * @readonly
    */
@@ -56,17 +56,17 @@ function GSet() {
   });
 
   /**
-   * Callback for handling elements iterated through by {@link module:cloudstate.crdt.GSet#forEach}.
+   * Callback for handling elements iterated through by {@link module:akkaserverless.crdt.GSet#forEach}.
    *
-   * @callback module:cloudstate.crdt.GSet~forEachCallback
-   * @param {module:cloudstate.Serializable} element The element.
+   * @callback module:akkaserverless.crdt.GSet~forEachCallback
+   * @param {module:akkaserverless.Serializable} element The element.
    */
 
   /**
    * Execute the given callback for each element.
    *
-   * @function module:cloudstate.crdt.GSet#forEach
-   * @param {module:cloudstate.crdt.GSet~forEachCallback} callback The callback to handle each element.
+   * @function module:akkaserverless.crdt.GSet#forEach
+   * @param {module:akkaserverless.crdt.GSet~forEachCallback} callback The callback to handle each element.
    */
   this.forEach = function (callback) {
     currentValue.forEach((value, key) => callback(value));
@@ -75,8 +75,8 @@ function GSet() {
   /**
    * Create an iterator for this set.
    *
-   * @function module:cloudstate.crdt.GSet#@@iterator
-   * @returns {iterator<module:cloudstate.Serializable>}
+   * @function module:akkaserverless.crdt.GSet#@@iterator
+   * @returns {iterator<module:akkaserverless.Serializable>}
    */
   this[Symbol.iterator] = function () {
     return currentValue.values();
@@ -85,9 +85,9 @@ function GSet() {
   /**
    * Add an element to this set.
    *
-   * @function module:cloudstate.crdt.GSet#add
-   * @param {module:cloudstate.Serializable} element The element to add.
-   * @return {module:cloudstate.crdt.GSet} This set.
+   * @function module:akkaserverless.crdt.GSet#add
+   * @param {module:akkaserverless.Serializable} element The element to add.
+   * @return {module:akkaserverless.crdt.GSet} This set.
    */
   this.add = function (element) {
     const comparable = AnySupport.toComparable(element);

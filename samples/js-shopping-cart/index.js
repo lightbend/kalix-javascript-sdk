@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-const CloudState = require("cloudstate").CloudState;
+const AkkaServerless = require("@lightbend/akkaserverless-javascript-sdk").AkkaServerless;
 
-const server = new CloudState();
+const server = new AkkaServerless();
 server.addEntity(require("./shoppingcart"));
 
 server.start();

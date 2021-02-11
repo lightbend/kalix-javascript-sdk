@@ -31,33 +31,33 @@ const Empty = protobufHelper.moduleRoot.google.protobuf.Empty;
 /**
  * All CRDTs and CRDT support classes.
  *
- * @namespace module:cloudstate.crdt
+ * @namespace module:akkaserverless.crdt
  */
 
 /**
  * A Conflict-free Replicated Data Type.
  *
- * @interface module:cloudstate.crdt.CrdtState
+ * @interface module:akkaserverless.crdt.CrdtState
  */
 
 /**
- * A clock that may be used by {@link module:cloudstate.crdt.LWWRegister}.
+ * A clock that may be used by {@link module:akkaserverless.crdt.LWWRegister}.
  *
- * @typedef module:cloudstate.crdt.Clock
+ * @typedef module:akkaserverless.crdt.Clock
  */
 
 /**
- * An enum of all clocks that can be used by {@link module:cloudstate.crdt.LWWRegister}.
+ * An enum of all clocks that can be used by {@link module:akkaserverless.crdt.LWWRegister}.
  *
- * @name module:cloudstate.crdt.Clocks
- * @enum {module:cloudstate.crdt.Clock}
+ * @name module:akkaserverless.crdt.Clocks
+ * @enum {module:akkaserverless.crdt.Clock}
  * @property DEFAULT The default clock, uses the machines system time.
  * @property REVERSE A reverse clock, for achieving first-write-wins semantics.
  * @property CUSTOM A custom clock.
  * @property CUSTOM_AUTO_INCREMENT A custom clock that automatically increments if the current clock value
  * is less than the existing clock value.
  */
-const Clocks = protobufHelper.moduleRoot.cloudstate.crdt.CrdtClock;
+const Clocks = protobufHelper.moduleRoot.akkaserverless.crdt.CrdtClock;
 
 function createCrdtForDelta(delta) {
   if (delta.gcounter) {

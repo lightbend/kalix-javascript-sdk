@@ -17,7 +17,7 @@
         "monospaceLinks": false,
         "theme": "cosmo",
         "includeDate": false,
-        "systemName": "CloudState"
+        "systemName": "AkkaServerless"
     },
     "opts": {
         "destination": "./apidocs/",

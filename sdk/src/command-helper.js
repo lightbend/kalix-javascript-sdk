@@ -195,25 +195,25 @@ module.exports = class CommandHelper {
     /**
      * Context for an entity.
      *
-     * @interface module:cloudstate.EntityContext
+     * @interface module:akkaserverless.EntityContext
      * @property {string} entityId The id of the entity that the command is for.
      * @property {Long} commandId The id of the command.
-     * @property {module:cloudstate.Metadata} replyMetadata The metadata to send with a reply.
+     * @property {module:akkaserverless.Metadata} replyMetadata The metadata to send with a reply.
      */
 
     /**
      * Effect context.
      *
-     * @interface module:cloudstate.EffectContext
-     * @property {module:cloudstate.Metadata} metadata The metadata associated with the command.
-     * @property {module:cloudstate.CloudEvent} cloudevent The CloudEvents metadata associated with the command.
+     * @interface module:akkaserverless.EffectContext
+     * @property {module:akkaserverless.Metadata} metadata The metadata associated with the command.
+     * @property {module:akkaserverless.CloudEvent} cloudevent The CloudEvents metadata associated with the command.
      */
 
     /**
      * Context for a command.
      *
-     * @interface module:cloudstate.CommandContext
-     * @extends module:cloudstate.EffectContext
+     * @interface module:akkaserverless.CommandContext
+     * @extends module:akkaserverless.EffectContext
      */
     accessor.context = {
       entityId: this.entityId,
@@ -225,11 +225,11 @@ module.exports = class CommandHelper {
       /**
        * Emit an effect after processing this command.
        *
-       * @function module:cloudstate.EffectContext#effect
+       * @function module:akkaserverless.EffectContext#effect
        * @param method The entity service method to invoke.
        * @param {object} message The message to send to that service.
        * @param {boolean} synchronous Whether the effect should be execute synchronously or not.
-       * @param {module:cloudstate.Metadata} metadata Metadata to send with the effect.
+       * @param {module:akkaserverless.Metadata} metadata Metadata to send with the effect.
        */
       effect: (method, message, synchronous = false, metadata) => {
         accessor.ensureActive();
@@ -239,10 +239,10 @@ module.exports = class CommandHelper {
       /**
        * Forward this command to another entity service call.
        *
-       * @function module:cloudstate.CommandContext#thenForward
+       * @function module:akkaserverless.CommandContext#thenForward
        * @param method The entity service method to invoke.
        * @param {object} message The message to send to that service.
-       * @param {module:cloudstate.Metadata} metadata Metadata to send with the forward.
+       * @param {module:akkaserverless.Metadata} metadata Metadata to send with the forward.
        */
       thenForward: (method, message, metadata) => {
         accessor.ensureActive();
@@ -252,7 +252,7 @@ module.exports = class CommandHelper {
       /**
        * Fail handling this command.
        *
-       * @function module:cloudstate.EffectContext#fail
+       * @function module:akkaserverless.EffectContext#fail
        * @param msg The failure message.
        * @throws An error that captures the failure message. Note that even if you catch the error thrown by this
        * method, the command will still be failed with the given message.

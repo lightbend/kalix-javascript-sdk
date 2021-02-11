@@ -18,7 +18,7 @@ const path = require("path");
 const grpc = require("grpc");
 const protoLoader = require("@grpc/proto-loader");
 
-const debug = require("debug")("cloudstate-event-sourcing");
+const debug = require("debug")("akkaserverless-event-sourcing");
 // Bind to stdout
 debug.log = console.log.bind(console);
 const AnySupport = require("./protobuf-any");
@@ -104,9 +104,9 @@ class EventSourcedEntityHandler {
           /**
            * Context for an event sourced command.
            *
-           * @interface module:cloudstate.EventSourced.EventSourcedCommandContext
-           * @extends module:cloudstate.CommandContext
-           * @extends module:cloudstate.EntityContext
+           * @interface module:akkaserverless.EventSourced.EventSourcedCommandContext
+           * @extends module:akkaserverless.CommandContext
+           * @extends module:akkaserverless.EntityContext
            */
 
           ctx.events = [];
@@ -117,8 +117,8 @@ class EventSourcedEntityHandler {
            * The event won't be persisted until the reply is sent to the proxy. Then, the event will be persisted
            * before the reply is sent back to the client.
            *
-           * @function module:cloudstate.EventSourced.EventSourcedCommandContext#emit
-           * @param {module:cloudstate.Serializable} event The event to emit.
+           * @function module:akkaserverless.EventSourced.EventSourcedCommandContext#emit
+           * @param {module:akkaserverless.Serializable} event The event to emit.
            */
           ctx.context.emit = (event) => {
             ctx.ensureActive();
@@ -254,7 +254,7 @@ module.exports = class EventSourcedServices {
   }
 
   entityType() {
-    return "cloudstate.eventsourced.EventSourced";
+    return "akkaserverless.eventsourced.EventSourced";
   }
 
   register(server) {
@@ -262,12 +262,12 @@ module.exports = class EventSourcedServices {
       path.join(__dirname, "..", "proto"),
       path.join(__dirname, "..", "protoc", "include")
     ];
-    const packageDefinition = protoLoader.loadSync(path.join("cloudstate", "event_sourced.proto"), {
+    const packageDefinition = protoLoader.loadSync(path.join("akkaserverless", "event_sourced.proto"), {
       includeDirs: includeDirs
     });
     const grpcDescriptor = grpc.loadPackageDefinition(packageDefinition);
 
-    const entityService = grpcDescriptor.cloudstate.eventsourced.EventSourced.service;
+    const entityService = grpcDescriptor.akkaserverless.eventsourced.EventSourced.service;
 
     server.addService(entityService, {
       handle: this.handle.bind(this)

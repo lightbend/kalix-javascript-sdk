@@ -19,16 +19,16 @@ const protobufHelper = require("./protobuf-helper");
 const grpc = require("grpc");
 const protoLoader = require("@grpc/proto-loader");
 const ActionSupport = require("./action-support");
-const CloudState = require("./cloudstate");
+const AkkaServerless = require("./akkaserverless");
 
 const actionServices = new ActionSupport();
 
 /**
  * A unary action command handler.
  *
- * @callback module:cloudstate.Action~unaryCommandHandler
+ * @callback module:akkaserverless.Action~unaryCommandHandler
  * @param {Object} command The command message, this will be of the type of the gRPC service call input type.
- * @param {module:cloudstate.Action.UnaryCommandContext} context The command context.
+ * @param {module:akkaserverless.Action.UnaryCommandContext} context The command context.
  * @returns {undefined|Object|Promise} The message to reply with, it must match the gRPC service call output type for
  *                                     this command. If replying by using context.write, undefined must be returned.
  */
@@ -36,8 +36,8 @@ const actionServices = new ActionSupport();
 /**
  * A streamed in action command handler.
  *
- * @callback module:cloudstate.Action~streamedInCommandHandler
- * @param {module:cloudstate.Action.StreamedInCommandContext} context The command context.
+ * @callback module:akkaserverless.Action~streamedInCommandHandler
+ * @param {module:akkaserverless.Action.StreamedInCommandContext} context The command context.
  * @returns {undefined|Object|Promise} The message to reply with, it must match the gRPC service call output type for
  *                                     this command. If replying by using context.write, undefined must be returned.
  */
@@ -45,30 +45,30 @@ const actionServices = new ActionSupport();
 /**
  * A streamed out command handler.
  *
- * @callback module:cloudstate.Action~streamedOutCommandHandler
+ * @callback module:akkaserverless.Action~streamedOutCommandHandler
  * @param {Object} command The command message, this will be of the type of the gRPC service call input type.
- * @param {module:cloudstate.Action.StreamedOutCommandContext} context The command context.
+ * @param {module:akkaserverless.Action.StreamedOutCommandContext} context The command context.
  */
 
 /**
  * A streamed command handler.
  *
- * @callback module:cloudstate.Action~streamedCommandHandler
- * @param {module:cloudstate.Action.StreamedCommandContext} context The command context.
+ * @callback module:akkaserverless.Action~streamedCommandHandler
+ * @param {module:akkaserverless.Action.StreamedCommandContext} context The command context.
  */
 
 /**
  * An action command handler.
  *
- * @typedef module:cloudstate.Action.ActionCommandHandler
- * @type {module:cloudstate.Action~unaryCommandHandler|module:cloudstate.Action~streamedInCommandHandler|module:cloudstate.Action~streamedOutCommandHandler|module:cloudstate.Action~streamedCommandHandler}
+ * @typedef module:akkaserverless.Action.ActionCommandHandler
+ * @type {module:akkaserverless.Action~unaryCommandHandler|module:akkaserverless.Action~streamedInCommandHandler|module:akkaserverless.Action~streamedOutCommandHandler|module:akkaserverless.Action~streamedCommandHandler}
  */
 
 /**
  * An action.
  *
- * @memberOf module:cloudstate
- * @extends module:cloudstate.Entity
+ * @memberOf module:akkaserverless
+ * @extends module:akkaserverless.Entity
  */
 class Action {
 
@@ -77,7 +77,7 @@ class Action {
    *
    * @param {string|string[]} desc A descriptor or list of descriptors to parse, containing the service to serve.
    * @param {string} serviceName The fully qualified name of the service that provides this entities interface.
-   * @param {module:cloudstate.Action~options=} options The options for this event sourced entity
+   * @param {module:akkaserverless.Action~options=} options The options for this event sourced entity
    */
   constructor(desc, serviceName, options) {
 
@@ -110,7 +110,7 @@ class Action {
      *
      * The names of the properties must match the names of the service calls specified in the gRPC descriptor
      *
-     * @type {Object.<string, module:cloudstate.Action.ActionCommandHandler>}
+     * @type {Object.<string, module:akkaserverless.Action.ActionCommandHandler>}
      */
     this.commandHandlers = {};
   }
@@ -139,7 +139,7 @@ class Action {
     if (this.server !== undefined) {
       throw new Error("Server already started!")
     }
-    this.server = new CloudState();
+    this.server = new AkkaServerless();
     this.server.addEntity(this);
 
     return this.server.start(options);

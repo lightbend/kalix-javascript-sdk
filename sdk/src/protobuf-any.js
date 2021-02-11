@@ -23,17 +23,17 @@ const stableJsonStringify = require("json-stable-stringify");
 
 const Any = protobufHelper.moduleRoot.google.protobuf.Any;
 
-// To allow primitive types to be stored, CloudState defines a number of primitive type URLs, based on protobuf types.
+// To allow primitive types to be stored, Akka Serverless defines a number of primitive type URLs, based on protobuf types.
 // The serialized values are valid protobuf messages that contain a value of that type as their single field at index
 // 15.
-const CloudStatePrimitive = "p.cloudstate.io/";
+const AkkaServerlessPrimitive = "p.akkaserverless.com/";
 // Chosen because it reduces the likelihood of clashing with something else.
-const CloudStatePrimitiveFieldNumber = 1;
-const CloudStatePrimitiveFieldNumberEncoded = CloudStatePrimitiveFieldNumber << 3; // 8
-const CloudStateSupportedPrimitiveTypes = new Set();
-["string", "bytes", "int64", "bool", "double"].forEach(CloudStateSupportedPrimitiveTypes.add.bind(CloudStateSupportedPrimitiveTypes));
+const AkkaServerlessPrimitiveFieldNumber = 1;
+const AkkaServerlessPrimitiveFieldNumberEncoded = AkkaServerlessPrimitiveFieldNumber << 3; // 8
+const AkkaServerlessSupportedPrimitiveTypes = new Set();
+["string", "bytes", "int64", "bool", "double"].forEach(AkkaServerlessSupportedPrimitiveTypes.add.bind(AkkaServerlessSupportedPrimitiveTypes));
 
-const CloudStateJson = "json.cloudstate.io/";
+const AkkaServerlessJson = "json.akkaserverless.com/";
 
 
 /**
@@ -41,7 +41,7 @@ const CloudStateJson = "json.cloudstate.io/";
  *
  * It should have a encode() method on it.
  *
- * @typedef module:cloudstate.SerializableProtobufMessage
+ * @typedef module:akkaserverless.SerializableProtobufMessage
  * @type {Object}
  */
 
@@ -49,7 +49,7 @@ const CloudStateJson = "json.cloudstate.io/";
  * Any type that has a type property on it can be serialized as JSON, with the value of the type property describing
  * the type of the value.
  *
- * @typedef module:cloudstate.TypedJson
+ * @typedef module:akkaserverless.TypedJson
  * @type {Object}
  * @property {string} type The type of the object.
  */
@@ -57,8 +57,8 @@ const CloudStateJson = "json.cloudstate.io/";
 /**
  * A type that is serializable.
  *
- * @typedef module:cloudstate.Serializable
- * @type {module:cloudstate.SerializableProtobufMessage|module:cloudstate.TypedJson|Object|string|number|boolean|Long|Buffer}
+ * @typedef module:akkaserverless.Serializable
+ * @type {module:akkaserverless.SerializableProtobufMessage|module:akkaserverless.TypedJson|Object|string|number|boolean|Long|Buffer}
  */
 
 
@@ -92,7 +92,7 @@ module.exports = class AnySupport {
     const writer = new protobuf.Writer();
     // First write the field key.
     // Field index is always 15, which gets shifted left by 3 bits (ie, 120).
-    writer.uint32((CloudStatePrimitiveFieldNumberEncoded | protobuf.types.basic[type]) >>> 0);
+    writer.uint32((AkkaServerlessPrimitiveFieldNumberEncoded | protobuf.types.basic[type]) >>> 0);
     // Now write the primitive
     writer[type](obj);
     return writer.finish();
@@ -101,7 +101,7 @@ module.exports = class AnySupport {
   static serializePrimitive(obj, type) {
     return Any.create({
       // I have *no* idea why it's type_url and not typeUrl, but it is.
-      type_url: CloudStatePrimitive + type,
+      type_url: AkkaServerlessPrimitive + type,
       value: this.serializePrimitiveValue(obj, type)
     });
   }
@@ -183,7 +183,7 @@ module.exports = class AnySupport {
         }
       }
       return Any.create({
-        type_url: CloudStateJson + type,
+        type_url: AkkaServerlessJson + type,
         value: this.serializePrimitiveValue(stableJsonStringify(obj), "string")
       });
     } else {
@@ -213,11 +213,11 @@ module.exports = class AnySupport {
       bytes = new Buffer(0);
     }
 
-    if (hostName === CloudStatePrimitive) {
+    if (hostName === AkkaServerlessPrimitive) {
       return AnySupport.deserializePrimitive(bytes, type);
     }
 
-    if (hostName === CloudStateJson) {
+    if (hostName === AkkaServerlessJson) {
       const json = AnySupport.deserializePrimitive(bytes, "string");
       return JSON.parse(json);
     }
@@ -227,8 +227,8 @@ module.exports = class AnySupport {
   }
 
   static deserializePrimitive(bytes, type) {
-    if (!CloudStateSupportedPrimitiveTypes.has(type)) {
-      throw new Error("Unsupported CloudState primitive Any type: " + type);
+    if (!AkkaServerlessSupportedPrimitiveTypes.has(type)) {
+      throw new Error("Unsupported AkkaServerless primitive Any type: " + type);
     }
     const reader = new protobuf.Reader(bytes);
     let fieldNumber = 0;
@@ -238,7 +238,7 @@ module.exports = class AnySupport {
       const key = reader.uint32();
       pType = key & 7;
       fieldNumber = key >>> 3;
-      if (fieldNumber !== CloudStatePrimitiveFieldNumber) {
+      if (fieldNumber !== AkkaServerlessPrimitiveFieldNumber) {
         reader.skipType(pType);
       } else {
         if (pType !== protobuf.types.basic[type]) {

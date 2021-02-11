@@ -1,6 +1,6 @@
 = Implementing in JavaScript
 
-Cloudstate offers a straightforward JavaScript API for implementing Cloudstate services.
+Akka Serverless offers a straightforward JavaScript API for implementing Akka Serverless services.
 
 * xref:getting-started.adoc[Getting started]
 * xref:eventsourced.adoc[Event sourcing]
