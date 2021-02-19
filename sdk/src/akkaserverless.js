@@ -200,7 +200,7 @@ class AkkaServerless {
         supportLibraryName: packageInfo.name,
         supportLibraryVersion: packageInfo.version,
         protocolMajorVersion: 0,
-        protocolMinorVersion: 2
+        protocolMinorVersion: 7
       }
     });
   }

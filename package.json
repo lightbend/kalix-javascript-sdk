@@ -1,6 +1,6 @@
 {
   "name": "@lightbend/akkaserverless-javascript-sdk",
-  "version": "0.0.5",
+  "version": "0.7.0",
   "description": "Akka Serverless JavaScript SDK",
   "keywords": [
     "akka",
