@@ -1,0 +1,4 @@
+{
+    "name": "{{name}}",
+    "description": "Create an Akka Serverless entity codebase with a single command."
+}
