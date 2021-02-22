@@ -9,9 +9,14 @@
   "private": true,
   "dependencies": {
     "mustache": "^4.1.0",
+    "request": "^2.88.2",
     "scaffold-generator": "^3.0.4"
   },
   "bin": {
-    "create-akkasls-entity": "./create-akkasls-entity.js"
+    "create-akkasls-entity": "./create-akkasls-entity.js",
+    "akkasls-codegen-js": "./akkasls-codegen-js"
+  },
+  "scripts": {
+    "preinstall": "node scripts/preinstall.js"
   }
 }

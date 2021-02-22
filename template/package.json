@@ -1,4 +1,6 @@
 {
     "name": "{{name}}",
-    "description": "Create an Akka Serverless entity codebase with a single command."
+    "devDependencies": {
+        "@lightbend/create-akkasls-entity": "^1.0.0"
+    }
 }
