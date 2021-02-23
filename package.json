@@ -17,6 +17,6 @@
     "akkasls-codegen-js": "./akkasls-codegen-js"
   },
   "scripts": {
-    "preinstall": "node scripts/preinstall.js"
+    "install": "node scripts/install.js"
   }
 }

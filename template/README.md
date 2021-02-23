@@ -10,6 +10,17 @@ This project has a bare-bones skeleton service ready to go, but in order to adap
 extend it it may be useful to read up on [developing Cloudstate services](https://developer.lightbend.com/docs/akka-serverless/developing/index.html)
 and in particular the [JavaScript section](https://developer.lightbend.com/docs/akka-serverless/js-services/index.html)
 
+## Prerequisites
+
+For local development:
+
+- Protocol Compiler (`protoc`); see https://grpc.io/docs/protoc-installation/
+
+To build and deploy to a cluster:
+
+- Docker; see https://docs.docker.com/engine/install/
+- Akka Serverless CLI (`akkasls`); see https://developer.lightbend.com/docs/akka-serverless/getting-started/set-up-development-env.html#_akka_serverless_cli
+
 ## Building
 
 To build, at a minimum you need to generate and process sources, particularly when using an IDE.
@@ -59,6 +70,6 @@ You will need to update the `akkasls.dockerImage` property in the `pom.xml` and 
 for more information on how to make your docker image available to Akka Serverless.
 
 Finally you can or use the [Akka Serverless Console](https://console.akkaserverless.com)
-to create a project and then deploy your service into the project either by using `mvn deploy`,
-through the `akkasls` CLI or via the web interface. When using `mvn deploy`, Maven will also
+to create a project and then deploy your service into the project either by using `npm run deploy`,
+through the `akkasls` CLI or via the web interface. When using `npm run deploy`, NPM will also
 conveniently package and publish your docker image prior to deployment.
