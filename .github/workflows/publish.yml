@@ -22,4 +22,4 @@ jobs:
           npm version $PUBLISH_VERSION
           npm publish
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.NODE_AUTH_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
