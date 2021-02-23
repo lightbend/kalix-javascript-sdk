@@ -20,7 +20,7 @@ npm run build
 Or using Yarn:
 
 ```sh
-yarn create akkasls-entity my-entity
+yarn create @lightbend/akkasls-entity my-entity
 cd my-entity
 yarn
 yarn build

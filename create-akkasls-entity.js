@@ -5,6 +5,7 @@ const mustache = require("mustache");
 const process = require("process");
 const path = require("path");
 const fs = require("fs");
+const package = require("./package.json");
 
 /**
  * Generates a new initial codebase for an Akka Serverless entity.
@@ -18,6 +19,7 @@ if (process.argv.length <= 2) {
 }
 
 const name = process.argv[2];
+const libraryVersion = package.version;
 
 const templatePath = path.resolve(__dirname, "template");
 const targetPath = path.resolve(name);
@@ -40,6 +42,7 @@ console.info(`Generating new Akka Serverless entity '${name}'`);
 new Scaffold({
   data: {
     name,
+    libraryVersion,
   },
   render: mustache.render,
 })
