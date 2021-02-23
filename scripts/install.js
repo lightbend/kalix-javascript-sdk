@@ -7,7 +7,7 @@ const path = require("path");
  * This is leveraged when this module is installed as a dependency.
  */
 
-const akkaslsCodegenVersion = "0.9.21";
+const akkaslsCodegenVersion = "0.10.4";
 const releases = {
   linux_x86_64: "akkasls-codegen-js-x86_64-unknown-linux-gnu",
   darwin_x86_64: "akkasls-codegen-js-x86_64-apple-darwin",
