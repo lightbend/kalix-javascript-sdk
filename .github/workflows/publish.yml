@@ -17,9 +17,6 @@ jobs:
           node-version: "12.x"
           registry-url: "https://registry.npmjs.org"
       - run: npm install
-      - run: |
-          export PUBLISH_VERSION="$(git describe --abbrev=0 --tags|cut -c2-)"
-          npm version $PUBLISH_VERSION
-          npm publish
+      - run: npm publish --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
