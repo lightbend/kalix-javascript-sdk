@@ -31,6 +31,7 @@ if (fs.existsSync(targetPath)) {
 
 // Override `mustache.escape`to avoid HTML-escaping of strings
 mustache.escape = (v) => v;
+console.info(`Generating new Akka Serverless entity '${name}'`);
 new Scaffold({
   data: {
     name,
@@ -39,5 +40,8 @@ new Scaffold({
 })
   .copy(templatePath, targetPath)
   .then(() => {
-    console.log("done");
+    console.info("Entity codebase generated successfully. To get started:");
+    console.info(`  cd ${name}`);
+    console.info("  npm install");
+    console.info("  npm run build");
   });
