@@ -14,7 +14,7 @@ To create the initial codebase for a new entity with NPM:
 npx @lightbend/create-akkasls-entity my-entity
 cd my-entity
 npm install
-npm build
+npm run build
 ```
 
 Or using Yarn:
