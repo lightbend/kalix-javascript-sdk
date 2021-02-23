@@ -1,6 +1,6 @@
 {
   "name": "@lightbend/create-akkasls-entity",
-  "version": "1.0.0",
+  "version": "0.10.0",
   "description": "Create an Akka Serverless entity codebase with a single command.",
   "main": "create-akkasls-entity.js",
   "repository": "https://github.com/lightbend/create-akkasls-entity",
