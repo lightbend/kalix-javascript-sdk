@@ -1,1 +1,3 @@
 node_modules
+/akkasls-codegen-js
+/lightbend-create-akkasls-entity*.tgz
