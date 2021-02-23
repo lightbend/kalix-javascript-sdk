@@ -6,6 +6,11 @@ const process = require("process");
 const path = require("path");
 const fs = require("fs");
 
+/**
+ * Generates a new initial codebase for an Akka Serverless entity.
+ * Renders the contents of the `./template` directory using the Mustache template engine
+ */
+
 if (process.argv.length <= 2) {
   console.error("Please specify the entity name:");
   console.error("  @lightbend/create-akkasls-entity <entity-name>");

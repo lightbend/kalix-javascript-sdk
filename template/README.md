@@ -12,11 +12,7 @@ and in particular the [JavaScript section](https://developer.lightbend.com/docs/
 
 ## Prerequisites
 
-For local development:
-
-- Protocol Compiler (`protoc`); see https://grpc.io/docs/protoc-installation/
-
-To build and deploy to a cluster:
+No additional tooling is required for local development. To build and deploy to a cluster:
 
 - Docker; see https://docs.docker.com/engine/install/
 - Akka Serverless CLI (`akkasls`); see https://developer.lightbend.com/docs/akka-serverless/getting-started/set-up-development-env.html#_akka_serverless_cli

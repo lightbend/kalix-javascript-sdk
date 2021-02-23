@@ -2,6 +2,11 @@ const request = require("request");
 const fs = require("fs");
 const path = require("path");
 
+/**
+ * Downloads the appropriate version of the akkasls-codegen-js tool for your platform.
+ * This is leveraged when this module is installed as a dependency.
+ */
+
 const akkaslsCodegenVersion = "0.9.21";
 const releases = {
   linux_x86_64: "akkasls-codegen-js-x86_64-unknown-linux-gnu",
