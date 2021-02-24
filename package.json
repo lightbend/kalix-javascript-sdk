@@ -12,9 +12,10 @@
     "scaffold-generator": "^3.0.4"
   },
   "bin": {
-    "create-akkasls-entity": "./create-akkasls-entity.js"
+    "create-akkasls-entity": "./create-akkasls-entity.js",
+    "akkasls-codegen-js": "./bin/akkasls-codegen-js.bin"
   },
   "scripts": {
-    "install": "node scripts/install.js"
+    "preinstall": "node scripts/preinstall.js"
   }
 }
