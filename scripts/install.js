@@ -9,17 +9,20 @@ const path = require("path");
 
 const akkaslsCodegenVersion = "0.10.4";
 const releases = {
-  linux_x86_64: "akkasls-codegen-js-x86_64-unknown-linux-gnu",
-  darwin_x86_64: "akkasls-codegen-js-x86_64-apple-darwin",
+  linux_x86_64: `akkasls-codegen-js-x86_64-unknown-linux-gnu-${akkaslsCodegenVersion}`,
+  darwin_x86_64: `akkasls-codegen-js-x86_64-apple-darwin-${akkaslsCodegenVersion}`,
+  win32_x86_64: `akkasls-codegen-js-x86_64-pc-windows-gnu-${akkaslsCodegenVersion}.exe`,
 };
 
 const arch = process.arch === "x64" ? "x86_64" : "x86_32";
 const release = `${process.platform}_${arch}`;
 
-const targetFile = path.resolve(__dirname, "..", "akkasls-codegen-js");
+const filename =
+  process.platform == "win32" ? "akkasls-codegen-js.exe" : "akkasls-codegen-js";
+const targetFile = path.resolve(__dirname, "..", filename);
 
 if (releases[release]) {
-  const url = `https://dl.bintray.com/lightbend/generic/${releases[release]}-${akkaslsCodegenVersion}`;
+  const url = `https://dl.bintray.com/lightbend/generic/${releases[release]}`;
   console.info(`Fetching akkasls-codegen-js from ${url}`);
   request(url).on("response", (response) => {
     if (response.statusCode !== 200) {
