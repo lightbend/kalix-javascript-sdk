@@ -17,9 +17,11 @@ const releases = {
 const arch = process.arch === "x64" ? "x86_64" : "x86_32";
 const release = `${process.platform}_${arch}`;
 
-const filename =
-  process.platform == "win32" ? "akkasls-codegen-js.exe" : "akkasls-codegen-js";
-const targetFile = path.resolve(__dirname, "..", filename);
+// Windows requires executable files to have some file extension, but we need a consistent name cross-platform
+const filename = "akkasls-codegen-js.bin";
+
+const binDir = path.resolve(__dirname, "../bin")
+const targetFile = path.resolve(binDir, filename);
 
 if (releases[release]) {
   const url = `https://dl.bintray.com/lightbend/generic/${releases[release]}`;
@@ -31,6 +33,8 @@ if (releases[release]) {
       );
     }
     console.debug(`Saving to ${targetFile}`);
+    
+    fs.mkdirSync(binDir, { recursive: true });
 
     const fileWriter = fs.createWriteStream(targetFile, { mode: 0o755 });
     response.body.pipe(fileWriter);
