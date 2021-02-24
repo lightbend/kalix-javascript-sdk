@@ -1,4 +1,4 @@
-const request = require("request");
+const fetch = require("node-fetch");
 const fs = require("fs");
 const path = require("path");
 
@@ -24,17 +24,18 @@ const targetFile = path.resolve(__dirname, "..", filename);
 if (releases[release]) {
   const url = `https://dl.bintray.com/lightbend/generic/${releases[release]}`;
   console.info(`Fetching akkasls-codegen-js from ${url}`);
-  request(url).on("response", (response) => {
-    if (response.statusCode !== 200) {
+  fetch(url).then(response => {
+    if (!response.ok) {
       throw new Error(
-        `Error fetching Akka Serverless codegen tool from [${url}]: ${response.statusMessage}.`
+        `Error fetching Akka Serverless codegen tool from [${url}]: ${response.statusText}.`
       );
     }
     console.debug(`Saving to ${targetFile}`);
 
     const fileWriter = fs.createWriteStream(targetFile, { mode: 0o755 });
-    response.pipe(fileWriter);
-  });
+    response.body.pipe(fileWriter);
+
+  })
 } else {
   throw new Error(
     "Unsupported platform. No prebuilt version of the Akka Serverless codegen tool exists for this platform."

@@ -8,7 +8,7 @@
   "license": "Copyright (c) Lightbend Inc. 2021",
   "dependencies": {
     "mustache": "^4.1.0",
-    "request": "^2.88.2",
+    "node-fetch": "^2.6.1",
     "scaffold-generator": "^3.0.4"
   },
   "bin": {
