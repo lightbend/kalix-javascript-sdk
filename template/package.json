@@ -15,7 +15,7 @@
     },
     "scripts": {
         "build-proto-desc": "compile-descriptor proto/*.proto",
-        "build": "npm run build-proto-desc && akkasls-codegen-js",
+        "build": "npm run build-proto-desc && akkasls-codegen-js --proto-src-dir ./proto",
         "start": "node index.js",
         "docker-build": "docker build --tag ${npm_package_config_dockerImage}:${npm_package_version} .",
         "docker-push": "docker push ${npm_package_config_dockerImage}:${npm_package_version}",
