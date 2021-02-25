@@ -33,8 +33,9 @@ if (releases[release]) {
       );
     }
     console.debug(`Saving to ${targetFile}`);
-    
-    fs.mkdirSync(binDir, { recursive: true });
+    if(!fs.existsSync(binDir)) {
+      fs.mkdirSync(binDir);
+    }
 
     const fileWriter = fs.createWriteStream(targetFile, { mode: 0o755 });
     response.body.pipe(fileWriter);
