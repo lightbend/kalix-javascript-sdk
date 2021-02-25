@@ -17,5 +17,8 @@
   },
   "scripts": {
     "install": "node scripts/install.js"
+  },
+  "config": {
+    "akkaslsCodegenVersion": "0.11.1"
   }
 }
