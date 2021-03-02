@@ -1,5 +1,5 @@
 {
-  "name": "js-shopping-cart",
+  "name": "js-eventsourced-shopping-cart",
   "version": "0.1.0",
   "description": "Sample Akka Serverless event sourced shopping cart application",
   "keywords": [
@@ -24,7 +24,7 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/lightbend/akkaserverless-javascript-sdk",
-    "directory": "samples/shopping-cart"
+    "directory": "samples/eventsourced-shopping-cart"
   },
   "//": "https://npm.community/t/npm-install-does-not-install-transitive-dependencies-of-local-dependency/2264",
   "dependencies": {
@@ -39,14 +39,14 @@
   },
   "scripts": {
     "test": "mocha",
-    "prepare-javascript-sdk": "cd ../../javascript-sdk && npm install && cd ../samples/js-shopping-cart",
+    "prepare-javascript-sdk": "cd ../../javascript-sdk && npm install && cd ../samples/js-eventsourced-shopping-cart",
     "prestart": "compile-descriptor -I../../protocols/example ../../protocols/example/shoppingcart/shoppingcart.proto",
     "pretest": "compile-descriptor -I../../protocols/example ../../protocols/example/shoppingcart/shoppingcart.proto",
     "postinstall": "compile-descriptor -I../../protocols/example ../../protocols/example/shoppingcart/shoppingcart.proto",
     "start": "node index.js",
     "start-no-prestart": "node index.js",
-    "dockerbuild": "npm run prepare-javascript-sdk && docker build -f Dockerfile -t ${DOCKER_PUBLISH_TO:-akkaserverless}/js-shopping-cart:latest ../..",
-    "dockerpush": "docker push ${DOCKER_PUBLISH_TO:-akkaserverless}/js-shopping-cart:latest",
+    "dockerbuild": "npm run prepare-javascript-sdk && docker build -f Dockerfile -t ${DOCKER_PUBLISH_TO:-akkaserverless}/js-eventsourced-shopping-cart:latest ../..",
+    "dockerpush": "docker push ${DOCKER_PUBLISH_TO:-akkaserverless}/js-eventsourced-shopping-cart:latest",
     "dockerbuildpush": "npm run dockerbuild && npm run dockerpush"
   }
 }

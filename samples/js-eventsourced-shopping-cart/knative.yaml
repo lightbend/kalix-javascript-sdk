@@ -9,7 +9,7 @@ spec:
         force-upgrade: one
     spec:
       containers:
-      - image: akkaserverless/js-shopping-cart:latest
+      - image: akkaserverless/js-eventsourced-shopping-cart:latest
         ports:
         - name: h2c
           containerPort: 8080
