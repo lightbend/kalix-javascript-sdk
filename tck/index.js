@@ -19,4 +19,9 @@ const server = new AkkaServerless();
 const eventSourced = require("./eventsourced.js");
 server.addEntity(eventSourced.tckModel);
 server.addEntity(eventSourced.two);
+const valueEntity = require("./value-entity.js");
+server.addEntity(valueEntity.two);
+// FIXME #124 passivation not supported yet
+// server.addEntity(valueEntity.configured);
+server.addEntity(valueEntity.tckModel);
 server.start();

@@ -10,6 +10,7 @@
 
 module.exports.AkkaServerless = require("./src/akkaserverless");
 module.exports.EventSourced = require("./src/eventsourced");
+module.exports.ValueEntity = require("./src/value-entity")
 module.exports.crdt = require("./src/crdt");
 module.exports.Action = require("./src/action");
 module.exports.Metadata = require("./src/metadata");

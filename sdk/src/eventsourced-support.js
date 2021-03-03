@@ -214,7 +214,7 @@ class EventSourcedEntityHandler {
   }
 
   withBehaviorAndState(callback) {
-    if (this.anyState == null) {
+    if (this.anyState === null) {
       this.updateState(this.entity.initial(this.entityId));
     }
     const stateObj = this.entity.deserialize(this.anyState);
