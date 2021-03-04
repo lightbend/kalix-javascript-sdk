@@ -48,6 +48,8 @@ docker-compose -f docker-compose.yml -f docker-compose.linux.yml up
 
 To start the application locally, use the following commands:
 
+> Be sure to have performed `npm install` for the first time!
+
 ```
 npm run build && npm run start
 ```
