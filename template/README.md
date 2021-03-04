@@ -31,16 +31,27 @@ npm run build
 
 In order to run your application locally, you must run the Cloudstate proxy. The included `docker-compose` file contains the configuration required to run the proxy for a locally running application. To start the proxy, run the following command from this directory:
 
-```
-docker-compose up -d
-```
-
-On Linux this requires Docker 20.10 or later (https://github.com/moby/moby/pull/40007), or for the `USER_FUNCTION_HOST` environment variable to be set manually.
-
-To start the application locally, use the following command:
+### macOS and Windows
 
 ```
-npm run start
+docker-compose up
+```
+
+### Linux
+
+> On Linux this requires Docker 20.10 or later (https://github.com/moby/moby/pull/40007), 
+> or for a `USER_FUNCTION_HOST` environment variable to be set manually.
+
+```
+docker-compose -f docker-compose.yml -f docker-compose.linux.yml up
+```
+
+To start the application locally, use the following commands:
+
+> Be sure to have performed `npm install` for the first time!
+
+```
+npm run build && npm run start
 ```
 
 With both the proxy and your application running, any defined endpoints should be available at `http://localhost:9000`. For example, given [`grpcurl`](https://github.com/fullstorydev/grpcurl):
