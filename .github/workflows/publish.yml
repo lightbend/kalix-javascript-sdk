@@ -16,6 +16,8 @@ jobs:
         with:
           node-version: "12.x"
           registry-url: "https://registry.npmjs.org"
+      - name: Set version
+        run: 'sed -i "s/  \"version\":.*/  \"version\": \"$(git tag|cut -c2-)\",/" package.json'
       - run: npm install
       - run: npm publish --access public
         env:
