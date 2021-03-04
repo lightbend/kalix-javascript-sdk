@@ -91,9 +91,6 @@ class ValueEntity {
     // Eagerly lookup the service to fail early
     this.service = this.root.lookupService(serviceName);
 
-    if(!fs.existsSync("user-function.desc"))
-      throw new Error("No 'user-function.desc' file found in application root folder.");
-
     const packageDefinition = protoLoader.loadSync(desc, {
       includeDirs: allIncludeDirs
     });

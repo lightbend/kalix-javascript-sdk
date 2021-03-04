@@ -2,6 +2,8 @@ syntax = "proto3";
 
 package com.example;
 
+import "akkaserverless/entity_key.proto";
+
 message Example {
     string field1 = 1;
     string field2 = 2;
@@ -14,7 +16,7 @@ message PrimitiveLike {
 }
 
 message In {
-    string field = 1;
+    string field = 1 [(.akkaserverless.entity_key) = true];
 }
 
 message Out {

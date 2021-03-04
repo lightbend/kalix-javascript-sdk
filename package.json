@@ -46,7 +46,8 @@
     "request": "^2.88.0",
     "rimraf": "^2.6.3",
     "test": "^0.6.0",
-    "unzipper": "^0.9.15"
+    "unzipper": "^0.9.15",
+    "testcontainers": "7.5.0"
   },
   "devDependencies": {
     "chai": "4.2.0",
@@ -76,6 +77,7 @@
     "watch-jsdoc": "npm-watch jsdoc",
     "jsdoc": "jsdoc -c jsdoc.json",
     "test": "mocha --recursive",
+    "pretest": "bin/compile-descriptor.js test/example.proto --descriptor_set_out=test/user-function.desc",
     "prepare": "bin/prepare.sh",
     "postinstall": "node bin/download-protoc.js"
   }
