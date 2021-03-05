@@ -71,6 +71,9 @@ const eventSourcedServices = new EventSourcedServices();
  * @property {string} [persistenceId="entity"] A persistence id for all event source entities of this type. This will be prefixed
  * onto the entityId when storing the events for this entity.
  * @property {number} [snapshotEvery=100] A snapshot will be persisted every time this many events are emitted.
+ *                                        It is strongly recommended to not disable snapshotting unless it is known that
+ *                                        event sourced entities will never have more than 100 events (in which case
+ *                                        the default will anyway not trigger any snapshots)
  * @property {array<string>} [includeDirs=["."]] The directories to include when looking up imported protobuf files.
  * @property {boolean} [serializeAllowPrimitives=false] Whether serialization of primitives should be supported when
  * serializing events and snapshots.

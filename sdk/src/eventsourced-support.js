@@ -22,6 +22,8 @@ class EventSourcedSupport {
     this.options = options;
     this.anySupport = new AnySupport(this.root);
     this.allEntities = allEntities;
+    if (!this.options.snapshotEvery)
+      console.warn("Snapshotting disabled for entity " + this.option.entityType + ", this is not recommended.")
   }
 
   serialize(obj, requireJsonType) {
