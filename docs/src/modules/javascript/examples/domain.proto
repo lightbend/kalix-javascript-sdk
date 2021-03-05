@@ -1,3 +1,5 @@
+// tag::valueentity[]
+// tag::eventsourced[]
 syntax = "proto3";
 
 package example.shoppingcart.domain;
@@ -8,6 +10,12 @@ message LineItem {
   int32 quantity = 3;
 }
 
+message Cart {
+  repeated LineItem items = 1;
+  bool checkedout = 2;
+}
+// end::valueentity[]
+
 message ItemAdded {
   LineItem item = 1;
 }
@@ -17,8 +25,4 @@ message ItemRemoved {
 }
 
 message CheckedOut {}
-
-message Cart {
-  repeated LineItem items = 1;
-  bool checkedout = 2;
-}
+// end::eventsourced[]

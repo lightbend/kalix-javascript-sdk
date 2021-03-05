@@ -12,7 +12,7 @@ For our shopping cart example, we'll create a new file called `domain.proto`, th
 
 [source,protobuf]
 ----
-include::example$domain.proto[]
+include::example$domain.proto[tag=eventsourced]
 ----
 
 In this file, the `Cart` message is the state, while `ItemAdded` and `ItemRemoved` are events. Note that the events are in past tense - events are facts, indisputable things that happened in the past. A fact never becomes false, once you've added an item to a shopping cart, it never becomes untrue that that item was added to the cart. It may be removed later, but that doesn't change the fact that it was added, it only changes the current state of the cart, not what happened in the past. The names of your events should always be in past tense, communicating the indisputable fact that they represent.
