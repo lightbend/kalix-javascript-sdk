@@ -11,7 +11,7 @@ const entity = new EventSourced(
   ["shoppingcart/shoppingcart.proto", "shoppingcart/persistence/domain.proto"],
   "example.shoppingcart.ShoppingCart",
   {
-    persistenceId: "shopping-cart"
+    entityType: "shopping-cart"
   }
 );
 

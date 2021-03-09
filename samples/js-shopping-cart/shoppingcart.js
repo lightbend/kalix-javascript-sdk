@@ -8,7 +8,7 @@ const entity = new ValueEntity(
   ["shoppingcart/shoppingcart.proto", "shoppingcart/persistence/domain.proto"],
   "com.example.valueentity.shoppingcart.ShoppingCart",
   {
-    persistenceId: "shopping-cart",
+    entityType: "shopping-cart",
     includeDirs: ["../../protocols/example/valueentity"]
   }
 );

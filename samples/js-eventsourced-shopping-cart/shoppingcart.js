@@ -8,7 +8,7 @@ const entity = new EventSourced(
   ["shoppingcart/shoppingcart.proto", "shoppingcart/persistence/domain.proto"],
   "com.example.shoppingcart.ShoppingCart",
   {
-    persistenceId: "shopping-cart",
+    entityType: "shopping-cart",
     snapshotEvery: 5, // Usually you wouldn't snapshot this frequently, but this helps to demonstrate snapshotting
     includeDirs: ["../../protocols/example"]
   }

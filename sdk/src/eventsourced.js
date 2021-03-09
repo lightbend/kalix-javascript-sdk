@@ -68,7 +68,7 @@ const eventSourcedServices = new EventSourcedServices();
  * Options for an event sourced entity.
  *
  * @typedef module:akkaserverless.EventSourced~options
- * @property {string} [persistenceId="entity"] A persistence id for all event source entities of this type. This will be prefixed
+ * @property {string} [entityType="entity"] The entity type name for all event source entities of this type. This will be prefixed
  * onto the entityId when storing the events for this entity.
  * @property {number} [snapshotEvery=100] A snapshot will be persisted every time this many events are emitted.
  *                                        It is strongly recommended to not disable snapshotting unless it is known that
@@ -87,7 +87,7 @@ const eventSourcedServices = new EventSourcedServices();
  * @memberOf module:akkaserverless
  * @extends module:akkaserverless.Entity
  */
-class EventSourced {
+class EventSourcedEntity {
 
   /**
    * Create a new event sourced entity.
@@ -100,7 +100,7 @@ class EventSourced {
 
     this.options = {
       ...{
-        persistenceId: "entity",
+        entityType: "entity",
         snapshotEvery: 100,
         includeDirs: ["."],
         serializeAllowPrimitives: false,
@@ -127,8 +127,8 @@ class EventSourced {
     this.grpc = grpc.loadPackageDefinition(packageDefinition);
   }
 
-  entityType() {
-    return eventSourcedServices.entityType();
+  componentType() {
+    return eventSourcedServices.componentType();
   }
 
   /**
@@ -188,7 +188,7 @@ class EventSourced {
       throw new Error("Server already started!")
     }
     this.server = new AkkaServerless();
-    this.server.addEntity(this);
+    this.server.addComponent(this);
 
     return this.server.start(options);
   }
@@ -203,4 +203,4 @@ class EventSourced {
 
 }
 
-module.exports = EventSourced;
+module.exports = EventSourcedEntity;

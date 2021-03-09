@@ -393,13 +393,13 @@ module.exports = class ActionServices {
     this.services = {};
   }
 
-  addService(entity, allEntities) {
-    this.services[entity.serviceName] = new ActionSupport(entity.root, entity.service,
-        entity.commandHandlers, allEntities);
+  addService(component, allComponents) {
+    this.services[component.serviceName] = new ActionSupport(component.root, component.service,
+        component.commandHandlers, allEntities);
   }
 
-  entityType() {
-    return "akkaserverless.action.ActionProtocol";
+  componentType() {
+    return "akkaserverless.action.Action";
   }
 
   register(server) {

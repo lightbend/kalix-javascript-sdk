@@ -202,7 +202,7 @@ module.exports = class ValueEntityServices {
       entity.initial, entity.options, allEntities);
   }
 
-  entityType() {
+  componentType() {
     return "akkaserverless.valueentity.ValueEntity";
   }
 

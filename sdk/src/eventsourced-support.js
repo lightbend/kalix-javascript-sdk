@@ -94,7 +94,7 @@ class EventSourcedEntityHandler {
           /**
            * Context for an event sourced command.
            *
-           * @interface module:akkaserverless.EventSourced.EventSourcedCommandContext
+           * @interface module:akkaserverless.EventSourcedEntity.EventSourcedEntityCommandContext
            * @extends module:akkaserverless.CommandContext
            * @extends module:akkaserverless.EntityContext
            */
@@ -107,7 +107,7 @@ class EventSourcedEntityHandler {
            * The event won't be persisted until the reply is sent to the proxy. Then, the event will be persisted
            * before the reply is sent back to the client.
            *
-           * @function module:akkaserverless.EventSourced.EventSourcedCommandContext#emit
+           * @function module:akkaserverless.EventSourcedEntity.EventSourcedEntityCommandContext#emit
            * @param {module:akkaserverless.Serializable} event The event to emit.
            */
           ctx.context.emit = (event) => {
@@ -232,7 +232,7 @@ class EventSourcedEntityHandler {
 }
 
 
-module.exports = class EventSourcedServices {
+module.exports = class EventSourcedEntityServices {
 
   constructor() {
     this.services = {};
@@ -243,8 +243,8 @@ module.exports = class EventSourcedServices {
       entity.initial, entity.options, allEntities);
   }
 
-  entityType() {
-    return "akkaserverless.eventsourced.EventSourced";
+  componentType() {
+    return "akkaserverless.eventsourced.EventSourcedEntity";
   }
 
   register(server) {
@@ -252,12 +252,12 @@ module.exports = class EventSourcedServices {
       path.join(__dirname, "..", "proto"),
       path.join(__dirname, "..", "protoc", "include")
     ];
-    const packageDefinition = protoLoader.loadSync(path.join("akkaserverless", "event_sourced.proto"), {
+    const packageDefinition = protoLoader.loadSync(path.join("akkaserverless", "event_sourced_entity.proto"), {
       includeDirs: includeDirs
     });
     const grpcDescriptor = grpc.loadPackageDefinition(packageDefinition);
 
-    const entityService = grpcDescriptor.akkaserverless.eventsourced.EventSourced.service;
+    const entityService = grpcDescriptor.akkaserverless.eventsourced.EventSourcedEntity.service;
 
     server.addService(entityService, {
       handle: this.handle.bind(this)

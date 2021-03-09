@@ -46,7 +46,7 @@ const valueEntityServices = new ValueEntityServices();
  * Options for a value entity.
  *
  * @typedef module:akkaserverless.ValueEntity~options
- * @property {string} [persistenceId="entity"] A persistence id for all value entities of this type. This will be prefixed
+ * @property {string} [entityType="entity"] A persistence id for all value entities of this type. This will be prefixed
  * onto the entityId when storing the state for this entity.
  * @property {array<string>} [includeDirs=["."]] The directories to include when looking up imported protobuf files.
  * @property {boolean} [serializeAllowPrimitives=false] Whether serialization of primitives should be supported when
@@ -74,7 +74,7 @@ class ValueEntity {
 
     this.options = {
       ...{
-        persistenceId: "entity",
+        entityType: "entity",
         includeDirs: ["."],
         serializeAllowPrimitives: false,
         serializeFallbackToJson: false
@@ -100,8 +100,8 @@ class ValueEntity {
     this.grpc = grpc.loadPackageDefinition(packageDefinition);
   }
 
-  entityType() {
-    return valueEntityServices.entityType();
+  componentType() {
+    return valueEntityServices.componentType();
   }
 
   /**
@@ -154,7 +154,7 @@ class ValueEntity {
       throw new Error("Server already started!")
     }
     this.server = new AkkaServerless();
-    this.server.addEntity(this);
+    this.server.addComponent(this);
 
     return this.server.start(options);
   }

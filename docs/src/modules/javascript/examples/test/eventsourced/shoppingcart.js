@@ -21,7 +21,7 @@ const entity = new EventSourced(
     ["shoppingcart.proto", "domain.proto"],
     "example.shoppingcart.ShoppingCartService",
     {
-        persistenceId: "shopping-cart",
+        entityType: "shopping-cart",
         snapshotEvery: 100
     }
 );
@@ -152,10 +152,10 @@ describe("The Eventsourced class", () => {
         entity.shutdown();
     });
     it("should allow adding the entity to the AkkaServerless server", () => {
-        // tag::add-entity[]
+        // tag::add-component[]
         const AkkaServerless = require("@lightbend/akkaserverless-javascript-sdk").AkkaServerless;
         const server = new AkkaServerless();
-        server.addEntity(entity);
-        // end::add-entity[]
+        server.addComponent(entity);
+        // end::add-component[]
     })
 });

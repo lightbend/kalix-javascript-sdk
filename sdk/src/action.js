@@ -64,8 +64,8 @@ class Action {
    * Create a new action.
    *
    * @param {string|string[]} desc A descriptor or list of descriptors to parse, containing the service to serve.
-   * @param {string} serviceName The fully qualified name of the service that provides this entities interface.
-   * @param {module:akkaserverless.Action~options=} options The options for this event sourced entity
+   * @param {string} serviceName The fully qualified name of the service that provides this interface.
+   * @param {module:akkaserverless.Action~options=} options The options for this action
    */
   constructor(desc, serviceName, options) {
 
@@ -103,8 +103,8 @@ class Action {
     this.commandHandlers = {};
   }
 
-  entityType() {
-    return actionServices.entityType();
+  componentType() {
+    return actionServices.componentType();
   }
 
   /**

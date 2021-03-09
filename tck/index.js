@@ -17,11 +17,11 @@
 const AkkaServerless = require("@lightbend/akkaserverless-javascript-sdk").AkkaServerless;
 const server = new AkkaServerless();
 const eventSourced = require("./eventsourced.js");
-server.addEntity(eventSourced.tckModel);
-server.addEntity(eventSourced.two);
+server.addComponent(eventSourced.tckModel);
+server.addComponent(eventSourced.two);
 const valueEntity = require("./value-entity.js");
-server.addEntity(valueEntity.two);
+server.addComponent(valueEntity.two);
 // FIXME #124 passivation not supported yet
 // server.addEntity(valueEntity.configured);
-server.addEntity(valueEntity.tckModel);
+server.addComponent(valueEntity.tckModel);
 server.start();

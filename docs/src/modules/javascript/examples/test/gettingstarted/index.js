@@ -10,7 +10,7 @@ describe("The AkkaServerless class", () => {
         const shoppingcart = require("./shoppingcart");
 
         const server = new akkaserverless.AkkaServerless();
-        server.addEntity(shoppingcart);
+        server.addComponent(shoppingcart);
         server.start();
         // end::start[]
 

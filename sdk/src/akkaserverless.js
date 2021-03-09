@@ -89,7 +89,7 @@ class AkkaServerless {
    * @property {string} [serviceName=<name from package.json>] The name of this service.
    * @property {string} [serviceVersion=<version from package.json>] The version of this service.
    * @property {string} [descriptorSetPath="user-function.desc"] A path to a compiled Protobuf FileDescriptor set,
-   * as output by protoc --descriptor_set_out=somefile.desc. This file must contain all of the entity services that
+   * as output by protoc --descriptor_set_out=somefile.desc. This file must contain all of the component services that
    * this user function serves.
    */
 
@@ -114,17 +114,17 @@ class AkkaServerless {
       throw e;
     }
 
-    this.entities = [];
+    this.components = [];
   }
 
   /**
-   * Add an entity to this server.
+   * Add an component to this server.
    *
-   * @param {module:akkaserverless.Entity} entities The entities to add.
+   * @param {module:akkaserverless.Component} components The components to add.
    * @returns {module:akkaserverless.AkkaServerless} This server.
    */
-  addEntity(...entities) {
-    this.entities = this.entities.concat(entities);
+  addComponent(...components) {
+    this.components = this.components.concat(components);
     return this;
   }
 
@@ -140,20 +140,20 @@ class AkkaServerless {
       ...options
     };
 
-    const allEntitiesMap = {};
-    this.entities.forEach(entity => {
-      allEntitiesMap[entity.serviceName] = entity.service;
+    const allComponentsMap = {};
+    this.components.forEach(component => {
+      allComponentsMap[component.serviceName] = component.service;
     });
 
-    const entityTypes = {};
-    this.entities.forEach(entity => {
-      const entityServices = entity.register(allEntitiesMap);
-      entityTypes[entityServices.entityType()] = entityServices;
+    const componentTypes = {};
+    this.components.forEach(component => {
+      const componentServices = component.register(allComponentsMap);
+      componentTypes[componentServices.componentType()] = componentServices;
     });
 
     this.server = new grpc.Server();
 
-    Object.values(entityTypes).forEach(services => {
+    Object.values(componentTypes).forEach(services => {
       services.register(this.server);
     });
 
@@ -161,14 +161,14 @@ class AkkaServerless {
       path.join(__dirname, "..", "proto"),
       path.join(__dirname, "..", "protoc", "include")
     ];
-    const packageDefinition = protoLoader.loadSync(path.join("akkaserverless", "entity.proto"), {
+    const packageDefinition = protoLoader.loadSync(path.join("akkaserverless", "discovery.proto"), {
       includeDirs: includeDirs
     });
     const grpcDescriptor = grpc.loadPackageDefinition(packageDefinition);
 
-    const entityDiscovery = grpcDescriptor.akkaserverless.EntityDiscovery.service;
+    const discovery = grpcDescriptor.akkaserverless.Discovery.service;
 
-    this.server.addService(entityDiscovery, {
+    this.server.addService(discovery, {
       discover: this.discover.bind(this),
       reportError: this.reportError.bind(this)
     });
@@ -182,17 +182,19 @@ class AkkaServerless {
 
   discover(call, callback) {
     const protoInfo = call.request;
-    debug("Discover call with info %o, sending %s entities", protoInfo, this.entities.length);
-    const entities = this.entities.map(entity => {
+    debug("Discover call with info %o, sending %s components", protoInfo, this.components.length);
+    const components = this.components.map(component => {
       return {
-        entityType: entity.entityType(),
-        serviceName: entity.serviceName,
-        persistenceId: entity.options.persistenceId
+        componentType: component.componentType(),
+        serviceName: component.serviceName,
+        entity: {
+          entityType: component.options.entityType
+        }
       };
     });
     callback(null, {
       proto: this.proto,
-      entities: entities,
+      components: components,
       serviceInfo: {
         serviceName: this.options.serviceName,
         serviceVersion: this.options.serviceVersion,

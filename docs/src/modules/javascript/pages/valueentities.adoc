@@ -34,7 +34,7 @@ Here we pass in the protobuf files that contain our service and our domain proto
 
 We also pass in the fully qualified name of the service our value entity implements, `example.shoppingcart.ShoppingCartService`. We also are specifying some options.
 
-The `persistenceId` is used to namespace the state in the journal, useful for when you share the same database between multiple entities. It defaults to `entity`, so it's a good idea to select one explicitly.
+The `entityType` is used to namespace the state in the journal, useful for when you share the same database between multiple entities. It defaults to `entity`, so it's a good idea to select one explicitly.
 
 == Using protobuf types
 

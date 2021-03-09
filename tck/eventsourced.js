@@ -20,7 +20,7 @@ const tckModel = new EventSourced(
   ["proto/eventsourced.proto"],
   "akkaserverless.tck.model.EventSourcedTckModel",
   {
-    persistenceId: "event-sourced-tck-model",
+    entityType: "event-sourced-tck-model",
     snapshotEvery: 5
   }
 );

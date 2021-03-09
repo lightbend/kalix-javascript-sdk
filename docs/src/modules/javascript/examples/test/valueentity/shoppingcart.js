@@ -9,7 +9,7 @@ const entity = new ValueEntity(
     ["shoppingcart.proto", "domain.proto"],
   "example.shoppingcart.ShoppingCartService",
   {
-    persistenceId: "shopping-cart"
+    entityType: "shopping-cart"
   }
 );
 // end::entity-class[]
@@ -97,10 +97,10 @@ describe("The ValueEntity class", () => {
     entity.shutdown();
   });
   it("should allow adding the entity to the AkkaServerless server", () => {
-    // tag::add-entity[]
+    // tag::add-component[]
     const AkkaServerless = require("@lightbend/akkaserverless-javascript-sdk").AkkaServerless;
     const server = new AkkaServerless();
-    server.addEntity(entity);
-    // end::add-entity[]
+    server.addComponent(entity);
+    // end::add-component[]
   })
 });

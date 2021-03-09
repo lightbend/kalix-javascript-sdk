@@ -30,7 +30,7 @@ class CrdtServices {
     }, allEntities);
   }
 
-  entityType() {
+  componentType() {
     return "akkaserverless.crdt.Crdt";
   }
 

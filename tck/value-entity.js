@@ -20,7 +20,7 @@ const tckModel = new ValueEntity(
   ["proto/valueentity.proto"],
   "akkaserverless.tck.model.valueentity.ValueEntityTckModel",
   {
-    persistenceId: "value-entity-tck-model"
+    entityType: "value-entity-tck-model"
   }
 );
 
@@ -60,7 +60,7 @@ const two = new ValueEntity(
   ["proto/valueentity.proto"],
   "akkaserverless.tck.model.valueentity.ValueEntityTwo",
   {
-    persistenceId: "value-entity-tck-model-two"
+    entityType: "value-entity-tck-model-two"
   }
 );
 
@@ -73,7 +73,7 @@ const configured = new ValueEntity(
   ["proto/valueentity.proto"],
   "akkaserverless.tck.model.valueentity.ValueEntityConfigured",
   {
-    persistenceId: "value-entity-configured"
+    entityType: "value-entity-configured"
   }
 );
 

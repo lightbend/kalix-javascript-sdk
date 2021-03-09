@@ -16,7 +16,7 @@ const allIncludeDirs = protobufHelper.moduleIncludeDirs.concat([
 
 const packageDefinition = protoLoader.loadSync(
   [
-    path.join("akkaserverless", "entity.proto"),
+    path.join("akkaserverless", "discovery.proto"),
     path.join("akkaserverless", "value_entity.proto")
   ],
   {
@@ -35,7 +35,7 @@ const Cart = root.lookupType("com.example.valueentity.shoppingcart.persistence.C
 const shoppingCartEntity = require("../shoppingcart.js");
 const AkkaServerless = require("@lightbend/akkaserverless-javascript-sdk").AkkaServerless;
 const server = new AkkaServerless();
-server.addEntity(shoppingCartEntity);
+server.addComponent(shoppingCartEntity);
 
 let discoveryClient;
 let eventSourcedClient;
@@ -171,7 +171,7 @@ describe("shopping cart", () => {
     const port = server.start({
       bindPort: 0
     });
-    discoveryClient = new descriptor.akkaserverless.EntityDiscovery("127.0.0.1:" + port, grpc.credentials.createInsecure());
+    discoveryClient = new descriptor.akkaserverless.Discovery("127.0.0.1:" + port, grpc.credentials.createInsecure());
     eventSourcedClient = new descriptor.akkaserverless.valueentity.ValueEntity("127.0.0.1:" + port, grpc.credentials.createInsecure());
   });
 
