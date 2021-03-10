@@ -1,19 +1,23 @@
 /**
- * Mocks the behaviour of a single Akka Serverless entity.
+ * Mocks the behaviour of a single Akka Serverless Event-sourced entity.
  *
  * Handles any commands and events, internally tracking the state and maintaining an event log.
  *
  * NOTE: Entity IDs are not handled, so all commands are assumed to refer to a single entity.
  */
-export class AkkaServerlessTestKitEntity {
+export class MockEventSourcedEntity {
   events = [];
   state;
   error;
+  grpcService;
 
   constructor(entity, entityId) {
     this.entity = entity;
     this.entityId = entityId;
     this.state = entity.initial(entityId);
+    this.grpcService = entity.serviceName
+      .split(".")
+      .reduce((obj, part) => obj[part], entity.grpc).service;
   }
 
   /**
@@ -21,21 +25,27 @@ export class AkkaServerlessTestKitEntity {
    *
    * @param {string} commandName the command method name (as per the entity proto definition)
    * @param {object} command the request body
-   * @param {AkkaServerlessTestKitContext} ctx override the context object for this handler for advanced behaviour
+   * @param {MockEventSourcedCommandContext} ctx override the context object for this handler for advanced behaviour
    * @returns the result of the command
    */
   handleCommand(
     commandName,
     command,
-    ctx = new AkkaServerlessTestKitContext()
+    ctx = new MockEventSourcedCommandContext()
   ) {
     const behaviors = this.entity.behavior(this.state);
     const handler = behaviors.commandHandlers[commandName];
+    const grpcMethod = this.grpcService[commandName];
 
-    const result = handler(command, this.state, ctx);
+    const request = grpcMethod.requestDeserialize(
+      grpcMethod.requestSerialize(command)
+    );
+
+    const result = handler(request, this.state, ctx);
     ctx.events.forEach((event) => this.handleEvent(event));
     this.error = ctx.error;
-    return result;
+
+    return grpcMethod.responseDeserialize(grpcMethod.responseSerialize(result));
   }
 
   /**
@@ -58,11 +68,20 @@ export class AkkaServerlessTestKitEntity {
  * construct their own instance of this class, however for making assertions on
  * forwarding or emmitted effects you may provide your own.
  */
-export class AkkaServerlessTestKitContext {
+export class MockEventSourcedCommandContext {
   events = [];
   effects = [];
   thenForward = () => {};
   error;
+
+  /**
+   * Set the `thenForward` callback for this context.
+   * This allows tests handling both failure and success cases for forwarded commands.
+   * @param {Function} handler the thenForward callback to set
+   */
+  onForward(handler) {
+    this.thenForward = handler;
+  }
 
   emit(event) {
     this.events.push(event);
@@ -70,10 +89,6 @@ export class AkkaServerlessTestKitContext {
 
   fail(error) {
     this.error = error;
-  }
-
-  onForward(handler) {
-    this.thenForward = handler;
   }
 
   effect(method, message, synchronous, metadata) {
