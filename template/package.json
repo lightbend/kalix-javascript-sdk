@@ -26,6 +26,7 @@
     "start": "node index.js",
     "docker-build": "docker build --tag ${npm_package_config_dockerImage}:${npm_package_version} .",
     "docker-push": "docker push ${npm_package_config_dockerImage}:${npm_package_version}",
-    "deploy": "npm run docker-build && npm run docker-push && akkasls services deploy $npm_package_name ${npm_package_config_dockerImage}:${npm_package_version}"
+    "deploy": "npm run docker-build && npm run docker-push && akkasls services deploy $npm_package_name ${npm_package_config_dockerImage}:${npm_package_version}",
+    "test": "mocha *.test.js"
   }
 }
