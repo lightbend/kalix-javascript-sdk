@@ -6,6 +6,10 @@
   "repository": "https://github.com/lightbend/create-akkasls-entity",
   "author": "Lightbend Inc",
   "license": "Copyright (c) Lightbend Inc. 2021",
+  "engines": {
+    "node": ">=13.0.0",
+    "npm": ">=6.0.0"
+  },
   "dependencies": {
     "mustache": "^4.1.0",
     "node-fetch": "^2.6.1",
