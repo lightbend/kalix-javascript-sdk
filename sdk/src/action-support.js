@@ -399,7 +399,7 @@ module.exports = class ActionServices {
   }
 
   componentType() {
-    return "akkaserverless.action.Action";
+    return "akkaserverless.action.Actions";
   }
 
   register(server) {
@@ -412,7 +412,7 @@ module.exports = class ActionServices {
     });
     const grpcDescriptor = grpc.loadPackageDefinition(packageDefinition);
 
-    const actionService = grpcDescriptor.akkaserverless.action.ActionProtocol.service;
+    const actionService = grpcDescriptor.akkaserverless.action.Actions.service;
 
     server.addService(actionService, {
       handleUnary: this.handleUnary.bind(this),

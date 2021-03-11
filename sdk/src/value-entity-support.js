@@ -203,7 +203,7 @@ module.exports = class ValueEntityServices {
   }
 
   componentType() {
-    return "akkaserverless.valueentity.ValueEntity";
+    return "akkaserverless.valueentity.ValueEntities";
   }
 
   register(server) {
@@ -216,7 +216,7 @@ module.exports = class ValueEntityServices {
     });
     const grpcDescriptor = grpc.loadPackageDefinition(packageDefinition);
 
-    const entityService = grpcDescriptor.akkaserverless.valueentity.ValueEntity.service;
+    const entityService = grpcDescriptor.akkaserverless.valueentity.ValueEntities.service;
 
     server.addService(entityService, {
       handle: this.handle.bind(this)

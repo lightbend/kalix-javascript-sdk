@@ -176,7 +176,7 @@ describe("shopping cart", () => {
       bindPort: 0
     });
     discoveryClient = new descriptor.akkaserverless.Discovery("127.0.0.1:" + port, grpc.credentials.createInsecure());
-    eventSourcedClient = new descriptor.akkaserverless.eventsourced.EventSourcedEntity("127.0.0.1:" + port, grpc.credentials.createInsecure());
+    eventSourcedClient = new descriptor.akkaserverless.eventsourced.EventSourcedEntities("127.0.0.1:" + port, grpc.credentials.createInsecure());
   });
 
   after("shutdown shopping cart server", () => {

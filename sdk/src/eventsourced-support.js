@@ -244,7 +244,7 @@ module.exports = class EventSourcedEntityServices {
   }
 
   componentType() {
-    return "akkaserverless.eventsourced.EventSourcedEntity";
+    return "akkaserverless.eventsourced.EventSourcedEntities";
   }
 
   register(server) {
@@ -257,7 +257,7 @@ module.exports = class EventSourcedEntityServices {
     });
     const grpcDescriptor = grpc.loadPackageDefinition(packageDefinition);
 
-    const entityService = grpcDescriptor.akkaserverless.eventsourced.EventSourcedEntity.service;
+    const entityService = grpcDescriptor.akkaserverless.eventsourced.EventSourcedEntities.service;
 
     server.addService(entityService, {
       handle: this.handle.bind(this)
