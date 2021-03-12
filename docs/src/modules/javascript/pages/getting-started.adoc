@@ -57,7 +57,7 @@ A minimal `package.json` for a shopping cart example is shown below:
     "akkaserverless": "^{akkaserverless-javascript-sdk-version}"
   },
   "scripts": {
-    "prestart": "compile-descriptor shoppingcart.proto",
+    "prestart": "compile-descriptor shopping-cart-api.proto",
     "start": "node index.js"
   }
 }
