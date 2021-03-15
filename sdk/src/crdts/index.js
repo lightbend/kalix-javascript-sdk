@@ -47,6 +47,25 @@ const Empty = protobufHelper.moduleRoot.google.protobuf.Empty;
  */
 const Clocks = protobufHelper.moduleRoot.akkaserverless.crdt.CrdtClock;
 
+/**
+ * A write consistency setting for replication of state updates.
+ *
+ * @typedef module:akkaserverless.crdt.WriteConsistency
+ */
+
+/**
+ * An enum of write consistency settings, for replication of state updates.
+ *
+ * @name module:akkaserverless.crdt.WriteConsistencies
+ * @enum {module:akkaserverless.crdt.WriteConsistency}
+ * @property LOCAL Updates will only be written to the local replica immediately, and then asynchronously
+ *                 distributed to other replicas in the background.
+ * @property MAJORITY Updates will be written immediately to a majority of replicas, and then asynchronously
+ *                    distributed to remaining replicas in the background.
+ * @property ALL Updates will be written immediately to all replicas.
+ */
+const WriteConsistencies = protobufHelper.moduleRoot.akkaserverless.crdt.CrdtWriteConsistency;
+
 function createCrdtForDelta(delta) {
   if (delta.gcounter) {
     return new GCounter();
@@ -80,5 +99,6 @@ module.exports = {
   Flag: Flag,
   ORMap: ORMap,
   Vote: Vote,
-  Clocks: Clocks
+  Clocks: Clocks,
+  WriteConsistencies: WriteConsistencies
 };

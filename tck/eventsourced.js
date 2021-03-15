@@ -74,14 +74,32 @@ two.initial = entityId => Persisted.create({ value: "" });
 two.behavior = state => {
   return {
     commandHandlers: {
-      Call: call
+      Call: request => Response.create()
     }
   };
 };
 
-function call(request) {
-  return Response.create({});
-}
+const configured = new EventSourced(
+  ["proto/eventsourced.proto"],
+  "akkaserverless.tck.model.EventSourcedConfigured",
+  {
+    entityType: "event-sourced-configured",
+    entityPassivationStrategy: {
+      timeout: 100 // milliseconds
+    }
+  }
+);
+
+configured.initial = entityId => Persisted.create({ value: "" });
+
+configured.behavior = state => {
+  return {
+    commandHandlers: {
+      Call: request => Response.create()
+    }
+  };
+};
 
 module.exports.tckModel = tckModel;
 module.exports.two = two;
+module.exports.configured = configured;

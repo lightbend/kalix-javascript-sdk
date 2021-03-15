@@ -1,6 +1,6 @@
 {
   "name": "akkaserverless-javascript-sdk-tck",
-  "version": "0.0.4",
+  "version": "0.7.0",
   "description": "Akka Serverless TCK implementation for JavaScript SDK",
   "engineStrict": true,
   "engines": {

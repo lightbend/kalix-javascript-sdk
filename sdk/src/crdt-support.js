@@ -248,6 +248,17 @@ class CrdtHandler {
           get: () => ctx.streamed === true
         });
 
+        /**
+         * Set the write consistency for replication of CRDT state.
+         *
+         * @name module:akkaserverless.crdt.CrdtCommandContext#writeConsistency
+         * @type {module:akkaserverless.crdt.WriteConsistency}
+         */
+        Object.defineProperty(ctx.context, "writeConsistency", {
+          get: () => ctx.writeConsistency,
+          set: (writeConsistency) => ctx.writeConsistency = writeConsistency
+        });
+
         const userReply = this.entity.commandHandlers[commandName](command, ctx.context);
         if (ctx.streamed && ctx.subscription === null) {
           // todo relax this requirement
@@ -271,7 +282,8 @@ class CrdtHandler {
     if (ctx.deleted) {
       ctx.commandDebug("Deleting entity");
       ctx.reply.stateAction = {
-        delete: {}
+        delete: {},
+        writeConsistency: ctx.writeConsistency
       };
       this.currentState = null;
       this.handleStateChange();
@@ -280,7 +292,8 @@ class CrdtHandler {
       if (delta != null) {
         ctx.commandDebug("Updating entity");
         ctx.reply.stateAction = {
-          update: delta
+          update: delta,
+          writeConsistency: ctx.writeConsistency
         };
         this.handleStateChange();
       }
@@ -446,43 +459,46 @@ class CrdtHandler {
     }
     this.subscribers.delete(subscriberKey);
 
-    if (this.cancelledCallbacks.has(subscriberKey)) {
-      const subscriber = this.cancelledCallbacks.get(subscriberKey);
+    let response = {
+      commandId: cancelled.id
+    };
 
-      /**
-       * Context passed to {@link module:akkaserverless.crdt.CrdtCommandContext#onStreamCancel} handlers.
-       *
-       * @interface module:akkaserverless.crdt.StreamCancelledContext
-       * @extends module:akkaserverless.EffectContext
-       * @extends module:akkaserverless.EntityContext
-       * @extends module:akkaserverless.crdt.StateManagementContext
-       */
+    try {
+      if (this.cancelledCallbacks.has(subscriberKey)) {
+        const subscriber = this.cancelledCallbacks.get(subscriberKey);
 
+        /**
+         * Context passed to {@link module:akkaserverless.crdt.CrdtCommandContext#onStreamCancel} handlers.
+         *
+         * @interface module:akkaserverless.crdt.StreamCancelledContext
+         * @extends module:akkaserverless.EffectContext
+         * @extends module:akkaserverless.EntityContext
+         * @extends module:akkaserverless.crdt.StateManagementContext
+         */
 
-      const ctx = this.commandHelper.createContext(cancelled.id, metadata);
-      ctx.reply = {
-        commandId: cancelled.id
-      };
-      this.addStateManagementToContext(ctx);
+        const ctx = this.commandHelper.createContext(cancelled.id, metadata);
+        ctx.reply = response;
+        this.addStateManagementToContext(ctx);
 
-      try {
         subscriber.handler(this.currentState, ctx.context);
         this.setStateActionOnReply(ctx);
         ctx.commandDebug("Sending streamed cancelled response");
 
-        this.call.write({
-          streamCancelledResponse: ctx.reply
-        });
-
-      } catch (e) {
-        this.call.write({
-          failure: {
-            commandId: cancelled.id,
-            description: util.format("Error: %o", e)
-          }
-        });
-        this.call.end();
+        response = ctx.reply;
       }
+
+      this.call.write({
+        streamCancelledResponse: response
+      });
+
+    } catch (e) {
+      this.call.write({
+        failure: {
+          commandId: cancelled.id,
+          description: util.format("Error: %o", e)
+        }
+      });
+      this.call.end();
     }
   }
 
@@ -491,7 +507,7 @@ class CrdtHandler {
       this.handleInitialDelta(crdtStreamIn.delta)
     } else if (crdtStreamIn.delta) {
       this.streamDebug("Received delta for CRDT type %s", crdtStreamIn.delta.delta);
-      this.currentState.applyDelta(crdtStreamIn.delta, this.entity.anySupport, crdts.createCrdtForState);
+      this.currentState.applyDelta(crdtStreamIn.delta, this.entity.anySupport, crdts.createCrdtForDelta);
       this.handleStateChange();
     } else if (crdtStreamIn.delete) {
       this.streamDebug("Received CRDT delete");
@@ -514,6 +530,7 @@ class CrdtHandler {
 
   onEnd() {
     this.streamDebug("Stream terminating");
+    this.call.end();
   }
 
 }

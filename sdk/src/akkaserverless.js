@@ -184,11 +184,14 @@ class AkkaServerless {
     const protoInfo = call.request;
     debug("Discover call with info %o, sending %s components", protoInfo, this.components.length);
     const components = this.components.map(component => {
+      const passivationTimeout = component.options.entityPassivationStrategy ? component.options.entityPassivationStrategy.timeout : null;
+      const passivationStrategy = passivationTimeout ? { timeout: { timeout: passivationTimeout } } : {};
       return {
         componentType: component.componentType(),
         serviceName: component.serviceName,
         entity: {
-          entityType: component.options.entityType
+          entityType: component.options.entityType,
+          passivationStrategy: passivationStrategy
         }
       };
     });

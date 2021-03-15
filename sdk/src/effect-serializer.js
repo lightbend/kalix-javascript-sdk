@@ -61,8 +61,8 @@ module.exports = class EffectSerializer {
     }
   }
 
-  serializeSideEffect(method, message, synchronous) {
-    const msg = this.serializeEffect(method, message);
+  serializeSideEffect(method, message, synchronous, metadata) {
+    const msg = this.serializeEffect(method, message, metadata);
     msg.synchronous = synchronous;
     return msg;
   }

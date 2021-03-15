@@ -20,9 +20,9 @@ const AkkaServerlessPrimitiveFieldNumber = 1;
 const AkkaServerlessPrimitiveFieldNumberEncoded = AkkaServerlessPrimitiveFieldNumber << 3; // 8
 const AkkaServerlessSupportedPrimitiveTypes = new Set();
 ["string", "bytes", "int64", "bool", "double"].forEach(AkkaServerlessSupportedPrimitiveTypes.add.bind(AkkaServerlessSupportedPrimitiveTypes));
+const EmptyArray = Object.freeze([]);
 
 const AkkaServerlessJson = "json.akkaserverless.com/";
-
 
 /**
  * This is any type that has been returned by the protobufjs Message.create method.
@@ -76,7 +76,14 @@ module.exports = class AnySupport {
     }
   }
 
+  static isPrimitiveDefaultValue(obj, type) {
+    if (Long.isLong(obj)) return obj.equals(Long.ZERO);
+    else if (Buffer.isBuffer(obj)) return !obj.length;
+    else return obj === protobuf.types.defaults[type];
+  }
+
   static serializePrimitiveValue(obj, type) {
+    if (this.isPrimitiveDefaultValue(obj, type)) return EmptyArray;
     const writer = new protobuf.Writer();
     // First write the field key.
     // Field index is always 15, which gets shifted left by 3 bits (ie, 120).
@@ -197,9 +204,6 @@ module.exports = class AnySupport {
     }
 
     let bytes = any.value;
-    if (typeof bytes === "undefined") {
-      bytes = new Buffer(0);
-    }
 
     if (hostName === AkkaServerlessPrimitive) {
       return AnySupport.deserializePrimitive(bytes, type);
@@ -214,10 +218,19 @@ module.exports = class AnySupport {
     return desc.decode(bytes);
   }
 
+  static primitiveDefaultValue(type) {
+    if (type === "int64") return Long.ZERO;
+    else if (type === "bytes") return Buffer.alloc(0);
+    else return protobuf.types.defaults[type];
+  }
+
   static deserializePrimitive(bytes, type) {
     if (!AkkaServerlessSupportedPrimitiveTypes.has(type)) {
       throw new Error("Unsupported AkkaServerless primitive Any type: " + type);
     }
+
+    if (!bytes.length) return this.primitiveDefaultValue(type);
+
     const reader = new protobuf.Reader(bytes);
     let fieldNumber = 0;
     let pType = 0;
@@ -237,6 +250,6 @@ module.exports = class AnySupport {
     }
 
     // We didn't find the field, just return the default.
-    return protobuf.types.defaults[type];
+    return this.primitiveDefaultValue(type);
   }
 };

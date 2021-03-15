@@ -116,7 +116,7 @@ class ActionHandler {
    */
   handleUnary() {
     this.setupUnaryOutContext();
-    const deserializedCommand = this.grpcMethod.resolvedRequestType.decode(this.call.request.payload.value);
+    const deserializedCommand = this.support.anySupport.deserialize(this.call.request.payload);
     const userReturn = this.invokeUserCallback("command", this.commandHandler, deserializedCommand, this.ctx);
     if (userReturn !== undefined) {
       if (this.call.cancelled) {
@@ -163,7 +163,7 @@ class ActionHandler {
    */
   handleStreamedOut() {
     this.setupStreamedOutContext();
-    const deserializedCommand = this.grpcMethod.resolvedRequestType.decode(this.call.request.payload.value);
+    const deserializedCommand = this.support.anySupport.deserialize(this.call.request.payload);
     this.invokeUserCallback("command", this.commandHandler, deserializedCommand, this.ctx);
   }
 
@@ -196,27 +196,33 @@ class ActionHandler {
     this.ctx.write = (message, metadata) => {
       this.ensureNotCancelled();
       this.streamDebug("Sending reply");
-      const messageProto = this.grpcMethod.resolvedResponseType.fromObject(message);
-      const replyPayload = AnySupport.serialize(messageProto, false, false, false);
-      let replyMetadata = null;
-      if (metadata && metadata.entries) {
-        replyMetadata = {
-          entries: metadata.entries
-        };
+      if (message != null) {
+        const messageProto = this.grpcMethod.resolvedResponseType.create(message);
+        const replyPayload = AnySupport.serialize(messageProto, false, false);
+        let replyMetadata = null;
+        if (metadata && metadata.entries) {
+          replyMetadata = {
+            entries: metadata.entries
+          };
+        }
+        this.grpcCallback(null, {
+          reply: {
+            payload: replyPayload,
+            metadata: replyMetadata
+          },
+          sideEffects: effects
+        });
+      } else { // empty reply
+        this.grpcCallback(null, {
+          sideEffects: effects
+        });
       }
-      this.grpcCallback(null, {
-        reply: {
-          payload: replyPayload,
-          metadata: replyMetadata
-        },
-        sideEffects: effects
-      });
     };
 
     this.ctx.effect = (method, message, synchronous, metadata) => {
       this.ensureNotCancelled();
       this.streamDebug("Emitting effect to %s", method);
-      effects.push(this.support.effectSerializer.serializeEffect(method, message, synchronous, metadata));
+      effects.push(this.support.effectSerializer.serializeSideEffect(method, message, synchronous, metadata));
     };
 
     this.ctx.fail = error => {
@@ -226,6 +232,7 @@ class ActionHandler {
         failure: {
           description: error
         },
+        sideEffects: effects
       });
     };
   }
@@ -237,6 +244,7 @@ class ActionHandler {
    * @extends module:akkaserverless.Action.ActionCommandContext
    */
   setupStreamedOutContext() {
+    let effects = [];
 
     /**
      * A cancelled event.
@@ -269,35 +277,43 @@ class ActionHandler {
       this.streamDebug("Forwarding to %s", method);
       const forward = this.support.effectSerializer.serializeEffect(method, message, metadata);
       this.call.write({
-        forward: forward
+        forward: forward,
+        sideEffects: effects
       });
+      effects = []; // clear effects after each streamed write
     };
 
     this.ctx.write = (message, metadata) => {
       this.ensureNotCancelled();
       this.streamDebug("Sending reply");
-      const messageProto = this.grpcMethod.resolvedResponseType.fromObject(message);
-      const replyPayload = AnySupport.serialize(messageProto, false, false, false);
-      let replyMetadata = null;
-      if (metadata && metadata.entries) {
-        replyMetadata = {
-          entries: metadata.entries
-        };
-      }
-      this.call.write({
-        reply: {
-          payload: replyPayload,
-          metadata: replyMetadata
+      if (message != null) {
+        const messageProto = this.grpcMethod.resolvedResponseType.create(message);
+        const replyPayload = AnySupport.serialize(messageProto, false, false);
+        let replyMetadata = null;
+        if (metadata && metadata.entries) {
+          replyMetadata = {
+            entries: metadata.entries
+          };
         }
-      });
+        this.call.write({
+          reply: {
+            payload: replyPayload,
+            metadata: replyMetadata
+          },
+          sideEffects: effects
+        });
+      } else { // empty reply
+        this.call.write({
+          sideEffects: effects
+        });
+      }
+      effects = []; // clear effects after each streamed write
     };
 
     this.ctx.effect = (method, message, synchronous, metadata) => {
       this.ensureNotCancelled();
       this.streamDebug("Emitting effect to %s", method);
-      this.call.write({
-        sideEffects: [this.support.effectSerializer.serializeSideEffect(method, message, synchronous, metadata)]
-      });
+      effects.push(this.support.effectSerializer.serializeSideEffect(method, message, synchronous, metadata));
     };
 
     this.ctx.fail = error => {
@@ -307,8 +323,9 @@ class ActionHandler {
         failure: {
           description: error
         },
+        sideEffects: effects
       });
-      this.call.end();
+      effects = []; // clear effects after each streamed write
     };
   }
 
@@ -340,7 +357,7 @@ class ActionHandler {
 
     this.call.on("data", (data) => {
       this.streamDebug("Received data in");
-      const deserializedCommand = this.grpcMethod.resolvedRequestType.decode(data.payload.value);
+      const deserializedCommand = this.support.anySupport.deserialize(data.payload);
       this.invokeCallback("data", deserializedCommand, this.ctx);
     });
 
@@ -395,7 +412,7 @@ module.exports = class ActionServices {
 
   addService(component, allComponents) {
     this.services[component.serviceName] = new ActionSupport(component.root, component.service,
-        component.commandHandlers, allEntities);
+        component.commandHandlers, allComponents);
   }
 
   componentType() {
@@ -451,13 +468,15 @@ module.exports = class ActionServices {
   }
 
   handleStreamed(call) {
+    let initial = true;
     call.on("data", data => {
-      // Ignore the remaining data by default
-      call.on("data", () => {});
-      const handler = this.createHandler(call, null, data);
-      if (handler) {
-        handler.handleStreamed();
-      }
+      if (initial) {
+        initial = false;
+        const handler = this.createHandler(call, null, data);
+        if (handler) {
+          handler.handleStreamed();
+        }
+      } // ignore the remaining data here, subscribed in setupStreamedInContext
     });
   }
 
@@ -469,13 +488,15 @@ module.exports = class ActionServices {
   }
 
   handleStreamedIn(call, callback) {
+    let initial = true;
     call.on("data", data => {
-      // Ignore the remaining data by default
-      call.on("data", () => {});
-      const handler = this.createHandler(call, callback, data);
-      if (handler) {
-        handler.handleStreamedIn();
-      }
+      if (initial) {
+        initial = false;
+        const handler = this.createHandler(call, callback, data);
+        if (handler) {
+          handler.handleStreamedIn();
+        }
+      } // ignore the remaining data here, subscribed in setupStreamedInContext
     });
   }
 

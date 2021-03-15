@@ -118,8 +118,8 @@ class Action {
     return this.root.lookupType(messageType);
   }
 
-  register(allEntities) {
-    actionServices.addService(this, allEntities);
+  register(allComponents) {
+    actionServices.addService(this, allComponents);
     return actionServices;
   }
 
@@ -128,7 +128,7 @@ class Action {
       throw new Error("Server already started!")
     }
     this.server = new AkkaServerless();
-    this.server.addEntity(this);
+    this.server.addComponent(this);
 
     return this.server.start(options);
   }

@@ -35,6 +35,13 @@ describe("AnySupport", () => {
     anySupport.deserialize(serialized).should.equal("foo");
   });
 
+  it("should support serializing empty string (default)", () => {
+    const serialized = AnySupport.serialize("", true, false);
+    serialized.type_url.should.equal("p.akkaserverless.com/string");
+    serialized.value.should.have.lengthOf(0); // empty bytes
+    anySupport.deserialize(serialized).should.equal("");
+  });
+
   it("should support serializing long", () => {
     const value = Long.fromNumber(2789);
     const serialized = AnySupport.serialize(value, true, false);
@@ -42,10 +49,25 @@ describe("AnySupport", () => {
     anySupport.deserialize(serialized).should.eql(value);
   });
 
+  it("should support serializing zero long (default)", () => {
+    const serialized = AnySupport.serialize(Long.fromNumber(0), true, false);
+    serialized.type_url.should.equal("p.akkaserverless.com/int64");
+    serialized.value.should.have.lengthOf(0); // empty bytes
+    anySupport.deserialize(serialized).should.eql(Long.ZERO);
+  });
+
   it("should support serializing bytes", () => {
-    const bytes = new Buffer("foo");
+    const bytes = Buffer.from("foo");
     const serialized = AnySupport.serialize(bytes, true, false);
     serialized.type_url.should.equal("p.akkaserverless.com/bytes");
+    anySupport.deserialize(serialized).should.eql(bytes);
+  });
+
+  it("should support serializing empty bytes (default)", () => {
+    const bytes = Buffer.alloc(0);
+    const serialized = AnySupport.serialize(bytes, true, false);
+    serialized.type_url.should.equal("p.akkaserverless.com/bytes");
+    serialized.value.should.have.lengthOf(0); // empty bytes
     anySupport.deserialize(serialized).should.eql(bytes);
   });
 
@@ -55,10 +77,24 @@ describe("AnySupport", () => {
     anySupport.deserialize(serialized).should.equal(true);
   });
 
+  it("should support serializing false booleans (default)", () => {
+    const serialized = AnySupport.serialize(false, true, false);
+    serialized.type_url.should.equal("p.akkaserverless.com/bool");
+    serialized.value.should.have.lengthOf(0); // empty bytes
+    anySupport.deserialize(serialized).should.equal(false);
+  });
+
   it("should support serializing numbers", () => {
     const serialized = AnySupport.serialize(1.2345, true, false);
     serialized.type_url.should.equal("p.akkaserverless.com/double");
     anySupport.deserialize(serialized).should.equal(1.2345);
+  });
+
+  it("should support serializing zero numbers (default)", () => {
+    const serialized = AnySupport.serialize(0, true, false);
+    serialized.type_url.should.equal("p.akkaserverless.com/double");
+    serialized.value.should.have.lengthOf(0); // empty bytes
+    anySupport.deserialize(serialized).should.equal(0);
   });
 
   it("should support serializing valid protobufs", () => {

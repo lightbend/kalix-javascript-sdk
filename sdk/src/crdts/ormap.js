@@ -358,11 +358,12 @@ function ORMap() {
     if (delta.ormap.added !== undefined) {
       delta.ormap.added.forEach(entry => {
         const value = createCrdtForDelta(entry.delta);
-        value.applyDelta(entry.delta);
+        value.applyDelta(entry.delta, anySupport, createCrdtForDelta);
         const key = anySupport.deserialize(entry.key);
         const comparable = AnySupport.toComparable(key);
         if (currentValue.has(comparable)) {
-          debug("Delta instructed to add key [%o], but it's already present in the ORMap.", key);
+          debug("Delta instructed to add key [%o], but it's already present in the ORMap. Updating with delta instead.", key);
+          currentValue.get(comparable).value.applyDelta(entry.delta, anySupport, createCrdtForDelta);
         } else {
           currentValue.set(comparable, {
             key: key,
@@ -376,7 +377,7 @@ function ORMap() {
         const key = anySupport.deserialize(entry.key);
         const comparable = AnySupport.toComparable(key);
         if (currentValue.has(comparable)) {
-          currentValue.get(comparable).value.applyDelta(entry.delta, anySupport, createCrdtForState);
+          currentValue.get(comparable).value.applyDelta(entry.delta, anySupport, createCrdtForDelta);
         } else {
           debug("Delta instructed to update key [%o], but it's not present in the ORMap.", key);
         }

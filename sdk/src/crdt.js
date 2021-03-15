@@ -173,5 +173,6 @@ module.exports = {
   Flag: crdts.Flag,
   ORMap: crdts.ORMap,
   Vote: crdts.Vote,
-  Clocks: crdts.Clocks
+  Clocks: crdts.Clocks,
+  WriteConsistencies: crdts.WriteConsistencies
 };

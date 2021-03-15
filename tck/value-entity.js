@@ -73,7 +73,10 @@ const configured = new ValueEntity(
   ["proto/valueentity.proto"],
   "akkaserverless.tck.model.valueentity.ValueEntityConfigured",
   {
-    entityType: "value-entity-configured"
+    entityType: "value-entity-configured",
+    entityPassivationStrategy: {
+      timeout: 100 // milliseconds
+    }
   }
 );
 

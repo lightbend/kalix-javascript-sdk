@@ -116,7 +116,7 @@ function decodeAny(root, any) {
   let bytes = any.value;
   if (bytes === undefined) {
     // An empty buffer is falsey and so disappears, we need to make it reappear.
-    bytes = new Buffer(0);
+    bytes = Buffer.alloc(0);
   }
   return root.lookupType(stripHostName(any.type_url)).decode(bytes);
 }
