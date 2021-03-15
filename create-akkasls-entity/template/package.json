@@ -13,20 +13,19 @@
     "grpc": "^1.20.2"
   },
   "devDependencies": {
-    "@lightbend/create-akkasls-entity": "^{{libraryVersion}}",
+    "@lightbend/akkasls-scripts": "^{{libraryVersion}}",
     "chai": "^4.3.3",
     "mocha": "^8.3.1"
   },
   "config": {
-    "dockerImage": "my-docker-repo/{{name}}"
+    "dockerImage": "my-docker-repo/{{name}}",
+    "protoSourceDir": "./proto"
   },
   "scripts": {
-    "build-proto-desc": "compile-descriptor proto/*.proto",
-    "build": "npm run build-proto-desc && akkasls-codegen-js --proto-source-dir ./proto",
     "start": "node index.js",
-    "docker-build": "docker build --tag ${npm_package_config_dockerImage}:${npm_package_version} .",
-    "docker-push": "docker push ${npm_package_config_dockerImage}:${npm_package_version}",
-    "deploy": "npm run docker-build && npm run docker-push && akkasls services deploy $npm_package_name ${npm_package_config_dockerImage}:${npm_package_version}",
-    "test": "mocha *.test.js"
+    "test": "mocha *.test.js",
+    "build": "akkasls-scripts build",
+    "package": "akkasls-scripts package",
+    "deploy": "akkasls-scripts deploy"
   }
 }
