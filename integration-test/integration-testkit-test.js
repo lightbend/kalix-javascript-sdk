@@ -31,7 +31,7 @@ action.commandHandlers = {
 
 
 const testkit = new akkaserverless.IntegrationTestkit({
-  descriptorSetPath: "test/user-function.desc",
+  descriptorSetPath: "integration-test/user-function.desc",
 });
 
 testkit.addComponent(action);

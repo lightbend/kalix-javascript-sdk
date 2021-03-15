@@ -7,7 +7,7 @@ const AkkaServerless = require("./akkaserverless");
 const { GenericContainer, TestContainers, Wait } = require("testcontainers");
 
 const defaultOptions = {
-  dockerImage: "akkaserverless/akkaserverless-proxy-core:latest",
+  dockerImage: "gcr.io/akkaserverless-public/akkaserverless-proxy:latest",
   dockerArgs: ["-Dconfig.resource=dev-mode.conf"],
 }
 
