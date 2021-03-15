@@ -6,7 +6,6 @@
   "repository": "https://github.com/lightbend/akkaserverless-npm-js",
   "author": "Lightbend Inc",
   "license": "Copyright (c) Lightbend Inc. 2021",
-  "type": "module",
   "engines": {
     "node": ">=13.0.0",
     "npm": ">=6.0.0"
@@ -16,7 +15,7 @@
     "node-fetch": "^2.6.1"
   },
   "peerDependencies": {
-    "cloudstate": ">= 0.0.3"
+    "cloudstate": ">= 0.0.5"
   },
   "bin": {
     "akkasls-scripts": "./bin/akkasls-scripts.js"
