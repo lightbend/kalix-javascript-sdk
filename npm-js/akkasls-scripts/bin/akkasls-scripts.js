@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 const path = require("path");
+const fs = require("fs");
 const spawn = require("cross-spawn");
 
 const akkaslsScriptDir = path.resolve(__dirname, "..");
@@ -14,17 +15,18 @@ const dockerBuild = (dockerTag) =>
   ]);
 
 const scriptHandlers = {
-  build({ nodeArgs, config }) {
-    const { protoSourceDir, akkaslsScriptDir } = config;
+  build({ protoSourceDir, akkaslsScriptDir }) {
+    // Workaround for https://github.com/protocolbuffers/protobuf/issues/3957
+    // Once the underlying library is updated to protobuf 3.10 or later, we can simply use the *.proto wildcard
+    const protoFiles = fs
+      .readdirSync(protoSourceDir)
+      .filter((file) => file.endsWith(".proto"))
+      .map((file) => path.resolve(protoSourceDir, file));
 
     runOrFail(
       "Compiling protobuf descriptor",
-      process.execPath,
-      [
-        ...nodeArgs,
-        "./node_modules/.bin/compile-descriptor",
-        path.resolve(protoSourceDir, "*.proto"),
-      ],
+      path.resolve("node_modules", ".bin", "compile-descriptor"),
+      protoFiles,
       { shell: true }
     );
 
@@ -34,12 +36,10 @@ const scriptHandlers = {
       ["--proto-source-dir", protoSourceDir]
     );
   },
-  package({ config }) {
-    const { dockerTag } = config;
+  package({ dockerTag }) {
     dockerBuild(dockerTag);
   },
-  deploy({ config }) {
-    const { dockerTag, serviceName } = config;
+  deploy({ dockerTag, serviceName }) {
     const { status } = run("Verifying docker image exists", "docker", [
       "image",
       "inspect",
@@ -58,18 +58,13 @@ const scriptHandlers = {
   },
 };
 
-const scriptNames = Object.keys(scriptHandlers);
-const args = process.argv.slice(2);
-const scriptIndex = args.findIndex((arg) => scriptNames.includes(arg));
+const script = process.argv[2];
+const handler = scriptHandlers[script];
 
-if (scriptIndex > -1) {
-  const script = args[scriptIndex];
-  const scriptArgs = args.slice(scriptIndex + 1);
-  // Arguments before the named script should be treated as arguments to node itself, and reused in any spawned node processes
-  const nodeArgs = args.slice(0, scriptIndex);
-
+if (handler) {
   // Extract project config from its package.json
   const packageConfig = require(path.resolve("package.json"));
+
   const config = {
     ...packageConfig.config,
     serviceName: packageConfig.name,
@@ -77,9 +72,9 @@ if (scriptIndex > -1) {
     akkaslsScriptDir,
   };
 
-  scriptHandlers[script]({ config, nodeArgs, scriptArgs });
+  handler(config);
 } else {
-  console.log('Unknown script "' + args[0] + '".');
+  console.log(`Unknown script "${script}".`);
   console.log("Perhaps you need to update akkasls-scripts?");
 }
 
