@@ -1,0 +1,32 @@
+{
+  "name": "{{name}}",
+  "version": "0.0.1",
+  "type": "module",
+  "engines": {
+    "node": ">=13.0.0",
+    "npm": ">=6.0.0"
+  },
+  "dependencies": {
+    "@grpc/proto-loader": "^0.1.0",
+    "cloudstate": "0.0.5",
+    "google-protobuf": "^3.0.0",
+    "grpc": "^1.20.2"
+  },
+  "devDependencies": {
+    "@lightbend/create-akkasls-entity": "^{{libraryVersion}}",
+    "chai": "^4.3.3",
+    "mocha": "^8.3.1"
+  },
+  "config": {
+    "dockerImage": "my-docker-repo/{{name}}"
+  },
+  "scripts": {
+    "build-proto-desc": "compile-descriptor proto/*.proto",
+    "build": "npm run build-proto-desc && akkasls-codegen-js --proto-source-dir ./proto",
+    "start": "node index.js",
+    "docker-build": "docker build --tag ${npm_package_config_dockerImage}:${npm_package_version} .",
+    "docker-push": "docker push ${npm_package_config_dockerImage}:${npm_package_version}",
+    "deploy": "npm run docker-build && npm run docker-push && akkasls services deploy $npm_package_name ${npm_package_config_dockerImage}:${npm_package_version}",
+    "test": "mocha *.test.js"
+  }
+}
