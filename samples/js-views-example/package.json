@@ -1,0 +1,52 @@
+{
+  "name": "js-views-example",
+  "version": "0.1.0",
+  "description": "Sample Akka Serverless application that demonstrates views",
+  "keywords": [
+    "serverless",
+    "akka serverless",
+    "value entities"
+  ],
+  "engineStrict": true,
+  "engines": {
+    "node": "~12"
+  },
+  "homepage": "https://github.com/lightbend/akkaserverless-javascript-sdk",
+  "bugs": {
+    "url": "https://github.com/lightbend/akkaserverless-javascript-sdk/issues"
+  },
+  "license": "Apache-2.0",
+  "author": {
+    "name": "Akka Serverless Team",
+    "email": "info@lightbend.com",
+    "url": "https://lightbend.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/lightbend/akkaserverless-javascript-sdk",
+    "directory": "samples/shopping-cart"
+  },
+  "//": "https://npm.community/t/npm-install-does-not-install-transitive-dependencies-of-local-dependency/2264",
+  "dependencies": {
+    "@grpc/proto-loader": "^0.1.0",
+    "@lightbend/akkaserverless-javascript-sdk": "file:../../javascript-sdk",
+    "google-protobuf": "^3.11.4",
+    "grpc": "^1.24.2"
+  },
+  "devDependencies": {
+    "chai": "4.2.0",
+    "mocha": "^6.2.3"
+  },
+  "scripts": {
+    "test": "mocha",
+    "prepare-javascript-sdk": "cd ../../javascript-sdk && npm install && cd ../samples/js-views-example",
+    "prestart": "compile-descriptor users.proto",
+    "pretest": "compile-descriptor users.proto",
+    "postinstall": "compile-descriptor users.proto",
+    "start": "node index.js",
+    "start-no-prestart": "node index.js",
+    "dockerbuild": "npm run prepare-javascript-sdk && docker build -f Dockerfile -t ${DOCKER_PUBLISH_TO:-akkaserverless}/js-views-example:latest ../..",
+    "dockerpush": "docker push ${DOCKER_PUBLISH_TO:-akkaserverless}/js-views-example:latest",
+    "dockerbuildpush": "npm run dockerbuild && npm run dockerpush"
+  }
+}

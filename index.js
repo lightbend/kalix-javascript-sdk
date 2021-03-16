@@ -15,3 +15,4 @@ module.exports.crdt = require("./src/crdt");
 module.exports.Action = require("./src/action");
 module.exports.Metadata = require("./src/metadata");
 module.exports.IntegrationTestkit = require("./src/integration-testkit");
+module.exports.View = require("./src/view");
