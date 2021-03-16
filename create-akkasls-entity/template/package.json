@@ -1,0 +1,31 @@
+{
+  "name": "{{name}}",
+  "version": "0.0.1",
+  "type": "module",
+  "engines": {
+    "node": ">=13.0.0",
+    "npm": ">=6.0.0"
+  },
+  "dependencies": {
+    "@grpc/proto-loader": "^0.1.0",
+    "cloudstate": "0.0.5",
+    "google-protobuf": "^3.0.0",
+    "grpc": "^1.20.2"
+  },
+  "devDependencies": {
+    "@lightbend/akkasls-scripts": "^{{libraryVersion}}",
+    "chai": "^4.3.3",
+    "mocha": "^8.3.1"
+  },
+  "config": {
+    "dockerImage": "my-docker-repo/{{name}}",
+    "protoSourceDir": "./proto"
+  },
+  "scripts": {
+    "start": "node index.js",
+    "test": "mocha *.test.js",
+    "build": "akkasls-scripts build",
+    "package": "akkasls-scripts package",
+    "deploy": "akkasls-scripts deploy"
+  }
+}

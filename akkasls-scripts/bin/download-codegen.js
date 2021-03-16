@@ -1,7 +1,7 @@
 const fetch = require("node-fetch");
 const fs = require("fs");
 const path = require("path");
-const package = require("../package.json");
+const packageConfig = require("../package.json");
 
 /**
  * Downloads the appropriate version of the akkasls-codegen-js tool for your platform.
@@ -9,7 +9,7 @@ const package = require("../package.json");
  */
 
 // Codegen tool version is defined in package.json
-const akkaslsCodegenVersion = package.config.akkaslsCodegenVersion;
+const { akkaslsCodegenVersion } = packageConfig.config;
 const releases = {
   linux_x86_64: `akkasls-codegen-js-x86_64-unknown-linux-gnu-${akkaslsCodegenVersion}`,
   darwin_x86_64: `akkasls-codegen-js-x86_64-apple-darwin-${akkaslsCodegenVersion}`,

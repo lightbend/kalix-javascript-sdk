@@ -6,8 +6,31 @@ on:
       - "v*"
 
 jobs:
-  deploy:
+  deploy-create-akkasls-entity:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: create-akkasls-entity
+
+    steps:
+      - uses: actions/checkout@v2
+      # Setup .npmrc file to publish to npm
+      - uses: actions/setup-node@v2
+        with:
+          node-version: "12.x"
+          registry-url: "https://registry.npmjs.org"
+      - name: Set version
+        run: 'sed -i "s/  \"version\":.*/  \"version\": \"$(git tag|cut -c2-)\",/" package.json'
+      - run: npm install
+      - run: npm publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
+
+  deploy-akkasls-scripts:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: akkasls-scripts
 
     steps:
       - uses: actions/checkout@v2

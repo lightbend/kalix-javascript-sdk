@@ -2,54 +2,16 @@
 
 This repository provides the `create-akkasls-entity` tool to support Akka Serverless development with the NPM/JavaScript toolchain.
 
-## Usage
+Please navigate to each project's README to comprehend what is provided in detail.
 
-This tool can be used to generate a project suitable for the general development of
-[event-sourced](https://martinfowler.com/eaaDev/EventSourcing.html)
-[Akka Serverless](https://www.lightbend.com/akka-serverless) applications.
+## create-akkasls-entity
 
-To create the initial codebase for a new entity with NPM:
+This command-line tool is used to initialise a new Akka Serverless entity codebase.
 
-```sh
-npx @lightbend/create-akkasls-entity my-entity
-cd my-entity
-npm install
-npm run build
-```
+See this project's [README](create-akkasls-entity/README.md) for more information.
 
-Or using Yarn:
+## akkasls-scripts
 
-```sh
-yarn create @lightbend/akkasls-entity my-entity
-cd my-entity
-yarn
-yarn build
-```
+This NPM module provides the default `build`, `package` and `deploy` scripts for an Akka Serverless codebase in a single managed package.
 
-This module will be included as a dependency of the created project, providing the `akkasls-codegen-js` tool binary for your platform.
-
-## Building
-
-To build and test locally, first install:
-
-```sh
-npm install
-```
-
-...then package:
-
-```sh
-npm pack
-```
-
-...and then install locally (substituting <some-version> with the version that the above `npm pack` reports):
-
-```sh
-npm install -g lightbend-create-akkasls-entity-<some-version>.tgz
-```
-
-As the `create-akkasls-entity` command is now locally installed, you are able to run:
-
-```sh
-create-akkasls-entity my-entity
-```
+See this project's [README](akkasls-scripts/README.md) for more information.
