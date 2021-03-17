@@ -5,7 +5,7 @@ syntax = "proto3";
 import "google/protobuf/empty.proto";
 import "akkaserverless/entity_key.proto";
 import "akkaserverless/eventing.proto";
-import "akkaserverless/view.proto";
+import "akkaserverless/views.proto";
 import "google/api/annotations.proto";
 import "google/api/http.proto";
 import "google/api/httpbody.proto";

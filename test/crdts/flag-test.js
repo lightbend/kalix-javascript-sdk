@@ -18,7 +18,7 @@ const should = require("chai").should();
 const Flag = require("../../src/crdts/flag");
 const protobufHelper = require("../../src/protobuf-helper");
 
-const CrdtDelta = protobufHelper.moduleRoot.akkaserverless.crdt.CrdtDelta;
+const CrdtDelta = protobufHelper.moduleRoot.akkaserverless.component.crdt.CrdtDelta;
 
 function roundTripDelta(delta) {
   return CrdtDelta.decode(CrdtDelta.encode(delta).finish());

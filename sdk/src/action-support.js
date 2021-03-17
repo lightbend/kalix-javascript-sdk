@@ -416,7 +416,7 @@ module.exports = class ActionServices {
   }
 
   componentType() {
-    return "akkaserverless.action.Actions";
+    return "akkaserverless.component.action.Actions";
   }
 
   register(server) {
@@ -424,12 +424,12 @@ module.exports = class ActionServices {
       path.join(__dirname, "..", "proto"),
       path.join(__dirname, "..", "protoc", "include")
     ];
-    const packageDefinition = protoLoader.loadSync(path.join("akkaserverless", "action.proto"), {
+    const packageDefinition = protoLoader.loadSync(path.join("akkaserverless", "component", "action", "action.proto"), {
       includeDirs: includeDirs
     });
     const grpcDescriptor = grpc.loadPackageDefinition(packageDefinition);
 
-    const actionService = grpcDescriptor.akkaserverless.action.Actions.service;
+    const actionService = grpcDescriptor.akkaserverless.component.action.Actions.service;
 
     server.addService(actionService, {
       handleUnary: this.handleUnary.bind(this),

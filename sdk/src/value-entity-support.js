@@ -203,7 +203,7 @@ module.exports = class ValueEntityServices {
   }
 
   componentType() {
-    return "akkaserverless.valueentity.ValueEntities";
+    return "akkaserverless.component.valueentity.ValueEntities";
   }
 
   register(server) {
@@ -211,12 +211,12 @@ module.exports = class ValueEntityServices {
       path.join(__dirname, "..", "proto"),
       path.join(__dirname, "..", "protoc", "include")
     ];
-    const packageDefinition = protoLoader.loadSync(path.join("akkaserverless", "value_entity.proto"), {
+    const packageDefinition = protoLoader.loadSync(path.join("akkaserverless", "component", "valueentity", "value_entity.proto"), {
       includeDirs: includeDirs
     });
     const grpcDescriptor = grpc.loadPackageDefinition(packageDefinition);
 
-    const entityService = grpcDescriptor.akkaserverless.valueentity.ValueEntities.service;
+    const entityService = grpcDescriptor.akkaserverless.component.valueentity.ValueEntities.service;
 
     server.addService(entityService, {
       handle: this.handle.bind(this)

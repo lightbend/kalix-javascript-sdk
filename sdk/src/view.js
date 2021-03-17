@@ -11,7 +11,7 @@ const AkkaServerless = require("./akkaserverless");
 const viewServices = new ViewSupport();
 
 /**
- * Options for a view entity.
+ * Options for a view.
  *
  * @typedef module:akkaserverless.View~options
  * @property {string} [viewId=serviceName] The id for the view, used for persisting the view.

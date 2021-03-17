@@ -45,7 +45,7 @@ const Empty = protobufHelper.moduleRoot.google.protobuf.Empty;
  * @property CUSTOM_AUTO_INCREMENT A custom clock that automatically increments if the current clock value
  * is less than the existing clock value.
  */
-const Clocks = protobufHelper.moduleRoot.akkaserverless.crdt.CrdtClock;
+const Clocks = protobufHelper.moduleRoot.akkaserverless.component.crdt.CrdtClock;
 
 /**
  * A write consistency setting for replication of state updates.
@@ -64,7 +64,7 @@ const Clocks = protobufHelper.moduleRoot.akkaserverless.crdt.CrdtClock;
  *                    distributed to remaining replicas in the background.
  * @property ALL Updates will be written immediately to all replicas.
  */
-const WriteConsistencies = protobufHelper.moduleRoot.akkaserverless.crdt.CrdtWriteConsistency;
+const WriteConsistencies = protobufHelper.moduleRoot.akkaserverless.component.crdt.CrdtWriteConsistency;
 
 function createCrdtForDelta(delta) {
   if (delta.gcounter) {

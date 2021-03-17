@@ -244,7 +244,7 @@ module.exports = class EventSourcedEntityServices {
   }
 
   componentType() {
-    return "akkaserverless.eventsourced.EventSourcedEntities";
+    return "akkaserverless.component.eventsourcedentity.EventSourcedEntities";
   }
 
   register(server) {
@@ -252,12 +252,12 @@ module.exports = class EventSourcedEntityServices {
       path.join(__dirname, "..", "proto"),
       path.join(__dirname, "..", "protoc", "include")
     ];
-    const packageDefinition = protoLoader.loadSync(path.join("akkaserverless", "event_sourced_entity.proto"), {
+    const packageDefinition = protoLoader.loadSync(path.join("akkaserverless", "component", "eventsourcedentity", "event_sourced_entity.proto"), {
       includeDirs: includeDirs
     });
     const grpcDescriptor = grpc.loadPackageDefinition(packageDefinition);
 
-    const entityService = grpcDescriptor.akkaserverless.eventsourced.EventSourcedEntities.service;
+    const entityService = grpcDescriptor.akkaserverless.component.eventsourcedentity.EventSourcedEntities.service;
 
     server.addService(entityService, {
       handle: this.handle.bind(this)

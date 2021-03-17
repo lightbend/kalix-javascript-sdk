@@ -2,7 +2,7 @@
  * Copyright 2019 Lightbend Inc.
  */
 
-const debug = require("debug")("akkaserverless-viewentity");
+const debug = require("debug")("akkaserverless-view");
 // Bind to stdout
 debug.log = console.log.bind(console);
 
@@ -24,7 +24,7 @@ module.exports = class ViewServices {
   }
 
   componentType() {
-    return "akkaserverless.viewentity.ViewEntity";
+    return "akkaserverless.component.view.Views";
   }
 
   register(server) {

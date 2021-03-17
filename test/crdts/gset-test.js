@@ -21,7 +21,7 @@ const GSet = require("../../src/crdts/gset");
 const protobufHelper = require("../../src/protobuf-helper");
 const AnySupport = require("../../src/protobuf-any");
 
-const CrdtDelta = protobufHelper.moduleRoot.akkaserverless.crdt.CrdtDelta;
+const CrdtDelta = protobufHelper.moduleRoot.akkaserverless.component.crdt.CrdtDelta;
 const root = new protobuf.Root();
 root.loadSync(path.join(__dirname, "..", "example.proto"));
 root.resolveAll();

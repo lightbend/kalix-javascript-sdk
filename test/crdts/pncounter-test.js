@@ -19,7 +19,7 @@ const Long = require("long");
 const PNCounter = require("../../src/crdts/pncounter");
 const protobufHelper = require("../../src/protobuf-helper");
 
-const CrdtDelta = protobufHelper.moduleRoot.akkaserverless.crdt.CrdtDelta;
+const CrdtDelta = protobufHelper.moduleRoot.akkaserverless.component.crdt.CrdtDelta;
 
 function roundTripDelta(delta) {
   return CrdtDelta.decode(CrdtDelta.encode(delta).finish());
