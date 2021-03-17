@@ -1,0 +1,41 @@
+name: Test
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: "14.x"
+      - run: npm install
+        working-directory: create-akkasls-entity
+      - name: Generate sample project
+        run: node "${{ github.workspace }}/create-akkasls-entity/create-akkasls-entity.js" generated-project
+        working-directory: ${{ runner.temp }}
+      - name: Upload generated project as artifact
+        uses: actions/upload-artifact@v1
+        with:
+          name: generated-project
+          path: ${{ runner.temp }}/generated-project
+      - name: Link akkasls-scripts from source
+        run: |
+          npm install
+          npm link
+        working-directory: akkasls-scripts
+      - name: Link akkasls-scripts to generated project
+        run: npm link @lightbend/akkasls-scripts
+        working-directory: ${{ runner.temp }}/generated-project
+      - name: Validate generated project
+        run: |
+          npm install
+          npm run build
+          npm run test
+        working-directory: ${{ runner.temp }}/generated-project
