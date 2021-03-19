@@ -65,7 +65,7 @@ function callAndInit(snapshot) {
   const call = eventSourcedClient.handle();
   call.write({
     init: {
-      serviceName: "com.example.valueentity.shoppingcart.ShoppingCart",
+      serviceName: "com.example.valueentity.shoppingcart.ShoppingCartService",
       entityKey: "123",
     }
   });

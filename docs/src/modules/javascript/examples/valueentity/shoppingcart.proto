@@ -1,7 +1,7 @@
 syntax = "proto3";
 
 import "google/protobuf/empty.proto";
-import "akkaserverless/entity_key.proto";
+import "akkaserverless/annotations.proto";
 import "akkaserverless/eventing.proto";
 import "google/api/annotations.proto";
 import "google/api/http.proto";
@@ -10,23 +10,23 @@ import "google/api/httpbody.proto";
 package example.shoppingcart;
 
 message AddLineItem {
-    string user_id = 1 [(.akkaserverless.entity_key) = true];
+    string user_id = 1 [(akkaserverless.field).entity_key = true];
     string product_id = 2;
     string name = 3;
     int32 quantity = 4;
 }
 
 message RemoveLineItem {
-    string user_id = 1 [(.akkaserverless.entity_key) = true];
+    string user_id = 1 [(akkaserverless.field).entity_key = true];
     string product_id = 2;
 }
 
 message GetShoppingCart {
-    string user_id = 1 [(.akkaserverless.entity_key) = true];
+    string user_id = 1 [(akkaserverless.field).entity_key = true];
 }
 
 message RemoveShoppingCart {
-    string user_id = 1 [(.akkaserverless.entity_key) = true];
+    string user_id = 1 [(akkaserverless.field).entity_key = true];
 }
 
 message LineItem {

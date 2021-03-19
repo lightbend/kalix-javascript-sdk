@@ -68,7 +68,7 @@ function callAndInit(snapshot) {
   const call = eventSourcedClient.handle();
   call.write({
     init: {
-      serviceName: "com.example.shoppingcart.ShoppingCart",
+      serviceName: "com.example.shoppingcart.ShoppingCartService",
       entityKey: "123",
       snapshot: snapshot
     }

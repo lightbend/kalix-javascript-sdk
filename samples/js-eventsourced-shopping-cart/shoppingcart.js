@@ -6,7 +6,7 @@ const EventSourced = require("@lightbend/akkaserverless-javascript-sdk").EventSo
 
 const entity = new EventSourced(
   ["shoppingcart/shoppingcart.proto", "shoppingcart/persistence/domain.proto"],
-  "com.example.shoppingcart.ShoppingCart",
+  "com.example.shoppingcart.ShoppingCartService",
   {
     entityType: "shopping-cart",
     snapshotEvery: 5, // Usually you wouldn't snapshot this frequently, but this helps to demonstrate snapshotting
