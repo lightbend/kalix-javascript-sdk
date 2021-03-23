@@ -66,13 +66,20 @@ To start the application locally, use the following commands:
 npm run build && npm run start
 ```
 
-With both the proxy and your application running, any defined endpoints should be available at `http://localhost:9000`. For example, given [`grpcurl`](https://github.com/fullstorydev/grpcurl):
+With both the proxy and your application running, any defined endpoints should be available at `http://localhost:9000`. In addition to the defined gRPC interface, each method has a corresponding HTTP endpoint. Unless configured otherwise (see [Transcoding HTTP](https://docs.lbcs.dev/js-services/proto.html#_transcoding_http)), this endpoint accepts POST requests at the path `/[package].[entity name]/[method]`. For example, using `curl`:
 
 ```
-> grpcurl -plaintext -d '{"entityId": "foo"}' localhost:9000 com.example.MyServiceEntity/GetValue
+> curl -XPOST -H "Content-Type: application/json" localhost:9000/${package}.MyServiceEntity/GetValue -d '{"entityId": "foo"}'
+The command handler for `GetValue` is not implemented, yet
+```
+
+For example, given [`grpcurl`](https://github.com/fullstorydev/grpcurl):
+
+```
+> grpcurl -plaintext -d '{"entityId": "foo"}' localhost:9000 ${package}.MyServiceEntity/GetValue
 ERROR:
   Code: Unknown
-  Message: Unexpected entity failure
+  Message: The command handler for `GetValue` is not implemented, yet
 ```
 
 > Note: The failure is to be expected if you have not yet provided an implementation of `GetValue` in
