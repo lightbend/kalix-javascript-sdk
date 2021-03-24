@@ -1,6 +1,6 @@
 {
   "name": "@lightbend/akkaserverless-javascript-sdk",
-  "version": "0.7.0",
+  "version": "0.0.0",
   "description": "Akka Serverless JavaScript SDK",
   "keywords": [
     "akka",
@@ -80,6 +80,7 @@
     "integration-test": "mocha integration-test",
     "preintegration-test": "bin/compile-descriptor.js test/example.proto --descriptor_set_out=integration-test/user-function.desc",
     "prepare": "bin/prepare.sh",
-    "postinstall": "node bin/download-protoc.js"
+    "postinstall": "node bin/download-protoc.js",
+    "prepublishOnly": "npm version --no-git-tag-version $(bin/version.sh)"
   }
 }
