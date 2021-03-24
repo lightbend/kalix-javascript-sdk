@@ -24,14 +24,14 @@ message GetUserRequest {
 service Users {
     rpc UpdateUser(User) returns (google.protobuf.Empty) {
         option (google.api.http) = {
-            put: "/users/{user_id}",
-            body: "*",
+            put: "/users/{user_id}"
+            body: "*"
         };
     }
 
     rpc GetUser(GetUserRequest) returns (User) {
         option (google.api.http) = {
-          get: "/users/{user_id}",
+          get: "/users/{user_id}"
         };
     }
 }
@@ -44,21 +44,21 @@ service UsersByEmail {
     rpc UpdateUser(User) returns (User) {
         option (akkaserverless.eventing) = {
           in: {
-            event_log: "users",
-          },
+            event_log: "users"
+          }
         };
         option (akkaserverless.view) = {
-          table: "users",
-          auto_persist: true,
+          table: "users"
+          auto_persist: true
         };
     }
 
     rpc GetUsersByEmail(UsersByEmailRequest) returns (stream User) {
         option (akkaserverless.view) = {
-          query: "select * from users where emails = :email",
+          query: "select * from users where emails = :email"
         };
         option (google.api.http) = {
-          get: "/users",
+          get: "/users"
         };
     }
 }

@@ -42,8 +42,8 @@ message Cart {
 service ShoppingCart {
     rpc AddItem(AddLineItem) returns (google.protobuf.Empty) {
         option (google.api.http) = {
-            post: "/ve/cart/{user_id}/items/add",
-            body: "*",
+            post: "/ve/cart/{user_id}/items/add"
+            body: "*"
         };
     }
 
@@ -53,9 +53,9 @@ service ShoppingCart {
 
     rpc GetCart(GetShoppingCart) returns (Cart) {
         option (google.api.http) = {
-            get: "/ve/carts/{user_id}",
+            get: "/ve/carts/{user_id}"
             additional_bindings: {
-                get: "/ve/carts/{user_id}/items",
+                get: "/ve/carts/{user_id}/items"
                 response_body: "items"
             }
         };
