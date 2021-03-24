@@ -2,10 +2,8 @@
 
 syntax = "proto3";
 
+import "akkaserverless/annotations.proto";
 import "google/protobuf/empty.proto";
-import "akkaserverless/entity_key.proto";
-import "akkaserverless/eventing.proto";
-import "akkaserverless/views.proto";
 import "google/api/annotations.proto";
 import "google/api/http.proto";
 import "google/api/httpbody.proto";
@@ -13,12 +11,12 @@ import "google/api/httpbody.proto";
 package example.users;
 
 message User {
-    string user_id = 1 [(.akkaserverless.entity_key) = true];
+    string user_id = 1 [(akkaserverless.field).entity_key = true];
     repeated string emails = 2;
 }
 
 message GetUserRequest {
-    string user_id = 1 [(.akkaserverless.entity_key) = true];
+    string user_id = 1 [(akkaserverless.field).entity_key = true];
 }
 
 service Users {
@@ -42,19 +40,18 @@ message UsersByEmailRequest {
 
 service UsersByEmail {
     rpc UpdateUser(User) returns (User) {
-        option (akkaserverless.eventing) = {
+        option (akkaserverless.method).eventing = {
           in: {
             event_log: "users"
           }
         };
-        option (akkaserverless.view) = {
+        option (akkaserverless.method).view = {
           table: "users"
-          auto_persist: true
         };
     }
 
     rpc GetUsersByEmail(UsersByEmailRequest) returns (stream User) {
-        option (akkaserverless.view) = {
+        option (akkaserverless.method).view = {
           query: "select * from users where emails = :email"
         };
         option (google.api.http) = {
