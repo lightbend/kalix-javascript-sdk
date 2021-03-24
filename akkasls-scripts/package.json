@@ -15,7 +15,7 @@
     "node-fetch": "^2.6.1"
   },
   "peerDependencies": {
-    "cloudstate": ">= 0.0.5"
+    "@lightbend/akkaserverless-javascript-sdk": ">= 0.7.0-pre-ebf5e9ea"
   },
   "bin": {
     "akkasls-scripts": "./bin/akkasls-scripts.js"
@@ -24,7 +24,7 @@
     "install": "node bin/download-codegen.js"
   },
   "config": {
-    "akkaslsCodegenVersion": "0.12.3"
+    "akkaslsCodegenVersion": "0.13.0"
   },
   "devDependencies": {
     "prettier": "^2.2.1"
