@@ -161,12 +161,12 @@ class AkkaServerless {
       path.join(__dirname, "..", "proto"),
       path.join(__dirname, "..", "protoc", "include")
     ];
-    const packageDefinition = protoLoader.loadSync(path.join("akkaserverless", "discovery.proto"), {
+    const packageDefinition = protoLoader.loadSync(path.join("akkaserverless", "protocol", "discovery.proto"), {
       includeDirs: includeDirs
     });
     const grpcDescriptor = grpc.loadPackageDefinition(packageDefinition);
 
-    const discovery = grpcDescriptor.akkaserverless.Discovery.service;
+    const discovery = grpcDescriptor.akkaserverless.protocol.Discovery.service;
 
     this.server.addService(discovery, {
       discover: this.discover.bind(this),

@@ -10,11 +10,13 @@ cp -r ../protocols/proxy/src/main/protobuf/* ../protocols/sdk/src/main/protobuf/
 # Generate the protobuf bundle and typescript definitions
 pbjs -t static-module -w commonjs -o ./proto/protobuf-bundle.js -p ./proto -p ./protoc/include \
   ./proto/akkaserverless/*.proto \
+  ./proto/akkaserverless/protocol/*.proto \
   ./proto/akkaserverless/component/*.proto \
   ./proto/akkaserverless/component/*/*.proto
 
 pbjs -t static-module -p ./proto -p ./protoc/include \
   ./proto/akkaserverless/*.proto \
+  ./proto/akkaserverless/protocol/*.proto \
   ./proto/akkaserverless/component/*.proto \
   ./proto/akkaserverless/component/*/*.proto \
   | pbts -o ./proto/protobuf-bundle.d.ts -

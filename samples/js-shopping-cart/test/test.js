@@ -16,7 +16,7 @@ const allIncludeDirs = protobufHelper.moduleIncludeDirs.concat([
 
 const packageDefinition = protoLoader.loadSync(
   [
-    path.join("akkaserverless", "discovery.proto"),
+    path.join("akkaserverless", "protocol", "discovery.proto"),
     path.join("akkaserverless", "component", "valueentity", "value_entity.proto")
   ],
   {
@@ -171,7 +171,7 @@ describe("shopping cart", () => {
     const port = server.start({
       bindPort: 0
     });
-    discoveryClient = new descriptor.akkaserverless.Discovery("127.0.0.1:" + port, grpc.credentials.createInsecure());
+    discoveryClient = new descriptor.akkaserverless.protocol.Discovery("127.0.0.1:" + port, grpc.credentials.createInsecure());
     eventSourcedClient = new descriptor.akkaserverless.component.valueentity.ValueEntities("127.0.0.1:" + port, grpc.credentials.createInsecure());
   });
 

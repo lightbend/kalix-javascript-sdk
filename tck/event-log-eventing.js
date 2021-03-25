@@ -18,8 +18,8 @@ const Action = require("@lightbend/akkaserverless-javascript-sdk").Action;
 const EventSourced = require("@lightbend/akkaserverless-javascript-sdk").EventSourced;
 
 const eventSourcedEntityOne = new EventSourced(
-  ["proto/eventlogeventing.proto"],
-  "akkaserverless.tck.model.eventlogeventing.EventSourcedEntityOne",
+  ["proto/event_log_eventing.proto"],
+  "akkaserverless.tck.model.eventing.EventSourcedEntityOne",
   {
     entityType: "eventlogeventing-one"
   }
@@ -47,8 +47,8 @@ function emitEvent(request, state, context) {
 }
 
 const eventSourcedEntityTwo = new EventSourced(
-  ["proto/eventlogeventing.proto"],
-  "akkaserverless.tck.model.eventlogeventing.EventSourcedEntityTwo",
+  ["proto/event_log_eventing.proto"],
+  "akkaserverless.tck.model.eventing.EventSourcedEntityTwo",
   {
     entityType: "eventlogeventing-two",
     serializeFallbackToJson: true
@@ -77,11 +77,11 @@ function emitJsonEvent(event, state, context) {
 }
 
 const eventLogSubscriber = new Action(
-  "proto/eventlogeventing.proto",
-  "akkaserverless.tck.model.eventlogeventing.EventLogSubscriberModel"
+  "proto/event_log_eventing.proto",
+  "akkaserverless.tck.model.eventing.EventLogSubscriberModel"
 );
 
-const Response = eventLogSubscriber.lookupType("akkaserverless.tck.model.eventlogeventing.Response");
+const Response = eventLogSubscriber.lookupType("akkaserverless.tck.model.eventing.Response");
 
 eventLogSubscriber.commandHandlers = {
   ProcessEventOne: processEventOne,

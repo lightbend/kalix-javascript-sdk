@@ -17,7 +17,7 @@
 const ValueEntity = require("@lightbend/akkaserverless-javascript-sdk").ValueEntity;
 
 const tckModel = new ValueEntity(
-  ["proto/valueentity.proto"],
+  ["proto/value_entity.proto"],
   "akkaserverless.tck.model.valueentity.ValueEntityTckModel",
   {
     entityType: "value-entity-tck-model"
@@ -57,7 +57,7 @@ function process(request, state, context) {
 }
 
 const two = new ValueEntity(
-  ["proto/valueentity.proto"],
+  ["proto/value_entity.proto"],
   "akkaserverless.tck.model.valueentity.ValueEntityTwo",
   {
     entityType: "value-entity-tck-model-two"
@@ -70,7 +70,7 @@ two.commandHandlers = {
 };
 
 const configured = new ValueEntity(
-  ["proto/valueentity.proto"],
+  ["proto/value_entity.proto"],
   "akkaserverless.tck.model.valueentity.ValueEntityConfigured",
   {
     entityType: "value-entity-configured",

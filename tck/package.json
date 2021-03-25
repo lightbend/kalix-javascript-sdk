@@ -13,8 +13,8 @@
     "@lightbend/akkaserverless-javascript-sdk": "file:.."
   },
   "scripts": {
-    "prepare": "rm -rf proto && mkdir proto && cp ../../protocols/tck/src/main/protobuf/akkaserverless/tck/model/*.proto proto",
-    "build": "npm run prepare && compile-descriptor ./proto/action.proto ./proto/crdt.proto ./proto/eventlogeventing.proto ./proto/eventsourced.proto ./proto/valueentity.proto",
+    "prepare": "rm -rf proto && mkdir proto && cp ../../protocols/tck/src/main/protobuf/akkaserverless/tck/model/*/*.proto proto",
+    "build": "npm run prepare && compile-descriptor ./proto/*.proto",
     "postinstall": "npm run build",
     "start": "node index.js"
   }
