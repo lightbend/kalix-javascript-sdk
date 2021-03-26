@@ -24,7 +24,7 @@
     "install": "node bin/download-codegen.js"
   },
   "config": {
-    "akkaslsCodegenVersion": "0.13.0"
+    "akkaslsCodegenVersion": "0.13.1"
   },
   "devDependencies": {
     "prettier": "^2.2.1"
