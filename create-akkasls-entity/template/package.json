@@ -25,7 +25,7 @@
   },
   "scripts": {
     "start": "node src/index.js",
-    "test": "mocha *.test.js",
+    "test": "mocha ./test",
     "build": "akkasls-scripts build",
     "package": "akkasls-scripts package",
     "deploy": "akkasls-scripts deploy"
