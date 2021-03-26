@@ -19,10 +19,12 @@
   },
   "config": {
     "dockerImage": "my-docker-repo/{{name}}",
+    "sourceDir": "./src",
+    "testSourceDir": "./test",
     "protoSourceDir": "./proto"
   },
   "scripts": {
-    "start": "node index.js",
+    "start": "node src/index.js",
     "test": "mocha *.test.js",
     "build": "akkasls-scripts build",
     "package": "akkasls-scripts package",

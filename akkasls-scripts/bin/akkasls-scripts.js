@@ -15,7 +15,7 @@ const dockerBuild = (dockerTag) =>
   ]);
 
 const scriptHandlers = {
-  build({ protoSourceDir, akkaslsScriptDir }) {
+  build({ protoSourceDir, akkaslsScriptDir, sourceDir, testSourceDir }) {
     // Workaround for https://github.com/protocolbuffers/protobuf/issues/3957
     // Once the underlying library is updated to protobuf 3.10 or later, we can simply use the *.proto wildcard
     const protoFiles = fs
@@ -33,7 +33,14 @@ const scriptHandlers = {
     runOrFail(
       "Invoking Akka Serverless codegen",
       path.resolve(akkaslsScriptDir, "bin", "akkasls-codegen-js.bin"),
-      ["--proto-source-dir", protoSourceDir]
+      [
+        "--proto-source-dir",
+        protoSourceDir,
+        "--source-dir",
+        sourceDir,
+        "--test-source-dir",
+        testSourceDir,
+      ]
     );
   },
   package({ dockerTag }) {
