@@ -20,6 +20,10 @@ if (!userArgs.some(arg => arg.startsWith("--descriptor_set_out"))) {
     protocArgs.push("--descriptor_set_out=user-function.desc");
 }
 
+if (!userArgs.includes("--include_source_info")) {
+  protocArgs.push("--include_source_info");
+}
+
 // We need to ensure that the files passed in is on the proto path. The user may have already ensured this by passing
 // their own proto path, but if not, we detect that, and add the files parent directory as a proto path.
 const filesToCompile = userArgs.filter(arg => !arg.startsWith("-") && !arg.startsWith("@"));

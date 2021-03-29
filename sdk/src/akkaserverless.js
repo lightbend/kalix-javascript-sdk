@@ -211,9 +211,67 @@ class AkkaServerless {
   }
 
   reportError(call, callback) {
-    const msg = call.request.message;
-    console.error("Error reported from sidecar: " + msg);
+    let msg = "Error reported from Akka system: " + call.request.code + " " + call.request.message;
+    if (call.request.detail) {
+      msg += "\n\n" + call.request.detail;
+    }
+    for (const location of call.request.sourceLocations) {
+      msg += "\n\n" + this.formatSource(location)
+    }
+    console.error(msg);
     callback(null, {});
+  }
+
+  formatSource(location) {
+    let startLine = location.startLine;
+    if (startLine === undefined) {
+      startLine = 0;
+    }
+    let endLine = location.endLine;
+    if (endLine === undefined) {
+      endLine = 0;
+    }
+    let startCol = location.startCol;
+    if (startCol === undefined) {
+      startCol = 0;
+    }
+    let endCol = location.endCol;
+    if (endCol === undefined) {
+      endCol = 0;
+    }
+    if (endLine === 0 && endCol === 0) {
+      // It's been sent without line/col data
+      return "At " + location.fileName;
+    }
+    // First, we need to location the protobuf file that it's from. To do that, we need to look in the include dirs
+    // of each entity.
+    for (const component of this.components) {
+      for (const includeDir of component.options.includeDirs) {
+        const file = path.resolve(includeDir, location.fileName);
+        if (fs.existsSync(file)) {
+          const lines = fs.readFileSync(file).toString("utf-8")
+              .split(/\r?\n/)
+              .slice(startLine, endLine + 1)
+          let content = "";
+          if (lines.length > 1) {
+            content = lines.join("\n")
+          } else if (lines.length === 1) {
+            const line = lines[0]
+            content = line + "\n";
+            for (let i = 0; i < Math.min(line.length, startCol); i++) {
+              if (line.charAt(i) === "\t") {
+                content += "\t";
+              } else {
+                content += " ";
+              }
+            }
+            content += "^";
+          }
+          return "At " + location.fileName + ":" + (startLine + 1) + ":" + (startCol + 1) + ":" + "\n" + content
+        }
+      }
+    }
+    return "At " + location.fileName + ":" + (startLine + 1) + ":" + (startCol + 1);
   }
 
   shutdown() {
