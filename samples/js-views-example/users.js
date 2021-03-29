@@ -7,9 +7,7 @@ const ValueEntity = require("@lightbend/akkaserverless-javascript-sdk").ValueEnt
 const entity = new ValueEntity(
   ["users.proto"],
   "example.users.Users",
-  {
-    entityType: "users"
-  }
+  "users"
 );
 
 const pkg = "example.users.";

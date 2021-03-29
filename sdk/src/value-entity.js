@@ -46,8 +46,6 @@ const valueEntityServices = new ValueEntityServices();
  * Options for a value entity.
  *
  * @typedef module:akkaserverless.ValueEntity~options
- * @property {string} [entityType="entity"] A persistence id for all value entities of this type. This will be prefixed
- * onto the entityId when storing the state for this entity.
  * @property {array<string>} [includeDirs=["."]] The directories to include when looking up imported protobuf files.
  * @property {boolean} [serializeAllowPrimitives=false] Whether serialization of primitives should be supported when
  * serializing the state.
@@ -68,19 +66,22 @@ class ValueEntity {
    *
    * @param {string|string[]} desc A descriptor or list of descriptors to parse, containing the service to serve.
    * @param {string} serviceName The fully qualified name of the service that provides this entities interface.
+   * @param {string} entityType The entity type name for all value entities of this type. Never change it after deploying
+   *                            a service that stored data of this type
    * @param {module:akkaserverless.ValueEntity~options=} options The options for this entity
    */
-  constructor(desc, serviceName, options) {
+  constructor(desc, serviceName, entityType, options) {
 
     this.options = {
       ...{
-        entityType: "entity",
+        entityType: entityType,
         includeDirs: ["."],
         serializeAllowPrimitives: false,
         serializeFallbackToJson: false
       },
       ...options
     };
+    if (!entityType) throw Error("EntityType must contain a name")
 
     const allIncludeDirs = protobufHelper.moduleIncludeDirs
       .concat(this.options.includeDirs);

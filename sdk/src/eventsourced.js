@@ -68,8 +68,6 @@ const eventSourcedServices = new EventSourcedServices();
  * Options for an event sourced entity.
  *
  * @typedef module:akkaserverless.EventSourced~options
- * @property {string} [entityType="entity"] The entity type name for all event source entities of this type. This will be prefixed
- * onto the entityId when storing the events for this entity.
  * @property {number} [snapshotEvery=100] A snapshot will be persisted every time this many events are emitted.
  *                                        It is strongly recommended to not disable snapshotting unless it is known that
  *                                        event sourced entities will never have more than 100 events (in which case
@@ -94,13 +92,17 @@ class EventSourcedEntity {
    *
    * @param {string|string[]} desc A descriptor or list of descriptors to parse, containing the service to serve.
    * @param {string} serviceName The fully qualified name of the service that provides this entities interface.
+   * @param {string} entityType The entity type name for all event source entities of this type. This will be prefixed
+   *                            onto the entityId when storing the events for this entity. Be aware that the
+   *                            chosen name must be stable through the entity lifecycle.  Never change it after deploying
+   *                            a service that stored data of this type
    * @param {module:akkaserverless.EventSourced~options=} options The options for this event sourced entity
    */
-  constructor(desc, serviceName, options) {
+  constructor(desc, serviceName, entityType,  options) {
 
     this.options = {
       ...{
-        entityType: "entity",
+        entityType: entityType,
         snapshotEvery: 100,
         includeDirs: ["."],
         serializeAllowPrimitives: false,
@@ -108,6 +110,7 @@ class EventSourcedEntity {
       },
       ...options
     };
+    if (!entityType) throw Error("EntityType must contain a name")
 
     const allIncludeDirs = protobufHelper.moduleIncludeDirs
       .concat(this.options.includeDirs);

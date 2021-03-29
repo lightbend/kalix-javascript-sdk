@@ -19,8 +19,8 @@ const EventSourced = require("@lightbend/akkaserverless-javascript-sdk").EventSo
 const tckModel = new EventSourced(
   ["proto/event_sourced_entity.proto"],
   "akkaserverless.tck.model.eventsourcedentity.EventSourcedTckModel",
+  "event-sourced-tck-model",
   {
-    entityType: "event-sourced-tck-model",
     snapshotEvery: 5
   }
 );
@@ -66,7 +66,8 @@ function persisted(event, state) {
 
 const two = new EventSourced(
   ["proto/event_sourced_entity.proto"],
-  "akkaserverless.tck.model.eventsourcedentity.EventSourcedTwo"
+  "akkaserverless.tck.model.eventsourcedentity.EventSourcedTwo",
+  "event-sourced-tck-model-2"
 );
 
 two.initial = entityId => Persisted.create({ value: "" });
@@ -82,8 +83,8 @@ two.behavior = state => {
 const configured = new EventSourced(
   ["proto/event_sourced_entity.proto"],
   "akkaserverless.tck.model.eventsourcedentity.EventSourcedConfigured",
+  "event-sourced-configured",
   {
-    entityType: "event-sourced-configured",
     entityPassivationStrategy: {
       timeout: 100 // milliseconds
     }

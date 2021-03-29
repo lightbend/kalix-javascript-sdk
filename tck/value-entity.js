@@ -19,9 +19,7 @@ const ValueEntity = require("@lightbend/akkaserverless-javascript-sdk").ValueEnt
 const tckModel = new ValueEntity(
   ["proto/value_entity.proto"],
   "akkaserverless.tck.model.valueentity.ValueEntityTckModel",
-  {
-    entityType: "value-entity-tck-model"
-  }
+  "value-entity-tck-model"
 );
 
 const Response = tckModel.lookupType("akkaserverless.tck.model.Response")
@@ -59,9 +57,7 @@ function process(request, state, context) {
 const two = new ValueEntity(
   ["proto/value_entity.proto"],
   "akkaserverless.tck.model.valueentity.ValueEntityTwo",
-  {
-    entityType: "value-entity-tck-model-two"
-  }
+  "value-entity-tck-model-two"
 );
 
 two.initial = entityId => Persisted.create({ value: "" });
@@ -72,8 +68,8 @@ two.commandHandlers = {
 const configured = new ValueEntity(
   ["proto/value_entity.proto"],
   "akkaserverless.tck.model.valueentity.ValueEntityConfigured",
+  "value-entity-configured",
   {
-    entityType: "value-entity-configured",
     entityPassivationStrategy: {
       timeout: 100 // milliseconds
     }

@@ -17,8 +17,6 @@ const crdtServices = new support.CrdtServices();
  *
  * @typedef module:akkaserverless.crdt.Crdt~options
  * @property {array<string>} includeDirs The directories to include when looking up imported protobuf files.
- * @property {string} entityType The entity type name, used to namespace entities of different CRDT
- * types in the same service.
  */
 
 /**
@@ -65,17 +63,20 @@ class Crdt {
    * @param desc {string|string[]} The file name of a protobuf descriptor or set of descriptors containing the
    * CRDT service.
    * @param serviceName {string} The fully qualified name of the gRPC service that this CRDT implements.
+   * @param {string} entityType The entity type name, used to namespace entities of different CRDT
+   *                            types in the same service.
    * @param options {module:akkaserverless.crdt.Crdt~options=} The options.
    */
-  constructor(desc, serviceName, options) {
+  constructor(desc, serviceName, entityType, options) {
 
     this.options = {
       ...{
         includeDirs: ["."],
-        entityType: serviceName.split(".").pop()
+        entityType: entityType
       },
       ...options
     };
+    if (!entityType) throw Error("EntityType must contain a name")
 
     const allIncludeDirs = protobufHelper.moduleIncludeDirs
       .concat(this.options.includeDirs);

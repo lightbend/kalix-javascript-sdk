@@ -21,9 +21,7 @@ const ValueEntity = require("@lightbend/akkaserverless-javascript-sdk").ValueEnt
 const eventSourcedEntityOne = new EventSourced(
   ["proto/local_persistence_eventing.proto"],
   "akkaserverless.tck.model.eventing.EventSourcedEntityOne",
-  {
-    entityType: "eventlogeventing-one"
-  }
+  "eventlogeventing-one"
 );
 
 const Empty = eventSourcedEntityOne.lookupType("google.protobuf.Empty").create();
@@ -48,10 +46,10 @@ function emitEvent(request, state, context) {
 }
 
 const eventSourcedEntityTwo = new EventSourced(
-    ["proto/local_persistence_eventing.proto"],
-    "akkaserverless.tck.model.eventing.EventSourcedEntityTwo",
+  ["proto/local_persistence_eventing.proto"],
+  "akkaserverless.tck.model.eventing.EventSourcedEntityTwo",
+  "eventlogeventing-two",
   {
-    entityType: "eventlogeventing-two",
     serializeFallbackToJson: true
   }
 );
@@ -80,9 +78,7 @@ function emitJsonEvent(event, state, context) {
 const valueEntityOne = new ValueEntity(
     ["proto/local_persistence_eventing.proto"],
     "akkaserverless.tck.model.eventing.ValueEntityOne",
-    {
-      entityType: "valuechangeseventing-one"
-    }
+    "valuechangeseventing-one"
 );
 
 valueEntityOne.initial = entityId => Empty;
@@ -99,8 +95,8 @@ function updateValue(request, state, context) {
 const valueEntityTwo = new ValueEntity(
     ["proto/local_persistence_eventing.proto"],
     "akkaserverless.tck.model.eventing.ValueEntityTwo",
+    "valuechangeseventing-two",
     {
-      entityType: "valuechangeseventing-two",
       serializeFallbackToJson: true
     }
 );

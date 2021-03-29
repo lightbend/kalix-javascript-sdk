@@ -20,8 +20,8 @@ const EventSourced = require("@lightbend/akkaserverless-javascript-sdk").EventSo
 const entity = new EventSourced(
     ["shoppingcart.proto", "domain.proto"],
     "example.shoppingcart.ShoppingCartService",
+    "shopping-cart",
     {
-        entityType: "shopping-cart",
         snapshotEvery: 100
     }
 );

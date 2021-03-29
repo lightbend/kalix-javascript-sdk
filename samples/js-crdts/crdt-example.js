@@ -20,6 +20,7 @@ const crdt = require("@lightbend/akkaserverless-javascript-sdk").crdt;
 const entity = new crdt.Crdt(
   "crdts/crdt-example.proto",
   "com.example.crdts.CrdtExample",
+  "crdt-example",
   {
     includeDirs: ["../../protocols/example"]
   }

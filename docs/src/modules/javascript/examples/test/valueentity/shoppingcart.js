@@ -6,11 +6,9 @@
 const ValueEntity = require("@lightbend/akkaserverless-javascript-sdk").ValueEntity;
 
 const entity = new ValueEntity(
-    ["shoppingcart.proto", "domain.proto"],
+  ["shoppingcart.proto", "domain.proto"],
   "example.shoppingcart.ShoppingCartService",
-  {
-    entityType: "shopping-cart"
-  }
+  "shopping-cart"
 );
 // end::entity-class[]
 
