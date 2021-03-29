@@ -2,9 +2,9 @@
  * Copyright 2019 Lightbend Inc.
  */
 
-const EventSourced = require("@lightbend/akkaserverless-javascript-sdk").EventSourced;
+const ValueEntity = require("@lightbend/akkaserverless-javascript-sdk").ValueEntity;
 
-const entity = new EventSourced(
+const entity = new ValueEntity(
   ["users.proto"],
   "example.users.Users",
   {
@@ -15,41 +15,21 @@ const entity = new EventSourced(
 const pkg = "example.users.";
 const User = entity.lookupType(pkg + "User");
 
-entity.setInitial(userId => User.create({
-  userId: userId,
-}));
+entity.initial = (entityId) => User.create({userId: entityId});
 
-entity.setBehavior(user => {
-  return {
-    commandHandlers: {
-      UpdateUser: updateUser,
-      GetUser: getUser
-    },
-    eventHandlers: {
-      User: userUpdated,
-    }
-  };
-});
+entity.commandHandlers = {
+  UpdateUser: updateUser,
+  GetUser: getUser
+}
 
-function updateUser(update, existing, ctx) {
-  if (!update.userId) {
-      update.userId = existing.userId;
-  }
-
-  if (update.userId !== existing.userId) {
-    ctx.fail("Bad user id " + update.userId + " for user " + existing.userId);
-  } else {
-    ctx.emit(User.create(update));
-    return {};
-  }
+function updateUser(update, state, ctx) {
+  update.userId = ctx.entityId;
+  ctx.updateState(User.create(update));
+  return {};
 }
 
 function getUser(request, user) {
   return user;
-}
-
-function userUpdated(update, existing) {
-  return update;
 }
 
 // Export the entity

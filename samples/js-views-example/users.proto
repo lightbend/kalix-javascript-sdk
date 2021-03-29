@@ -42,7 +42,7 @@ service UsersByEmail {
     rpc UpdateUser(User) returns (User) {
         option (akkaserverless.method).eventing = {
           in: {
-            event_log: "users"
+            value_changes: "users"
           }
         };
         option (akkaserverless.method).view = {
