@@ -45,13 +45,13 @@ service UsersByEmail {
             value_changes: "users"
           }
         };
-        option (akkaserverless.method).view = {
+        option (akkaserverless.method).view.update = {
           table: "users"
         };
     }
 
     rpc GetUsersByEmail(UsersByEmailRequest) returns (stream User) {
-        option (akkaserverless.method).view = {
+        option (akkaserverless.method).view.query = {
           query: "select * from users where emails = :email"
         };
         option (google.api.http) = {
