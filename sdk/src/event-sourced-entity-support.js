@@ -6,13 +6,13 @@ const path = require("path");
 const grpc = require("grpc");
 const protoLoader = require("@grpc/proto-loader");
 
-const debug = require("debug")("akkaserverless-event-sourcing");
+const debug = require("debug")("akkaserverless-event-sourced-entity");
 // Bind to stdout
 debug.log = console.log.bind(console);
 const AnySupport = require("./protobuf-any");
 const CommandHelper = require("./command-helper");
 
-class EventSourcedSupport {
+class EventSourcedEntitySupport {
 
   constructor(root, service, behavior, initial, options, allEntities) {
     this.root = root;
@@ -56,7 +56,7 @@ class EventSourcedSupport {
 class EventSourcedEntityHandler {
 
   /**
-   * @param {EventSourcedSupport} support
+   * @param {EventSourcedEntitySupport} support
    * @param call
    * @param entityId
    * @private
@@ -239,7 +239,7 @@ module.exports = class EventSourcedEntityServices {
   }
 
   addService(entity, allEntities) {
-    this.services[entity.serviceName] = new EventSourcedSupport(entity.root, entity.service, entity.behavior,
+    this.services[entity.serviceName] = new EventSourcedEntitySupport(entity.root, entity.service, entity.behavior,
       entity.initial, entity.options, allEntities);
   }
 

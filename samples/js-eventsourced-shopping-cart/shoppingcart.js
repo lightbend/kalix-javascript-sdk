@@ -2,9 +2,9 @@
  * Copyright 2019 Lightbend Inc.
  */
 
-const EventSourced = require("@lightbend/akkaserverless-javascript-sdk").EventSourced;
+const EventSourcedEntity = require("@lightbend/akkaserverless-javascript-sdk").EventSourcedEntity;
 
-const entity = new EventSourced(
+const entity = new EventSourcedEntity(
   ["shoppingcart/shoppingcart.proto", "shoppingcart/persistence/domain.proto"],
   "com.example.shoppingcart.ShoppingCartService",
   "shopping-cart",

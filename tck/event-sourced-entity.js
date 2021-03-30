@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-const EventSourced = require("@lightbend/akkaserverless-javascript-sdk").EventSourced;
+const EventSourcedEntity = require("@lightbend/akkaserverless-javascript-sdk").EventSourcedEntity;
 
-const tckModel = new EventSourced(
+const tckModel = new EventSourcedEntity(
   ["proto/event_sourced_entity.proto"],
   "akkaserverless.tck.model.eventsourcedentity.EventSourcedTckModel",
   "event-sourced-tck-model",
@@ -64,7 +64,7 @@ function persisted(event, state) {
   return state;
 }
 
-const two = new EventSourced(
+const two = new EventSourcedEntity(
   ["proto/event_sourced_entity.proto"],
   "akkaserverless.tck.model.eventsourcedentity.EventSourcedTwo",
   "event-sourced-tck-model-2"
@@ -80,7 +80,7 @@ two.behavior = state => {
   };
 };
 
-const configured = new EventSourced(
+const configured = new EventSourcedEntity(
   ["proto/event_sourced_entity.proto"],
   "akkaserverless.tck.model.eventsourcedentity.EventSourcedConfigured",
   "event-sourced-configured",

@@ -15,10 +15,10 @@
  */
 
 const Action = require("@lightbend/akkaserverless-javascript-sdk").Action;
-const EventSourced = require("@lightbend/akkaserverless-javascript-sdk").EventSourced;
+const EventSourcedEntity = require("@lightbend/akkaserverless-javascript-sdk").EventSourcedEntity;
 const ValueEntity = require("@lightbend/akkaserverless-javascript-sdk").ValueEntity;
 
-const eventSourcedEntityOne = new EventSourced(
+const eventSourcedEntityOne = new EventSourcedEntity(
   ["proto/local_persistence_eventing.proto"],
   "akkaserverless.tck.model.eventing.EventSourcedEntityOne",
   "eventlogeventing-one"
@@ -45,7 +45,7 @@ function emitEvent(request, state, context) {
   return Empty;
 }
 
-const eventSourcedEntityTwo = new EventSourced(
+const eventSourcedEntityTwo = new EventSourcedEntity(
   ["proto/local_persistence_eventing.proto"],
   "akkaserverless.tck.model.eventing.EventSourcedEntityTwo",
   "eventlogeventing-two",

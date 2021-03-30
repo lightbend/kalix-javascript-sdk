@@ -158,7 +158,7 @@ module.exports = class CommandHelper {
   }
 
   // This creates the context. Note that the context has two levels, first is the internal implementation context,
-  // this has everything the CRDT and EventSourced support needs to do its stuff, it's where effects and metadata
+  // this has everything the CRDT and EventSourcedEntity support needs to do its stuff, it's where effects and metadata
   // are recorded, etc. The second is the user facing context, which is a property on the internal context called
   // "context".
   createContext(commandId, metadata) {

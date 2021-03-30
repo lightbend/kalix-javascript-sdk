@@ -6,15 +6,15 @@ const fs = require("fs");
 const protobufHelper = require("./protobuf-helper");
 const grpc = require("grpc");
 const protoLoader = require("@grpc/proto-loader");
-const EventSourcedServices = require("./eventsourced-support");
+const EventSourcedEntityServices = require("./event-sourced-entity-support");
 const AkkaServerless = require("./akkaserverless");
 
-const eventSourcedServices = new EventSourcedServices();
+const eventSourcedEntityServices = new EventSourcedEntityServices();
 
 /**
- * An event sourced command handler.
+ * An event sourced entity command handler.
  *
- * @callback module:akkaserverless.EventSourced~commandHandler
+ * @callback module:akkaserverless.EventSourcedEntity~commandHandler
  * @param {Object} command The command message, this will be of the type of the gRPC service call input type.
  * @param {module:akkaserverless.Serializable} state The entity state.
  * @param {module:akkaserverless.EventSourced.EventSourcedCommandContext} context The command context.
@@ -23,9 +23,9 @@ const eventSourcedServices = new EventSourcedServices();
  */
 
 /**
- * An event sourced event handler.
+ * An event sourced entity event handler.
  *
- * @callback module:akkaserverless.EventSourced~eventHandler
+ * @callback module:akkaserverless.EventSourcedEntity~eventHandler
  * @param {module:akkaserverless.Serializable} event The event.
  * @param {module:akkaserverless.Serializable} state The entity state.
  * @returns {module:akkaserverless.Serializable} The new entity state.
@@ -34,12 +34,12 @@ const eventSourcedServices = new EventSourcedServices();
 /**
  * An event sourced entity behavior.
  *
- * @typedef module:akkaserverless.EventSourced~behavior
- * @property {Object<String, module:akkaserverless.EventSourced~commandHandler>} commandHandlers The command handlers.
+ * @typedef module:akkaserverless.EventSourcedEntity~behavior
+ * @property {Object<String, module:akkaserverless.EventSourcedEntity~commandHandler>} commandHandlers The command handlers.
  *
  * The names of the properties must match the names of the service calls specified in the gRPC descriptor for this
  * event sourced entities service.
- * @property {Object<String, module:akkaserverless.EventSourced~eventHandler>} eventHandlers The event handlers.
+ * @property {Object<String, module:akkaserverless.EventSourcedEntity~eventHandler>} eventHandlers The event handlers.
  *
  * The names of the properties must match the short names of the events.
  */
@@ -49,9 +49,9 @@ const eventSourcedServices = new EventSourcedServices();
  *
  * This callback takes the current entity state, and returns a set of handlers to handle commands and events for it.
  *
- * @callback module:akkaserverless.EventSourced~behaviorCallback
+ * @callback module:akkaserverless.EventSourcedEntity~behaviorCallback
  * @param {module:akkaserverless.Serializable} state The entity state.
- * @returns {module:akkaserverless.EventSourced~behavior} The new entity state.
+ * @returns {module:akkaserverless.EventSourcedEntity~behavior} The new entity state.
  */
 
 /**
@@ -59,7 +59,7 @@ const eventSourcedServices = new EventSourcedServices();
  *
  * This is invoked if the entity is started with no snapshot.
  *
- * @callback module:akkaserverless.EventSourced~initialCallback
+ * @callback module:akkaserverless.EventSourcedEntity~initialCallback
  * @param {string} entityId The entity id.
  * @returns {module:akkaserverless.Serializable} The entity state.
  */
@@ -67,7 +67,7 @@ const eventSourcedServices = new EventSourcedServices();
 /**
  * Options for an event sourced entity.
  *
- * @typedef module:akkaserverless.EventSourced~options
+ * @typedef module:akkaserverless.EventSourcedEntity~options
  * @property {number} [snapshotEvery=100] A snapshot will be persisted every time this many events are emitted.
  *                                        It is strongly recommended to not disable snapshotting unless it is known that
  *                                        event sourced entities will never have more than 100 events (in which case
@@ -96,7 +96,7 @@ class EventSourcedEntity {
    *                            onto the entityId when storing the events for this entity. Be aware that the
    *                            chosen name must be stable through the entity lifecycle.  Never change it after deploying
    *                            a service that stored data of this type
-   * @param {module:akkaserverless.EventSourced~options=} options The options for this event sourced entity
+   * @param {module:akkaserverless.EventSourcedEntity~options=} options The options for this event sourced entity
    */
   constructor(desc, serviceName, entityType,  options) {
 
@@ -128,7 +128,7 @@ class EventSourcedEntity {
   }
 
   componentType() {
-    return eventSourcedServices.componentType();
+    return eventSourcedEntityServices.componentType();
   }
 
   /**
@@ -145,15 +145,15 @@ class EventSourcedEntity {
   /**
    * The initial state callback.
    *
-   * @member module:akkaserverless.EventSourced#initial
-   * @type module:akkaserverless.EventSourced~initialCallback
+   * @member module:akkaserverless.EventSourcedEntity#initial
+   * @type module:akkaserverless.EventSourcedEntity~initialCallback
    */
 
   /**
    * Set the initial state callback.
    *
-   * @param {module:akkaserverless.EventSourced~initialCallback} callback The initial state callback.
-   * @return {module:akkaserverless.EventSourced} This entity.
+   * @param {module:akkaserverless.EventSourcedEntity~initialCallback} callback The initial state callback.
+   * @return {module:akkaserverless.EventSourcedEntity} This entity.
    */
   setInitial(callback) {
     this.initial = callback;
@@ -163,15 +163,15 @@ class EventSourcedEntity {
   /**
    * The behavior callback.
    *
-   * @member module:akkaserverless.EventSourced#behavior
-   * @type module:akkaserverless.EventSourced~behaviorCallback
+   * @member module:akkaserverless.EventSourcedEntity#behavior
+   * @type module:akkaserverless.EventSourcedEntity~behaviorCallback
    */
 
   /**
    * Set the behavior callback.
    *
-   * @param {module:akkaserverless.EventSourced~behaviorCallback} callback The behavior callback.
-   * @return {module:akkaserverless.EventSourced} This entity.
+   * @param {module:akkaserverless.EventSourcedEntity~behaviorCallback} callback The behavior callback.
+   * @return {module:akkaserverless.EventSourcedEntity} This entity.
    */
   setBehavior(callback) {
     this.behavior = callback;
@@ -179,8 +179,8 @@ class EventSourcedEntity {
   }
 
   register(allEntities) {
-    eventSourcedServices.addService(this, allEntities);
-    return eventSourcedServices;
+    eventSourcedEntityServices.addService(this, allEntities);
+    return eventSourcedEntityServices;
   }
 
   start(options) {

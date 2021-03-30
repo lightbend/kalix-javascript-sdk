@@ -15,9 +15,9 @@
  */
 
 // tag::entity-class[]
-const EventSourced = require("@lightbend/akkaserverless-javascript-sdk").EventSourced;
+const EventSourcedEntity = require("@lightbend/akkaserverless-javascript-sdk").EventSourcedEntity;
 
-const entity = new EventSourced(
+const entity = new EventSourcedEntity(
     ["shoppingcart.proto", "domain.proto"],
     "example.shoppingcart.ShoppingCartService",
     "shopping-cart",

@@ -1,5 +1,5 @@
 const akkaserverless = require("@lightbend/akkaserverless-javascript-sdk");
-const entity = new akkaserverless.EventSourced("shoppingcart.proto", "example.ShoppingCartService", "shopping-cart");
+const entity = new akkaserverless.EventSourcedEntity("shoppingcart.proto", "example.ShoppingCartService", "shopping-cart");
 entity.setInitial(() => {});
 entity.setBehavior(() => {
     return {
