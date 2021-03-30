@@ -67,7 +67,7 @@ module.exports = class CommandHelper {
           this.invokeHandler(() => handler(deserCommand, ctx), ctx, grpcMethod, reply => { return {reply}; }, "Command");
 
         } else {
-          const msg = "No handler registered for command '" + command.name + "', we have: " + Object.keys(this.entity.commandHandlers);
+          const msg = "No handler registered for command '" + command.name + "'";
           ctx.commandDebug(msg);
           this.call.write({
             failure: {
