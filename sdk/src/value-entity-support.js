@@ -53,7 +53,7 @@ class ValueEntityHandler {
    * @param {ValueEntitySupport} support
    * @param call
    * @param entityId
-   * @param state initial state
+   * @param initialState
    * @private
    */
   constructor(support, call, entityId, initialState) {

@@ -59,3 +59,35 @@ service UsersByEmail {
         };
     }
 }
+
+// Somewhat superficial usecase for views just to show off event transformation
+message UserEmailCountState {
+  string user_id = 1 [(akkaserverless.field).entity_key = true];
+  int32 email_count = 2;
+}
+
+message NumberOfEmailsPerUserRequest {
+}
+
+service UserEmailCount {
+  rpc UpdateUser(User) returns (UserEmailCountState) {
+    option (akkaserverless.method).eventing = {
+      in: {
+        value_changes: "users"
+      }
+    };
+    option (akkaserverless.method).view.update = {
+      table: "user_email_count"
+      transform_updates: true
+    };
+  }
+
+  rpc GetNumberOfEmailsPerUser(NumberOfEmailsPerUserRequest) returns (stream UserEmailCountState) {
+    option (akkaserverless.method).view.query = {
+      query: "select * from user_email_count"
+    };
+    option (google.api.http) = {
+      get: "/user-email-count"
+    };
+  }
+}

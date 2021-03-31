@@ -7,5 +7,6 @@ const AkkaServerless = require("@lightbend/akkaserverless-javascript-sdk").AkkaS
 const server = new AkkaServerless();
 server.addComponent(require("./users"));
 server.addComponent(require("./users-by-email"));
+server.addComponent(require("./user-email-count"));
 
 server.start();

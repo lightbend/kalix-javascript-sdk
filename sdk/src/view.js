@@ -5,10 +5,10 @@
 const protobufHelper = require("./protobuf-helper");
 const grpc = require("grpc");
 const protoLoader = require("@grpc/proto-loader");
-const ViewSupport = require("./view-support");
+const ViewServices = require("./view-support");
 const AkkaServerless = require("./akkaserverless");
 
-const viewServices = new ViewSupport();
+const viewServices = new ViewServices();
 
 /**
  * Options for a view.
@@ -16,6 +16,26 @@ const viewServices = new ViewSupport();
  * @typedef module:akkaserverless.View~options
  * @property {string} [viewId=serviceName] The id for the view, used for persisting the view.
  * @property {array<string>} [includeDirs=["."]] The directories to include when looking up imported protobuf files.
+ */
+
+/**
+ * View handlers
+ *
+ * @typedef module:akkaserverless.View~handlers
+ *
+ * The names of the properties must match the names of all the view methods specified in the gRPC
+ * descriptor.
+ * @property {Object<String, module:akkaserverless.View~handler>}
+ */
+
+/**
+ * A handler for transforming an incoming event and the previous view state into a new state
+ *
+ * @callback module:akkaserverless.View~handler
+ * @param {Object} event The event, this will be of the type of the gRPC event handler input type.
+ * @param {undefined|module:akkaserverless.Serializable} state The previous view state or 'undefined' if no previous state was stored.
+ * @param {module:akkaserverless.View.ViewHandlerContext} context The view handler context.
+ * @returns {undefined|module:akkaserverless.Serializable} The state to store in the view or undefined to not update/store state for the event
  */
 
 /**
@@ -73,6 +93,18 @@ class View {
    */
   lookupType(messageType) {
     return this.root.lookupType(messageType);
+  }
+
+  /**
+   * Set the update handlers of the view. Only used for updates where event transformation is enabled through
+   * "transform_updates: true" in the grpc descriptor.
+   *
+   * @param {module:akkaserverless.View~handlers} handlers The handler callbacks.
+   * @return {module:akkaserverless.View} This view.
+   */
+  setUpdateHandlers(handlers) {
+    this.updateHandlers = handlers;
+    return this;
   }
 
   register(allEntities) {
