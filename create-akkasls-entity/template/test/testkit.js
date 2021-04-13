@@ -54,7 +54,8 @@ export class MockEventSourcedEntity {
    */
   handleEvent(event) {
     const behaviors = this.entity.behavior(this.state);
-    const handler = behaviors.eventHandlers[event.type];
+    const handler =
+      behaviors.eventHandlers[event.type || event.constructor.name];
 
     this.state = handler(event, this.state);
     this.events.push(event);
