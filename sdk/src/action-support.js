@@ -183,7 +183,13 @@ class ActionHandler {
   setupUnaryOutContext() {
     const effects = [];
 
+    // FIXME: remove for version 0.8 (https://github.com/lightbend/akkaserverless-framework/issues/410)
     this.ctx.thenForward = (method, message, metadata) => {
+      console.warn("WARNING: Action context 'thenForward' is deprecated. Please use 'forward' instead.");
+      this.ctx.forward(method, message, metadata);
+    }
+
+    this.ctx.forward = (method, message, metadata) => {
       this.ensureNotCancelled();
       this.streamDebug("Forwarding to %s", method);
       const forward = this.support.effectSerializer.serializeEffect(method, message, metadata);
@@ -272,7 +278,13 @@ class ActionHandler {
       }
     };
 
+    // FIXME: remove for version 0.8 (https://github.com/lightbend/akkaserverless-framework/issues/410)
     this.ctx.thenForward = (method, message, metadata) => {
+      console.warn("WARNING: Action context 'thenForward' is deprecated. Please use 'forward' instead.");
+      this.ctx.forward(method, message, metadata);
+    }
+
+    this.ctx.forward = (method, message, metadata) => {
       this.ensureNotCancelled();
       this.streamDebug("Forwarding to %s", method);
       const forward = this.support.effectSerializer.serializeEffect(method, message, metadata);

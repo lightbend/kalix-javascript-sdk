@@ -165,7 +165,7 @@ function process(step, context) {
   if (step.reply)
     context.write(Response.create({ id: id, message: step.reply.message }));
   else if (step.forward)
-    context.thenForward(localPersistenceSubscriber.service.methods.Effect, { id: id, message: step.forward.message });
+    context.forward(localPersistenceSubscriber.service.methods.Effect, { id: id, message: step.forward.message });
 }
 
 module.exports.eventSourcedEntityOne = eventSourcedEntityOne;

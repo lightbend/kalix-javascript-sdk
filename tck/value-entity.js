@@ -43,7 +43,7 @@ function process(request, state, context) {
       state = {};
     } else if (action.forward) {
       forwarding = true;
-      context.thenForward(two.service.methods.Call, { id: action.forward.id });
+      context.forward(two.service.methods.Call, { id: action.forward.id });
     } else if (action.effect) {
       context.effect(two.service.methods.Call, { id: action.effect.id }, action.effect.synchronous);
     } else if (action.fail) {

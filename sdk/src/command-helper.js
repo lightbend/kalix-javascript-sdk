@@ -224,15 +224,31 @@ module.exports = class CommandHelper {
         accessor.effects.push(this.effectSerializer.serializeSideEffect(method, message, synchronous, metadata))
       },
 
+      // FIXME: remove for version 0.8 (https://github.com/lightbend/akkaserverless-framework/issues/410)
       /**
-       * Forward this command to another entity service call.
+       * DEPRECATED. Forward this command to another service component call.
+       *
+       * @deprecated Since version 0.7. Will be deleted in version 0.8. Use 'forward' instead.
        *
        * @function module:akkaserverless.CommandContext#thenForward
-       * @param method The entity service method to invoke.
-       * @param {object} message The message to send to that service.
+       * @param method The service component method to invoke.
+       * @param {object} message The message to send to that service component.
        * @param {module:akkaserverless.Metadata} metadata Metadata to send with the forward.
        */
       thenForward: (method, message, metadata) => {
+        console.warn("WARNING: Command context 'thenForward' is deprecated. Please use 'forward' instead.");
+        accessor.context.forward(method, message, metadata);
+      },
+
+      /**
+       * Forward this command to another service component call.
+       *
+       * @function module:akkaserverless.CommandContext#forward
+       * @param method The service component method to invoke.
+       * @param {object} message The message to send to that service component.
+       * @param {module:akkaserverless.Metadata} metadata Metadata to send with the forward.
+       */
+      forward: (method, message, metadata) => {
         accessor.ensureActive();
         accessor.forward = this.effectSerializer.serializeEffect(method, message, metadata);
       },

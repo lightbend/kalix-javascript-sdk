@@ -49,7 +49,7 @@ function process(request, state, context) {
       // FIXME: events are not emitted immediately, so we also update the function local state directly for responses
       state = persisted(event, state);
     } else if (action.forward) {
-      context.thenForward(two.service.methods.Call, { id: action.forward.id });
+      context.forward(two.service.methods.Call, { id: action.forward.id });
     } else if (action.effect) {
       context.effect(two.service.methods.Call, { id: action.effect.id }, action.effect.synchronous);
     } else if (action.fail) {
