@@ -14,14 +14,21 @@ const dockerBuild = (dockerTag) =>
     ".",
   ]);
 
+const getProtoFiles = (directory) =>
+  fs.readdirSync(directory).flatMap((file) => {
+    const absolutePath = path.resolve(directory, file);
+    if (file.endsWith(".proto")) {
+      return [absolutePath];
+    } else if (fs.lstatSync(absolutePath).isDirectory()) {
+      return getProtoFiles(absolutePath);
+    } else {
+      return [];
+    }
+  });
+
 const scriptHandlers = {
   build({ protoSourceDir, akkaslsScriptDir, sourceDir, testSourceDir }) {
-    // Workaround for https://github.com/protocolbuffers/protobuf/issues/3957
-    // Once the underlying library is updated to protobuf 3.10 or later, we can simply use the *.proto wildcard
-    const protoFiles = fs
-      .readdirSync(protoSourceDir)
-      .filter((file) => file.endsWith(".proto"))
-      .map((file) => path.resolve(protoSourceDir, file));
+    const protoFiles = getProtoFiles(protoSourceDir);
 
     runOrFail(
       "Compiling protobuf descriptor",
