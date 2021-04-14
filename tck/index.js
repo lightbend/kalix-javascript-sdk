@@ -37,4 +37,6 @@ server.addComponent(localPersistenceEventing.eventSourcedEntityTwo);
 server.addComponent(localPersistenceEventing.valueEntityOne);
 server.addComponent(localPersistenceEventing.valueEntityTwo);
 server.addComponent(localPersistenceEventing.localPersistenceSubscriber);
+const view = require("./view.js");
+server.addComponent(view.tckModel);
 server.start();

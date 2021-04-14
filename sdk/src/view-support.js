@@ -47,11 +47,14 @@ module.exports = class ViewServices {
 
   handle(call) {
     const failAndEndCall = function(description) {
+      // FIXME no failure reporting in protocol and this does not reach the proxy as a failure
+      /*
       call.write({
         failure: {
           description: description
         }
       })
+      */
       call.end()
     }
 
