@@ -102,11 +102,9 @@ module.exports = class ViewServices {
                   }
                 });
               } else {
-                // FIXME support signalling not doing any update at all rather than write original state back
-                console.log("no state back from user function")
                 call.write({
                   upsert: {
-                    row: receiveEvent.bySubjectLookupResult
+                    row: null
                   }
                 });
               }

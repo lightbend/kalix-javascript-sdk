@@ -28,6 +28,8 @@ function processUpdateUnary(userEvent, previousViewState, ctx) {
         }
     } else if (userEvent.fail) {
         throw Error("requested failure")
+    } else if (userEvent.ignore) {
+        return null; // or whatever falsy
     } else {
         throw Error("Unexpected event type: " + JSON.stringify(userEvent))
     }
