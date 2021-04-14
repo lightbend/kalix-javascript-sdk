@@ -69,14 +69,14 @@ npm run build && npm run start
 With both the proxy and your application running, any defined endpoints should be available at `http://localhost:9000`. In addition to the defined gRPC interface, each method has a corresponding HTTP endpoint. Unless configured otherwise (see [Transcoding HTTP](https://docs.lbcs.dev/js-services/proto.html#_transcoding_http)), this endpoint accepts POST requests at the path `/[package].[entity name]/[method]`. For example, using `curl`:
 
 ```
-> curl -XPOST -H "Content-Type: application/json" localhost:9000/${package}.MyServiceEntity/GetValue -d '{"entityId": "foo"}'
+> curl -XPOST -H "Content-Type: application/json" localhost:9000/com.example.MyServiceEntity/GetValue -d '{"entityId": "foo"}'
 The command handler for `GetValue` is not implemented, yet
 ```
 
 For example, given [`grpcurl`](https://github.com/fullstorydev/grpcurl):
 
 ```
-> grpcurl -plaintext -d '{"entityId": "foo"}' localhost:9000 ${package}.MyServiceEntity/GetValue
+> grpcurl -plaintext -d '{"entityId": "foo"}' localhost:9000 com.example.MyServiceEntity/GetValue
 ERROR:
   Code: Unknown
   Message: The command handler for `GetValue` is not implemented, yet
