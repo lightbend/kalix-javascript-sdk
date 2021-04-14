@@ -22,12 +22,12 @@ class CrdtServices {
     ];
   }
 
-  addService(entity, allEntities) {
+  addService(entity, allComponents) {
     this.services[entity.serviceName] = new CrdtSupport(entity.root, entity.service, {
       commandHandlers: entity.commandHandlers,
       onStateSet: entity.onStateSet,
       defaultValue: entity.defaultValue
-    }, allEntities);
+    }, allComponents);
   }
 
   componentType() {
@@ -100,14 +100,14 @@ class CrdtServices {
 
 class CrdtSupport {
 
-  constructor(root, service, handlers, allEntities) {
+  constructor(root, service, handlers, allComponents) {
     this.root = root;
     this.service = service;
     this.anySupport = new AnySupport(this.root);
     this.commandHandlers = handlers.commandHandlers;
     this.onStateSet = handlers.onStateSet;
     this.defaultValue = handlers.defaultValue;
-    this.allEntities = allEntities;
+    this.allComponents = allComponents;
   }
 
   create(call, init) {
@@ -158,7 +158,7 @@ class CrdtHandler {
     this.streamId = Math.random().toString(16).substr(2, 7);
 
     this.commandHelper = new CommandHelper(this.entityId, support.service, this.streamId, call,
-      this.commandHandlerFactory.bind(this), support.allEntities, debug);
+      this.commandHandlerFactory.bind(this), support.allComponents, debug);
 
     this.streamDebug("Started new stream");
 

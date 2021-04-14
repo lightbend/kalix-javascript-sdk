@@ -107,8 +107,8 @@ class View {
     return this;
   }
 
-  register(allEntities) {
-    viewServices.addService(this, allEntities);
+  register(allComponents) {
+    viewServices.addService(this, allComponents);
     return viewServices;
   }
 

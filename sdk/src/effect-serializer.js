@@ -7,8 +7,8 @@ const util = require("util");
 
 module.exports = class EffectSerializer {
 
-  constructor(allEntities) {
-    this.allEntities = allEntities;
+  constructor(allComponents) {
+    this.allComponents = allComponents;
   }
 
   serializeEffect(method, message, metadata) {
@@ -26,7 +26,7 @@ module.exports = class EffectSerializer {
       commandName = method.name;
     }
 
-    const service = this.allEntities[serviceName];
+    const service = this.allComponents[serviceName];
 
     if (service !== undefined) {
       const command = service.methods[commandName];

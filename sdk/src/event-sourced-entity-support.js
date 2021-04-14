@@ -14,14 +14,14 @@ const CommandHelper = require("./command-helper");
 
 class EventSourcedEntitySupport {
 
-  constructor(root, service, behavior, initial, options, allEntities) {
+  constructor(root, service, behavior, initial, options, allComponents) {
     this.root = root;
     this.service = service;
     this.behavior = behavior;
     this.initial = initial;
     this.options = options;
     this.anySupport = new AnySupport(this.root);
-    this.allEntities = allEntities;
+    this.allComponents = allComponents;
     if (!this.options.snapshotEvery)
       console.warn("Snapshotting disabled for entity " + this.option.entityType + ", this is not recommended.")
   }
@@ -75,7 +75,7 @@ class EventSourcedEntityHandler {
     this.streamId = Math.random().toString(16).substr(2, 7);
 
     this.commandHelper = new CommandHelper(this.entityId, support.service, this.streamId, call,
-      this.commandHandlerFactory.bind(this), support.allEntities, debug);
+      this.commandHandlerFactory.bind(this), support.allComponents, debug);
 
     this.streamDebug("Started new stream")
   }
@@ -238,9 +238,9 @@ module.exports = class EventSourcedEntityServices {
     this.services = {};
   }
 
-  addService(entity, allEntities) {
+  addService(entity, allComponents) {
     this.services[entity.serviceName] = new EventSourcedEntitySupport(entity.root, entity.service, entity.behavior,
-      entity.initial, entity.options, allEntities);
+      entity.initial, entity.options, allComponents);
   }
 
   componentType() {

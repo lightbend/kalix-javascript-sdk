@@ -14,12 +14,12 @@ const Metadata = require("./metadata");
 const CloudEvents = require("./cloudevents");
 
 class ActionSupport {
-  constructor(root, service, commandHandlers, allEntities) {
+  constructor(root, service, commandHandlers, allComponents) {
     this.root = root;
     this.service = service;
     this.commandHandlers = commandHandlers;
     this.anySupport = new AnySupport(this.root);
-    this.effectSerializer = new EffectSerializer(allEntities);
+    this.effectSerializer = new EffectSerializer(allComponents);
   }
 }
 

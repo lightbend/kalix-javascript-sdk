@@ -178,8 +178,8 @@ class EventSourcedEntity {
     return this;
   }
 
-  register(allEntities) {
-    eventSourcedEntityServices.addService(this, allEntities);
+  register(allComponents) {
+    eventSourcedEntityServices.addService(this, allComponents);
     return eventSourcedEntityServices;
   }
 

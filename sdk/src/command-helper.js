@@ -14,12 +14,12 @@ const CloudEvents = require("./cloudevents");
  */
 module.exports = class CommandHelper {
 
-  constructor(entityId, service, streamId, call, handlerFactory, allEntities, debug) {
+  constructor(entityId, service, streamId, call, handlerFactory, allComponents, debug) {
     this.entityId = entityId;
     this.service = service;
     this.streamId = streamId;
     this.call = call;
-    this.effectSerializer = new EffectSerializer(allEntities);
+    this.effectSerializer = new EffectSerializer(allComponents);
     this.debug = debug;
     this.handlerFactory = handlerFactory;
   }

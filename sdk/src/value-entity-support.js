@@ -14,14 +14,14 @@ const CommandHelper = require("./command-helper");
 
 class ValueEntitySupport {
 
-  constructor(root, service, commandHandlers, initial, options, allEntities) {
+  constructor(root, service, commandHandlers, initial, options, allComponents) {
     this.root = root;
     this.service = service;
     this.commandHandlers = commandHandlers;
     this.initial = initial;
     this.options = options;
     this.anySupport = new AnySupport(this.root);
-    this.allEntities = allEntities;
+    this.allComponents = allComponents;
   }
 
   serialize(obj, requireJsonType) {
@@ -71,7 +71,7 @@ class ValueEntityHandler {
     this.streamId = Math.random().toString(16).substr(2, 7);
 
     this.commandHelper = new CommandHelper(this.entityId, support.service, this.streamId, call,
-      this.commandHandlerFactory.bind(this), support.allEntities, debug);
+      this.commandHandlerFactory.bind(this), support.allComponents, debug);
 
     this.streamDebug("Started new stream")
   }
@@ -197,9 +197,9 @@ module.exports = class ValueEntityServices {
     this.services = {};
   }
 
-  addService(entity, allEntities) {
+  addService(entity, allComponents) {
     this.services[entity.serviceName] = new ValueEntitySupport(entity.root, entity.service, entity.commandHandlers,
-      entity.initial, entity.options, allEntities);
+      entity.initial, entity.options, allComponents);
   }
 
   componentType() {

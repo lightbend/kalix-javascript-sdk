@@ -137,8 +137,8 @@ class Crdt {
     return this.root.lookupType(messageType);
   }
 
-  register(allEntities) {
-    crdtServices.addService(this, allEntities);
+  register(allComponents) {
+    crdtServices.addService(this, allComponents);
     return crdtServices;
   }
 
