@@ -31,16 +31,16 @@ class CrdtServices {
   }
 
   componentType() {
-    return "akkaserverless.component.crdt.Crdt";
+    return "akkaserverless.component.replicatedentity.ReplicatedEntities";
   }
 
   register(server) {
-    const packageDefinition = protoLoader.loadSync(path.join("akkaserverless", "component", "crdt", "crdt.proto"), {
+    const packageDefinition = protoLoader.loadSync(path.join("akkaserverless", "component", "replicatedentity", "replicated_entity.proto"), {
       includeDirs: this.includeDirs
     });
     const grpcDescriptor = grpc.loadPackageDefinition(packageDefinition);
 
-    const entityService = grpcDescriptor.akkaserverless.component.crdt.Crdt.service;
+    const entityService = grpcDescriptor.akkaserverless.component.replicatedentity.ReplicatedEntities.service;
 
     server.addService(entityService, {
       handle: this.handle.bind(this)
@@ -52,7 +52,7 @@ class CrdtServices {
 
     call.on("data", crdtStreamIn => {
       // cycle through the CrdtStreamIn type, this will ensure default values are initialised
-      crdtStreamIn = protoHelper.moduleRoot.akkaserverless.component.crdt.CrdtStreamIn.fromObject(crdtStreamIn);
+      crdtStreamIn = protoHelper.moduleRoot.akkaserverless.component.replicatedentity.ReplicatedEntityStreamIn.fromObject(crdtStreamIn);
 
       if (crdtStreamIn.init) {
         if (service != null) {

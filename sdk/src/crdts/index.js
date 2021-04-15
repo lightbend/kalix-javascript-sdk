@@ -46,12 +46,12 @@ const Empty = protobufHelper.moduleRoot.google.protobuf.Empty;
  * is less than the existing clock value.
  */
 const Clocks = (function () {
-  const CrdtClock = protobufHelper.moduleRoot.akkaserverless.component.crdt.CrdtClock;
+  const CrdtClock = protobufHelper.moduleRoot.akkaserverless.component.replicatedentity.ReplicatedEntityClock;
   const values = {
-    DEFAULT: CrdtClock.CRDT_CLOCK_DEFAULT_UNSPECIFIED,
-    REVERSE: CrdtClock.CRDT_CLOCK_REVERSE,
-    CUSTOM: CrdtClock.CRDT_CLOCK_CUSTOM,
-    CUSTOM_AUTO_INCREMENT: CrdtClock.CRDT_CLOCK_CUSTOM_AUTO_INCREMENT
+    DEFAULT: CrdtClock.REPLICATED_ENTITY_CLOCK_DEFAULT_UNSPECIFIED,
+    REVERSE: CrdtClock.REPLICATED_ENTITY_CLOCK_REVERSE,
+    CUSTOM: CrdtClock.REPLICATED_ENTITY_CLOCK_CUSTOM,
+    CUSTOM_AUTO_INCREMENT: CrdtClock.REPLICATED_ENTITY_CLOCK_CUSTOM_AUTO_INCREMENT
   };
   return Object.freeze(values);
 })();
@@ -74,11 +74,11 @@ const Clocks = (function () {
  * @property ALL Updates will be written immediately to all replicas.
  */
 const WriteConsistencies = (function () {
-  const CrdtWriteConsistency = protobufHelper.moduleRoot.akkaserverless.component.crdt.CrdtWriteConsistency;
+  const CrdtWriteConsistency = protobufHelper.moduleRoot.akkaserverless.component.replicatedentity.ReplicatedEntityWriteConsistency;
   const values = {
-    LOCAL: CrdtWriteConsistency.CRDT_WRITE_CONSISTENCY_LOCAL_UNSPECIFIED,
-    MAJORITY: CrdtWriteConsistency.CRDT_WRITE_CONSISTENCY_MAJORITY,
-    ALL: CrdtWriteConsistency.CRDT_WRITE_CONSISTENCY_ALL
+    LOCAL: CrdtWriteConsistency.REPLICATED_ENTITY_WRITE_CONSISTENCY_LOCAL_UNSPECIFIED,
+    MAJORITY: CrdtWriteConsistency.REPLICATED_ENTITY_WRITE_CONSISTENCY_MAJORITY,
+    ALL: CrdtWriteConsistency.REPLICATED_ENTITY_WRITE_CONSISTENCY_ALL
   }
   return Object.freeze(values);
 })();

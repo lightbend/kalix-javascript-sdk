@@ -5,12 +5,12 @@
 const crdt = require("@lightbend/akkaserverless-javascript-sdk").crdt;
 
 const tckModel = new crdt.Crdt(
-  "proto/crdt_entity.proto",
-  "akkaserverless.tck.model.crdtentity.CrdtTckModel",
-  "crdt-tck-one",
+  "proto/replicated_entity.proto",
+  "akkaserverless.tck.model.replicatedentity.ReplicatedEntityTckModel",
+  "replicated-entity-tck-one",
 );
 
-const Response = tckModel.lookupType("akkaserverless.tck.model.crdtentity.Response");
+const Response = tckModel.lookupType("akkaserverless.tck.model.replicatedentity.Response");
 
 tckModel.commandHandlers = {
   Process: process,
@@ -166,9 +166,9 @@ function sortedEntries(entries, convert) {
 }
 
 const two = new crdt.Crdt(
-  "proto/crdt_entity.proto",
-  "akkaserverless.tck.model.crdtentity.CrdtTwo",
-  "crdt-tck-two"
+  "proto/replicated_entity.proto",
+  "akkaserverless.tck.model.replicatedentity.ReplicatedEntityTwo",
+  "replicated-entity-tck-two"
 );
 
 two.commandHandlers = {
@@ -185,9 +185,9 @@ function call(request, context) {
 }
 
 const configured = new crdt.Crdt(
-  "proto/crdt_entity.proto",
-  "akkaserverless.tck.model.crdtentity.CrdtConfigured",
-  "crdt-configured",
+  "proto/replicated_entity.proto",
+  "akkaserverless.tck.model.replicatedentity.ReplicatedEntityConfigured",
+  "replicated-entity-configured",
   {
     entityPassivationStrategy: {
       timeout: 100 // milliseconds

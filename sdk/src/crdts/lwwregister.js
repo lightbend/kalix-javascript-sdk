@@ -6,7 +6,7 @@ const util = require("util");
 const protobufHelper = require("../protobuf-helper");
 const AnySupport = require("../protobuf-any");
 
-const Clocks = protobufHelper.moduleRoot.akkaserverless.component.crdt.CrdtClock;
+const Clocks = protobufHelper.moduleRoot.akkaserverless.component.replicatedentity.ReplicatedEntityClock;
 
 /**
  * @classdesc A Last-Write-Wins Register CRDT.
