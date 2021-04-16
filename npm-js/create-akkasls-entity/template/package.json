@@ -21,7 +21,8 @@
     "dockerImage": "my-docker-repo/{{name}}",
     "sourceDir": "./src",
     "testSourceDir": "./test",
-    "protoSourceDir": "./proto"
+    "protoSourceDir": "./proto",
+    "generatedSourceDir": "./lib/generated"
   },
   "scripts": {
     "start": "node src/index.js",
