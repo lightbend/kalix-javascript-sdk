@@ -27,13 +27,38 @@ const getProtoFiles = (directory) =>
   });
 
 const scriptHandlers = {
-  build({ protoSourceDir, akkaslsScriptDir, sourceDir, testSourceDir }) {
+  build({
+    protoSourceDir,
+    akkaslsScriptDir,
+    sourceDir,
+    testSourceDir,
+    generatedSourceDir,
+  }) {
     const protoFiles = getProtoFiles(protoSourceDir);
+    fs.mkdirSync(generatedSourceDir, {
+      recursive: true,
+    });
+    const protoJs = path.resolve(generatedSourceDir, "proto.js");
+    const protoTs = path.resolve(generatedSourceDir, "proto.d.ts");
 
     runOrFail(
       "Compiling protobuf descriptor",
       path.resolve("node_modules", ".bin", "compile-descriptor"),
       protoFiles,
+      { shell: true }
+    );
+
+    runOrFail(
+      "Building static Javascript definitions from proto",
+      path.resolve("node_modules", ".bin", "pbjs"),
+      [...protoFiles, "-t", "static", "-o", protoJs],
+      { shell: true }
+    );
+
+    runOrFail(
+      "Building Typescript definitions from static JS",
+      path.resolve("node_modules", ".bin", "pbts"),
+      [protoJs, "-o", protoTs],
       { shell: true }
     );
 
@@ -47,6 +72,8 @@ const scriptHandlers = {
         sourceDir,
         "--test-source-dir",
         testSourceDir,
+        "--generated-source-dir",
+        generatedSourceDir,
       ]
     );
   },
