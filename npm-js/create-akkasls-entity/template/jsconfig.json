@@ -6,5 +6,5 @@
     },
     "strict": true,
     "exclude": ["lib/generated/proto.js"],
-    "include": ["src/**/*", "lib/**/*"]
+    "include": ["src/**/*", "lib/**/*", "test/testkit.js"]
 }
