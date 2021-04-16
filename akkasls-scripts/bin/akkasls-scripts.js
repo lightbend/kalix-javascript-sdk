@@ -4,6 +4,14 @@ const path = require("path");
 const fs = require("fs");
 const spawn = require("cross-spawn");
 
+const requiredConfig = [
+  "dockerImage",
+  "sourceDir",
+  "testSourceDir",
+  "protoSourceDir",
+  "generatedSourceDir",
+];
+
 const akkaslsScriptDir = path.resolve(__dirname, "..");
 
 const dockerBuild = (dockerTag) =>
@@ -101,23 +109,42 @@ const scriptHandlers = {
 
 const script = process.argv[2];
 const handler = scriptHandlers[script];
-
-if (handler) {
-  // Extract project config from its package.json
-  const packageConfig = require(path.resolve("package.json"));
-
-  const config = {
-    ...packageConfig.config,
-    serviceName: packageConfig.name,
-    dockerTag: `${packageConfig.config.dockerImage}:${packageConfig.version}`,
-    akkaslsScriptDir,
-  };
-
-  handler(config);
-} else {
-  console.log(`Unknown script "${script}".`);
-  console.log("Perhaps you need to update akkasls-scripts?");
+if (!handler) {
+  console.error(`Unknown script "${script}".`);
+  console.error("Perhaps you need to update akkasls-scripts?");
+  process.exit(1);
 }
+
+// Extract project config from its package.json
+const packageConfig = require(path.resolve("package.json"));
+
+if (packageConfig.config == undefined) {
+  console.error('The "config" section of your package.json is not defined.');
+  console.error("You must specify the following properties:");
+  console.error(requiredConfig.join(", "));
+  process.exit(1);
+}
+
+const missingConfig = requiredConfig.filter(
+  (key) => (packageConfig.config && packageConfig.config[key]) == undefined
+);
+
+if (missingConfig.length > 0) {
+  console.error(
+    `The "config" section of your package.json is missing the following required properties:`
+  );
+  console.error(missingConfig.join(", "));
+  process.exit(1);
+}
+
+const config = {
+  ...packageConfig.config,
+  serviceName: packageConfig.name,
+  dockerTag: `${packageConfig.config.dockerImage}:${packageConfig.version}`,
+  akkaslsScriptDir,
+};
+
+handler(config);
 
 /**
  * A wrapped version of cross-spawn's synchronous spawn with informative logging and default options for stdio.
