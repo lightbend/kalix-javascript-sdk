@@ -1,0 +1,51 @@
+{
+  "name": "js-replicated-entity-example",
+  "version": "0.1.0",
+  "description": "Sample Akka Serverless Replicated Entity application",
+  "keywords": [
+    "akka",
+    "serverless",
+    "akka serverless"
+  ],
+  "homepage": "https://github.com/lightbend/akkaserverless-javascript-sdk",
+  "bugs": {
+    "url": "https://github.com/lightbend/akkaserverless-javascript-sdk/issues"
+  },
+  "license": "Apache-2.0",
+  "author": {
+    "name": "Akka Serverless Team",
+    "email": "info@lightbend.com",
+    "url": "https://lightbend.com"
+  },
+  "engineStrict": true,
+  "engines": {
+    "node": "~12"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/lightbend/akkaserverless-javascript-sdk",
+    "directory": "samples/replicated-entity-example"
+  },
+  "//": "https://npm.community/t/npm-install-does-not-install-transitive-dependencies-of-local-dependency/2264",
+  "dependencies": {
+    "@grpc/proto-loader": "^0.1.0",
+    "google-protobuf": "^3.11.4",
+    "grpc": "^1.24.2",
+    "@lightbend/akkaserverless-javascript-sdk": "file:../../javascript-sdk"
+  },
+  "devDependencies": {
+    "chai": "4.2.0",
+    "mocha": "^6.1.4"
+  },
+  "scripts": {
+    "test": "mocha",
+    "prestart": "compile-descriptor ../../protocols/example/replicatedentity/replicated-entity-example.proto",
+    "pretest": "compile-descriptor ../../protocols/example/replicatedentity/replicated-entity-example.proto",
+    "postinstall": "compile-descriptor ../../protocols/example/replicatedentity/replicated-entity-example.proto",
+    "start": "node index.js",
+    "start-no-prestart": "node index.js",
+    "dockerbuild": "docker build -f Dockerfile -t akkaserverless/js-replicated-entity-example:latest ../..",
+    "dockerpush": "docker push akkaserverless/js-replicated-entity-example:latest",
+    "dockerbuildpush": "npm run dockerbuild && npm run dockerpush"
+  }
+}

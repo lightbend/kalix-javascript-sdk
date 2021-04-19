@@ -1,4 +1,4 @@
-= Implementing value entities
+= Implementing Value Entities
 
 This page documents how to implement Akka Serverless value entities in JavaScript.
 // FIXME concept link if we should have one
@@ -109,5 +109,5 @@ Alternatively, you can add it to the `AkkaServerless` server explicitly:
 
 [source,js]
 ----
-include::example$test/valueentity/shoppingcart.js[tag=add-entity]
+include::example$test/valueentity/shoppingcart.js[tag=add-component]
 ----

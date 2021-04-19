@@ -1,0 +1,7 @@
+= Implementing Replicated Entities
+
+* Explain how to use the Replicated Entity API
+* Explain default values
+* Explain onStateSet
+* Explain how to handle streamed calls
+* Explain the APIs for each different Replicated Data type

@@ -18,8 +18,8 @@ const should = require("chai").should();
 const protobuf = require("protobufjs");
 const path = require("path");
 const Long = require("long");
-const support = require("../src/crdt-support");
-const crdts = require("../src/crdts");
+const support = require("../src/replicated-entity-support");
+const replicatedData = require("../src/replicated-data");
 const AnySupport = require("../src/protobuf-any");
 const protobufHelper = require("../src/protobuf-helper");
 
@@ -32,9 +32,9 @@ const In = root.lookupType("com.example.In");
 const Out = root.lookupType("com.example.Out");
 const ExampleService = root.lookupService("com.example.ExampleService");
 
-const CrdtStreamIn = protobufHelper.moduleRoot.akkaserverless.component.replicatedentity.ReplicatedEntityStreamIn;
-const CrdtStreamOut = protobufHelper.moduleRoot.akkaserverless.component.replicatedentity.ReplicatedEntityStreamOut;
-const CrdtInit = protobufHelper.moduleRoot.akkaserverless.component.replicatedentity.ReplicatedEntityInit;
+const ReplicatedEntityStreamIn = protobufHelper.moduleRoot.akkaserverless.component.replicatedentity.ReplicatedEntityStreamIn;
+const ReplicatedEntityStreamOut = protobufHelper.moduleRoot.akkaserverless.component.replicatedentity.ReplicatedEntityStreamOut;
+const ReplicatedEntityInit = protobufHelper.moduleRoot.akkaserverless.component.replicatedentity.ReplicatedEntityInit;
 
 const outMsg = {
   field: "ok"
@@ -50,7 +50,7 @@ class MockCall {
   }
 
   write(msg) {
-    this.written.push(CrdtStreamOut.decode(CrdtStreamOut.encode(msg).finish()));
+    this.written.push(ReplicatedEntityStreamOut.decode(ReplicatedEntityStreamOut.encode(msg).finish()));
   }
 
   end() {
@@ -78,7 +78,7 @@ function createHandler(commandHandler, delta = undefined, otherHandlers = {}) {
   return create(otherHandlers, delta);
 }
 function create(handlers = {}, delta = undefined) {
-  const entity = new support.CrdtSupport(root, ExampleService, {
+  const entity = new support.ReplicatedEntitySupport(root, ExampleService, {
     ...{
       commandHandlers: {
         DoSomething: () => outMsg,
@@ -91,7 +91,7 @@ function create(handlers = {}, delta = undefined) {
     },
     ...handlers
   }, {});
-  return entity.create(call, CrdtInit.decode(CrdtInit.encode({
+  return entity.create(call, ReplicatedEntityInit.decode(ReplicatedEntityInit.encode({
     entityId: "foo",
     delta: delta
   }).finish()));
@@ -99,8 +99,8 @@ function create(handlers = {}, delta = undefined) {
 
 // This ensures we have the field names right, rather than just matching them between
 // the tests and the code.
-function roundTripCrdtStreamIn(msg) {
-  return CrdtStreamIn.decode(CrdtStreamIn.encode(msg).finish());
+function roundTripReplicatedEntityStreamIn(msg) {
+  return ReplicatedEntityStreamIn.decode(ReplicatedEntityStreamIn.encode(msg).finish());
 }
 
 function handleCommand(handler, command, name = "DoSomething", id = 10, streamed = false) {
@@ -143,7 +143,7 @@ function expectFailure() {
 }
 
 function send(handler, streamIn) {
-  handler.onData(roundTripCrdtStreamIn(streamIn));
+  handler.onData(roundTripReplicatedEntityStreamIn(streamIn));
 }
 
 function assertHasNoAction(reply) {
@@ -153,7 +153,7 @@ function assertHasNoAction(reply) {
   }
 }
 
-describe("CrdtHandler", () => {
+describe("ReplicatedEntityHandler", () => {
 
   it("should start with no state", () => {
     const handler = createHandler((cmd, ctx) => {
@@ -181,7 +181,7 @@ describe("CrdtHandler", () => {
 
   it("should create state when a new state is set", () => {
     const handler = createHandler((cmd, ctx) => {
-      ctx.state = new crdts.GCounter();
+      ctx.state = new replicatedData.GCounter();
       return outMsg;
     });
 

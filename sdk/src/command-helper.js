@@ -157,10 +157,10 @@ module.exports = class CommandHelper {
     this.debug("%s [%s] (%s) - " + msg, ...[this.streamId, this.entityId].concat(args));
   }
 
-  // This creates the context. Note that the context has two levels, first is the internal implementation context,
-  // this has everything the CRDT and EventSourcedEntity support needs to do its stuff, it's where effects and metadata
-  // are recorded, etc. The second is the user facing context, which is a property on the internal context called
-  // "context".
+  // This creates the context. Note that the context has two levels, first is the internal implementation context, this
+  // has everything the ReplicatedEntity and EventSourcedEntity support needs to do its stuff, it's where effects and
+  // metadata are recorded, etc. The second is the user facing context, which is a property on the internal context
+  // called "context".
   createContext(commandId, metadata) {
     const accessor = {};
 

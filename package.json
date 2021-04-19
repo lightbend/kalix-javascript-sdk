@@ -5,9 +5,7 @@
   "keywords": [
     "akka",
     "serverless",
-    "akka serverless",
-    "event-sourcing",
-    "crdt"
+    "akka serverless"
   ],
   "homepage": "https://github.com/lightbend/akkaserverless-javascript-sdk",
   "bugs": {
