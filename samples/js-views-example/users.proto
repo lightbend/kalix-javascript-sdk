@@ -42,7 +42,7 @@ service UsersByEmail {
     rpc UpdateUser(User) returns (User) {
         option (akkaserverless.method).eventing = {
           in: {
-            value_changes: "users"
+            value_entity: "users"
           }
         };
         option (akkaserverless.method).view.update = {
@@ -73,7 +73,7 @@ service UserEmailCount {
   rpc UpdateUser(User) returns (UserEmailCountState) {
     option (akkaserverless.method).eventing = {
       in: {
-        value_changes: "users"
+        value_entity: "users"
       }
     };
     option (akkaserverless.method).view.update = {
