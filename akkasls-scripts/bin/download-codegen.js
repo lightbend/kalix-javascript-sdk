@@ -11,9 +11,9 @@ const packageConfig = require("../package.json");
 // Codegen tool version is defined in package.json
 const { akkaslsCodegenVersion } = packageConfig.config;
 const releases = {
-  linux_x86_64: `akkasls-codegen-js-x86_64-unknown-linux-gnu-${akkaslsCodegenVersion}`,
-  darwin_x86_64: `akkasls-codegen-js-x86_64-apple-darwin-${akkaslsCodegenVersion}`,
-  win32_x86_64: `akkasls-codegen-js-x86_64-pc-windows-gnu-${akkaslsCodegenVersion}.exe`,
+  linux_x86_64: "akkasls-codegen-js-x86_64-unknown-linux-gnu",
+  darwin_x86_64: "akkasls-codegen-js-x86_64-apple-darwin",
+  win32_x86_64: "akkasls-codegen-js-x86_64-pc-windows-gnu",
 };
 
 const arch = process.arch === "x64" ? "x86_64" : "x86_32";
@@ -24,9 +24,11 @@ const filename = "akkasls-codegen-js.bin";
 
 const binDir = path.resolve(__dirname, "../bin");
 const targetFile = path.resolve(binDir, filename);
-
 if (releases[release]) {
-  const url = `https://dl.bintray.com/lightbend/generic/${releases[release]}`;
+  const url =
+    process.platform == "win32"
+      ? `https://dl.cloudsmith.io/public/lightbend/akkaserverless/raw/names/${releases[release]}/versions/${akkaslsCodegenVersion}/${releases[release]}.exe`
+      : `https://dl.cloudsmith.io/public/lightbend/akkaserverless/raw/versions/${akkaslsCodegenVersion}/${releases[release]}`;
   console.info(`Fetching akkasls-codegen-js from ${url}`);
   fetch(url).then((response) => {
     if (!response.ok) {
