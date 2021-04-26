@@ -51,6 +51,7 @@ class ActionHandler {
    * @property {boolean} cancelled Whether the client is still connected.
    * @property {module:akkaserverless.Metadata} metadata The metadata associated with the command.
    * @property {module:akkaserverless.CloudEvent} cloudevent The CloudEvents metadata associated with the command.
+   * @property {String} eventSubject The origin subject of the CloudEvent. For example, the entity key when the event was emitted from an entity.
    */
   createContext(metadata) {
     /**
@@ -76,6 +77,9 @@ class ActionHandler {
       },
       get cloudevent() {
         return cloudevent;
+      },
+      get eventSubject() {
+        return cloudevent.subject();
       }
     };
 

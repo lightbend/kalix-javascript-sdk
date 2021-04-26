@@ -78,13 +78,13 @@ module.exports = class ViewServices {
                    * Context for a view update event.
                    *
                    * @interface module:akkaserverless.View.ViewHandlerContext
-                   * @property {String} sourceEntityId The entity id that the update came from
+                   * @property {String} eventSubject The origin subject of the CloudEvent. For example, the entity key when the event was emitted from an entity.
                    * @property {module:akkaserverless.Metadata} metadata for the event
                    * @property {String} commandName
                    */
                   context = {
                     "viewId": service.viewId,
-                    "sourceEntityId": receiveEvent.metadata["ce-subject"],
+                    "eventSubject": receiveEvent.metadata["ce-subject"],
                     "metadata": metadata,
                     "commandName": receiveEvent.commandName
                  }
