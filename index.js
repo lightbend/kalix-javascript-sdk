@@ -17,3 +17,4 @@ module.exports.Action = require("./src/action");
 module.exports.Metadata = require("./src/metadata");
 module.exports.IntegrationTestkit = require("./src/integration-testkit");
 module.exports.View = require("./src/view");
+module.exports.replies = require("./src/reply");

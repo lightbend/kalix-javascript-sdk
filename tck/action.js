@@ -3,6 +3,7 @@
  */
 
 const Action = require("@lightbend/akkaserverless-javascript-sdk").Action
+const replies = require("@lightbend/akkaserverless-javascript-sdk").replies;
 
 const tckModel = new Action(
   "proto/action.proto",
@@ -19,63 +20,81 @@ tckModel.commandHandlers = {
 };
 
 function processUnary(request, context) {
-  respondWith(singleResponse(createResponses(request)), context);
+  return createReplyForGroup(request.groups[0]);
 }
 
+/**
+ * @param {module:akkaserverless.Action.StreamedInContext} context
+ */
 function processStreamedIn(context) {
-  const responses = [];
-  context.on("data", request => responses.push(...createResponses(request)));
-  context.on("end", () => respondWith(singleResponse(responses), context));
+  let reply = replies.noReply()
+  context.on("data", request => {
+    const replyForThisRequest = createReplyForGroup(request.groups[0])
+    if (!replyForThisRequest.isEmpty()) {
+      // keep the last type of reply but pass along the effects
+      if (reply.effects) replyForThisRequest.addEffects(reply.effects)
+      reply = replyForThisRequest
+    } else if (replyForThisRequest.effects) {
+      // pass along the effects from empty reply, but keep the previous non-empty reply
+      reply.addEffects(replyForThisRequest.effects)
+    }
+  })
+  // last callback return value is sent back for stream in, if it is a Reply
+  context.on("end", () => reply)
 }
 
+/**
+ * @param {object} request
+ * @param {module:akkaserverless.Action.StreamedOutContext} context
+ */
 function processStreamedOut(request, context) {
-  createResponses(request).forEach(response => respondWith(response, context));
-  context.end();
+  createReplies(request).forEach(reply => {
+    // imperative send of Reply (since we could have 1:* for the incoming, and they can happen async?)
+    context.reply(reply)
+  });
+  context.end()
 }
 
+/**
+ * @param {module:akkaserverless.Action.StreamedCommandContext} context
+ */
 function processStreamed(context) {
-  context.on("data", request => createResponses(request).forEach(response => respondWith(response, context)));
-  context.on("end", () => context.end());
+  context.on("data", request => {
+    createReplies(request).forEach(reply =>
+      // imperative send of Reply (since we could have 1:* for the incoming, and they can happen async?)
+      context.reply(reply)
+    )
+  })
+  context.on("end", () => context.end())
 }
 
-function respondWith(response, context) {
-  // need to accumulate effects, before replying, forwarding, or failing
-  response.effects.forEach(effect => context.effect(two.service.methods.Call, { id: effect.id }, effect.synchronous));
-  if (response.fail) context.fail(response.fail);
-  else if (response.forward) context.forward(two.service.methods.Call, { id: response.forward });
-  else if (response.reply) context.write(Response.create({ message: response.reply }));
-  else context.write(); // empty message
+// Reply API
+/**
+ * @param request
+ * @return {module:akkaserverless.replies.Reply[]} one reply for each request group
+ */
+function createReplies(request) {
+  return request.groups.map(createReplyForGroup)
 }
 
-function createResponses(request) {
-  return request.groups.map(createResponse);
-}
-
-function createResponse(group) {
-  const response = {
-    effects: []
-  };
+/**
+ * Process the steps in one group into a single reply
+ * @return {module:akkaserverless.replies.Reply}
+ */
+function createReplyForGroup(group) {
+  let reply = replies.noReply()
   group.steps.forEach(step => {
     if (step.reply) {
-      response.reply = step.reply.message;
+      reply = replies.message(Response.create({ message: step.reply.message }))
     } else if (step.forward) {
-      response.forward = step.forward.id;
+      reply = replies.forward(two.service.methods.Call, { id: step.forward.id })
     } else if (step.effect) {
-      response.effects.push({ id: step.effect.id, synchronous: step.effect.synchronous });
+      reply.addEffect(two.service.methods.Call, { id: step.effect.id }, step.effect.synchronous)
     } else if (step.fail) {
-      response.fail = step.fail.message;
+      reply = replies.failure(step.fail.message)
     }
-  });
-  return response;
-}
-
-function singleResponse(responses) {
-  return responses.reduce((response, next) => ({
-    reply: next.reply || response.reply,
-    forward: next.forward || response.forward,
-    fail: next.fail || response.fail,
-    effects: response.effects.concat(next.effects)
-  }), { effects: [] });
+  })
+  return reply
 }
 
 const two = new Action(

@@ -7,6 +7,7 @@ const EffectSerializer = require("./effect-serializer");
 const ContextFailure = require("./context-failure");
 const Metadata = require("./metadata");
 const CloudEvents = require("./cloudevents");
+const Reply = require("./reply").Reply;
 
 /**
  * Creates the base for context objects.
@@ -124,9 +125,59 @@ module.exports = class CommandHelper {
           }
         }
       });
+    } else if (userReply instanceof Reply) {
+      if (userReply.failure) {
+        // handle failure with a separate write to make sure we don't write back events etc
+        ctx.commandDebug("%s failed with message '%s'", desc, userReply.failure);
+        this.call.write({
+          reply: {
+            commandId: ctx.commandId,
+            clientAction: {
+              failure: {
+                commandId: ctx.commandId,
+                description: userReply.failure
+              }
+            }
+          }
+        })
+      } else {
+        // effects need to go first to end up in reply
+        // note that we amend the ctx.reply to get events etc passed along from the entities
+        ctx.commandDebug("%s Reply '%s'", desc, userReply);
+        ctx.reply.commandId = ctx.commandId;
+        if (userReply.effects) {
+          ctx.reply.sideEffects = userReply.effects.map(effect =>
+            this.effectSerializer.serializeSideEffect(effect.method, effect.message, effect.synchronous, effect.metadata)
+          )
+        }
+        if (userReply.message) {
+          ctx.reply.clientAction = {
+            reply: {
+              payload: AnySupport.serialize(grpcMethod.resolvedResponseType.create(userReply.message), false, false),
+              metadata: userReply.metadata || null
+            }
+          }
+        } else if (userReply.forward) {
+          ctx.reply.clientAction = {
+            forward: this.effectSerializer.serializeEffect(
+              userReply.forward.method, userReply.forward.message, userReply.forward.metadata)
+          }
+        } else {
+          // empty reply, but
+          ctx.reply.clientAction = {
+            reply: {
+              payload: null,
+              metadata: userReply.metadata || null
+            }
+          }
+        }
+        const reply = createReply(ctx.reply);
+        if (reply !== undefined) {
+          this.call.write(reply);
+        }
+      }
     } else {
       ctx.reply.commandId = ctx.commandId;
-      ctx.reply.sideEffects = ctx.effects;
       ctx.reply.sideEffects = ctx.effects;
 
       if (ctx.forward !== null) {
@@ -211,7 +262,7 @@ module.exports = class CommandHelper {
       replyMetadata: accessor.replyMetadata,
 
       /**
-       * Emit an effect after processing this command.
+       * DEPRECATED. Emit an effect after processing this command.
        *
        * @function module:akkaserverless.EffectContext#effect
        * @param method The entity service method to invoke.
@@ -219,8 +270,10 @@ module.exports = class CommandHelper {
        * @param {boolean} synchronous Whether the effect should be execute synchronously or not.
        * @param {module:akkaserverless.Metadata} metadata Metadata to send with the effect.
        */
-      effect: (method, message, synchronous = false, metadata) => {
+      effect: (method, message, synchronous = false, metadata, internalCall) => {
         accessor.ensureActive();
+        if (!internalCall)
+          console.warn("WARNING: Command context 'effect' is deprecated. Please use 'Reply.addEffect' instead.");
         accessor.effects.push(this.effectSerializer.serializeSideEffect(method, message, synchronous, metadata))
       },
 
@@ -236,25 +289,28 @@ module.exports = class CommandHelper {
        * @param {module:akkaserverless.Metadata} metadata Metadata to send with the forward.
        */
       thenForward: (method, message, metadata) => {
-        console.warn("WARNING: Command context 'thenForward' is deprecated. Please use 'forward' instead.");
         accessor.context.forward(method, message, metadata);
       },
 
       /**
-       * Forward this command to another service component call.
+       * DEPRECATED. Forward this command to another service component call, use 'ReplyFactory.forward' instead.
        *
        * @function module:akkaserverless.CommandContext#forward
        * @param method The service component method to invoke.
        * @param {object} message The message to send to that service component.
        * @param {module:akkaserverless.Metadata} metadata Metadata to send with the forward.
        */
-      forward: (method, message, metadata) => {
+      forward: (method, message, metadata, internalCall) => {
         accessor.ensureActive();
+        if (!internalCall)
+          console.warn("WARNING: Command context 'forward' is deprecated. Please use 'ReplyFactory.forward' instead.");
         accessor.forward = this.effectSerializer.serializeEffect(method, message, metadata);
       },
 
       /**
        * Fail handling this command.
+       *
+       * An alternative to using this is to return a failed Reply created with 'ReplyFactory.failed'.
        *
        * @function module:akkaserverless.EffectContext#fail
        * @param msg The failure message.

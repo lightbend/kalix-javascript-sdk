@@ -28,8 +28,8 @@ const valueEntityServices = new ValueEntityServices();
  * @param {Object} command The command message, this will be of the type of the gRPC service call input type.
  * @param {module:akkaserverless.Serializable} state The entity state.
  * @param {module:akkaserverless.ValueEntity.ValueEntityCommandContext} context The command context.
- * @returns {undefined|Object} The message to reply with, it must match the gRPC service call output type for this
- * command.
+ * @returns {undefined|Object|module:akkaserverless.replies.Reply} The message to reply with, it must match the gRPC service call output type for this
+ * command, or if a Reply is returned, contain an object that matches the output type.
  */
 
 /**

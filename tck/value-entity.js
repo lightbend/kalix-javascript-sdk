@@ -15,6 +15,7 @@
  */
 
 const ValueEntity = require("@lightbend/akkaserverless-javascript-sdk").ValueEntity;
+const replies = require("@lightbend/akkaserverless-javascript-sdk").replies;
 
 const tckModel = new ValueEntity(
   ["proto/value_entity.proto"],
@@ -32,26 +33,29 @@ tckModel.commandHandlers = {
 };
 
 function process(request, state, context) {
-  var forwarding = false;
+  let reply = undefined,
+    effects = []
   request.actions.forEach(action => {
     if (action.update) {
-      // FIXME: state update is not emitted immediately, so we also update the function local state directly for responses
-      state = Persisted.create({ value: action.update.value });
-      context.updateState(state);
+      // state update is not emitted immediately, so we also update the function local state directly for responses
+      state = Persisted.create({ value: action.update.value })
+      context.updateState(state)
     } else if (action.delete) {
-      context.deleteState();
-      state = {};
+      context.deleteState()
+      state = {}
     } else if (action.forward) {
-      forwarding = true;
-      context.forward(two.service.methods.Call, { id: action.forward.id });
+      reply = replies.forward(two.service.methods.Call, { id: action.forward.id })
     } else if (action.effect) {
-      context.effect(two.service.methods.Call, { id: action.effect.id }, action.effect.synchronous);
+      effects.push(action.effect)
     } else if (action.fail) {
-      context.fail(action.fail.message);
+      reply = replies.failure(action.fail.message)
     }
   });
-  if (forwarding) return {}
-  else return Response.create(state.value ? { message: state.value } : {});
+  if (!reply) reply = replies.message(Response.create(state.value ? { message: state.value } : {}))
+  effects.forEach(effect =>
+    reply.addEffect(two.service.methods.Call, { id: effect.id }, effect.synchronous)
+  )
+  return reply
 }
 
 const two = new ValueEntity(

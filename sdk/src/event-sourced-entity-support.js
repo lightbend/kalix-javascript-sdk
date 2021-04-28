@@ -11,6 +11,7 @@ const debug = require("debug")("akkaserverless-event-sourced-entity");
 debug.log = console.log.bind(console);
 const AnySupport = require("./protobuf-any");
 const CommandHelper = require("./command-helper");
+const Reply = require("./reply").Reply;
 
 class EventSourcedEntitySupport {
 
@@ -120,26 +121,30 @@ class EventSourcedEntityHandler {
 
           const userReply = behavior.commandHandlers[commandName](command, state, ctx.context);
 
-          // Invoke event handlers first
-          let snapshot = false;
-          ctx.events.forEach(event => {
-            this.handleEvent(event);
-            this.sequence++;
-            if (this.sequence % this.entity.options.snapshotEvery === 0) {
-              snapshot = true;
+          // when not using Reply a failure is signaled by throwing, but
+          // when using Reply a failed reply also means applying events & creating snapshots should be skipped
+          if (!(userReply instanceof Reply) || !userReply.failure) {
+
+            // Invoke event handlers first
+            let snapshot = false;
+            ctx.events.forEach(event => {
+              this.handleEvent(event);
+              this.sequence++;
+              if (this.sequence % this.entity.options.snapshotEvery === 0) {
+                snapshot = true;
+              }
+            });
+
+            if (ctx.events.length > 0) {
+              ctx.commandDebug("Emitting %d events", ctx.events.length);
             }
-          });
+            ctx.reply.events = ctx.events;
 
-          if (ctx.events.length > 0) {
-            ctx.commandDebug("Emitting %d events", ctx.events.length);
+            if (snapshot) {
+              ctx.commandDebug("Snapshotting current state with type '%s'", this.anyState.type_url);
+              ctx.reply.snapshot = this.anyState
+            }
           }
-          ctx.reply.events = ctx.events;
-
-          if (snapshot) {
-            ctx.commandDebug("Snapshotting current state with type '%s'", this.anyState.type_url);
-            ctx.reply.snapshot = this.anyState
-          }
-
           return userReply;
         };
       } else {

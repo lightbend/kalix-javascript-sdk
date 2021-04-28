@@ -12,6 +12,7 @@ const AnySupport = require("./protobuf-any");
 const EffectSerializer = require("./effect-serializer");
 const Metadata = require("./metadata");
 const CloudEvents = require("./cloudevents");
+const Reply = require("./reply").Reply;
 
 class ActionSupport {
   constructor(root, service, commandHandlers, allComponents) {
@@ -100,15 +101,41 @@ class ActionHandler {
     return ctx;
   }
 
+  /**
+   * @return {*} The return value from the callback, if there was one
+   */
   invokeCallback(eventType, ...args) {
     if (this.callbacks.hasOwnProperty(eventType)) {
-      this.invokeUserCallback(eventType + " event", this.callbacks[eventType], ...args)
+      return this.invokeUserCallback(eventType + " event", this.callbacks[eventType], ...args)
     }
   }
 
   ensureNotCancelled() {
     if (this.call.cancelled) {
       throw new Error("Already replied to unary command, cannot interact further.")
+    }
+  }
+
+  /**
+   * @param {module:akkaserverless.Action.ActionCommandContext} ctx
+   * @param {module:akkaserverless.replies.Reply} reply
+   */
+  passReplyThroughContext(ctx, reply) {
+    // effects need to go first to end up in reply
+    if (reply.effects) {
+      reply.effects.forEach(function(effect) {
+        ctx.effect(effect.method, effect.message, effect.synchronous, effect.metadata, true)
+      })
+    }
+    if (reply.failure) {
+      ctx.fail(reply.failure)
+    } else if (reply.message) {
+      ctx.write(reply.message, reply.metadata)
+    } else if (reply.forward) {
+      ctx.forward(reply.forward.method, reply.forward.message, reply.forward.metadata, true)
+    } else {
+      // no reply
+      ctx.write(null)
     }
   }
 
@@ -122,7 +149,9 @@ class ActionHandler {
     this.setupUnaryOutContext();
     const deserializedCommand = this.support.anySupport.deserialize(this.call.request.payload);
     const userReturn = this.invokeUserCallback("command", this.commandHandler, deserializedCommand, this.ctx);
-    if (userReturn !== undefined) {
+    if (userReturn instanceof Reply) {
+      this.passReplyThroughContext(this.ctx, userReturn)
+    } else if (userReturn) {
       if (this.call.cancelled) {
         this.streamDebug("Unary command handler for command %s.%s both sent a reply through the context and returned a value, ignoring return value.", this.support.service.name, this.grpcMethod.name)
       } else {
@@ -190,12 +219,23 @@ class ActionHandler {
     // FIXME: remove for version 0.8 (https://github.com/lightbend/akkaserverless-framework/issues/410)
     this.ctx.thenForward = (method, message, metadata) => {
       console.warn("WARNING: Action context 'thenForward' is deprecated. Please use 'forward' instead.");
-      this.ctx.forward(method, message, metadata);
+      this.ctx.forward(method, message, metadata, true);
     }
 
-    this.ctx.forward = (method, message, metadata) => {
+
+    /**
+     * DEPRECATED. Forward this command to another service component call, use 'ReplyFactory.forward' instead.
+     *
+     * @function module:akkaserverless.Action.UnaryCommandContext#forward
+     * @param method The service component method to invoke.
+     * @param {object} message The message to send to that service component.
+     * @param {module:akkaserverless.Metadata} metadata Metadata to send with the forward.
+     */
+    this.ctx.forward = (method, message, metadata, internalCall) => {
       this.ensureNotCancelled();
       this.streamDebug("Forwarding to %s", method);
+      if (!internalCall)
+        console.warn("WARNING: Command context 'forward' is deprecated. Please use 'ReplyFactory.forward' instead.");
       const forward = this.support.effectSerializer.serializeEffect(method, message, metadata);
       this.grpcCallback(null, {
         forward: forward,
@@ -206,6 +246,7 @@ class ActionHandler {
     this.ctx.write = (message, metadata) => {
       this.ensureNotCancelled();
       this.streamDebug("Sending reply");
+      this.ctx.alreadyReplied = true
       if (message != null) {
         const messageProto = this.grpcMethod.resolvedResponseType.create(message);
         const replyPayload = AnySupport.serialize(messageProto, false, false);
@@ -267,6 +308,16 @@ class ActionHandler {
       this.streamDebug("Received stream cancelled");
       this.invokeCallback("cancelled", this.ctx);
     });
+
+    /**
+     * Send a reply
+     *
+     * @function module:akkaserverless.Action.StreamedOutContext#reply
+     * @param {module:akkaserverless.replies.Reply} reply The reply to send
+     */
+    this.ctx.reply = (reply) => {
+      this.passReplyThroughContext(this.ctx, reply)
+    }
 
     /**
      * Terminate the outgoing stream of messages.
@@ -367,6 +418,8 @@ class ActionHandler {
      *
      * Emitted when the input stream terminates.
      *
+     * If a callback is registered and that returns a Reply, then that is returned as a response from the action
+     *
      * @event module:akkaserverless.Action.StreamedInContext#end
      */
     this.supportedEvents.push("end");
@@ -379,7 +432,13 @@ class ActionHandler {
 
     this.call.on("end", () => {
       this.streamDebug("Received stream end");
-      this.invokeCallback("end", this.ctx);
+      const userReturn = this.invokeCallback("end", this.ctx);
+      if (userReturn instanceof Reply) {
+        this.passReplyThroughContext(this.ctx, userReturn)
+      } else {
+        this.streamDebug("Ignored unknown (non Reply) return value from end callback")
+      }
+
     });
 
     /**

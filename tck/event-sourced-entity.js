@@ -15,6 +15,7 @@
  */
 
 const EventSourcedEntity = require("@lightbend/akkaserverless-javascript-sdk").EventSourcedEntity;
+const replies = require("@lightbend/akkaserverless-javascript-sdk").replies;
 
 const tckModel = new EventSourcedEntity(
   ["proto/event_sourced_entity.proto"],
@@ -42,21 +43,29 @@ tckModel.behavior = state => {
 };
 
 function process(request, state, context) {
+  let reply = null,
+    effects = []
   request.actions.forEach(action => {
     if (action.emit) {
-      const event = Persisted.create({ value: action.emit.value });
+      const event = Persisted.create({ value: action.emit.value })
       context.emit(event);
-      // FIXME: events are not emitted immediately, so we also update the function local state directly for responses
+      // events are not emitted immediately, so we also update the function local state directly for responses
       state = persisted(event, state);
     } else if (action.forward) {
-      context.forward(two.service.methods.Call, { id: action.forward.id });
+      reply = replies.forward(two.service.methods.Call, { id: action.forward.id })
     } else if (action.effect) {
-      context.effect(two.service.methods.Call, { id: action.effect.id }, action.effect.synchronous);
+      effects.push(action.effect)
     } else if (action.fail) {
-      context.fail(action.fail.message);
+      reply = replies.failure(action.fail.message)
     }
-  });
-  return Response.create(state.value ? { message: state.value } : {});
+  })
+  // if we don't already have a reply from the actions
+  if (!reply) reply = replies.message(Response.create((state.value ? { message: state.value } : {})))
+  if (effects)
+    effects.forEach(effect =>
+      reply.addEffect(two.service.methods.Call, { id: effect.id }, effect.synchronous)
+    )
+  return reply
 }
 
 function persisted(event, state) {
@@ -75,7 +84,7 @@ two.initial = entityId => Persisted.create({ value: "" });
 two.behavior = state => {
   return {
     commandHandlers: {
-      Call: request => Response.create()
+      Call: request => replies.message(Response.create())
     }
   };
 };
@@ -96,7 +105,7 @@ configured.initial = entityId => Persisted.create({ value: "" });
 configured.behavior = state => {
   return {
     commandHandlers: {
-      Call: request => Response.create()
+      Call: request => replies.message(Response.create())
     }
   };
 };
