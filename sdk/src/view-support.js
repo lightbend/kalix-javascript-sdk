@@ -95,7 +95,7 @@ module.exports = class ViewServices {
                 call.write({
                   upsert: {
                     row: {
-                      table: receiveEvent.initialTable,
+                      index: receiveEvent.initialTable,
                       key: receiveEvent.key,
                       value: resultPayload
                     }
