@@ -143,7 +143,6 @@ module.exports = class CommandHelper {
       } else {
         // effects need to go first to end up in reply
         // note that we amend the ctx.reply to get events etc passed along from the entities
-        ctx.commandDebug("%s Reply '%s'", desc, userReply);
         ctx.reply.commandId = ctx.commandId;
         if (userReply.effects) {
           ctx.reply.sideEffects = userReply.effects.map(effect =>
@@ -157,16 +156,20 @@ module.exports = class CommandHelper {
               metadata: userReply.metadata || null
             }
           }
+          ctx.commandDebug("%s reply with type [%s] with %d side effects.", desc, ctx.reply.clientAction.reply.payload.type_url, ctx.effects.length);
         } else if (userReply.forward) {
           ctx.reply.clientAction = {
             forward: this.effectSerializer.serializeEffect(
               userReply.forward.method, userReply.forward.message, userReply.forward.metadata)
           }
+          ctx.commandDebug("%s forward to %s with %d side effects.", desc, userReply.forward.method, ctx.effects.length);
         } else {
-          // empty reply, but
+          // empty reply
+          // FIXME should this be Protobuf Empty rather than no reply at all?
+          ctx.commandDebug("%s no reply with %d side effects.", desc, ctx.effects.length);
           ctx.reply.clientAction = {
             reply: {
-              payload: null,
+              payload: AnySupport.serialize(grpcMethod.resolvedResponseType.create({}), false, false),
               metadata: userReply.metadata || null
             }
           }

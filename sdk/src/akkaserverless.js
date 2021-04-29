@@ -215,7 +215,7 @@ class AkkaServerless {
     if (call.request.detail) {
       msg += "\n\n" + call.request.detail;
     }
-    for (const location of call.request.sourceLocations) {
+    for (const location of (call.request.sourceLocations || [])) {
       msg += "\n\n" + this.formatSource(location)
     }
     console.error(msg);
