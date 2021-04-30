@@ -34,7 +34,7 @@ const viewServices = new ViewServices();
  * @callback module:akkaserverless.View~handler
  * @param {Object} event The event, this will be of the type of the gRPC event handler input type.
  * @param {undefined|module:akkaserverless.Serializable} state The previous view state or 'undefined' if no previous state was stored.
- * @param {module:akkaserverless.View.ViewHandlerContext} context The view handler context.
+ * @param {module:akkaserverless.View.UpdateHandlerContext} context The view handler context.
  * @returns {undefined|module:akkaserverless.Serializable} The state to store in the view or undefined to not update/store state for the event
  */
 
