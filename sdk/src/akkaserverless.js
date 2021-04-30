@@ -210,11 +210,37 @@ class AkkaServerless {
     });
   }
 
+  docLinkFor(code) {
+    const specificCodes = {
+      // "AS-00112": "js-services/views.html#_changing_the_view", not in place yet
+      "AS-00402": "js-services/topic-eventing.html",
+      "AS-00406": "js-services/topic-eventing.html"
+    }
+    let path = specificCodes[code]
+    if (!path) {
+      const codeCategories = {
+        // "AS-001": "js-services/views.html", not in place yet
+        "AS-002": "js-services/value-entity.html",
+        "AS-003": "js-services/eventsourced.html",
+        "AS-004": "js-services/" // no single page for eventing
+      }
+      path = codeCategories[code.substr(0, 6)]
+    }
+
+    if (path)
+      return "https://developer.lightbend.com/docs/akka-serverless/" + path
+    else
+      return ""
+  }
+
   reportError(call, callback) {
     let msg = "Error reported from Akka system: " + call.request.code + " " + call.request.message;
     if (call.request.detail) {
       msg += "\n\n" + call.request.detail;
     }
+    const docLink = this.docLinkFor(call.request.code)
+    if (docLink)
+      msg += " See documentation: " + docLink
     for (const location of (call.request.sourceLocations || [])) {
       msg += "\n\n" + this.formatSource(location)
     }
