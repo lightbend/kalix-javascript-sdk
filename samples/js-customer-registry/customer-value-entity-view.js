@@ -2,6 +2,7 @@
  * Copyright 2021 Lightbend Inc.
  */
 
+// tag::register[]
 const View = require("@lightbend/akkaserverless-javascript-sdk").View;
 
 const view = new View(
@@ -13,3 +14,4 @@ const view = new View(
 );
 
 module.exports = view;
+// end::register[]

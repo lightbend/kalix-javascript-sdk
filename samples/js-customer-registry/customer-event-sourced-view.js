@@ -2,6 +2,7 @@
  * Copyright 2021 Lightbend Inc.
  */
 
+// tag::register[]
 const View = require("@lightbend/akkaserverless-javascript-sdk").View;
 
 const view = new View(
@@ -11,8 +12,10 @@ const view = new View(
     viewId: "customer-event-sourced-view"
   }
 );
+// end::register[]
 
-view.setUpdateHandlers({
+// tag::process-events[]
+view.setUpdateHandlers({ // <1>
   ProcessCustomerCreated: customerCreated,
   ProcessCustomerNameChanged: customerNameChanged
 });
@@ -27,5 +30,9 @@ function customerCreated(event, state, ctx) {
 function customerNameChanged(event, state, ctx) {
   state.name = event.newName
 }
+// end::process-events[]
+
+// tag::register[]
 
 module.exports = view;
+// end::register[]
