@@ -5,7 +5,7 @@
 const EventSourcedEntity = require("@lightbend/akkaserverless-javascript-sdk").EventSourcedEntity;
 
 const entity = new EventSourcedEntity(
-  ["shoppingcart/shoppingcart.proto", "shoppingcart/persistence/domain.proto"],
+  ["shoppingcart/shoppingcart_api.proto", "shoppingcart/shoppingcart_domain.proto"],
   "com.example.shoppingcart.ShoppingCartService",
   "shopping-cart",
   {
@@ -21,7 +21,7 @@ const entity = new EventSourcedEntity(
  *
  * Note this shows loading them dynamically, they could also be compiled and statically loaded.
  */
-const pkg = "com.example.shoppingcart.persistence.";
+const pkg = "com.example.shoppingcart.domain.";
 const ItemAdded = entity.lookupType(pkg + "ItemAdded");
 const ItemRemoved = entity.lookupType(pkg + "ItemRemoved");
 const Cart = entity.lookupType(pkg + "Cart");
@@ -31,10 +31,10 @@ const Cart = entity.lookupType(pkg + "Cart");
  * Set a callback to create the initial state. This is what is created if there is no
  * snapshot to load.
  *
- * We can ignore the userId parameter if we want, it's the id of the entity, which is
+ * We can ignore the cartId parameter if we want, it's the id of the entity, which is
  * automatically associated with all events and state for this entity.
  */
-entity.setInitial(userId => Cart.create({items: []}));
+entity.setInitial(cartId => Cart.create({items: []}));
 
 /*
  * Set a callback to create the behavior given the current state. Since there is no state

@@ -26,13 +26,13 @@ const packageDefinition = protoLoader.loadSync(
 const descriptor = grpc.loadPackageDefinition(packageDefinition);
 
 const root = protobufHelper.loadSync([
-  path.join("shoppingcart","shoppingcart.proto"),
-  path.join("shoppingcart","persistence","domain.proto")
+  path.join("shoppingcart","shoppingcart_api.proto"),
+  path.join("shoppingcart","shoppingcart_domain.proto")
 ], allIncludeDirs);
 
-const ItemAdded = root.lookupType("com.example.shoppingcart.persistence.ItemAdded");
-const ItemRemoved = root.lookupType("com.example.shoppingcart.persistence.ItemRemoved");
-const Cart = root.lookupType("com.example.shoppingcart.persistence.Cart");
+const ItemAdded = root.lookupType("com.example.shoppingcart.domain.ItemAdded");
+const ItemRemoved = root.lookupType("com.example.shoppingcart.domain.ItemRemoved");
+const Cart = root.lookupType("com.example.shoppingcart.domain.Cart");
 
 // Start server
 const shoppingCartEntity = require("../shoppingcart.js");
@@ -161,7 +161,7 @@ function sendEvent(call, sequence, event) {
 
 function getCart(call) {
   return sendCommand(call, "GetCart", root.lookupType("com.example.shoppingcart.GetShoppingCart").create({
-    userId: "123"
+    cartId: "123"
   }));
 }
 
@@ -213,13 +213,13 @@ describe("shopping cart", () => {
   it("should emit events", () => {
     const call = callAndInit();
     return addItem(call, {
-      userId: "123",
+      cartId: "123",
       productId: "abc",
       name: "Some product",
       quantity: 10
     }).then(reply => {
       reply.events.should.have.lengthOf(1);
-      reply.events[0].type_url.should.equal("type.googleapis.com/com.example.shoppingcart.persistence.ItemAdded");
+      reply.events[0].type_url.should.equal("type.googleapis.com/com.example.shoppingcart.domain.ItemAdded");
       reply.decodedEvents[0].item.should.include({productId: "abc", name: "Some product", quantity: 10});
       return getCart(call);
     }).then(reply => {
