@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Lightbend Inc.
+ * Copyright 2021 Lightbend Inc.
  */
 
 const EventSourcedEntity = require("@lightbend/akkaserverless-javascript-sdk").EventSourcedEntity;
