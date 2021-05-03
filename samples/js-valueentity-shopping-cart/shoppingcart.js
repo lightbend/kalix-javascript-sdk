@@ -5,7 +5,7 @@
 const ValueEntity = require("@lightbend/akkaserverless-javascript-sdk").ValueEntity;
 
 const entity = new ValueEntity(
-  ["valueentity/shoppingcart/shoppingcart.proto", "valueentity/shoppingcart/persistence/domain.proto"],
+  ["valueentity/shoppingcart/shoppingcart_api.proto", "valueentity/shoppingcart/shoppingcart_domain.proto"],
   "com.example.valueentity.shoppingcart.ShoppingCartService",
   "shopping-cart",
   {
@@ -20,7 +20,7 @@ const entity = new ValueEntity(
  *
  * Note this shows loading them dynamically, they could also be compiled and statically loaded.
  */
-const pkg = "com.example.shoppingcart.persistence.";
+const pkg = "com.example.valueentity.shoppingcart.domain.";
 const Cart = entity.lookupType(pkg + "Cart");
 
 
@@ -28,10 +28,10 @@ const Cart = entity.lookupType(pkg + "Cart");
  * Set a callback to create the initial state. This is what is created if there is no
  * snapshot to load.
  *
- * We can ignore the userId parameter if we want, it's the id of the entity, which is
+ * We can ignore the cartId parameter if we want, it's the id of the entity, which is
  * automatically associated with all events and state for this entity.
  */
-entity.setInitial(userId => Cart.create({items: []}));
+entity.setInitial(cartId => Cart.create({items: []}));
 
 /*
  * Command handlers. The name of the command corresponds to the name of the rpc call in

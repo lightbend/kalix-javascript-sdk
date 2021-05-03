@@ -40,9 +40,9 @@
   "scripts": {
     "test": "mocha",
     "prepare-javascript-sdk": "cd ../../javascript-sdk && npm install && cd ../samples/js-shopping-cart",
-    "prestart": "compile-descriptor -I../../protocols/example ../../protocols/example/valueentity/shoppingcart/shoppingcart.proto",
-    "pretest": "compile-descriptor -I../../protocols/example ../../protocols/example/valueentity/shoppingcart/shoppingcart.proto",
-    "postinstall": "compile-descriptor -I../../protocols/example ../../protocols/example/valueentity/shoppingcart/shoppingcart.proto",
+    "prestart": "compile-descriptor -I../../protocols/example ../../protocols/example/valueentity/shoppingcart/shoppingcart_api.proto",
+    "pretest": "compile-descriptor -I../../protocols/example ../../protocols/example/valueentity/shoppingcart/shoppingcart_api.proto",
+    "postinstall": "compile-descriptor -I../../protocols/example ../../protocols/example/valueentity/shoppingcart/shoppingcart_api.proto",
     "start": "node index.js",
     "start-no-prestart": "node index.js",
     "dockerbuild": "npm run prepare-javascript-sdk && docker build -f Dockerfile -t ${DOCKER_PUBLISH_TO:-akkaserverless}/js-shopping-cart:latest ../..",

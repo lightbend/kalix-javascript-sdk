@@ -25,11 +25,11 @@ const packageDefinition = protoLoader.loadSync(
 const descriptor = grpc.loadPackageDefinition(packageDefinition);
 
 const root = protobufHelper.loadSync([
-  path.join("shoppingcart","shoppingcart.proto"),
-  path.join("shoppingcart","persistence","domain.proto")
+  path.join("shoppingcart","shoppingcart_api.proto"),
+  path.join("shoppingcart","shoppingcart_domain.proto")
 ], allIncludeDirs);
 
-const Cart = root.lookupType("com.example.valueentity.shoppingcart.persistence.Cart");
+const Cart = root.lookupType("com.example.valueentity.shoppingcart.domain.Cart");
 
 // Start server
 const shoppingCartEntity = require("../shoppingcart.js");
@@ -38,7 +38,7 @@ const server = new AkkaServerless();
 server.addComponent(shoppingCartEntity);
 
 let discoveryClient;
-let eventSourcedClient;
+let valueEntityClient;
 
 let commandId = 0;
 
@@ -62,7 +62,7 @@ function invokeDiscover() {
 }
 
 function callAndInit(snapshot) {
-  const call = eventSourcedClient.handle();
+  const call = valueEntityClient.handle();
   call.write({
     init: {
       serviceName: "com.example.valueentity.shoppingcart.ShoppingCartService",
@@ -157,7 +157,7 @@ function sendEvent(call, sequence, event) {
 
 function getCart(call) {
   return sendCommand(call, "GetCart", root.lookupType("com.example.valueentity.shoppingcart.GetShoppingCart").create({
-    userId: "123"
+    cartId: "123"
   }));
 }
 
@@ -172,7 +172,7 @@ describe("shopping cart", () => {
       bindPort: 0
     });
     discoveryClient = new descriptor.akkaserverless.protocol.Discovery("127.0.0.1:" + port, grpc.credentials.createInsecure());
-    eventSourcedClient = new descriptor.akkaserverless.component.valueentity.ValueEntities("127.0.0.1:" + port, grpc.credentials.createInsecure());
+    valueEntityClient = new descriptor.akkaserverless.component.valueentity.ValueEntities("127.0.0.1:" + port, grpc.credentials.createInsecure());
   });
 
   after("shutdown shopping cart server", () => {
@@ -193,7 +193,7 @@ describe("shopping cart", () => {
   it("should respond to addItem commands", () => {
     const call = callAndInit();
     return addItem(call, {
-      userId: "123",
+      cartId: "123",
       productId: "abc",
       name: "Some product",
       quantity: 10
