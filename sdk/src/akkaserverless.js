@@ -180,34 +180,45 @@ class AkkaServerless {
     return boundPort;
   }
 
+  // detect hybrid proxy version probes when protocol version 0.0 (or undefined)
+  isVersionProbe(info) {
+    return !info.protocolMajorVersion && !info.protocolMinorVersion
+  }
+
   discover(call, callback) {
-    const protoInfo = call.request;
-    debug("Discover call with info %o, sending %s components", protoInfo, this.components.length);
-    const components = this.components.map(component => {
-      const passivationTimeout = component.options.entityPassivationStrategy ? component.options.entityPassivationStrategy.timeout : null;
-      const passivationStrategy = passivationTimeout ? { timeout: { timeout: passivationTimeout } } : {};
-      return {
-        componentType: component.componentType(),
-        serviceName: component.serviceName,
-        entity: {
-          entityType: component.options.entityType,
-          passivationStrategy: passivationStrategy
-        }
-      };
-    });
-    callback(null, {
-      proto: this.proto,
-      components: components,
-      serviceInfo: {
-        serviceName: this.options.serviceName,
-        serviceVersion: this.options.serviceVersion,
-        serviceRuntime: process.title + " " + process.version,
-        supportLibraryName: packageInfo.name,
-        supportLibraryVersion: packageInfo.version,
-        protocolMajorVersion: 0,
-        protocolMinorVersion: 7
-      }
-    });
+    const proxyInfo = call.request;
+    const serviceInfo = {
+      serviceName: this.options.serviceName,
+      serviceVersion: this.options.serviceVersion,
+      serviceRuntime: process.title + " " + process.version,
+      supportLibraryName: packageInfo.name,
+      supportLibraryVersion: packageInfo.version,
+      protocolMajorVersion: 0,
+      protocolMinorVersion: 7
+    }
+    if (this.isVersionProbe(proxyInfo)) {
+      // only (silently) send service info for hybrid proxy version probe
+      callback(null, { serviceInfo: serviceInfo })
+    } else {
+      debug("Discover call with info %o, sending %s components", proxyInfo, this.components.length);
+      const components = this.components.map(component => {
+        const passivationTimeout = component.options.entityPassivationStrategy ? component.options.entityPassivationStrategy.timeout : null;
+        const passivationStrategy = passivationTimeout ? { timeout: { timeout: passivationTimeout } } : {};
+        return {
+          componentType: component.componentType(),
+          serviceName: component.serviceName,
+          entity: {
+            entityType: component.options.entityType,
+            passivationStrategy: passivationStrategy
+          }
+        };
+      });
+      callback(null, {
+        proto: this.proto,
+        components: components,
+        serviceInfo: serviceInfo
+      });
+    }
   }
 
   docLinkFor(code) {
