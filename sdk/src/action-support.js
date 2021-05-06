@@ -139,6 +139,22 @@ class ActionHandler {
     }
   }
 
+  handleSingleReturn(value) {
+    if (value) {
+      if (this.ctx.alreadyReplied) {
+        console.warn(`WARNING: Command handler for ${this.support.service.name}.${this.grpcMethod.name} both sent a reply through the context and returned a value, ignoring return value.`)
+      } else if (value instanceof Reply) {
+        this.passReplyThroughContext(this.ctx, value)
+      } else if (typeof value.then === "function") {
+        value.then(this.handleSingleReturn.bind(this), this.ctx.fail)
+      } else {
+        this.ctx.write(value)
+      }
+    } else if (!this.ctx.alreadyReplied) {
+      this.ctx.write({}) // empty reply, resolved to response type
+    }
+  }
+
   /**
    * Context for a unary action command.
    *
@@ -149,19 +165,7 @@ class ActionHandler {
     this.setupUnaryOutContext();
     const deserializedCommand = this.support.anySupport.deserialize(this.call.request.payload);
     const userReturn = this.invokeUserCallback("command", this.commandHandler, deserializedCommand, this.ctx);
-    if (userReturn instanceof Reply) {
-      this.passReplyThroughContext(this.ctx, userReturn)
-    } else if (userReturn) {
-      if (this.call.cancelled) {
-        this.streamDebug("Unary command handler for command %s.%s both sent a reply through the context and returned a value, ignoring return value.", this.support.service.name, this.grpcMethod.name)
-      } else {
-        if (typeof userReturn.then === "function") {
-          userReturn.then(this.ctx.write, this.ctx.fail)
-        } else {
-          this.ctx.write(userReturn);
-        }
-      }
-    }
+    this.handleSingleReturn(userReturn);
   }
 
   /**
@@ -222,7 +226,6 @@ class ActionHandler {
       this.ctx.forward(method, message, metadata, true);
     }
 
-
     /**
      * DEPRECATED. Forward this command to another service component call, use 'ReplyFactory.forward' instead.
      *
@@ -234,6 +237,7 @@ class ActionHandler {
     this.ctx.forward = (method, message, metadata, internalCall) => {
       this.ensureNotCancelled();
       this.streamDebug("Forwarding to %s", method);
+      this.ctx.alreadyReplied = true;
       if (!internalCall)
         console.warn("WARNING: Command context 'forward' is deprecated. Please use 'ReplyFactory.forward' instead.");
       const forward = this.support.effectSerializer.serializeEffect(method, message, metadata);
@@ -279,6 +283,7 @@ class ActionHandler {
     this.ctx.fail = error => {
       this.ensureNotCancelled();
       this.streamDebug("Failing with %s", error);
+      this.ctx.alreadyReplied = true;
       this.grpcCallback(null, {
         failure: {
           description: error

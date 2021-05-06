@@ -49,11 +49,14 @@
   },
   "devDependencies": {
     "chai": "4.2.0",
+    "chai-as-promised": "7.1.1",
     "ink-docstrap": "^1.3.2",
     "jsdoc": "^3.6.3",
     "mocha": "^6.1.4",
     "npm-watch": "^0.6.0",
-    "nyc": "^14.1.1"
+    "nyc": "^14.1.1",
+    "sinon": "10.0.0",
+    "sinon-chai": "3.6.0"
   },
   "bin": {
     "download-protoc": "bin/download-protoc.js",
@@ -74,7 +77,7 @@
     "print-version": "echo $npm_package_version",
     "watch-jsdoc": "npm-watch jsdoc",
     "jsdoc": "jsdoc -c jsdoc.json",
-    "test": "mocha --recursive",
+    "test": "mocha --recursive --unhandled-rejections=strict",
     "integration-test": "mocha integration-test",
     "preintegration-test": "bin/compile-descriptor.js test/example.proto --descriptor_set_out=integration-test/user-function.desc",
     "prepare": "bin/prepare.sh",
