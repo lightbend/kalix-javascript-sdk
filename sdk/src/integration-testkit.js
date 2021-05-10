@@ -35,7 +35,6 @@ class IntegrationTestkit {
   start(callback) {
     // First start this user function
     const boundPort = this.akkaServerless.start({
-      bindAddress: "0.0.0.0",
       bindPort: 0
     });
 
