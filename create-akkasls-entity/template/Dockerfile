@@ -14,7 +14,7 @@ COPY package*.json ./
 RUN npm ci
 
 # Copy sources and build the app
-COPY . .
+COPY --chown=node . .
 RUN npm run build
 
 # Remove dev packages
@@ -33,10 +33,11 @@ COPY --from=builder --chown=node /home/node/node_modules node_modules/
 # Copy the app
 COPY --from=builder --chown=node \
     /home/node/package*.json \
-    /home/node/*.js \
-    /home/node/proto \
     /home/node/user-function.desc \
     ./
+COPY --from=builder --chown=node /home/node/proto ./proto
+COPY --from=builder --chown=node /home/node/src ./src
+COPY --from=builder --chown=node /home/node/lib ./lib
 
 # Run the app as an unprivileged user for extra security.
 USER node
