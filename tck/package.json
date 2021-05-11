@@ -4,12 +4,12 @@
   "description": "Akka Serverless TCK implementation for JavaScript SDK",
   "engineStrict": true,
   "engines": {
-    "node": "~12"
+    "node": "~14"
   },
   "dependencies": {
     "@grpc/proto-loader": "^0.1.0",
     "google-protobuf": "^3.11.4",
-    "grpc": "^1.24.2",
+    "grpc": "^1.24.9",
     "@lightbend/akkaserverless-javascript-sdk": "file:.."
   },
   "scripts": {

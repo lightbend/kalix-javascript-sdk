@@ -1,4 +1,4 @@
-FROM node:12
+FROM node:14
 
 # Copy and install deps. This is done as a separate step as an optimization, so changes to the programs files
 # don't require the npm install to be redone
