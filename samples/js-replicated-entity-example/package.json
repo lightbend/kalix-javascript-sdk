@@ -39,9 +39,9 @@
   },
   "scripts": {
     "test": "mocha",
-    "prestart": "compile-descriptor ../../protocols/example/replicatedentity/replicated-entity-example.proto",
-    "pretest": "compile-descriptor ../../protocols/example/replicatedentity/replicated-entity-example.proto",
-    "postinstall": "compile-descriptor ../../protocols/example/replicatedentity/replicated-entity-example.proto",
+    "prestart": "compile-descriptor ../../protocols/example/replicatedentity/replicated_entity_example.proto",
+    "pretest": "compile-descriptor ../../protocols/example/replicatedentity/replicated_entity_example.proto",
+    "postinstall": "compile-descriptor ../../protocols/example/replicatedentity/replicated_entity_example.proto",
     "start": "node index.js",
     "start-no-prestart": "node index.js",
     "dockerbuild": "docker build -f Dockerfile -t akkaserverless/js-replicated-entity-example:latest ../..",
