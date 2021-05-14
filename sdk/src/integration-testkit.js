@@ -4,11 +4,11 @@
 
 const grpc = require("grpc");
 const AkkaServerless = require("./akkaserverless");
+const settings = require("../settings");
 const { GenericContainer, TestContainers, Wait } = require("testcontainers");
 
 const defaultOptions = {
-  dockerImage: "gcr.io/akkaserverless-public/akkaserverless-proxy:latest",
-  dockerArgs: ["-Dconfig.resource=dev-mode.conf"],
+  dockerImage: `gcr.io/akkaserverless-public/akkaserverless-proxy:${settings.frameworkVersion}`
 }
 
 class IntegrationTestkit {
@@ -45,7 +45,6 @@ class IntegrationTestkit {
         .withEnv("USER_FUNCTION_HOST", "host.testcontainers.internal")
         .withEnv("USER_FUNCTION_PORT", boundPort.toString())
         .withEnv("HTTP_PORT", "9000")
-        .withCmd(this.options.dockerArgs)
         .withWaitStrategy(Wait.forLogMessage("Akka Serverless proxy online"))
         .start().then(proxyContainer => {
 

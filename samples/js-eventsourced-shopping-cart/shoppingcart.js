@@ -5,12 +5,11 @@
 const EventSourcedEntity = require("@lightbend/akkaserverless-javascript-sdk").EventSourcedEntity;
 
 const entity = new EventSourcedEntity(
-  ["shoppingcart/shoppingcart_api.proto", "shoppingcart/shoppingcart_domain.proto"],
+  ["shoppingcart_api.proto", "shoppingcart_domain.proto"],
   "com.example.shoppingcart.ShoppingCartService",
   "shopping-cart",
   {
-    snapshotEvery: 5, // Usually you wouldn't snapshot this frequently, but this helps to demonstrate snapshotting
-    includeDirs: ["../../protocols/example"]
+    snapshotEvery: 5 // Usually you wouldn't snapshot this frequently, but this helps to demonstrate snapshotting
   }
 );
 

@@ -1,6 +1,6 @@
 {
-  "name": "akkaserverless-javascript-sdk-tck",
-  "version": "0.7.0",
+  "name": "akkaserverless-tck-javascript-sdk",
+  "version": "0.0.0",
   "description": "Akka Serverless TCK implementation for JavaScript SDK",
   "engineStrict": true,
   "engines": {
@@ -10,12 +10,17 @@
     "@grpc/proto-loader": "^0.1.0",
     "google-protobuf": "^3.11.4",
     "grpc": "^1.24.9",
-    "@lightbend/akkaserverless-javascript-sdk": "file:.."
+    "@lightbend/akkaserverless-javascript-sdk": "file:../sdk"
+  },
+  "devDependencies": {
+    "testcontainers": "7.10.0"
   },
   "scripts": {
-    "prepare": "rm -rf proto && mkdir proto && cp ../../protocols/tck/src/main/protobuf/akkaserverless/tck/model/*/*.proto proto",
-    "build": "npm run prepare && compile-descriptor ./proto/*.proto",
+    "build": "bin/prepare.sh && compile-descriptor ./proto/*.proto",
     "postinstall": "npm run build",
-    "start": "node index.js"
+    "start": "node index.js",
+    "tck": "node run.js",
+    "docker-build": "docker build -f Dockerfile -t gcr.io/akkaserverless-public/akkaserverless-tck-javascript-sdk:$(../sdk/bin/version.sh) ..",
+    "docker-push": "docker push gcr.io/akkaserverless-public/akkaserverless-tck-javascript-sdk:$(../sdk/bin/version.sh)"
   }
 }

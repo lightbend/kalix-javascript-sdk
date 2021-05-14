@@ -1,12 +1,7 @@
 {
   "name": "js-replicated-entity-example",
-  "version": "0.1.0",
-  "description": "Sample Akka Serverless Replicated Entity application",
-  "keywords": [
-    "akka",
-    "serverless",
-    "akka serverless"
-  ],
+  "version": "0.0.0",
+  "description": "Akka Serverless JavaScript SDK example for replicated entities",
   "homepage": "https://github.com/lightbend/akkaserverless-javascript-sdk",
   "bugs": {
     "url": "https://github.com/lightbend/akkaserverless-javascript-sdk/issues"
@@ -24,28 +19,28 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/lightbend/akkaserverless-javascript-sdk",
-    "directory": "samples/replicated-entity-example"
+    "directory": "samples/js-replicated-entity-example"
   },
   "//": "https://npm.community/t/npm-install-does-not-install-transitive-dependencies-of-local-dependency/2264",
   "dependencies": {
     "@grpc/proto-loader": "^0.1.0",
     "google-protobuf": "^3.11.4",
     "grpc": "^1.24.2",
-    "@lightbend/akkaserverless-javascript-sdk": "file:../../javascript-sdk"
+    "@lightbend/akkaserverless-javascript-sdk": "file:../../sdk"
   },
   "devDependencies": {
     "chai": "4.2.0",
     "mocha": "^6.1.4"
   },
   "scripts": {
+    "build": "compile-descriptor replicated_entity_example.proto",
+    "pretest": "npm run build",
     "test": "mocha",
-    "prestart": "compile-descriptor ../../protocols/example/replicatedentity/replicated_entity_example.proto",
-    "pretest": "compile-descriptor ../../protocols/example/replicatedentity/replicated_entity_example.proto",
-    "postinstall": "compile-descriptor ../../protocols/example/replicatedentity/replicated_entity_example.proto",
+    "prestart": "npm run build",
     "start": "node index.js",
     "start-no-prestart": "node index.js",
-    "dockerbuild": "docker build -f Dockerfile -t akkaserverless/js-replicated-entity-example:latest ../..",
-    "dockerpush": "docker push akkaserverless/js-replicated-entity-example:latest",
-    "dockerbuildpush": "npm run dockerbuild && npm run dockerpush"
+    "docker-build": "docker build -f Dockerfile -t ${DOCKER_PUBLISH_TO:-akkaserverless}/js-replicated-entity-example:$(../../sdk/bin/version.sh) ../..",
+    "docker-push": "docker push ${DOCKER_PUBLISH_TO:-akkaserverless}/js-replicated-entity-example:$(../../sdk/bin/version.sh)",
+    "docker-build-push": "npm run docker-build && npm run docker-push"
   }
 }

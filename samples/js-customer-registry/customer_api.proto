@@ -5,7 +5,6 @@ syntax = "proto3";
 package customer.api;
 
 import "google/protobuf/empty.proto";
-import "google/api/annotations.proto";
 import "akkaserverless/annotations.proto";
 
 message Customer {

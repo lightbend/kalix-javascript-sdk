@@ -11,7 +11,7 @@ const protobuf = require("protobufjs");
 const protobufHelper = require("@lightbend/akkaserverless-javascript-sdk/src/protobuf-helper");
 
 const allIncludeDirs = protobufHelper.moduleIncludeDirs.concat([
-  path.join("..", "..", "protocols", "example", "valueentity")
+  path.join(".")
 ]);
 
 const packageDefinition = protoLoader.loadSync(
@@ -25,8 +25,8 @@ const packageDefinition = protoLoader.loadSync(
 const descriptor = grpc.loadPackageDefinition(packageDefinition);
 
 const root = protobufHelper.loadSync([
-  path.join("shoppingcart","shoppingcart_api.proto"),
-  path.join("shoppingcart","shoppingcart_domain.proto")
+  path.join("shoppingcart_api.proto"),
+  path.join("shoppingcart_domain.proto")
 ], allIncludeDirs);
 
 const Cart = root.lookupType("com.example.valueentity.shoppingcart.domain.Cart");

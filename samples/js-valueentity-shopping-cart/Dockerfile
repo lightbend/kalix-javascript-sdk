@@ -1,19 +1,19 @@
-FROM node:14
+FROM node:14-buster-slim AS builder
+WORKDIR /home/node
+RUN apt-get update && apt-get install -y curl unzip
+COPY sdk sdk
+RUN cd sdk && npm ci
+RUN cd sdk && npm prune --production
+COPY samples/js-valueentity-shopping-cart/package*.json samples/js-valueentity-shopping-cart/
+RUN cd samples/js-valueentity-shopping-cart && npm ci
+COPY samples/js-valueentity-shopping-cart samples/js-valueentity-shopping-cart
+RUN cd samples/js-valueentity-shopping-cart && npm run build
+RUN cd samples/js-valueentity-shopping-cart && npm prune --production
 
-# Copy and install deps. This is done as a separate step as an optimization, so changes to the programs files
-# don't require the npm install to be redone
-RUN mkdir -p /opt/samples/js-shopping-cart
-RUN mkdir -p /opt/protocols/example
-COPY javascript-sdk /opt/javascript-sdk
-COPY samples/js-shopping-cart/package.json /opt/samples/js-shopping-cart/
-RUN cd /opt/javascript-sdk && npm install && cd /opt/samples/js-shopping-cart && npm install
-
-# Now copy the entire app
-COPY samples/js-shopping-cart /opt/samples/js-shopping-cart
-COPY protocols/example /opt/protocols/example
-WORKDIR /opt/samples/js-shopping-cart
-RUN npm run prestart
-
-# run
+FROM node:14-buster-slim
+COPY --from=builder --chown=node /home/node /home/node
+WORKDIR /home/node/samples/js-valueentity-shopping-cart
+USER node
+ENV NODE_ENV production
 EXPOSE 8080
 CMD ["npm", "run", "start-no-prestart"]

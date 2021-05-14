@@ -6,6 +6,7 @@ const path = require("path");
 const grpc = require("grpc");
 const protoLoader = require("@grpc/proto-loader");
 const fs = require("fs");
+const settings = require("../settings");
 
 const debug = require("debug")("akkaserverless");
 // Bind to stdout
@@ -187,14 +188,15 @@ class AkkaServerless {
 
   discover(call, callback) {
     const proxyInfo = call.request;
+    const protocolVersion = settings.protocolVersion();
     const serviceInfo = {
       serviceName: this.options.serviceName,
       serviceVersion: this.options.serviceVersion,
       serviceRuntime: process.title + " " + process.version,
       supportLibraryName: packageInfo.name,
       supportLibraryVersion: packageInfo.version,
-      protocolMajorVersion: 0,
-      protocolMinorVersion: 7
+      protocolMajorVersion: protocolVersion.major,
+      protocolMinorVersion: protocolVersion.minor
     }
     if (this.isVersionProbe(proxyInfo)) {
       // only (silently) send service info for hybrid proxy version probe

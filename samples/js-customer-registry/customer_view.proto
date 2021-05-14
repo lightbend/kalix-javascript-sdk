@@ -5,8 +5,6 @@ syntax = "proto3";
 package customer.view;
 
 import "customer_domain.proto";
-import "google/protobuf/empty.proto";
-import "google/api/annotations.proto";
 import "akkaserverless/annotations.proto";
 
 // tag::service[]

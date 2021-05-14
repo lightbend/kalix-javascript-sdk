@@ -1,13 +1,7 @@
 {
   "name": "js-customer-registry",
-  "version": "0.1.0",
-  "description": "Sample Akka Serverless application that demonstrates views",
-  "keywords": [
-    "serverless",
-    "akka serverless",
-    "event sourced entities",
-    "value entities"
-  ],
+  "version": "0.0.0",
+  "description": "Akka Serverless JavaScript SDK sample application for customer registry",
   "engineStrict": true,
   "engines": {
     "node": "~14"
@@ -25,12 +19,12 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/lightbend/akkaserverless-javascript-sdk",
-    "directory": "samples/shopping-cart"
+    "directory": "samples/js-customer-registry"
   },
   "//": "https://npm.community/t/npm-install-does-not-install-transitive-dependencies-of-local-dependency/2264",
   "dependencies": {
     "@grpc/proto-loader": "^0.1.0",
-    "@lightbend/akkaserverless-javascript-sdk": "file:../../javascript-sdk",
+    "@lightbend/akkaserverless-javascript-sdk": "file:../../sdk",
     "google-protobuf": "^3.11.4",
     "grpc": "^1.24.9"
   },
@@ -39,15 +33,14 @@
     "mocha": "^6.2.3"
   },
   "scripts": {
+    "build": "compile-descriptor customer_api.proto customer_domain.proto customer_view.proto",
+    "pretest": "npm run build",
     "test": "mocha",
-    "prepare-javascript-sdk": "cd ../../javascript-sdk && npm install && cd ../samples/js-customer-registry",
-    "prestart": "compile-descriptor -I./proto customer_api.proto customer_domain.proto customer_view.proto",
-    "pretest": "compile-descriptor -I./proto customer_api.proto customer_domain.proto customer_view.proto",
-    "postinstall": "compile-descriptor -I./proto customer_api.proto customer_domain.proto customer_view.proto",
+    "prestart": "npm run build",
     "start": "node index.js",
     "start-no-prestart": "node index.js",
-    "dockerbuild": "npm run prepare-javascript-sdk && docker build -f Dockerfile -t ${DOCKER_PUBLISH_TO:-akkaserverless}/js-customer-registry:latest ../..",
-    "dockerpush": "docker push ${DOCKER_PUBLISH_TO:-akkaserverless}/js-customer-registry:latest",
-    "dockerbuildpush": "npm run dockerbuild && npm run dockerpush"
+    "docker-build": "docker build -f Dockerfile -t ${DOCKER_PUBLISH_TO:-akkaserverless}/js-customer-registry:$(../../sdk/bin/version.sh) ../..",
+    "docker-push": "docker push ${DOCKER_PUBLISH_TO:-akkaserverless}/js-customer-registry:$(../../sdk/bin/version.sh)",
+    "docker-build-push": "npm run docker-build && npm run docker-push"
   }
 }

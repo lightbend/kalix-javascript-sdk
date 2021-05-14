@@ -5,10 +5,23 @@
 
 set -euo pipefail
 
-# base framework version
-# FIXME: this can be shared with the protocol version declared in src/akkaserverless.js
-# FIXME: or the base version (and pre_version) can be removed when the SDK is separated from the main repo
-readonly base="0.7"
+function _script_path {
+  local source="${BASH_SOURCE[0]}"
+  while [ -h "$source" ] ; do
+    local linked="$(readlink "$source")"
+    local dir="$(cd -P $(dirname "$source") && cd -P $(dirname "$linked") && pwd)"
+    source="$dir/$(basename "$linked")"
+  done
+  echo ${source}
+}
+
+readonly script_path=$(_script_path)
+readonly script_dir="$(cd -P "$(dirname "$script_path")" && pwd)"
+readonly sdk_dir="$(cd "$script_dir/.." && pwd)"
+
+# base framework version --- get from settings.js
+# FIXME: the base version (and pre_version) can be removed when the SDK is separated from the main repo
+readonly base=$(cd "$sdk_dir" && node --print 'require("./settings").baseVersion()')
 
 # check if the git repo is dirty (has changes)
 function dirty {

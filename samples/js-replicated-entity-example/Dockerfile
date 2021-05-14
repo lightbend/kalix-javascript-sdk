@@ -1,20 +1,19 @@
-FROM node:14
+FROM node:14-buster-slim AS builder
+WORKDIR /home/node
+RUN apt-get update && apt-get install -y curl unzip
+COPY sdk sdk
+RUN cd sdk && npm ci
+RUN cd sdk && npm prune --production
+COPY samples/js-replicated-entity-example/package*.json samples/js-replicated-entity-example/
+RUN cd samples/js-replicated-entity-example && npm ci
+COPY samples/js-replicated-entity-example samples/js-replicated-entity-example
+RUN cd samples/js-replicated-entity-example && npm run build
+RUN cd samples/js-replicated-entity-example && npm prune --production
 
-# Copy and install deps. This is done as a separate step as an optimization, so changes to the programs files
-# don't require the npm install to be redone
-RUN mkdir -p /opt/samples/js-replicated-entity-example
-RUN mkdir -p /opt/protocols/example
-COPY javascript-sdk /opt/javascript-sdk
-COPY samples/js-replicated-entity-example/package.json /opt/samples/js-replicated-entity-example/
-RUN cd /opt/javascript-sdk && npm install && cd /opt/samples/js-replicated-entity-example && npm install
-
-# Now copy the entire app
-COPY samples/js-replicated-entity-example /opt/samples/js-replicated-entity-example
-COPY protocols/example /opt/protocols/example
-WORKDIR /opt/samples/js-replicated-entity-example
-RUN npm run prestart
-
-# run
+FROM node:14-buster-slim
+COPY --from=builder --chown=node /home/node /home/node
+WORKDIR /home/node/samples/js-replicated-entity-example
+USER node
+ENV NODE_ENV production
 EXPOSE 8080
-ENV DEBUG=akkaserverless*
-ENTRYPOINT ["npm", "run", "start-no-prestart"]
+CMD ["npm", "run", "start-no-prestart"]

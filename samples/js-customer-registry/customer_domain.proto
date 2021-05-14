@@ -4,10 +4,6 @@ syntax = "proto3";
 
 package customer.domain;
 
-import "google/protobuf/empty.proto";
-import "google/api/annotations.proto";
-import "akkaserverless/annotations.proto";
-
 // tag::domain[]
 message CustomerState {
   string customer_id = 1;

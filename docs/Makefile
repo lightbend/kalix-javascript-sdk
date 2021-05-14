@@ -43,9 +43,9 @@ attributes: ${cloudstate_antora}
 		> "${managed_partials}/attributes.adoc"
 
 apidocs:
-	npm install && npm run jsdoc
+	cd ../sdk && npm install && npm run jsdoc
 	mkdir -p "${managed_attachments}"
-	rsync -a ../apidocs/ "${managed_attachments}/api/"
+	rsync -a ../sdk/apidocs/ "${managed_attachments}/api/"
 
 ${descriptor}: ${cloudstate_antora}
 	mkdir -p $$(dirname ${descriptor})

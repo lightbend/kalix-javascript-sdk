@@ -19,12 +19,9 @@ const ReplicatedEntity = require("@lightbend/akkaserverless-javascript-sdk").Rep
 const ReplicatedData = require("@lightbend/akkaserverless-javascript-sdk").ReplicatedData;
 
 const entity = new ReplicatedEntity(
-  "replicatedentity/replicated-entity-example.proto",
+  "replicated_entity_example.proto",
   "com.example.replicatedentity.ReplicatedEntityExample",
-  "replicated-entity-example",
-  {
-    includeDirs: ["../../protocols/example"]
-  }
+  "replicated-entity-example"
 );
 
 entity.commandHandlers = {

@@ -5,12 +5,9 @@
 const ValueEntity = require("@lightbend/akkaserverless-javascript-sdk").ValueEntity;
 
 const entity = new ValueEntity(
-  ["valueentity/shoppingcart/shoppingcart_api.proto", "valueentity/shoppingcart/shoppingcart_domain.proto"],
+  ["shoppingcart_api.proto", "shoppingcart_domain.proto"],
   "com.example.valueentity.shoppingcart.ShoppingCartService",
-  "shopping-cart",
-  {
-    includeDirs: ["../../protocols/example/"]
-  }
+  "shopping-cart"
 );
 
 /*

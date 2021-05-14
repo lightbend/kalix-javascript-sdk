@@ -13,7 +13,7 @@
     "@grpc/proto-loader": "^0.1.0",
     "google-protobuf": "^3.0.0",
     "grpc": "^1.24.9",
-    "@lightbend/akkaserverless-javascript-sdk": "file:../../../../.."
+    "@lightbend/akkaserverless-javascript-sdk": "file:../../../../../sdk"
   },
   "devDependencies": {
     "chai": "4.2.0",
