@@ -1,0 +1,20 @@
+{
+  "ignoreFile": "sdk/.gitignore",
+  "ignore": ["build", "docs", "**/.*", "**/bin", "**/Dockerfile", "**/*.md"],
+  "license": "build/header.txt",
+  "licenseFormats": {
+    "js": {
+      "prepend": "/*",
+      "append": " */",
+      "eachLine": {
+        "prepend": " * "
+      }
+    },
+    "proto": {
+      "eachLine": {
+        "prepend": "// "
+      }
+    }
+  },
+  "trailingWhitespace": "TRIM"
+}

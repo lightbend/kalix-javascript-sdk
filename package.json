@@ -1,0 +1,9 @@
+{
+  "devDependencies": {
+    "license-check-and-add": "^4.0.2"
+  },
+  "scripts": {
+    "license-check": "license-check-and-add check -f build/license.json",
+    "license-add": "license-check-and-add add -f build/license.json"
+  }
+}

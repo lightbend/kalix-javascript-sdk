@@ -1,6 +1,3 @@
-/*
- * Copyright 2021 Lightbend Inc.
- */
 
 // tag::entity-class[]
 const ValueEntity = require("@lightbend/akkaserverless-javascript-sdk").ValueEntity;
