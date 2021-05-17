@@ -36,6 +36,8 @@
     "build": "compile-descriptor customer_api.proto customer_domain.proto customer_view.proto",
     "pretest": "npm run build",
     "test": "mocha",
+    "preintegration-test": "npm run build",
+    "integration-test": "mocha integration-test",
     "prestart": "npm run build",
     "start": "node index.js",
     "start-no-prestart": "node index.js",

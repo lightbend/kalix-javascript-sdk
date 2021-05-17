@@ -36,6 +36,8 @@
     "build": "compile-descriptor shoppingcart_api.proto shoppingcart_domain.proto",
     "pretest": "npm run build",
     "test": "mocha",
+    "preintegration-test": "npm run build",
+    "integration-test": "mocha integration-test",
     "prestart": "npm run build",
     "start": "node index.js",
     "start-no-prestart": "node index.js",

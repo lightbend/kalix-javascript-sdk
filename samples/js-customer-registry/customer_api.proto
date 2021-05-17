@@ -29,13 +29,9 @@ message ChangeNameRequest {
 }
 
 service CustomerService {
-  rpc Create(Customer) returns (google.protobuf.Empty) {
-  }
+  rpc Create(Customer) returns (google.protobuf.Empty) {}
 
-  rpc ChangeName(ChangeNameRequest) returns (google.protobuf.Empty) {
-  }
+  rpc ChangeName(ChangeNameRequest) returns (google.protobuf.Empty) {}
 
-  rpc GetCustomer(GetCustomerRequest) returns (Customer) {
-  }
+  rpc GetCustomer(GetCustomerRequest) returns (Customer) {}
 }
-

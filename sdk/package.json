@@ -44,8 +44,8 @@
     "request": "^2.88.0",
     "rimraf": "^2.6.3",
     "test": "^0.6.0",
-    "unzipper": "^0.9.15",
-    "testcontainers": "7.5.0"
+    "testcontainers": "7.5.0",
+    "unzipper": "^0.9.15"
   },
   "devDependencies": {
     "chai": "4.2.0",

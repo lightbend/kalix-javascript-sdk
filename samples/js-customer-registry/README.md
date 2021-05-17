@@ -1,28 +1,54 @@
-# Views documentation example
+# Customer Registry example
 
 This example includes the code snippets that are used in the Views documentation.
 
-To run the example locally:
+## Running locally
 
-* Start the example:
-  * In the `js-customer-registry` directory `npm install` then `npm start`
-* Start the proxy
-  * with in-memory store: `sbt proxy-core/run`
-  * or with local Spanner emulator:
-    * start the Spanner emulator: `docker run -p 9010:9010 -p 9020:9020 gcr.io/cloud-spanner-emulator/emulator` 
-    * `sbt proxy-spanner/run`
-* Create a customer with:
-  ```
-  grpcurl --plaintext -d '{"customer_id": "wip", "email": "wip@example.com", "name": "Very Important", "address": {"street": "Road 1", "city": "The Capital"}}' localhost:9000  customer.api.CustomerService/Create
-* Retrieve the customer:
-  ```
-  grpcurl --plaintext -d '{"customer_id": "wip"}' localhost:9000  customer.api.CustomerService/GetCustomer
-  ```
-* Query by name:
-  ```
-  grpcurl --plaintext -d '{"customer_name": "Very Important"}' localhost:9000 customer.view.CustomersResponseByName/GetCustomers
-  ```
-* Change name:
-  ```
-  grpcurl --plaintext -d '{"customer_id": "wip", "new_name": "Most Important"}' localhost:9000  customer.api.CustomerService/ChangeName
-  ```
+Install dependencies:
+
+```
+npm install
+```
+
+Start the Customer Registry example:
+
+```
+npm start
+```
+
+Start the proxy:
+
+```
+docker run --rm -e USER_FUNCTION_HOST=host.docker.internal -p 9000:9000 gcr.io/akkaserverless-public/akkaserverless-proxy
+```
+
+Create a customer:
+
+```
+grpcurl --plaintext -d '{"customer_id": "vip", "email": "vip@example.com", "name": "Very Important", "address": {"street": "Road 1", "city": "The Capital"}}' localhost:9000  customer.api.CustomerService/Create
+```
+
+Retrieve a customer:
+
+```
+grpcurl --plaintext -d '{"customer_id": "vip"}' localhost:9000  customer.api.CustomerService/GetCustomer
+```
+
+Query customers by name:
+
+```
+grpcurl --plaintext -d '{"customer_name": "Very Important"}' localhost:9000 customer.view.CustomersResponseByName/GetCustomers
+```
+
+Change name of a customer:
+
+```
+grpcurl --plaintext -d '{"customer_id": "vip", "new_name": "Most Important"}' localhost:9000  customer.api.CustomerService/ChangeName
+```
+
+
+## Running integration tests
+
+```
+npm run integration-test
+```

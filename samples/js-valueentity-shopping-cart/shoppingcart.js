@@ -37,7 +37,8 @@ entity.setInitial(cartId => Cart.create({items: []}));
 entity.setCommandHandlers({
   AddItem: addItem,
   RemoveItem: removeItem,
-  GetCart: getCart
+  GetCart: getCart,
+  RemoveCart: removeCart
 });
 
 /**
@@ -80,10 +81,9 @@ function removeItem(removeItem, cart, ctx) {
     ctx.fail("Item " + removeItem.productId + " not in cart");
   } else {
     // Otherwise, remove the item.
-
     // Filter the removed item from the items by product id.
     cart.items = cart.items.filter(item => {
-      return item.productId !== removed.productId;
+      return item.productId !== removeItem.productId;
     });
 
     ctx.updateState(cart);
@@ -97,6 +97,14 @@ function removeItem(removeItem, cart, ctx) {
 function getCart(request, cart, ctx) {
   // Simply return the shopping cart as is.
   return cart;
+}
+
+/**
+ * Handler for remove cart commands.
+ */
+function removeCart(request, cart, ctx) {
+  ctx.deleteState();
+  return {};
 }
 
 // Export the entity

@@ -6,6 +6,7 @@ const grpc = require("grpc");
 const AkkaServerless = require("./akkaserverless");
 const settings = require("../settings");
 const { GenericContainer, TestContainers, Wait } = require("testcontainers");
+const util = require("util");
 
 const defaultOptions = {
   dockerImage: `gcr.io/akkaserverless-public/akkaserverless-proxy:${settings.frameworkVersion}`
@@ -60,7 +61,7 @@ class IntegrationTestkit {
               stub = stub[part];
             });
             const client = new stub("localhost:" + proxyPort, grpc.credentials.createInsecure());
-            this.clients[parts[parts.length - 1]] = client;
+            this.clients[parts[parts.length - 1]] = this.promisifyClient(client);
           });
 
           return this;
@@ -71,6 +72,17 @@ class IntegrationTestkit {
     } else {
       return serverPromise;
     }
+  }
+
+  // add async versions of unary request methods, suffixed with "Async"
+  promisifyClient(client) {
+    Object.keys(Object.getPrototypeOf(client)).forEach((methodName) => {
+      const methodFunction = client[methodName];
+      if (methodFunction.requestStream == false && methodFunction.responseStream == false) {
+        client[methodName + "Async"] = util.promisify(methodFunction).bind(client);
+      }
+    });
+    return client;
   }
 
   shutdown(callback) {
