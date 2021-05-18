@@ -1,0 +1,139 @@
+version: 2.1
+
+orbs:
+  build-tools: circleci/build-tools@2.9.0
+
+commands:
+  checkout-and-merge-to-main:
+    steps:
+      - checkout
+      - run:
+          name: Configure git user
+          command: |
+            # required by merge-with-parent (for some unknown reason)
+            git config user.email "circleci@example.com"
+            git config user.name "CircleCI"
+      - build-tools/merge-with-parent:
+          parent: main
+
+jobs:
+  tests:
+    docker:
+      - image: cimg/node:14.16.1
+    description: "tests"
+    steps:
+      - checkout-and-merge-to-main
+      - run:
+          name: "run checks"
+          command: |
+            npm ci && npm run license-check
+      - run:
+          name: "run tests"
+          command: |
+            pushd sdk && npm ci && npm test && popd
+            pushd docs/src/modules/javascript/examples && npm ci && npm test && popd
+            pushd samples/js-eventsourced-shopping-cart && npm ci && npm test && popd
+            pushd samples/js-valueentity-shopping-cart && npm ci && npm test && popd
+
+  integration-tests:
+    machine: true
+    description: "integration tests"
+    steps:
+      - checkout-and-merge-to-main
+      - run:
+          name: "run integration tests"
+          command: |
+            source /opt/circleci/.nvm/nvm.sh
+            pushd sdk && nvm install && npm ci && DEBUG='testcontainers*' npm run integration-test && popd
+            pushd samples/js-customer-registry && npm ci && npm run integration-test && popd
+            pushd samples/js-eventsourced-shopping-cart && npm ci && npm run integration-test && popd
+            pushd samples/js-valueentity-shopping-cart && npm ci && npm run integration-test && popd
+
+  tck-tests:
+    machine: true
+    description: "TCK tests"
+    steps:
+      - checkout-and-merge-to-main
+      - run:
+          name: "run TCK tests"
+          command: |
+            source /opt/circleci/.nvm/nvm.sh
+            pushd sdk && nvm install && npm ci && popd
+            pushd tck && nvm install && npm ci && npm run tck && popd
+
+  validate-docs:
+    machine: true
+    description: "validate docs"
+    steps:
+      - checkout-and-merge-to-main
+      - run:
+          name: "validate docs"
+          command: |
+            source /opt/circleci/.nvm/nvm.sh
+            pushd sdk && nvm install && popd
+            make -C docs
+
+  publish:
+    docker:
+      - image: cimg/node:14.16.1
+    steps:
+      - checkout
+      - run:
+          name: "publish to npm"
+          command: |
+            echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/.npmrc
+            pushd sdk && npm ci && npm publish --access public && popd
+
+  publish-tck:
+    machine: true
+    description: "publish TCK"
+    steps:
+      - checkout
+      - run: bin/docker-login-public-gcr.sh
+      - run:
+          name: "publish TCK docker image"
+          command: |
+            source /opt/circleci/.nvm/nvm.sh
+            pushd tck && nvm install && npm run docker-build && npm run docker-push && popd
+
+workflows:
+  CI:
+    jobs:
+      - tests:
+        filters: # required since publish jobs have tag filters and dependencies
+          tags:
+            only: /.*/
+      - integration-tests:
+          filters: # required since publish jobs have tag filters and dependencies
+            tags:
+              only: /.*/
+      - tck-tests:
+          filters: # required since publish jobs have tag filters and dependencies
+            tags:
+              only: /.*/
+      - validate-docs:
+          filters: # required since publish jobs have tag filters and dependencies
+            tags:
+              only: /.*/
+      - publish:
+          filters: # version tags only
+            tags:
+              only: /^v.*/
+            branches:
+              ignore: /.*/
+          requires:
+            - tests
+            - integration-tests
+            - tck-tests
+            - validate-docs
+      - publish-tck:
+          filters: # version tags only
+            tags:
+              only: /^v.*/
+            branches:
+              ignore: /.*/
+          requires:
+            - tests
+            - integration-tests
+            - tck-tests
+            - validate-docs
