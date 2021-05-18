@@ -1,31 +1,33 @@
-# Developing the SDK
+# Developing the JavaScript SDK
 
-## Pre-requisites
 
-The SDK currently requires Node.js 12.
-Can be useful to install `nvm` and run `nvm use` to select the right node version if you have multiple node versions 
-installed.
+## Prerequisites
 
-Install other js packages with `npm install`.
+The JavaScript SDK requires Node.js 14.
 
-`pbjs` - install through `node bin/download-protoc.js` (really needed?)
+It can be useful to install `nvm` and run `nvm use` to select the right node version if you have multiple node versions installed.
 
-## Run a sample locally
-
-Start local proxy, in akkaserverless-framework root: `sbt proxy-core/run`
-
-Sample is in `samples/js-shopping-cart`
-
-From that directory `npm start`. The service can now be accessed through the local proxy at port 9000.
-
-## TCK
-
-The tck is run from the akkaserverless-framework/tck project (`sbt tck/it:test`)
+Install package dependencies with `npm install`.
 
 
 ## Tests
 
-Run the tests using FIXME
+Run the tests for the SDK with `npm test` (in the `sdk` directory).
+
+Run integration tests with `npm run integration-test` (in the `sdk` directory, requires Docker).
+
+See [.circleci/config.yml] for all tests that run for CI.
+
+
+## Samples
+
+Each sample under `samples` can be run locally. See their READMEs for details.
+
+
+## TCK
+
+To run the Akka Serverless TCK, see [tck/README.md].
+
 
 ## Docs
 
