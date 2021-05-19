@@ -96,6 +96,22 @@ jobs:
             source /opt/circleci/.nvm/nvm.sh
             pushd tck && nvm install && npm run docker-build && npm run docker-push && popd
 
+  publish-docs:
+    machine: true
+    description: "publish docs"
+    steps:
+      - checkout
+      # deploy key for pushing docs to branch
+      - add_ssh_keys:
+          fingerprints:
+            - "d1:35:c0:f1:89:8c:45:06:6f:f9:7e:a3:b5:57:18:87"
+      - run:
+          name: "publish docs"
+          command: |
+            source /opt/circleci/.nvm/nvm.sh
+            pushd sdk && nvm install && popd
+            make -C docs deploy
+
 workflows:
   CI:
     jobs:
@@ -127,6 +143,17 @@ workflows:
             - tck-tests
             - validate-docs
       - publish-tck:
+          filters: # version tags only
+            tags:
+              only: /^v.*/
+            branches:
+              ignore: /.*/
+          requires:
+            - tests
+            - integration-tests
+            - tck-tests
+            - validate-docs
+      - publish-docs:
           filters: # version tags only
             tags:
               only: /^v.*/
