@@ -2,7 +2,7 @@ FROM node:14-buster-slim AS builder
 WORKDIR /home/node
 RUN apt-get update && apt-get install -y curl unzip
 COPY sdk sdk
-RUN cd sdk && npm ci
+RUN cd sdk && npm ci && npm run prepare
 RUN cd sdk && npm prune --production
 COPY samples/js-replicated-entity-example/package*.json samples/js-replicated-entity-example/
 RUN cd samples/js-replicated-entity-example && npm ci
