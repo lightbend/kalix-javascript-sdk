@@ -1,70 +1,36 @@
 # Make Akka Serverless JavaScript SDK documentation
 
-# FIXME: set up new documentation building
-
-module   := javascript
+module   := js-services
 upstream := lightbend/akkaserverless-javascript-sdk
-branch   := javascript-sdk/docs/current
+branch   := docs/current
 sources  := src build/src/managed
 
-cloudstate_antora_download := https://github.com/cloudstateio/cloudstate-antora/raw/master/cloudstate-antora
-cloudstate_antora := .cache/bin/cloudstate-antora
-descriptor := build/site.yml
 src_managed := build/src/managed
-managed_attachments := ${src_managed}/modules/javascript/attachments
-managed_partials := ${src_managed}/modules/javascript/partials
+managed_attachments := ${src_managed}/modules/${module}/attachments
+managed_partials := ${src_managed}/modules/${module}/partials
 
 .SILENT:
 
-build: clean managed validate html
+build: clean managed
 
-${cloudstate_antora}:
-	mkdir -p $$(dirname ${cloudstate_antora})
-	curl -Lo ${cloudstate_antora} ${cloudstate_antora_download}
-	chmod +x ${cloudstate_antora}
-
-clean-cache:
-	rm -rf .cache
-
-update: clean-cache ${cloudstate_antora}
-
-clean: ${cloudstate_antora}
-	${cloudstate_antora} clean
-	# avoid node_modules being indexed by antora
-	rm -rf src/modules/javascript/examples/node_modules
+clean:
+	rm -rf build
 
 managed: attributes apidocs
 	mkdir -p "${src_managed}"
 	cp src/antora.yml "${src_managed}/antora.yml"
 
-attributes: ${cloudstate_antora}
+attributes:
 	mkdir -p "${managed_partials}"
-	${cloudstate_antora} version --prefix "node-support-" | xargs -0  printf ":akkaserverless-javascript-sdk-version: %s" \
+	bin/version.sh | xargs -0  printf ":akkaserverless-javascript-sdk-version: %s" \
 		> "${managed_partials}/attributes.adoc"
+	echo ":minimum_node_version: 14" \
+		>> "${managed_partials}/attributes.adoc"
 
 apidocs:
-	cd ../sdk && npm install && npm run jsdoc
+	cd ../sdk && npm ci && npm run jsdoc
 	mkdir -p "${managed_attachments}"
 	rsync -a ../sdk/apidocs/ "${managed_attachments}/api/"
 
-${descriptor}: ${cloudstate_antora}
-	mkdir -p $$(dirname ${descriptor})
-	${cloudstate_antora} source --preview --upstream ${upstream} ${sources} > build/source.yml
-	${cloudstate_antora} site --preview --exclude ${module} build/source.yml > ${descriptor}
-
-validate: ${descriptor}
-	${cloudstate_antora} validate ${descriptor}
-
-html: ${descriptor}
-	${cloudstate_antora} build ${descriptor}
-
-build-author-mode: clean managed validate html-author-mode
-
-html-author-mode: ${descriptor}
-	${cloudstate_antora} build --author-mode ${descriptor}
-
-validate-links: ${cloudstate_antora}
-	${cloudstate_antora} validate --links --no-xrefs
-
 deploy: clean managed
-	${cloudstate_antora} deploy --module ${module} --upstream ${upstream} --branch ${branch} ${sources}
+	bin/deploy.sh --module ${module} --upstream ${upstream} --branch ${branch} ${sources}
