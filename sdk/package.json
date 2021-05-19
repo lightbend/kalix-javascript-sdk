@@ -31,7 +31,8 @@
     "protobuf-bundle.d.ts",
     "src",
     "index.js",
-    "index.d.ts"
+    "index.d.ts",
+    "settings.js"
   ],
   "dependencies": {
     "@grpc/proto-loader": "^0.5.6",
