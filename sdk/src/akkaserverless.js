@@ -263,12 +263,16 @@ class AkkaServerless {
     if (call.request.detail) {
       msg += "\n\n" + call.request.detail;
     }
-    const docLink = this.docLinkFor(call.request.code)
-    if (docLink)
-      msg += " See documentation: " + docLink
-    for (const location of (call.request.sourceLocations || [])) {
-      msg += "\n\n" + this.formatSource(location)
+
+    if(call.request.code) {
+      const docLink = this.docLinkFor(call.request.code)
+      if (docLink)
+        msg += " See documentation: " + docLink
+      for (const location of (call.request.sourceLocations || [])) {
+        msg += "\n\n" + this.formatSource(location)
+      }
     }
+    
     console.error(msg);
     callback(null, {});
   }
