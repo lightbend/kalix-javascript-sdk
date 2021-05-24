@@ -237,7 +237,7 @@ class AkkaServerless {
 
   docLinkFor(code) {
     const specificCodes = {
-      // "AS-00112": "js-services/views.html#_changing_the_view", not in place yet
+      "AS-00112": "js-services/views.html#changing",
       "AS-00402": "js-services/topic-eventing.html",
       "AS-00406": "js-services/topic-eventing.html"
     }
