@@ -7,6 +7,7 @@ sources  := src build/src/managed
 
 src_managed := build/src/managed
 managed_attachments := ${src_managed}/modules/${module}/attachments
+managed_examples := ${src_managed}/modules/${module}/examples
 managed_partials := ${src_managed}/modules/${module}/partials
 
 .SILENT:
@@ -16,7 +17,7 @@ build: clean managed
 clean:
 	rm -rf build
 
-managed: attributes apidocs
+managed: attributes apidocs examples
 	mkdir -p "${src_managed}"
 	cp src/antora.yml "${src_managed}/antora.yml"
 
@@ -31,6 +32,10 @@ apidocs:
 	cd ../sdk && npm ci && npm run jsdoc
 	mkdir -p "${managed_attachments}"
 	rsync -a ../sdk/apidocs/ "${managed_attachments}/api/"
+
+examples:
+	mkdir -p "${managed_examples}"
+	rsync -a --exclude-from=.examplesignore ../samples/js-customer-registry/ "${managed_examples}/js-customer-registry/"
 
 deploy: clean managed
 	bin/deploy.sh --module ${module} --upstream ${upstream} --branch ${branch} ${sources}

@@ -1,0 +1,6 @@
+.gitignore
+Dockerfile
+node_modules
+*.desc
+*.json
+*.md
