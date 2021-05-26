@@ -31,7 +31,6 @@ jobs:
           name: "run tests"
           command: |
             pushd sdk && npm ci && npm test && popd
-            pushd docs/src/modules/javascript/examples && npm ci && npm test && popd
             pushd samples/js-eventsourced-shopping-cart && npm ci && npm test && popd
             pushd samples/js-valueentity-shopping-cart && npm ci && npm test && popd
 
