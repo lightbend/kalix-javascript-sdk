@@ -9,12 +9,15 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node: [ '14', '15', '16' ]
 
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
         with:
-          node-version: "14.x"
+          node-version: ${{ matrix.node }}
       - run: npm install
         working-directory: create-akkasls-entity
       - name: Generate sample project
