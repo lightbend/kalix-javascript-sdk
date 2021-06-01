@@ -4,8 +4,6 @@ package com.example.domain;
 
 import "akkaserverless/annotations.proto";
 
-option java_outer_classname = "CounterDomain";
-
 option (akkaserverless.file).value_entity = {
     name: "Counter"
     entity_type: "counter"
