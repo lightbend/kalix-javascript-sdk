@@ -27,8 +27,8 @@ const targetFile = path.resolve(binDir, filename);
 if (releases[release]) {
   const url =
     process.platform == "win32"
-      ? `https://dl.cloudsmith.io/public/lightbend/akkaserverless/raw/names/${releases[release]}/versions/${akkaslsCodegenVersion}/${releases[release]}.exe`
-      : `https://dl.cloudsmith.io/public/lightbend/akkaserverless/raw/versions/${akkaslsCodegenVersion}/${releases[release]}`;
+      ? `https://repo.lightbend.com/raw/akkaserverless/names/${releases[release]}/versions/${akkaslsCodegenVersion}/${releases[release]}.exe`
+      : `https://repo.lightbend.com/raw/akkaserverless/versions/${akkaslsCodegenVersion}/${releases[release]}`;
   console.info(`Fetching akkasls-codegen-js from ${url}`);
   fetch(url).then((response) => {
     if (!response.ok) {
