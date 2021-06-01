@@ -10,6 +10,7 @@ const requiredConfig = [
   "testSourceDir",
   "protoSourceDir",
   "generatedSourceDir",
+  "compileDescriptorArgs"
 ];
 
 const akkaslsScriptDir = path.resolve(__dirname, "..");
@@ -41,6 +42,7 @@ const scriptHandlers = {
     sourceDir,
     testSourceDir,
     generatedSourceDir,
+    compileDescriptorArgs
   }) {
     const protoFiles = getProtoFiles(protoSourceDir);
     fs.mkdirSync(generatedSourceDir, {
@@ -52,7 +54,7 @@ const scriptHandlers = {
     runOrFail(
       "Compiling protobuf descriptor",
       path.resolve("node_modules", ".bin", "compile-descriptor"),
-      protoFiles,
+      [...protoFiles, compileDescriptorArgs],
       { shell: true }
     );
 
