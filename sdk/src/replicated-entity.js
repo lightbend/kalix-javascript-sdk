@@ -150,6 +150,10 @@ class ReplicatedEntity {
     return this.root.lookupType(messageType);
   }
 
+  /**
+   * @param allComponents
+   * @return {ReplicatedEntityServices}
+   */
   register(allComponents) {
     replicatedEntityServices.addService(this, allComponents);
     return replicatedEntityServices;
@@ -174,6 +178,18 @@ class ReplicatedEntity {
   }
 }
 
+/**
+ * @type {{
+ * ReplicatedData: {PNCounter: function():
+ * void, ORSet: function(): void,
+ * Vote: function(): void, GCounter: function(): void,
+ * ORMap: function(): void, WriteConsistencies: unknown[],
+ * GSet: function(): void,
+ * LWWRegister: function(module:akkaserverless.Serializable, module:akkaserverless.replicatedentity.Clock=, number=): void,
+ * Flag: function(): void, Clocks: unknown[]},
+ * ReplicatedEntity: module:akkaserverless.replicatedentity.ReplicatedEntity
+ * }}
+ */
 module.exports = {
   ReplicatedEntity: ReplicatedEntity,
   ReplicatedData: {

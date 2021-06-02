@@ -60,13 +60,6 @@ function ORSet() {
   });
 
   /**
-   * Callback for handling elements iterated through by {@link module:akkaserverless.replicatedentity.ORSet#forEach}.
-   *
-   * @callback module:akkaserverless.replicatedentity.ORSet~forEachCallback
-   * @param {module:akkaserverless.Serializable} element The element.
-   */
-
-  /**
    * Execute the given callback for each element.
    *
    * @function module:akkaserverless.replicatedentity.ORSet#forEach

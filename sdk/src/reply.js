@@ -136,6 +136,9 @@ class ReplyFactory {
 
 }
 
+/**
+ * @type {module:akkaserverless.ReplyFactory}
+ */
 const replies = new ReplyFactory()
 replies.Reply = Reply
 replies.Effect = Effect
