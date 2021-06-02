@@ -13,7 +13,7 @@ Configuration is pulled from the `config` section of your project's `package.jso
     "testSourceDir": "./test",
     "protoSourceDir": "./proto",
     "generatedSourceDir": "./lib/generated",
-    "compileDescriptorArgs": ""
+    "compileDescriptorArgs": []
   },
   ...
 }

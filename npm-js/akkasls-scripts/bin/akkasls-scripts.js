@@ -54,7 +54,7 @@ const scriptHandlers = {
     runOrFail(
       "Compiling protobuf descriptor",
       path.resolve("node_modules", ".bin", "compile-descriptor"),
-      [...protoFiles, compileDescriptorArgs],
+      [...protoFiles, ...compileDescriptorArgs],
       { shell: true }
     );
 
