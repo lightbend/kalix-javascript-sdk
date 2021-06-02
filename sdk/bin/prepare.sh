@@ -34,3 +34,5 @@ pbjs -t static-module -p ./proto -p ./protoc/include \
   ./proto/akkaserverless/component/*.proto \
   ./proto/akkaserverless/component/*/*.proto \
   | pbts -o ./proto/protobuf-bundle.d.ts -
+
+tsc
