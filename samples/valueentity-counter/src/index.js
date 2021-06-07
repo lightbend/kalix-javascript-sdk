@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 
+// tag::starting[]
 import generatedComponents from "../lib/generated/index.js";
 
 generatedComponents.forEach((component) => {
   component.start();
 });
+// end::starting[]

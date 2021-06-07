@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
+// tag::entity-class[]
 import akkaserverless from "@lightbend/akkaserverless-javascript-sdk";
 const ValueEntity = akkaserverless.ValueEntity;
 
@@ -45,9 +45,15 @@ const entity = new ValueEntity(
     serializeFallbackToJson: true
   }
 );
-const CounterState = entity.lookupType("com.example.domain.CounterState");
+// end::entity-class[]
 
+// tag::lookup-type[]
+const CounterState = entity.lookupType("com.example.domain.CounterState");
+// end::lookup-type[]
+
+// tag::initial[]
 entity.setInitial(entityId => (CounterState.create({ value: 0 })));
+// end::initial[]
 
 entity.setCommandHandlers({
   Increase: increase,
@@ -56,6 +62,7 @@ entity.setCommandHandlers({
   GetCurrentCounter: getCurrentCounter
 });
 
+// tag::increase[]
 function increase(command, state, ctx) {
   if (command.value < 0) {
     ctx.fail(`Increase requires a positive value. It was [${command.value}].`);
@@ -64,6 +71,7 @@ function increase(command, state, ctx) {
   ctx.updateState(state);
   return {};
 }
+// end::increase[]
 
 function decrease(command, state, ctx) {
   if (command.value < 0) {
@@ -80,8 +88,10 @@ function reset(command, state, ctx) {
   return {};
 }
 
+// tag::get-current[]
 function getCurrentCounter(command, state, ctx) {
   return { value: state.value };
 }
+// end::get-current[]
 
 export default entity;

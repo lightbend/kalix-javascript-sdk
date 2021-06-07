@@ -36,6 +36,7 @@ apidocs:
 examples:
 	mkdir -p "${managed_examples}"
 	rsync -a --exclude-from=.examplesignore ../samples/js-customer-registry/ "${managed_examples}/js-customer-registry/"
+	rsync -a --exclude-from=.examplesignore ../samples/valueentity-counter/ "${managed_examples}/valueentity-counter/"
 
 deploy: clean managed
 	bin/deploy.sh --module ${module} --upstream ${upstream} --branch ${branch} ${sources}
