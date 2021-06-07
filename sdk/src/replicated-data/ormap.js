@@ -76,7 +76,7 @@ function ORMap() {
    *
    * @callback module:akkaserverless.replicatedentity.ORMap~defaultValueCallback
    * @param {module:akkaserverless.Serializable} key The key the default value is being generated for.
-   * @returns {undefined|akkaserverless.replicatedentity.ReplicatedData} The default value, or undefined if no default value should be returned.
+   * @returns {undefined|module:akkaserverless.replicatedentity.ReplicatedData} The default value, or undefined if no default value should be returned.
    */
 
   /**
@@ -152,8 +152,8 @@ function ORMap() {
   /**
    * Return an iterator of the entries of this map.
    *
-   * @function module:akkaserverless.replicatedentity.ORMap#@@iterator
-   * @returns {iterator<Array>}
+   * @function module:akkaserverless.replicatedentity.ORMap#iterator
+   * @returns {Iterator<Array>}
    */
   this[Symbol.iterator] = function() {
     return entries();
@@ -163,7 +163,7 @@ function ORMap() {
    * Return an iterator of the values of this map.
    *
    * @function module:akkaserverless.replicatedentity.ORMap#values
-   * @returns {iterator<module:akkaserverless.replicatedentity.ReplicatedData>}
+   * @returns {Iterator<module:akkaserverless.replicatedentity.ReplicatedData>}
    */
   this.values = function() {
     return mapIterator(currentValue.values(), value => value.value);
@@ -173,7 +173,7 @@ function ORMap() {
    * Return an iterator of the keys of this map.
    *
    * @function module:akkaserverless.replicatedentity.ORMap#keys
-   * @returns {iterator<module:akkaserverless.Serializable>}
+   * @returns {Iterator<module:akkaserverless.Serializable>}
    */
   this.keys = function() {
     return mapIterator(currentValue.values(), value => value.key);
@@ -182,7 +182,7 @@ function ORMap() {
   /**
    * Get the value at the given key.
    *
-   * @function {module:akkaserverless.replicatedentity.ORMap#get}
+   * @function module:akkaserverless.replicatedentity.ORMap#get
    * @param {module:akkaserverless.Serializable} key The key to get.
    * @returns {undefined|module:akkaserverless.replicatedentity.ReplicatedData} The Replicated Data value, or undefined if no value is defined at that key.
    */

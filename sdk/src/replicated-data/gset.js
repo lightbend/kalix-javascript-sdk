@@ -75,8 +75,8 @@ function GSet() {
   /**
    * Create an iterator for this set.
    *
-   * @function module:akkaserverless.replicatedentity.GSet#@@iterator
-   * @returns {iterator<module:akkaserverless.Serializable>}
+   * @function module:akkaserverless.replicatedentity.GSet#iterator
+   * @returns {Iterator<module:akkaserverless.Serializable>}
    */
   this[Symbol.iterator] = function () {
     return currentValue.values();

@@ -22,7 +22,7 @@ const util = require("util");
  * A Vote Replicated Data type allows all nodes an a cluster to vote on a condition, such as whether a user is online.
  *
  * @constructor module:akkaserverless.replicatedentity.Vote
- * @extends module:akkaserverless.replicatedentity.ReplicatedData
+ * @implements module:akkaserverless.replicatedentity.ReplicatedData
  */
 function Vote() {
   let currentSelfVote = false;

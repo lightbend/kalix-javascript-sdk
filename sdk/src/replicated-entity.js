@@ -65,7 +65,7 @@ const replicatedEntityServices = new support.ReplicatedEntityServices();
  * A Replicated Entity.
  *
  * @memberOf module:akkaserverless.replicatedentity
- * @extends module:akkaserverless.Entity
+ * @implements module:akkaserverless.Entity
  */
 class ReplicatedEntity {
 

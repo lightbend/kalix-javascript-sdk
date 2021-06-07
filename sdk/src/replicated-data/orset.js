@@ -79,8 +79,8 @@ function ORSet() {
   /**
    * Create an iterator for this set.
    *
-   * @function module:akkaserverless.replicatedentity.ORSet#@@iterator
-   * @returns {iterator<module:akkaserverless.Serializable>}
+   * @function module:akkaserverless.replicatedentity.ORSet#iterator
+   * @returns {Iterator<module:akkaserverless.Serializable>}
    */
   this[Symbol.iterator] = function () {
     return currentValue.values();
