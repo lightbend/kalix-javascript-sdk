@@ -6,7 +6,7 @@ While designing your service it is useful to read [designing services](https://d
 
 ## Developing
 
-This project has a bare-bones skeleton service ready to go, but in order to adapt and
+This project has a functioning service ready to adapt and
 extend it it may be useful to read up on [developing services](https://developer.lightbend.com/docs/akka-serverless/developing/index.html)
 and in particular the [JavaScript section](https://developer.lightbend.com/docs/akka-serverless/js-services/index.html)
 
@@ -36,7 +36,7 @@ Mocha is the testing framework employed, and Chai is used for assertions. To exe
 npm run test
 ```
 
-These tests leverage the mock event-sourced entity classes provided by `testkit.js`. These classes mimic the minimal required machinery to execute commands and handle events against a single entity for simple unit testing.
+These tests leverage the mock event-sourced entity and value-entity classes provided by `testkit.js`. These classes mimic the minimal required machinery to execute commands and handle events against a single entity for simple unit testing.
 In future, more complicated testing can leverage the Akka Serverless integration test-kit which runs the proxy inside docker (see [this example](https://github.com/lightbend/akkaserverless-framework/blob/master/javascript-sdk/integration-test/integration-testkit-test.js)).
 
 ## Integration Test
