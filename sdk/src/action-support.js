@@ -86,7 +86,7 @@ class ActionHandler {
         return call.cancelled;
       },
       get metadata() {
-        return metadata;
+        return metadataObject;
       },
       get cloudevent() {
         return cloudevent;
