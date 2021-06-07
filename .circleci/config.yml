@@ -33,7 +33,9 @@ jobs:
             pushd sdk && npm ci && npm test && popd
             pushd samples/js-eventsourced-shopping-cart && npm ci && npm test && popd
             pushd samples/js-valueentity-shopping-cart && npm ci && npm test && popd
-            pushd samples/valueentity-counter && npm install && npm run build && npm run test && popd
+
+            pushd sdk && nvm install && npm install && npm link && popd
+            pushd samples/valueentity-counter && npm link @lightbend/akkaserverless-javascript-sdk@0.0.0 && npm install && npm run build && npm run test && popd
 
   integration-tests:
     machine: true
@@ -48,7 +50,9 @@ jobs:
             pushd samples/js-customer-registry && npm ci && npm run integration-test && popd
             pushd samples/js-eventsourced-shopping-cart && npm ci && npm run integration-test && popd
             pushd samples/js-valueentity-shopping-cart && npm ci && npm run integration-test && popd
-            pushd samples/valueentity-counter && npm install && npm run build && npm run integration-test && popd
+
+            pushd sdk && nvm install && npm install && npm link && popd
+            pushd samples/valueentity-counter && npm link @lightbend/akkaserverless-javascript-sdk@0.0.0 && npm install && npm run build && npm run integration-test && popd
 
   tck-tests:
     machine: true
