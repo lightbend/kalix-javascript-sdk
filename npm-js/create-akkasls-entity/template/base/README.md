@@ -96,7 +96,7 @@ ERROR:
 
 To deploy your service, install the `akkasls` CLI as documented in [Setting up a local development environment](https://developer.lightbend.com/docs/akka-serverless/getting-started/set-up-development-env.html) and configure a Docker Registry to upload your docker image to.
 
-You will need to update the `akkasls.dockerImage` property in the `pom.xml` and refer to [Configuring registries](https://developer.lightbend.com/docs/akka-serverless/deploying/registries.html) for more information on how to make your docker image available to Akka Serverless.
+You will need to update the `config.dockerImage` property in the `package.json` and refer to [Configuring registries](https://developer.lightbend.com/docs/akka-serverless/deploying/registries.html) for more information on how to make your docker image available to Akka Serverless.
 
 Finally, you can use the [Akka Serverless Console](https://console.akkaserverless.com)
 to create a project and then deploy your service into the project either by using `npm run deploy`,
