@@ -34,3 +34,14 @@ pbjs -t static-module -p ./proto -p ./protoc/include \
   ./proto/akkaserverless/component/*.proto \
   ./proto/akkaserverless/component/*/*.proto \
   | pbts -o ./proto/protobuf-bundle.d.ts -
+
+# Generate TS type definitions based on the JSDocs
+jsdoc -t ./node_modules/@janory/tsd-jsdoc/dist -c ./jsdoc.json -d .
+mv types.d.ts index.d.ts
+# There replacements are quite dirty, but even the patched tsd-jsdoc generator can't deal with these (mostly module related) issues currently
+perl -i -pe 's/declare module \"akkaserverless\"/declare module \"\@lightbend\/akkaserverless-javascript-sdk\"/g' index.d.ts
+perl -i -pe 's/module:akkaserverless\.//g' index.d.ts
+perl -i -pe 's/import\("akkaserverless\.([a-zA-Z.]*)([a-zA-Z]*)\"\).(?!default\W)([a-zA-Z]*)/$1$2.$3/g' index.d.ts
+perl -i -pe 's/import\("akkaserverless\.([a-zA-Z.]*)([a-zA-Z]*)\"\)([.a-zA-Z]*)/$1$2/g' index.d.ts
+perl -i -pe 's/Promise(?!<)/Promise<any>/g' index.d.ts
+perl -i -pe 's/Component\[\]/import(\"\.\/proto\/protobuf-bundle")\.akkaserverless\.protocol\.Component\[\]/g' index.d.ts
