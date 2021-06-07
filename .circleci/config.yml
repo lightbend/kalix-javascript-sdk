@@ -51,7 +51,7 @@ jobs:
             pushd samples/js-eventsourced-shopping-cart && npm ci && npm run integration-test && popd
             pushd samples/js-valueentity-shopping-cart && npm ci && npm run integration-test && popd
 
-            pushd sdk && npm install && sudo (source /opt/circleci/.nvm/nvm.sh && npm link) && popd
+            pushd sdk && npm install && sudo $(which npm) link && popd
             pushd samples/valueentity-counter && npm link @lightbend/akkaserverless-javascript-sdk && npm install && npm run build && npm run integration-test && popd
 
   tck-tests:
