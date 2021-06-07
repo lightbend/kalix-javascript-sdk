@@ -29,6 +29,7 @@
   "scripts": {
     "start": "node src/index.js",
     "test": "mocha ./test",
-    "integration-test": "mocha ./integration-test"
+    "integration-test": "mocha ./integration-test",
+    "build": "compile-descriptor proto/counter_api.proto proto/counter_domain.proto"
   }
 }
