@@ -15,9 +15,13 @@
  */
 
 /**
+ *
+ * @namespace module:akkaserverless.replies
+ */
+
+/**
  * A return type to allow returning forwards or failures, and attaching effects to messages.
  *
- * @class module:akkaserverless.replies.Reply
  * @memberOf module:akkaserverless.replies
  */
 class Reply {
@@ -59,7 +63,6 @@ class Reply {
 }
 
 /**
- * @class module:akkaserverless.replies.Effect
  * @memberOf module:akkaserverless.replies
  */
 class Effect {
@@ -80,7 +83,7 @@ class Effect {
 
 /**
  * Factory for creating various types of replies from a component
- * @member module:akkaserverless.replies
+ * @memberOf module:akkaserverless.replies
  */
 class ReplyFactory {
   /**

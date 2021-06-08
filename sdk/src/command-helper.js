@@ -25,7 +25,7 @@ const Reply = require("./reply").Reply;
  * Creates the base for context objects.
  * @private
  */
-module.exports = class CommandHelper {
+class CommandHelper {
 
   constructor(entityId, service, streamId, call, handlerFactory, allComponents, debug) {
     this.entityId = entityId;
@@ -344,3 +344,5 @@ module.exports = class CommandHelper {
     return accessor;
   }
 };
+
+module.exports = CommandHelper;

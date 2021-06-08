@@ -61,8 +61,10 @@ const AkkaServerlessJson = "json.akkaserverless.com/";
  * @type {module:akkaserverless.SerializableProtobufMessage|module:akkaserverless.TypedJson|Object|string|number|boolean|Long|Buffer}
  */
 
-
-module.exports = class AnySupport {
+/**
+ * @private
+ */
+class AnySupport {
   constructor(root) {
     this.root = root;
   }
@@ -265,3 +267,5 @@ module.exports = class AnySupport {
     return this.primitiveDefaultValue(type);
   }
 };
+
+module.exports = AnySupport;

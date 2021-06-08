@@ -93,7 +93,7 @@ try {
  * An Akka Serverless root server.
  *
  * @memberOf module:akkaserverless
- * @extends module:akkaserverless.Server
+ * @implements module:akkaserverless.Server
  */
 class AkkaServerless {
 
@@ -144,7 +144,7 @@ class AkkaServerless {
   /**
    * Start this server.
    *
-   * @param {module:akkaserverless.AkkaServerless~startOptions=} options The options for starting.
+   * @param {module:akkaserverless.Server~startOptions=} options The options for starting.
    * @returns {number} The port that was bound to, useful for when a random ephemeral port was requested.
    */
   start(options) {

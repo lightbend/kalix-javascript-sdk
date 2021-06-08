@@ -25,12 +25,10 @@ const valueEntityServices = new ValueEntityServices();
 
 /**
  * Value entity command handlers
+ * The names of the properties must match the names of the service calls specified in the gRPC descriptor for this value entities service.
  *
  * @typedef module:akkaserverless.ValueEntity~commandHandlers
- *
- * The names of the properties must match the names of the service calls specified in the gRPC descriptor for this
- * value entities service.
- * @property {Object<String, module:akkaserverless.ValueEntity~commandHandler>}
+ * @type {Object<String, module:akkaserverless.ValueEntity~commandHandler>}
  */
 
 /**
@@ -69,7 +67,7 @@ const valueEntityServices = new ValueEntityServices();
  * A value entity.
  *
  * @memberOf module:akkaserverless
- * @extends module:akkaserverless.Entity
+ * @implements module:akkaserverless.Entity
  */
 class ValueEntity {
 
@@ -146,7 +144,7 @@ class ValueEntity {
   /**
    * Set the command handlers of the entity.
    *
-   * @param {module:akkaserverless.ValueEntity~commandHandlers} callback The command handler callbacks.
+   * @param {module:akkaserverless.ValueEntity~commandHandlers} handlers The command handler callbacks.
    * @return {module:akkaserverless.ValueEntity} This entity.
    */
   setCommandHandlers(commandHandlers) {

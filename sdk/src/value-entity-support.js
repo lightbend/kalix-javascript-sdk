@@ -24,6 +24,9 @@ debug.log = console.log.bind(console);
 const AnySupport = require("./protobuf-any");
 const CommandHelper = require("./command-helper");
 
+/**
+ * @private
+ */
 class ValueEntitySupport {
 
   constructor(root, service, commandHandlers, initial, options, allComponents) {
