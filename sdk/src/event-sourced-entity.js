@@ -95,7 +95,7 @@ const eventSourcedEntityServices = new EventSourcedEntityServices();
  * An event sourced entity.
  *
  * @memberOf module:akkaserverless
- * @extends module:akkaserverless.Entity
+ * @implements module:akkaserverless.Entity
  */
 class EventSourcedEntity {
 

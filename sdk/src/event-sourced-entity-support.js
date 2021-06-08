@@ -25,6 +25,9 @@ const AnySupport = require("./protobuf-any");
 const CommandHelper = require("./command-helper");
 const Reply = require("./reply").Reply;
 
+/**
+ * @private
+ */
 class EventSourcedEntitySupport {
 
   constructor(root, service, behavior, initial, options, allComponents) {

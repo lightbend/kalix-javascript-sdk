@@ -36,6 +36,9 @@ class ActionSupport {
   }
 }
 
+/**
+ * @private
+ */
 class ActionHandler {
 
   constructor(support, grpcMethod, commandHandler, call, grpcCallback, metadata) {

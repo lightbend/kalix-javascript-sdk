@@ -32,12 +32,11 @@ const viewServices = new ViewServices();
 
 /**
  * View handlers
- *
- * @typedef module:akkaserverless.View~handlers
- *
  * The names of the properties must match the names of all the view methods specified in the gRPC
  * descriptor.
- * @property {Object<String, module:akkaserverless.View~handler>}
+ *
+ * @typedef module:akkaserverless.View~handlers
+ * @type {Object<String, module:akkaserverless.View~handler>}
  */
 
 /**
@@ -54,7 +53,7 @@ const viewServices = new ViewServices();
  * A view.
  *
  * @memberOf module:akkaserverless
- * @extends module:akkaserverless.Entity
+ * @implements module:akkaserverless.Entity
  */
 class View {
 

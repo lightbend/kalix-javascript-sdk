@@ -24,6 +24,13 @@ const AkkaServerless = require("./akkaserverless");
 const actionServices = new ActionSupport();
 
 /**
+ * Options for a action.
+ *
+ * @typedef module:akkaserverless.Action~options
+ * @property {array<string>} [includeDirs=["."]] The directories to include when looking up imported protobuf files.
+ */
+
+/**
  * A unary action command handler.
  *
  * @callback module:akkaserverless.Action~unaryCommandHandler
@@ -68,7 +75,7 @@ const actionServices = new ActionSupport();
  * An action.
  *
  * @memberOf module:akkaserverless
- * @extends module:akkaserverless.Entity
+ * @implements module:akkaserverless.Entity
  */
 class Action {
 

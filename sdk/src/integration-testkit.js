@@ -24,6 +24,9 @@ const defaultOptions = {
   dockerImage: `gcr.io/akkaserverless-public/akkaserverless-proxy:${settings.frameworkVersion}`
 }
 
+/**
+ * @private
+ */
 class IntegrationTestkit {
 
   constructor(options) {
