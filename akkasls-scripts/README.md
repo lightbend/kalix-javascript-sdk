@@ -12,7 +12,8 @@ Configuration is pulled from the `config` section of your project's `package.jso
     "sourceDir": "./src",
     "testSourceDir": "./test",
     "protoSourceDir": "./proto",
-    "generatedSourceDir": "./lib/generated"
+    "generatedSourceDir": "./lib/generated",
+    "compileDescriptorArgs": []
   },
   ...
 }
