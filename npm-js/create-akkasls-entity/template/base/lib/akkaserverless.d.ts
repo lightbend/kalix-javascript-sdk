@@ -68,12 +68,21 @@ type ValueEntityCommandContext<State> = CommandContext & {
 };
 
 /**
+ * The context passed to View update handlers
+ */
+type ViewUpdateHandlerContext = {
+  eventSubject: string;
+  metadata: Metadata;
+  commandName: string;
+};
+
+/**
  * The base context passed to Action command handlers
  */
 type ActionCommandContext = CommandContext & {
   cancelled: boolean;
   metadata: Metadata;
-  eventSubject: String;
+  eventSubject: string;
   cloudevent: unknown;
 };
 
