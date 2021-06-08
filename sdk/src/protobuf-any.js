@@ -215,7 +215,7 @@ module.exports = class AnySupport {
       type = url.substr(idx + 1);
     }
 
-    let bytes = any.value;
+    let bytes = any.value || EmptyArray;
 
     if (hostName === AkkaServerlessPrimitive) {
       return AnySupport.deserializePrimitive(bytes, type);
