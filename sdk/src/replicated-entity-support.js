@@ -271,19 +271,25 @@ class ReplicatedEntityHandler {
           set: (writeConsistency) => ctx.writeConsistency = writeConsistency
         });
 
-        const userReply = this.entity.commandHandlers[commandName](command, ctx.context);
-        if (ctx.streamed && ctx.subscription === null) {
-          // todo relax this requirement
-          throw new Error("Streamed commands must be subscribed to using ctx.subscribe()");
+        const nextFunc = (userReply) => {
+          if (ctx.streamed && ctx.subscription === null) {
+            // todo relax this requirement
+            throw new Error("Streamed commands must be subscribed to using ctx.subscribe()");
+          }
+  
+          const res = Promise.resolve(this.setStateActionOnReply(ctx));
+  
+          if (ctx.subscribed) {
+            ctx.reply.streamed = true;
+          }
+  
+          return res.then(() => userReply);
         }
 
-        this.setStateActionOnReply(ctx);
-
-        if (ctx.subscribed) {
-          ctx.reply.streamed = true;
-        }
-
-        return userReply;
+        return {
+          userReply: this.entity.commandHandlers[commandName](command, ctx.context),
+          next: nextFunc
+        };
       };
     } else {
       return null;
@@ -298,7 +304,7 @@ class ReplicatedEntityHandler {
         writeConsistency: ctx.writeConsistency
       };
       this.currentState = null;
-      this.handleStateChange();
+      return this.handleStateChange();
     } else if (this.currentState !== null) {
       const delta = this.currentState.getAndResetDelta();
       if (delta != null) {
@@ -307,9 +313,11 @@ class ReplicatedEntityHandler {
           update: delta,
           writeConsistency: ctx.writeConsistency
         };
-        this.handleStateChange();
+        return this.handleStateChange();
       }
     }
+
+    return Promise.resolve();
   }
 
   addStateManagementToContext(ctx) {
@@ -402,7 +410,7 @@ class ReplicatedEntityHandler {
   }
 
   handleStateChange() {
-    this.subscribers.forEach((subscriber, key) => {
+    Promise.all(Array.from( this.subscribers).map((subscriber, key) => {
       /**
        * Context passed to {@link module:akkaserverless.replicatedentity.ReplicatedEntityCommandContext#onStateChange} handlers.
        *
@@ -436,21 +444,7 @@ class ReplicatedEntityHandler {
         this.cancelledCallbacks.delete(key);
       };
 
-      try {
-        this.commandHelper.invokeHandler(() => {
-          const userReply = subscriber.handler(this.currentState, ctx.context);
-          if (this.currentState.getAndResetDelta() !== null) {
-            throw new Error("State change handler attempted to modify state");
-          }
-          return userReply;
-        }, ctx, subscriber.grpcMethod, msg => {
-          if (ctx.effects.length > 0 || ctx.reply.endStream === true || ctx.reply.clientAction !== undefined) {
-            return {
-              streamedMessage: msg
-            };
-          }
-        })
-      } catch (e) {
+      const onError = (err) => {
         this.call.write({
           failure: {
             commandId: subscriber.commandId,
@@ -459,8 +453,33 @@ class ReplicatedEntityHandler {
         });
         this.call.end();
         // Probably rethrow?
+      };
+
+      try {
+        this.commandHelper.invokeHandler(() => {
+          const nextAction = () => {
+            if (this.currentState.getAndResetDelta() !== null) {
+              throw new Error("State change handler attempted to modify state");
+            }
+
+            return userReply;
+          }
+
+          return {
+            userReply: subscriber.handler(this.currentState, ctx.context),
+            next: nextAction
+          };
+        }, ctx, subscriber.grpcMethod, msg => {
+          if (ctx.effects.length > 0 || ctx.reply.endStream === true || ctx.reply.clientAction !== undefined) {
+            return {
+              streamedMessage: msg
+            };
+          }
+        }, "empty desc", onError);
+      } catch (e) {
+        onError(e);
       }
-    });
+    }))
   }
 
   handleStreamCancelled(cancelled) {
