@@ -34,7 +34,8 @@ jobs:
             pushd samples/js-eventsourced-shopping-cart && npm ci && npm test && popd
             pushd samples/js-valueentity-shopping-cart && npm ci && npm test && popd
 
-            pushd sdk && npm install && sudo npm link && popd
+            mkdir ~/.npm-packages && npm config set prefix ~/.npm-packages
+            pushd sdk && npm ci && npm link && popd
             pushd samples/valueentity-counter && npm link @lightbend/akkaserverless-javascript-sdk && npm install && npm run build && npm run test && popd
 
   integration-tests:
@@ -51,7 +52,7 @@ jobs:
             pushd samples/js-eventsourced-shopping-cart && npm ci && npm run integration-test && popd
             pushd samples/js-valueentity-shopping-cart && npm ci && npm run integration-test && popd
 
-            pushd sdk && npm install && sudo ln -s "$(which node)" /usr/bin/node && sudo ln -s "$(which npm)" /usr/bin/npm && sudo npm link && popd
+            pushd sdk && nvm install && npm ci && npm link && popd
             pushd samples/valueentity-counter && npm link @lightbend/akkaserverless-javascript-sdk && npm install && npm run build && npm run integration-test && popd
 
   tck-tests:
