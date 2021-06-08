@@ -22,7 +22,6 @@ const Long = require("long");
 
 const root = new protobuf.Root();
 root.loadSync(path.join(__dirname, "example.proto"));
-
 const anySupport = new AnySupport(root);
 const Example = root.lookupType("com.example.Example");
 const PrimitiveLike = root.lookupType("com.example.PrimitiveLike");
@@ -169,6 +168,13 @@ describe("AnySupport", () => {
 
   it("should fail to serialize to JSON when no type property is present but is required", () => {
     (() => AnySupport.serialize({field1: "foo"}, false, true, true)).should.throw();
+  });
+
+  it("should handle deserializing undefined any values", () => {
+    const serialized = { type_url: "type.googleapis.com/com.example.Example" };
+    const deserialized = anySupport.deserialize(serialized);
+    deserialized.should.be.an.instanceof(Example.ctor);
+    deserialized.should.be.empty;
   });
 
 });
