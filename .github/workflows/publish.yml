@@ -17,7 +17,7 @@ jobs:
       - run: npm install
         working-directory: create-akkasls-entity
       - name: Generate sample project
-        run: node "${{ github.workspace }}/create-akkasls-entity/create-akkasls-entity.js" generated-project
+        run: node "${{ github.workspace }}/create-akkasls-entity/create-akkasls-entity.js" generated-project --template event-sourced-entity
         working-directory: ${{ runner.temp }}
       - name: Upload generated project as artifact
         uses: actions/upload-artifact@v1
