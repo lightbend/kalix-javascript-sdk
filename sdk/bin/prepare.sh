@@ -36,7 +36,7 @@ pbjs -t static-module -p ./proto -p ./protoc/include \
   | pbts -o ./proto/protobuf-bundle.d.ts -
 
 # Generate TS type definitions based on the JSDocs
-jsdoc -t ./node_modules/@janory/tsd-jsdoc/dist -c ./jsdoc.json -d .
+jsdoc -t ./node_modules/@lightbend/tsd-jsdoc/dist -c ./jsdoc.json -d .
 mv types.d.ts index.d.ts
 # There replacements are quite dirty, but even the patched tsd-jsdoc generator can't deal with these (mostly module related) issues currently
 perl -i -pe 's/declare module \"akkaserverless\"/declare module \"\@lightbend\/akkaserverless-javascript-sdk\"/g' index.d.ts

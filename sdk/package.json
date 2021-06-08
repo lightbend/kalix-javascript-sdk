@@ -49,7 +49,7 @@
     "unzipper": "^0.9.15"
   },
   "devDependencies": {
-    "@janory/tsd-jsdoc": "^2.5.1",
+    "@lightbend/tsd-jsdoc": "^2.5.1",
     "chai": "4.2.0",
     "chai-as-promised": "7.1.1",
     "ink-docstrap": "^1.3.2",
