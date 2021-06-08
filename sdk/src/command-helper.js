@@ -61,6 +61,21 @@ module.exports = class CommandHelper {
       })
     } else {
 
+      const onError = (err) => {
+        const error = "Error handling command '" + command.name + "'";
+        ctx.commandDebug(error);
+        console.error(err);
+
+        this.call.write({
+          failure: {
+            commandId: command.id,
+            description: error + ": " + err
+          }
+        });
+
+        this.call.end();
+      }
+
       try {
         const grpcMethod = this.service.methods[command.name];
 
@@ -72,21 +87,6 @@ module.exports = class CommandHelper {
         const deserCommand = grpcMethod.resolvedRequestType.decode(commandBuffer);
 
         const handler = this.handlerFactory(command.name, grpcMethod);
-
-        const onError = (err) => {
-          const error = "Error handling command '" + command.name + "'";
-          ctx.commandDebug(error);
-          console.error(err);
-  
-          this.call.write({
-            failure: {
-              commandId: command.id,
-              description: error + ": " + err
-            }
-          });
-  
-          this.call.end();
-        }
 
         if (handler !== null) {
 
@@ -113,10 +113,14 @@ module.exports = class CommandHelper {
 
   invokeHandler(handler, ctx, grpcMethod, createReply, desc, onError) {
     const { userReply, next } = handler() 
-    Promise.resolve(userReply)
+    return Promise.resolve(userReply)
       .then(reply => {
         ctx.reply = {};
-        this.invokeHandlerAsync(reply, ctx, grpcMethod, createReply, desc);
+        const r = (res) => {
+          next(reply);
+          return createReply(res);
+        }
+        this.invokeHandlerAsync(reply, ctx, grpcMethod, r, desc);
       })
       .catch((err) => {
         // TODO: verify-again this logic
@@ -128,7 +132,6 @@ module.exports = class CommandHelper {
           onError(err);
         }
       })
-      .then(reply => next(reply))
       .finally(() => ctx.active = false)
   }
 
@@ -195,6 +198,11 @@ module.exports = class CommandHelper {
             }
           }
         }
+
+        // the big hammer?
+        if (ctx.subscribed) {
+          ctx.reply.streamed = true;
+        }
         const reply = createReply(ctx.reply);
         if (reply !== undefined) {
           this.call.write(reply);
@@ -221,6 +229,10 @@ module.exports = class CommandHelper {
         ctx.commandDebug("%s no reply with %d side effects.", desc, ctx.effects.length);
       }
 
+      // the big hammer?
+      if (ctx.subscribed) {
+        ctx.reply.streamed = true;
+      }
       const reply = createReply(ctx.reply);
       if (reply !== undefined) {
         this.call.write(reply);

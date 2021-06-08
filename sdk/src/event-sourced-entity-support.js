@@ -131,33 +131,37 @@ class EventSourcedEntityHandler {
             ctx.commandDebug("Emitting event '%s'", serEvent.type_url);
           };
 
-          const userReply = behavior.commandHandlers[commandName](command, state, ctx.context);
+          const nextAction = (userReply) => {
+            // when not using Reply a failure is signaled by throwing, but
+            // when using Reply a failed reply also means applying events & creating snapshots should be skipped
+            if (!(userReply instanceof Reply) || !userReply.failure) {
 
-          // when not using Reply a failure is signaled by throwing, but
-          // when using Reply a failed reply also means applying events & creating snapshots should be skipped
-          if (!(userReply instanceof Reply) || !userReply.failure) {
+              // Invoke event handlers first
+              let snapshot = false;
+              ctx.events.forEach(event => {
+                this.handleEvent(event);
+                this.sequence++;
+                if (this.sequence % this.entity.options.snapshotEvery === 0) {
+                  snapshot = true;
+                }
+              });
 
-            // Invoke event handlers first
-            let snapshot = false;
-            ctx.events.forEach(event => {
-              this.handleEvent(event);
-              this.sequence++;
-              if (this.sequence % this.entity.options.snapshotEvery === 0) {
-                snapshot = true;
+              if (ctx.events.length > 0) {
+                ctx.commandDebug("Emitting %d events", ctx.events.length);
               }
-            });
+              ctx.reply.events = ctx.events;
 
-            if (ctx.events.length > 0) {
-              ctx.commandDebug("Emitting %d events", ctx.events.length);
-            }
-            ctx.reply.events = ctx.events;
-
-            if (snapshot) {
-              ctx.commandDebug("Snapshotting current state with type '%s'", this.anyState.type_url);
-              ctx.reply.snapshot = this.anyState
+              if (snapshot) {
+                ctx.commandDebug("Snapshotting current state with type '%s'", this.anyState.type_url);
+                ctx.reply.snapshot = this.anyState
+              }
             }
           }
-          return userReply;
+
+          return {
+            userReply: behavior.commandHandlers[commandName](command, state, ctx.context),
+            next: nextAction
+          };
         };
       } else {
         return null;

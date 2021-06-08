@@ -134,23 +134,28 @@ class ValueEntityHandler {
             deleted = true;
           }
 
-          const userReply = this.entity.commandHandlers[commandName](command, state, ctx.context);
+          const nextAction = (userReply) => {
+            if (deleted) {
+              ctx.reply.stateAction = { delete: {} };
+              this.anyState = null;
+              ctx.commandDebug("Deleting state '%s'", this.entityId);
+            } else if (updatedAnyState !== null) {
+              ctx.reply.stateAction = {
+                update: {
+                  value: updatedAnyState
+                }
+              };
+              this.anyState = updatedAnyState; // already serialized
+              ctx.commandDebug("Updating state '%s'", updatedAnyState.type_url);
+            }
 
-          if (deleted) {
-            ctx.reply.stateAction = { delete: {} };
-            this.anyState = null;
-            ctx.commandDebug("Deleting state '%s'", this.entityId);
-          } else if (updatedAnyState !== null) {
-            ctx.reply.stateAction = {
-              update: {
-                value: updatedAnyState
-              }
-            };
-            this.anyState = updatedAnyState; // already serialized
-            ctx.commandDebug("Updating state '%s'", updatedAnyState.type_url);
+            return userReply;
           }
 
-          return userReply;
+          return {
+            userReply: this.entity.commandHandlers[commandName](command, state, ctx.context),
+            next: nextAction
+          };
         };
       } else {
         return null;

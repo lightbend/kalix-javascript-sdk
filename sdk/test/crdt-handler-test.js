@@ -59,9 +59,9 @@ class MockCall {
 
   get() {
     if (this.written.length === 0) {
-      throw new Error("No messages in call written buffer!")
+      throw new Error("No messages in call written buffer!");
     } else {
-      return this.written.shift()
+      return this.written.shift();
     }
   }
 
@@ -200,7 +200,6 @@ describe("ReplicatedEntityHandler", () => {
       }
     });
     const reply = await handleCommand(handler, inMsg);
-    console.dir(reply);
     reply.stateAction.update.gcounter.increment.toNumber().should.equal(3);
   });
 
@@ -251,144 +250,144 @@ describe("ReplicatedEntityHandler", () => {
     reply.stateAction.delete.should.not.be.null;
   });
 
-  // it("should not allow deleting an entity that hasn't been created", () => {
-  //   const handler = createHandler((cmd, ctx) => {
-  //     ctx.delete();
-  //     return outMsg;
-  //   });
-  //   handleFailedCommand(handler, inMsg);
-  // });
+  it("should not allow deleting an entity that hasn't been created", async () => {
+    const handler = createHandler((cmd, ctx) => {
+      ctx.delete();
+      return outMsg;
+    });
+    await handleFailedCommand(handler, inMsg);
+  });
 
-  // it("should allow streaming", () => {
-  //   const handler = create({
-  //     commandHandlers: {
-  //       StreamSomething: (cmd, ctx) => {
-  //         ctx.streamed.should.equal(true);
-  //         ctx.onStateChange = (state, ctx) => {
-  //           ctx.state.value.should.equal(5);
-  //           return {field: "pushed"};
-  //         };
-  //         return outMsg;
-  //       }
-  //     },
-  //   }, {
-  //     gcounter: {
-  //       increment: 2
-  //     }
-  //   });
+  it("should allow streaming", async () => {
+    const handler = create({
+      commandHandlers: {
+        StreamSomething: (cmd, ctx) => {
+          ctx.streamed.should.equal(true);
+          ctx.onStateChange = (state, ctx) => {
+            ctx.state.value.should.equal(5);
+            return {field: "pushed"};
+          };
+          return outMsg;
+        }
+      },
+    }, {
+      gcounter: {
+        increment: 2
+      }
+    });
 
-  //   const reply = handleCommand(handler, inMsg, "StreamSomething", 5, true);
-  //   reply.streamed.should.be.true;
-  //   send(handler, {
-  //     delta: {
-  //       gcounter: {
-  //         increment: 3
-  //       }
-  //     }
-  //   });
-  //   const streamed = call.get().streamedMessage;
-  //   streamed.commandId.toNumber().should.equal(5);
-  //   anySupport.deserialize(streamed.clientAction.reply.payload).field.should.equal("pushed");
-  // });
+    const reply = await handleCommand(handler, inMsg, "StreamSomething", 5, true);
+    reply.streamed.should.be.true;
+    await send(handler, {
+      delta: {
+        gcounter: {
+          increment: 3
+        }
+      }
+    });
+    const streamed = call.get().streamedMessage;
+    streamed.commandId.toNumber().should.equal(5);
+    anySupport.deserialize(streamed.clientAction.reply.payload).field.should.equal("pushed");
+  });
 
-  // it("should not allow subscribing a non streamed command", () => {
-  //   const handler = create({
-  //     commandHandlers: {
-  //       StreamSomething: (cmd, ctx) => {
-  //         ctx.streamed.should.equal(false);
-  //         ctx.onStateChange = () => undefined;
-  //         return outMsg;
-  //       }
-  //     }
-  //   });
+  it("should not allow subscribing a non streamed command", async () => {
+    const handler = create({
+      commandHandlers: {
+        StreamSomething: (cmd, ctx) => {
+          ctx.streamed.should.equal(false);
+          ctx.onStateChange = () => undefined;
+          return outMsg;
+        }
+      }
+    });
 
-  //   handleFailedCommand(handler, inMsg, "StreamSomething", 5, false);
-  // });
+    await handleFailedCommand(handler, inMsg, "StreamSomething", 5, false);
+  });
 
+  it("should not allow not subscribing to a streamed command", async () => {
+    const handler = create({
+      commandHandlers: {
+        StreamSomething: (cmd, ctx) => {
+          ctx.streamed.should.equal(true);
+          return outMsg;
+        }
+      }
+    });
 
-  // it("should not allow not subscribing to a streamed command", () => {
-  //   const handler = create({
-  //     commandHandlers: {
-  //       StreamSomething: (cmd, ctx) => {
-  //         ctx.streamed.should.equal(true);
-  //         return outMsg;
-  //       }
-  //     }
-  //   });
+    const reply = await handleCommand(handler, inMsg, "StreamSomething", 5, true);
+    reply.streamed.should.be.false;
+  });
 
-  //   const reply = handleCommand(handler, inMsg, "StreamSomething", 5, true);
-  //   reply.streamed.should.be.false;
-  // });
+  it("should allow closing a stream", async () => {
+    let ended = false;
 
-  // it("should allow closing a stream", () => {
-  //   let ended = false;
+    const handler = create({
+      commandHandlers: {
+        StreamSomething: (cmd, ctx) => {
+          ctx.onStateChange = (state, ctx) => {
+            if (!ended) {
+              ctx.end();
+            } else {
+              throw new Error("Invoked!")
+            }
+          };
+          return outMsg;
+        }
+      },
+    }, {
+      gcounter: {
+        value: 2
+      }
+    });
 
-  //   const handler = create({
-  //     commandHandlers: {
-  //       StreamSomething: (cmd, ctx) => {
-  //         ctx.onStateChange = (state, ctx) => {
-  //           if (!ended) {
-  //             ctx.end();
-  //           } else {
-  //             throw new Error("Invoked!")
-  //           }
-  //         };
-  //         return outMsg;
-  //       }
-  //     },
-  //   }, {
-  //     gcounter: {
-  //       value: 2
-  //     }
-  //   });
+    await handleCommand(handler, inMsg, "StreamSomething", 5, true);
+    await send(handler, {
+      delta: {
+        gcounter: {
+          increment: 3
+        }
+      }
+    });
 
-  //   handleCommand(handler, inMsg, "StreamSomething", 5, true);
-  //   send(handler, {
-  //     delta: {
-  //       gcounter: {
-  //         increment: 3
-  //       }
-  //     }
-  //   });
-  //   const streamed = call.get().streamedMessage;
-  //   streamed.endStream.should.be.true;
-  //   send(handler, {
-  //     delta: {
-  //       gcounter: {
-  //         increment: 3
-  //       }
-  //     }
-  //   });
-  //   call.expectNoWrites();
-  // });
+    const streamed = call.get().streamedMessage;
+    streamed.endStream.should.be.true;
+    await send(handler, {
+      delta: {
+        gcounter: {
+          increment: 3
+        }
+      }
+    });
+    call.expectNoWrites();
+  });
 
-  // it("should handle stream cancelled events", () => {
-  //   const handler = create({
-  //     commandHandlers: {
-  //       StreamSomething: (cmd, ctx) => {
-  //         ctx.onStreamCancel = (state, ctx) => {
-  //           state.value.should.equal(2);
-  //           state.increment(3);
-  //         };
-  //         return outMsg;
-  //       }
-  //     }
-  //   }, {
-  //     gcounter: {
-  //       increment: 2
-  //     }
-  //   });
+  it("should handle stream cancelled events", async () => {
+    const handler = create({
+      commandHandlers: {
+        StreamSomething: (cmd, ctx) => {
+          ctx.onStreamCancel = (state, ctx) => {
+            state.value.should.equal(2);
+            state.increment(3);
+          };
+          return outMsg;
+        }
+      }
+    }, {
+      gcounter: {
+        increment: 2
+      }
+    });
 
-  //   handleCommand(handler, inMsg, "StreamSomething", 5, true);
-  //   send(handler, {
-  //     streamCancelled: {
-  //       id: 5
-  //     }
-  //   });
-  //   const response = call.get();
-  //   response.streamCancelledResponse.commandId.toNumber().should.equal(5);
-  //   response.streamCancelledResponse.stateAction.update.gcounter.increment.toNumber().should.equal(3);
+    await handleCommand(handler, inMsg, "StreamSomething", 5, true);
+    await send(handler, {
+      streamCancelled: {
+        id: 5
+      }
+    });
+    const response = call.get();
+    response.streamCancelledResponse.commandId.toNumber().should.equal(5);
+    response.streamCancelledResponse.stateAction.update.gcounter.increment.toNumber().should.equal(3);
 
-  // });
+  });
 
 });

@@ -24,6 +24,7 @@ const AnySupport = require("./protobuf-any");
 const replicatedData = require("./replicated-data");
 const CommandHelper = require("./command-helper");
 const Metadata = require("./metadata");
+const { Console } = require("console");
 
 class ReplicatedEntityServices {
   constructor() {
@@ -276,14 +277,13 @@ class ReplicatedEntityHandler {
             // todo relax this requirement
             throw new Error("Streamed commands must be subscribed to using ctx.subscribe()");
           }
-  
-          const res = Promise.resolve(this.setStateActionOnReply(ctx));
-  
-          if (ctx.subscribed) {
-            ctx.reply.streamed = true;
-          }
-  
-          return res.then(() => userReply);
+
+          // moved to command helper
+          // if (ctx.subscribed) {
+          //   ctx.reply.streamed = true;
+          // }
+
+          return this.setStateActionOnReply(ctx);
         }
 
         return {
@@ -394,9 +394,7 @@ class ReplicatedEntityHandler {
   }
 
   onData(replicatedEntityStreamIn) {
-    try {
-      this.handleReplicatedEntityStreamIn(replicatedEntityStreamIn);
-    } catch (err) {
+    const onError = (err) => {
       this.streamDebug("Error handling message, terminating stream: %o", replicatedEntityStreamIn);
       console.error(err);
       this.call.write({
@@ -407,10 +405,19 @@ class ReplicatedEntityHandler {
       });
       this.call.end();
     }
+
+    try {
+      return Promise.resolve(this.handleReplicatedEntityStreamIn(replicatedEntityStreamIn))
+        .catch((err) => onError(err));
+    } catch (err) {
+      onError(err);
+    }
   }
 
   handleStateChange() {
-    Promise.all(Array.from( this.subscribers).map((subscriber, key) => {
+    return Promise.all(Array.from(this.subscribers).map((sub, k) => {
+      const key = sub[0];
+      const subscriber = sub[1];
       /**
        * Context passed to {@link module:akkaserverless.replicatedentity.ReplicatedEntityCommandContext#onStateChange} handlers.
        *
@@ -439,7 +446,6 @@ class ReplicatedEntityHandler {
        * @function module:akkaserverless.replicatedentity.StateChangedContext#end
        */
       ctx.context.end = () => {
-        ctx.reply.endStream = true;
         this.subscribers.delete(key);
         this.cancelledCallbacks.delete(key);
       };
@@ -448,7 +454,7 @@ class ReplicatedEntityHandler {
         this.call.write({
           failure: {
             commandId: subscriber.commandId,
-            description: util.format("Error: %o", e)
+            description: util.format("Error: %o", err)
           }
         });
         this.call.end();
@@ -457,7 +463,7 @@ class ReplicatedEntityHandler {
 
       try {
         this.commandHelper.invokeHandler(() => {
-          const nextAction = () => {
+          const nextAction = (userReply) => {
             if (this.currentState.getAndResetDelta() !== null) {
               throw new Error("State change handler attempted to modify state");
             }
@@ -470,6 +476,9 @@ class ReplicatedEntityHandler {
             next: nextAction
           };
         }, ctx, subscriber.grpcMethod, msg => {
+          if (this.subscribers.get(key) === undefined) {
+            ctx.reply.endStream = true;
+          }
           if (ctx.effects.length > 0 || ctx.reply.endStream === true || ctx.reply.clientAction !== undefined) {
             return {
               streamedMessage: msg
@@ -495,6 +504,22 @@ class ReplicatedEntityHandler {
       commandId: cancelled.id
     };
 
+    const onError = (e) => {
+      this.call.write({
+        failure: {
+          commandId: cancelled.id,
+          description: util.format("Error: %o", e)
+        }
+      });
+      this.call.end();
+    }
+
+    const after = (resp) => {
+      this.call.write({
+        streamCancelledResponse: resp
+      });
+    }
+
     try {
       if (this.cancelledCallbacks.has(subscriberKey)) {
         const subscriber = this.cancelledCallbacks.get(subscriberKey);
@@ -513,42 +538,37 @@ class ReplicatedEntityHandler {
         this.addStateManagementToContext(ctx);
 
         subscriber.handler(this.currentState, ctx.context);
-        this.setStateActionOnReply(ctx);
-        ctx.commandDebug("Sending streamed cancelled response");
-
-        response = ctx.reply;
+        
+        return this.setStateActionOnReply(ctx)
+          .then(() => {
+            ctx.commandDebug("Sending streamed cancelled response");
+            after(ctx.reply);
+          })
+          .catch((e) => onError(e));
+      } else {
+        after(response);
       }
 
-      this.call.write({
-        streamCancelledResponse: response
-      });
-
     } catch (e) {
-      this.call.write({
-        failure: {
-          commandId: cancelled.id,
-          description: util.format("Error: %o", e)
-        }
-      });
-      this.call.end();
+      onError(e);
     }
   }
 
   handleReplicatedEntityStreamIn(replicatedEntityStreamIn) {
     if (replicatedEntityStreamIn.delta && this.currentState === null) {
-      this.handleInitialDelta(replicatedEntityStreamIn.delta)
+      return this.handleInitialDelta(replicatedEntityStreamIn.delta)
     } else if (replicatedEntityStreamIn.delta) {
       this.streamDebug("Received delta for Replicated Data type %s", replicatedEntityStreamIn.delta.delta);
       this.currentState.applyDelta(replicatedEntityStreamIn.delta, this.entity.anySupport, replicatedData.createForDelta);
-      this.handleStateChange();
+      return this.handleStateChange();
     } else if (replicatedEntityStreamIn.delete) {
       this.streamDebug("Received Replicated Entity delete");
       this.currentState = null;
-      this.handleStateChange();
+      return this.handleStateChange();
     } else if (replicatedEntityStreamIn.command) {
-      this.commandHelper.handleCommand(replicatedEntityStreamIn.command);
+      return this.commandHelper.handleCommand(replicatedEntityStreamIn.command);
     } else if (replicatedEntityStreamIn.streamCancelled) {
-      this.handleStreamCancelled(replicatedEntityStreamIn.streamCancelled)
+      return this.handleStreamCancelled(replicatedEntityStreamIn.streamCancelled)
     } else {
       this.call.write({
         failure: {
