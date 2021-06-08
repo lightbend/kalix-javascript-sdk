@@ -14,12 +14,34 @@
  * limitations under the License.
  */
 
-const ValueEntity = require("@lightbend/akkaserverless-javascript-sdk").ValueEntity;
+import { ValueEntity } from "@lightbend/akkaserverless-javascript-sdk";
 
+/**
+ * Type definitions.
+ * These types have been generated based on your proto source.
+ * A TypeScript aware editor such as VS Code will be able to leverage them to provide hinting and validation.
+ * 
+ * State; the serialisable and persistable state of the entity
+ * @typedef { import("../lib/generated/shoppingcartservice").State } State
+ * 
+ * ShoppingCartService; a strongly typed extension of ValueEntity derived from your proto source
+ * @typedef { import("../lib/generated/shoppingcartservice").ShoppingCartService } ShoppingCartService
+ */
+
+/**
+ * @type ShoppingCartService
+ */
 const entity = new ValueEntity(
-  ["shoppingcart_api.proto", "shoppingcart_domain.proto"],
-  "com.example.valueentity.shoppingcart.ShoppingCartService",
-  "shopping-cart"
+  [
+    "shoppingcart_domain.proto",
+    "shoppingcart_api.proto"
+  ],
+  "com.example.shoppingcart.ShoppingCartService",
+  "shopping-cart",
+  {
+    includeDirs: ["./proto"],
+    serializeFallbackToJson: true
+  }
 );
 
 /*
@@ -29,9 +51,8 @@ const entity = new ValueEntity(
  *
  * Note this shows loading them dynamically, they could also be compiled and statically loaded.
  */
-const pkg = "com.example.valueentity.shoppingcart.domain.";
+const pkg = "com.example.shoppingcart.domain.";
 const Cart = entity.lookupType(pkg + "Cart");
-
 
 /*
  * Set a callback to create the initial state. This is what is created if there is no
@@ -40,7 +61,7 @@ const Cart = entity.lookupType(pkg + "Cart");
  * We can ignore the cartId parameter if we want, it's the id of the entity, which is
  * automatically associated with all events and state for this entity.
  */
-entity.setInitial(cartId => Cart.create({items: []}));
+entity.setInitial(cartId => Cart.create({ items: [] }));
 
 /*
  * Command handlers. The name of the command corresponds to the name of the rpc call in
@@ -52,6 +73,7 @@ entity.setCommandHandlers({
   GetCart: getCart,
   RemoveCart: removeCart
 });
+
 
 /**
  * Handler for add item commands.
@@ -119,5 +141,4 @@ function removeCart(request, cart, ctx) {
   return {};
 }
 
-// Export the entity
-module.exports = entity;
+export default entity;
