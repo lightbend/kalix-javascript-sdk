@@ -25,7 +25,8 @@
     "sourceDir": "./src",
     "testSourceDir": "./test",
     "protoSourceDir": "./proto",
-    "generatedSourceDir": "./lib/generated"
+    "generatedSourceDir": "./lib/generated",
+    "compileDescriptorArgs": []
   },
   "scripts": {
     "start": "node src/index.js",
