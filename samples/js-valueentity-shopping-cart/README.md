@@ -56,7 +56,7 @@ docker-compose up
 > On Linux this requires Docker 20.10 or later (https://github.com/moby/moby/pull/40007),
 > or for a `USER_FUNCTION_HOST` environment variable to be set manually.
 
-```
+```shell
 docker-compose -f docker-compose.yml -f docker-compose.linux.yml up
 ```
 
@@ -69,6 +69,10 @@ npm run build && npm run start
 ```
 
 With both the proxy and your application running, any defined endpoints should be available at `http://localhost:9000`. In addition to the defined gRPC interface, each method has a corresponding HTTP endpoint. Unless configured otherwise (see [Transcoding HTTP](https://developer.lightbend.com/docs/akka-serverless/js-services/proto.html#_transcoding_http)), this endpoint accepts POST requests at the path `/[package].[entity name]/[method]`. For example, using `curl`:
+
+```shell
+> curl -XPOST -H "Content-Type: application/json" localhost:9000/com.example.shoppingcart.ShoppingCartService/AddItem -d '{"entityId": "foo"}'
+```
 
 Send an `AddItem` command:
 
