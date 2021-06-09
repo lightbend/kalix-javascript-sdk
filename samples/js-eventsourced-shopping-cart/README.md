@@ -13,9 +13,9 @@ No additional tooling is required to develop locally. To package and deploy to A
 
 Take a look at what the tools generated for you:
 
-- The top level directory, `my-entity`, contains build and packaging configuration, which are described in more detail below.
+- The top level directory, `js-eventsourced-shopping-cart`, contains build and packaging configuration, which are described in more detail below.
 - The `proto` folder contains `protobuf` descriptors written in the [Proto3](https://developers.google.com/protocol-buffers/docs/proto3) Protocol Buffers Language. The `.proto` files in this folder specify messages describing the external APIs for your service as well as the internal data structures.  
-- The `scr` folder contains a starter Event Sourced Entity.
+- The `src` folder contains a starter Event Sourced Entity.
 
 To understand Akka Serverless services, `protobuf` descriptors, and Entities, see the documentation on [designing services](https://developer.lightbend.com/docs/akka-serverless/designing/index.html).
 
