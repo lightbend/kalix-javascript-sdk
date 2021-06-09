@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-const AkkaServerless = require("@lightbend/akkaserverless-javascript-sdk").AkkaServerless;
+import generatedComponents from "../lib/generated/index.js";
 
-const server = new AkkaServerless();
-server.addComponent(require("./shoppingcart"));
-
-server.start();
+generatedComponents.forEach((component) => {
+  component.start();
+});
