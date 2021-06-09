@@ -18,11 +18,9 @@ syntax = "proto3";
 
 package com.example.shoppingcart;
 
-option java_outer_classname = "ShoppingCartApi";
-
-import "akkaserverless/annotations.proto";
 import "google/api/annotations.proto";
 import "google/protobuf/empty.proto";
+import "akkaserverless/annotations.proto";
 
 message AddLineItem {
   string cart_id = 1 [(akkaserverless.field).entity_key = true];
