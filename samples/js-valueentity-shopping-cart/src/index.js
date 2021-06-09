@@ -13,8 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import counter from "../../src/counter.js";
 
-export { counter };
+import generatedComponents from "../lib/generated/index.js";
 
-export default [counter];
+generatedComponents.forEach((component) => {
+  component.start();
+});
