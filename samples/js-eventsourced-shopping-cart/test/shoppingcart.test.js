@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import {MockEventSourcedEntity} from "./testkit.js";
-import {expect} from "chai";
+import { MockEventSourcedEntity } from "./testkit.js";
+import { expect } from "chai";
 import shoppingcart from "../src/shoppingcart.js";
 
 const pkg = "com.example.shoppingcart.domain.";
@@ -105,6 +105,6 @@ describe("ShoppingCartService", () => {
       expect(entity.state.items).to.be.empty;
       expect(entity.events).to.be.empty;
     });
-    });
   });
 });
+})

@@ -14,19 +14,19 @@
  * limitations under the License.
  */
 
-import { EventSourcedEntity } from "@lightbend/akkaserverless-javascript-sdk";
+import {EventSourcedEntity} from "@lightbend/akkaserverless-javascript-sdk";
 
 /**
  * Type definitions.
  * These types have been generated based on your proto source.
  * A TypeScript aware editor such as VS Code will be able to leverage them to provide hinting and validation.
- * 
+ *
  * State; the serialisable and persistable state of the entity
  * @typedef { import("../lib/generated/shoppingcartservice").State } State
- * 
+ *
  * Event; the union of all possible event types
  * @typedef { import("../lib/generated/shoppingcartservice").Event } Event
- * 
+ *
  * ShoppingCartService; a strongly typed extension of EventSourcedEntity derived from your proto source
  * @typedef { import("../lib/generated/shoppingcartservice").ShoppingCartService } ShoppingCartService
  */
@@ -96,7 +96,7 @@ function addItem(addItem, cart, ctx) {
   if (addItem.quantity < 1) {
     ctx.fail("Cannot add negative quantity to item " + addItem.productId);
   } else {
-  // Create the event.
+    // Create the event.
     const itemAdded = ItemAdded.create({
       item: {
         productId: addItem.productId,
