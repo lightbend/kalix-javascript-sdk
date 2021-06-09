@@ -91,7 +91,7 @@ describe("ShoppingCartService", () => {
         [
           ItemAdded.create({item: {productId: 'a', name: 'Apple', quantity: 1}}),
           ItemAdded.create({item: {productId: 'b', name: 'Banana', quantity: 2}}),
-          ItemRemoved.create({productId: 'a'}),
+          ItemRemoved.create({productId: 'a'})
         ]);
     });
   });
@@ -106,5 +106,5 @@ describe("ShoppingCartService", () => {
       expect(entity.events).to.be.empty;
     });
   });
-});
+
 })
