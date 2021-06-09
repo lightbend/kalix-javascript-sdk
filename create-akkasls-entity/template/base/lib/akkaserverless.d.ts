@@ -14,9 +14,7 @@ interface TypedEventSourcedEntity<State, EventHandlers, CommandHandlers>
   ) => TypedEventSourcedEntity<State, EventHandlers, CommandHandlers>;
 
   setBehavior: (
-    callback: (
-      state: State
-    ) => {
+    callback: (state: State) => {
       commandHandlers: CommandHandlers;
       eventHandlers: EventHandlers;
     }
@@ -67,4 +65,41 @@ type EventSourcedCommandContext<Event> = CommandContext & {
 type ValueEntityCommandContext<State> = CommandContext & {
   updateState(state: State): void;
   deleteState(): void;
+};
+
+/**
+ * The context passed to View update handlers
+ */
+type ViewUpdateHandlerContext = {
+  eventSubject: string;
+  metadata: Metadata;
+  commandName: string;
+};
+
+/**
+ * The base context passed to Action command handlers
+ */
+type ActionCommandContext = CommandContext & {
+  cancelled: boolean;
+  metadata: Metadata;
+  eventSubject: string;
+  cloudevent: unknown;
+};
+
+/**
+ * The additional context methods for Action commands with streamed input
+ */
+type StreamedInCommandContext<RequestType> = {
+  cancel: () => void;
+  on: (eventType: "data", callback: (request: RequestType) => void) => void;
+  on: (eventType: "end", callback: () => void) => void;
+};
+
+/**
+ * The additional context methods for Action commands with streamed output
+ */
+type StreamedOutCommandContext<ResponseType> = {
+  write: (message: ResponseType, metadata: Metadata) => void;
+  on: (eventType: "cancelled", callback: () => void) => void;
+  end: () => void;
 };
