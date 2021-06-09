@@ -35,9 +35,9 @@ describe("ShoppingCartService", () => {
       expect(entity.state.items)
         .to.deep.equal(
           [
-            { cartId: 'cart1', productId: 'a', name: 'Apple', quantity: 1 },
-            { cartId: 'cart1', productId: 'b', name: 'Banana', quantity: 2 },
-            { cartId: 'cart1', productId: 'c', name: 'Cantaloupe', quantity: 3 }
+            { productId: 'a', name: 'Apple', quantity: 1 },
+            { productId: 'b', name: 'Banana', quantity: 2 },
+            { productId: 'c', name: 'Cantaloupe', quantity: 3 }
           ]);
       // expect(entity.events).to.deep.equal([]);
     });
@@ -56,8 +56,8 @@ describe("ShoppingCartService", () => {
       expect(entity.state.items)
         .to.deep.equal(
           [
-            { cartId: 'cart1', productId: 'a', name: 'Apple', quantity: 1 },
-            { cartId: 'cart1', productId: 'b', name: 'Banana', quantity: 2 }
+            { productId: 'a', name: 'Apple', quantity: 1 },
+            { productId: 'b', name: 'Banana', quantity: 2 }
           ]);
 
       entity.handleCommand(
@@ -66,7 +66,7 @@ describe("ShoppingCartService", () => {
       expect(entity.state.items)
         .to.deep.equal(
           [
-            { cartId: 'cart1', productId: 'b', name: 'Banana', quantity: 2 }
+            { productId: 'b', name: 'Banana', quantity: 2 }
           ]);
     });
       // expect(entity.events).to.deep.equal([]);

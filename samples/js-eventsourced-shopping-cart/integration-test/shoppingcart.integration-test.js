@@ -72,24 +72,5 @@ describe("Shopping cart service", function () {
     }
   });
 
-  it("should remove a cart", async () => {
-    await client().addItemAsync({ cartId: "cart4", productId: "a", name: "Apple", quantity: 1 });
-    await client().addItemAsync({ cartId: "cart4", productId: "b", name: "Banana", quantity: 2 });
-
-    { // after adding items
-      const cart = await client().getCartAsync({ cartId: "cart4" });
-      expect(cart.items).to.deep.equal([
-        { productId: 'a', name: 'Apple', quantity: 1 },
-        { productId: 'b', name: 'Banana', quantity: 2 }
-      ]);
-    }
-
-    await client().removeCartAsync({ cartId: "cart4" });
-    { // after removing cart
-      const cart = await client().getCartAsync({ cartId: "cart4" });
-      expect(cart).to.deep.equal({});
-    }
-    
-  });
 
 });
