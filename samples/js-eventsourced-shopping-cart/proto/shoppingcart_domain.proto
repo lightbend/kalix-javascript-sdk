@@ -19,17 +19,14 @@ syntax = "proto3";
 
 package com.example.shoppingcart.domain;
 
-option java_outer_classname = "ShoppingCartDomain";
-
 import "akkaserverless/annotations.proto";
 
 // Describes how this domain relates to an event sourced entity
 option (akkaserverless.file).event_sourced_entity = {
   name: "ShoppingCart"
-  entity_type: "shopping-cart"
+  entity_type: "eventsourced-shopping-cart"
   state: "Cart"
-  events: "ItemAdded"
-  events: "ItemRemoved"
+  events: ["ItemAdded", "ItemRemoved"]
 };
 
 message LineItem {

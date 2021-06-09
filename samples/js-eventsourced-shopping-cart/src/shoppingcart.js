@@ -14,14 +14,36 @@
  * limitations under the License.
  */
 
-const EventSourcedEntity = require("@lightbend/akkaserverless-javascript-sdk").EventSourcedEntity;
+import { EventSourcedEntity } from "@lightbend/akkaserverless-javascript-sdk";
 
+/**
+ * Type definitions.
+ * These types have been generated based on your proto source.
+ * A TypeScript aware editor such as VS Code will be able to leverage them to provide hinting and validation.
+ * 
+ * State; the serialisable and persistable state of the entity
+ * @typedef { import("../lib/generated/shoppingcartservice").State } State
+ * 
+ * Event; the union of all possible event types
+ * @typedef { import("../lib/generated/shoppingcartservice").Event } Event
+ * 
+ * ShoppingCartService; a strongly typed extension of EventSourcedEntity derived from your proto source
+ * @typedef { import("../lib/generated/shoppingcartservice").ShoppingCartService } ShoppingCartService
+ */
+
+/**
+ * @type ShoppingCartService
+ */
 const entity = new EventSourcedEntity(
-  ["shoppingcart_api.proto", "shoppingcart_domain.proto"],
+  [
+    "shoppingcart_domain.proto",
+    "shoppingcart_api.proto"
+  ],
   "com.example.shoppingcart.ShoppingCartService",
-  "shopping-cart",
+  "eventsourced-shopping-cart",
   {
-    snapshotEvery: 5 // Usually you wouldn't snapshot this frequently, but this helps to demonstrate snapshotting
+    includeDirs: ["./proto"],
+    serializeFallbackToJson: true
   }
 );
 
@@ -37,7 +59,6 @@ const ItemAdded = entity.lookupType(pkg + "ItemAdded");
 const ItemRemoved = entity.lookupType(pkg + "ItemRemoved");
 const Cart = entity.lookupType(pkg + "Cart");
 
-
 /*
  * Set a callback to create the initial state. This is what is created if there is no
  * snapshot to load.
@@ -47,17 +68,6 @@ const Cart = entity.lookupType(pkg + "Cart");
  */
 entity.setInitial(cartId => Cart.create({items: []}));
 
-/*
- * Set a callback to create the behavior given the current state. Since there is no state
- * machine like behavior transitions for our shopping cart, we just return one behavior, but
- * this could inspect the cart, and return a different set of handlers depending on the
- * current state of the cart - for example, if the cart supported being checked out, then
- * if the cart was checked out, it might return AddItem and RemoveItem command handlers that
- * always fail because the cart is checked out.
- *
- * This callback will be invoked after each time that an event is handled to get the current
- * behavior for the current state.
- */
 entity.setBehavior(cart => {
   return {
     // Command handlers. The name of the command corresponds to the name of the rpc call in
@@ -75,6 +85,7 @@ entity.setBehavior(cart => {
     }
   };
 });
+
 
 /**
  * Handler for add item commands.
@@ -163,5 +174,5 @@ function itemRemoved(removed, cart) {
   return cart;
 }
 
-// Export the entity
-module.exports = entity;
+
+export default entity;

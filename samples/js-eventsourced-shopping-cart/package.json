@@ -1,48 +1,40 @@
 {
   "name": "js-eventsourced-shopping-cart",
-  "version": "0.0.0",
-  "description": "Akka Serverless JavaScript SDK sample application for event-sourced shopping cart",
-  "engineStrict": true,
+  "version": "0.0.1",
+  "type": "module",
   "engines": {
-    "node": "~14"
+    "node": ">=14.0.0",
+    "npm": ">=6.0.0"
   },
-  "homepage": "https://github.com/lightbend/akkaserverless-javascript-sdk",
-  "bugs": {
-    "url": "https://github.com/lightbend/akkaserverless-javascript-sdk/issues"
-  },
-  "license": "Apache-2.0",
-  "author": {
-    "name": "Akka Serverless Team",
-    "email": "info@lightbend.com",
-    "url": "https://lightbend.com"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/lightbend/akkaserverless-javascript-sdk",
-    "directory": "samples/js-eventsourced-shopping-cart"
-  },
-  "//": "https://npm.community/t/npm-install-does-not-install-transitive-dependencies-of-local-dependency/2264",
   "dependencies": {
+    "@grpc/grpc-js": "^1.3.0",
     "@grpc/proto-loader": "^0.1.0",
-    "@lightbend/akkaserverless-javascript-sdk": "file:../../sdk",
-    "google-protobuf": "^3.11.4",
-    "grpc": "^1.24.9"
+    "@lightbend/akkaserverless-javascript-sdk": "0.7.0-beta.9",
+    "google-protobuf": "^3.0.0",
+    "protobufjs": "^6.11.2"
   },
   "devDependencies": {
-    "chai": "4.2.0",
-    "mocha": "^6.2.3"
+    "@lightbend/akkasls-scripts": "^0.26.0",
+    "chai": "^4.3.3",
+    "jsdoc": "^3.6.3",
+    "mocha": "^8.3.1",
+    "uglify-js": "^3.7.7"
+  },
+  "config": {
+    "dockerImage": "gcr.io/akkaserverless-public/samples-js-event-sourced-entity-shopping-cart",
+    "sourceDir": "./src",
+    "testSourceDir": "./test",
+    "protoSourceDir": "./proto",
+    "generatedSourceDir": "./lib/generated",
+    "compileDescriptorArgs": []
   },
   "scripts": {
-    "build": "compile-descriptor shoppingcart_api.proto shoppingcart_domain.proto",
-    "pretest": "npm run build",
-    "test": "mocha",
-    "preintegration-test": "npm run build",
-    "integration-test": "mocha integration-test",
-    "prestart": "npm run build",
-    "start": "node index.js",
-    "start-no-prestart": "node index.js",
-    "docker-build": "docker build -f Dockerfile -t ${DOCKER_PUBLISH_TO:-akkaserverless}/js-eventsourced-shopping-cart:$(../../sdk/bin/version.sh) ../..",
-    "docker-push": "docker push ${DOCKER_PUBLISH_TO:-akkaserverless}/js-eventsourced-shopping-cart:$(../../sdk/bin/version.sh)",
-    "docker-build-push": "npm run docker-build && npm run docker-push"
+    "start": "node src/index.js",
+    "test": "mocha ./test",
+    "integration-test": "mocha ./integration-test",
+    "test-all": "npm run test && npm run integration-test",
+    "build": "akkasls-scripts build",
+    "package": "akkasls-scripts package",
+    "deploy": "akkasls-scripts deploy"
   }
 }
