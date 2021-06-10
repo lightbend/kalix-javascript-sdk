@@ -4,7 +4,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width">
-	<title>AkkaServerless Class: GCounter</title>
+	<title>AkkaServerless Namespace: replies</title>
 
 	<!--[if lt IE 9]>
 	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -93,20 +93,16 @@
 		<div id="main">
 			
 
-	<h1 class="page-title">Class: GCounter</h1>
+	<h1 class="page-title">Namespace: replies</h1>
 <section>
 
 <header>
     
         <h2>
-            <span class="ancestors"><a href="module-akkaserverless.html">akkaserverless</a><a href="module-akkaserverless.replicatedentity.html">.replicatedentity</a>.</span>
+            <span class="ancestors"><a href="module-akkaserverless.html">akkaserverless</a>.</span>
         
-        GCounter
+        replies
         </h2>
-        
-            <div class="class-description"><p>A Grow-only counter Replicated Data type.</p>
-<p>As the name suggests, a grow only counter can be incremented, but not decremented.</p>
-<p>The value is stored as a 64-bit unsigned long, hence values over <code>2^64</code> can't be represented.</p></div>
         
     
 </header>
@@ -116,24 +112,8 @@
     <div class="container-overview">
     
         
-<hr>
-<dt>
-    <h4 class="name" id="GCounter"><span class="type-signature"></span>new GCounter()</h4>
-    
-    
-</dt>
-<dd>
 
-    
-
-    
-
-    
-
-    
-    
-
-    
+        
 <dl class="details">
     
 
@@ -147,13 +127,6 @@
 
     
 
-    
-    <dt class="implements">Implements:</dt>
-    <dd class="implements"><ul>
-        
-            <li><a href="module-akkaserverless.replicatedentity.ReplicatedData.html">module:akkaserverless.replicatedentity.ReplicatedData</a></li>
-        
-    </ul></dd>
     
 
     
@@ -180,21 +153,7 @@
 </dl>
 
 
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</dd>
-
+        
     
     </div>
 
@@ -203,332 +162,26 @@
     
 
     
-
-    
-
-    
-
-    
-        <h3 class="subsection-title">Members</h3>
+        <h3 class="subsection-title">Classes</h3>
 
         <dl>
-            
-<hr>
-<dt class="name" id="longValue">
-    <h4 id="longValue"><span class="type-signature">&lt;readonly> </span>longValue<span class="type-signature"> :Long</span></h4>
-
-    
-</dt>
-<dd>
-    
-    <div class="description">
-        <p>The value as a long.</p>
-    </div>
-    
-
-    
-        <h5>Type:</h5>
-        <ul>
-            <li>
-                
-<span class="param-type">Long</span>
-
-
-
-            </li>
-        </ul>
-    
-
-    
-<dl class="details">
-    
-
-	
-
-	
-
-	
-
-    
-
-    
-
-    
-
-    
-
-	
-
-	
-
-	
-
-	
-
-	
-
-
-
-	
-
-	
-
-	
-
-	
-</dl>
-
-
-    
-</dd>
-
+            <dt><a href="module-akkaserverless.replies.Effect.html">Effect</a></dt>
+            <dd></dd>
         
-            
-<hr>
-<dt class="name" id="value">
-    <h4 id="value"><span class="type-signature">&lt;readonly> </span>value<span class="type-signature"> :number</span></h4>
-
-    
-</dt>
-<dd>
-    
-    <div class="description">
-        <p>The value as a number. Note that once the value exceeds <code>2^53</code>, this will not be an accurate
-representation of the value. If you expect it to exceed <code>2^53</code>, <a href="module-akkaserverless.replicatedentity.GCounter.html#longValue"><code>module:akkaserverless.replicatedentity.GCounter#longValue</code></a> should be
-used instead.</p>
-    </div>
-    
-
-    
-        <h5>Type:</h5>
-        <ul>
-            <li>
-                
-<span class="param-type">number</span>
-
-
-
-            </li>
-        </ul>
-    
-
-    
-<dl class="details">
-    
-
-	
-
-	
-
-	
-
-    
-
-    
-
-    
-
-    
-
-	
-
-	
-
-	
-
-	
-
-	
-
-
-
-	
-
-	
-
-	
-
-	
-</dl>
-
-
-    
-</dd>
-
+            <dt><a href="module-akkaserverless.replies.Reply.html">Reply</a></dt>
+            <dd></dd>
+        
+            <dt><a href="module-akkaserverless.replies.ReplyFactory.html">ReplyFactory</a></dt>
+            <dd></dd>
         </dl>
     
 
     
-        <h3 class="subsection-title">Methods</h3>
-
-        <dl>
-            
-<hr>
-<dt>
-    <h4 class="name" id="increment"><span class="type-signature"></span>increment(increment)</h4>
-    
-    
-</dt>
-<dd>
-
-    
-    <div class="description">
-        <p>Increment the counter by the given number.</p>
-    </div>
-    
 
     
 
     
 
-    
-    
-        <h5>Parameters:</h5>
-        
-
-<table class="params table table-striped">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>increment</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Long</span>
-|
-
-<span class="param-type">number</span>
-
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>The amount to increment the counter by.</p></td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-    
-
-    
-<dl class="details">
-    
-
-	
-
-	
-
-	
-
-    
-
-    
-
-    
-
-    
-
-	
-
-	
-
-	
-
-	
-
-	
-
-
-
-	
-
-	
-
-	
-
-	
-</dl>
-
-
-    
-
-    
-
-    
-
-    
-
-    
-    <h5>Throws:</h5>
-    
-            
-
-    <div class="param-desc">
-    
-        <p>If the increment is less than zero.</p>
-    
-    </div>
-
-
-        
-
-    
-    <h5>Returns:</h5>
-    
-            
-<div class="param-desc">
-    <p>This counter.</p>
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type"><a href="module-akkaserverless.replicatedentity.GCounter.html">module:akkaserverless.replicatedentity.GCounter</a></span>
-
-
-
-    </dd>
-</dl>
-
-
-        
-
-    
-</dd>
-
-        </dl>
     
 
     

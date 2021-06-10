@@ -33,7 +33,7 @@
 			<li class="dropdown">
 				<a href="namespaces.list.html" class="dropdown-toggle" data-toggle="dropdown">Namespaces<b class="caret"></b></a>
 				<ul class="dropdown-menu ">
-					<li><a href="module-akkaserverless.replicatedentity.html">akkaserverless.replicatedentity</a></li>
+					<li><a href="module-akkaserverless.replicatedentity.html">akkaserverless.replicatedentity</a></li><li><a href="module-akkaserverless.replies.html">akkaserverless.replies</a></li>
 				</ul>
 			</li>
 			
@@ -47,7 +47,7 @@
 			<li class="dropdown">
 				<a href="classes.list.html" class="dropdown-toggle" data-toggle="dropdown">Classes<b class="caret"></b></a>
 				<ul class="dropdown-menu ">
-					<li><a href="Effect.html">Effect</a></li><li><a href="module-akkaserverless.Action.html">akkaserverless.Action</a></li><li><a href="module-akkaserverless.AkkaServerless.html">akkaserverless.AkkaServerless</a></li><li><a href="module-akkaserverless.EventSourcedEntity.html">akkaserverless.EventSourcedEntity</a></li><li><a href="module-akkaserverless.replicatedentity.Flag.html">akkaserverless.replicatedentity.Flag</a></li><li><a href="module-akkaserverless.replicatedentity.GCounter.html">akkaserverless.replicatedentity.GCounter</a></li><li><a href="module-akkaserverless.replicatedentity.GSet.html">akkaserverless.replicatedentity.GSet</a></li><li><a href="module-akkaserverless.replicatedentity.LWWRegister.html">akkaserverless.replicatedentity.LWWRegister</a></li><li><a href="module-akkaserverless.replicatedentity.ORMap.html">akkaserverless.replicatedentity.ORMap</a></li><li><a href="module-akkaserverless.replicatedentity.ORSet.html">akkaserverless.replicatedentity.ORSet</a></li><li><a href="module-akkaserverless.replicatedentity.PNCounter.html">akkaserverless.replicatedentity.PNCounter</a></li><li><a href="module-akkaserverless.replicatedentity.ReplicatedEntity.html">akkaserverless.replicatedentity.ReplicatedEntity</a></li><li><a href="module-akkaserverless.replicatedentity.Vote.html">akkaserverless.replicatedentity.Vote</a></li><li><a href="module-akkaserverless.replies.Effect.html">akkaserverless.replies.Effect</a></li><li><a href="module-akkaserverless.replies.Reply.html">akkaserverless.replies.Reply</a></li><li><a href="module-akkaserverless.ValueEntity.html">akkaserverless.ValueEntity</a></li><li><a href="module-akkaserverless.View.html">akkaserverless.View</a></li>
+					<li><a href="module-akkaserverless.Action.html">akkaserverless.Action</a></li><li><a href="module-akkaserverless.AkkaServerless.html">akkaserverless.AkkaServerless</a></li><li><a href="module-akkaserverless.EventSourcedEntity.html">akkaserverless.EventSourcedEntity</a></li><li><a href="module-akkaserverless.replicatedentity.Flag.html">akkaserverless.replicatedentity.Flag</a></li><li><a href="module-akkaserverless.replicatedentity.GCounter.html">akkaserverless.replicatedentity.GCounter</a></li><li><a href="module-akkaserverless.replicatedentity.GSet.html">akkaserverless.replicatedentity.GSet</a></li><li><a href="module-akkaserverless.replicatedentity.LWWRegister.html">akkaserverless.replicatedentity.LWWRegister</a></li><li><a href="module-akkaserverless.replicatedentity.ORMap.html">akkaserverless.replicatedentity.ORMap</a></li><li><a href="module-akkaserverless.replicatedentity.ORSet.html">akkaserverless.replicatedentity.ORSet</a></li><li><a href="module-akkaserverless.replicatedentity.PNCounter.html">akkaserverless.replicatedentity.PNCounter</a></li><li><a href="module-akkaserverless.replicatedentity.ReplicatedEntity.html">akkaserverless.replicatedentity.ReplicatedEntity</a></li><li><a href="module-akkaserverless.replicatedentity.Vote.html">akkaserverless.replicatedentity.Vote</a></li><li><a href="module-akkaserverless.replies.Effect.html">akkaserverless.replies.Effect</a></li><li><a href="module-akkaserverless.replies.Reply.html">akkaserverless.replies.Reply</a></li><li><a href="module-akkaserverless.replies.ReplyFactory.html">akkaserverless.replies.ReplyFactory</a></li><li><a href="module-akkaserverless.ValueEntity.html">akkaserverless.ValueEntity</a></li><li><a href="module-akkaserverless.View.html">akkaserverless.View</a></li>
 				</ul>
 			</li>
 			
@@ -312,6 +312,13 @@ a service that stored data of this type</p></td>
     
 
     
+    <dt class="implements">Implements:</dt>
+    <dd class="implements"><ul>
+        
+            <li><a href="module-akkaserverless.Entity.html">module:akkaserverless.Entity</a></li>
+        
+    </ul></dd>
+    
 
     
 
@@ -354,17 +361,6 @@ a service that stored data of this type</p></td>
 
     
     </div>
-
-    
-        <h3 class="subsection-title">Extends</h3>
-
-        
-
-
-    <ul>
-        <li><a href="module-akkaserverless.Entity.html">module:akkaserverless.Entity</a></li>
-    </ul>
-
 
     
 
@@ -589,7 +585,7 @@ a service that stored data of this type</p></td>
             
 <hr>
 <dt>
-    <h4 class="name" id="setCommandHandlers"><span class="type-signature"></span>setCommandHandlers(callback)</h4>
+    <h4 class="name" id="setCommandHandlers"><span class="type-signature"></span>setCommandHandlers(handlers)</h4>
     
     
 </dt>
@@ -632,7 +628,7 @@ a service that stored data of this type</p></td>
 
         <tr>
             
-                <td class="name"><code>callback</code></td>
+                <td class="name"><code>handlers</code></td>
             
 
             <td class="type">
@@ -932,14 +928,16 @@ a service that stored data of this type</p></td>
 	
 
     
-    <dt class="tag-overrides">Overrides:</dt>
-    <dd class="tag-overrides"><ul class="dummy"><li>
-        <a href="module-akkaserverless.Entity.html#shutdown">module:akkaserverless.Entity#shutdown</a>
-    </li></ul></dd>
-    
 
     
 
+    
+    <dt class="implements">Implements:</dt>
+    <dd class="implements"><ul>
+        
+            <li><a href="module-akkaserverless.Entity.html#shutdown">module:akkaserverless.Entity#shutdown</a></li>
+        
+    </ul></dd>
     
 
     
@@ -1086,14 +1084,16 @@ a service that stored data of this type</p></td>
 	
 
     
-    <dt class="tag-overrides">Overrides:</dt>
-    <dd class="tag-overrides"><ul class="dummy"><li>
-        <a href="module-akkaserverless.Entity.html#start">module:akkaserverless.Entity#start</a>
-    </li></ul></dd>
-    
 
     
 
+    
+    <dt class="implements">Implements:</dt>
+    <dd class="implements"><ul>
+        
+            <li><a href="module-akkaserverless.Entity.html#start">module:akkaserverless.Entity#start</a></li>
+        
+    </ul></dd>
     
 
     
@@ -1383,63 +1383,26 @@ command, or if a Reply is returned, contain an object that matches the output ty
 <dd>
     
     <div class="description">
-        <p>Value entity command handlers</p>
+        <p>Value entity command handlers
+The names of the properties must match the names of the service calls specified in the gRPC descriptor for this value entities service.</p>
     </div>
     
 
     
-
-    
-<dl class="details">
-    
-
-    <h5 class="subsection-title">Properties:</h5>
-
-    <dl>
-
-<table class="props table table-striped">
-    <thead>
-    <tr>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-
-            <td class="type">
-            
+        <h5>Type:</h5>
+        <ul>
+            <li>
                 
 <span class="param-type">Object.&lt;String, <a href="module-akkaserverless.ValueEntity.html#~commandHandler">module:akkaserverless.ValueEntity~commandHandler</a>></span>
 
 
 
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"></td>
-        </tr>
+            </li>
+        </ul>
+    
 
     
-    </tbody>
-</table>
-</dl>
-
+<dl class="details">
     
 
 	
@@ -1889,7 +1852,7 @@ can't be serialized as a protobuf.</p></td>
 
 
 <span class="jsdoc-message">
-	Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.6</a>
+	Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.7</a>
 	
 	using the <a href="https://github.com/docstrap/docstrap">DocStrap template</a>.
 </span>

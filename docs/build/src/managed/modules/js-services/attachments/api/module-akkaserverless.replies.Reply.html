@@ -33,7 +33,7 @@
 			<li class="dropdown">
 				<a href="namespaces.list.html" class="dropdown-toggle" data-toggle="dropdown">Namespaces<b class="caret"></b></a>
 				<ul class="dropdown-menu ">
-					<li><a href="module-akkaserverless.replicatedentity.html">akkaserverless.replicatedentity</a></li>
+					<li><a href="module-akkaserverless.replicatedentity.html">akkaserverless.replicatedentity</a></li><li><a href="module-akkaserverless.replies.html">akkaserverless.replies</a></li>
 				</ul>
 			</li>
 			
@@ -47,7 +47,7 @@
 			<li class="dropdown">
 				<a href="classes.list.html" class="dropdown-toggle" data-toggle="dropdown">Classes<b class="caret"></b></a>
 				<ul class="dropdown-menu ">
-					<li><a href="Effect.html">Effect</a></li><li><a href="module-akkaserverless.Action.html">akkaserverless.Action</a></li><li><a href="module-akkaserverless.AkkaServerless.html">akkaserverless.AkkaServerless</a></li><li><a href="module-akkaserverless.EventSourcedEntity.html">akkaserverless.EventSourcedEntity</a></li><li><a href="module-akkaserverless.replicatedentity.Flag.html">akkaserverless.replicatedentity.Flag</a></li><li><a href="module-akkaserverless.replicatedentity.GCounter.html">akkaserverless.replicatedentity.GCounter</a></li><li><a href="module-akkaserverless.replicatedentity.GSet.html">akkaserverless.replicatedentity.GSet</a></li><li><a href="module-akkaserverless.replicatedentity.LWWRegister.html">akkaserverless.replicatedentity.LWWRegister</a></li><li><a href="module-akkaserverless.replicatedentity.ORMap.html">akkaserverless.replicatedentity.ORMap</a></li><li><a href="module-akkaserverless.replicatedentity.ORSet.html">akkaserverless.replicatedentity.ORSet</a></li><li><a href="module-akkaserverless.replicatedentity.PNCounter.html">akkaserverless.replicatedentity.PNCounter</a></li><li><a href="module-akkaserverless.replicatedentity.ReplicatedEntity.html">akkaserverless.replicatedentity.ReplicatedEntity</a></li><li><a href="module-akkaserverless.replicatedentity.Vote.html">akkaserverless.replicatedentity.Vote</a></li><li><a href="module-akkaserverless.replies.Effect.html">akkaserverless.replies.Effect</a></li><li><a href="module-akkaserverless.replies.Reply.html">akkaserverless.replies.Reply</a></li><li><a href="module-akkaserverless.ValueEntity.html">akkaserverless.ValueEntity</a></li><li><a href="module-akkaserverless.View.html">akkaserverless.View</a></li>
+					<li><a href="module-akkaserverless.Action.html">akkaserverless.Action</a></li><li><a href="module-akkaserverless.AkkaServerless.html">akkaserverless.AkkaServerless</a></li><li><a href="module-akkaserverless.EventSourcedEntity.html">akkaserverless.EventSourcedEntity</a></li><li><a href="module-akkaserverless.replicatedentity.Flag.html">akkaserverless.replicatedentity.Flag</a></li><li><a href="module-akkaserverless.replicatedentity.GCounter.html">akkaserverless.replicatedentity.GCounter</a></li><li><a href="module-akkaserverless.replicatedentity.GSet.html">akkaserverless.replicatedentity.GSet</a></li><li><a href="module-akkaserverless.replicatedentity.LWWRegister.html">akkaserverless.replicatedentity.LWWRegister</a></li><li><a href="module-akkaserverless.replicatedentity.ORMap.html">akkaserverless.replicatedentity.ORMap</a></li><li><a href="module-akkaserverless.replicatedentity.ORSet.html">akkaserverless.replicatedentity.ORSet</a></li><li><a href="module-akkaserverless.replicatedentity.PNCounter.html">akkaserverless.replicatedentity.PNCounter</a></li><li><a href="module-akkaserverless.replicatedentity.ReplicatedEntity.html">akkaserverless.replicatedentity.ReplicatedEntity</a></li><li><a href="module-akkaserverless.replicatedentity.Vote.html">akkaserverless.replicatedentity.Vote</a></li><li><a href="module-akkaserverless.replies.Effect.html">akkaserverless.replies.Effect</a></li><li><a href="module-akkaserverless.replies.Reply.html">akkaserverless.replies.Reply</a></li><li><a href="module-akkaserverless.replies.ReplyFactory.html">akkaserverless.replies.ReplyFactory</a></li><li><a href="module-akkaserverless.ValueEntity.html">akkaserverless.ValueEntity</a></li><li><a href="module-akkaserverless.View.html">akkaserverless.View</a></li>
 				</ul>
 			</li>
 			
@@ -99,10 +99,12 @@
 <header>
     
         <h2>
-            <span class="ancestors"><a href="module-akkaserverless.html">akkaserverless</a><a href="module-akkaserverless.html#.replies">.replies</a>.</span>
+            <span class="ancestors"><a href="module-akkaserverless.html">akkaserverless</a><a href="module-akkaserverless.replies.html">.replies</a>.</span>
         
         Reply
         </h2>
+        
+            <div class="class-description"><p>A return type to allow returning forwards or failures, and attaching effects to messages.</p></div>
         
     
 </header>
@@ -120,10 +122,6 @@
 </dt>
 <dd>
 
-    
-    <div class="description">
-        <p>A return type to allow returning forwards or failures, and attaching effects to messages.</p>
-    </div>
     
 
     
@@ -204,6 +202,526 @@
     
 
     
+        <h3 class="subsection-title">Methods</h3>
+
+        <dl>
+            
+<hr>
+<dt>
+    <h4 class="name" id="addEffect"><span class="type-signature"></span>addEffect(method, message [, synchronous] [, metadata])</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Attach the given effect(s) to this reply</p>
+    </div>
+    
+
+    
+
+    
+
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Argument</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>method</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">protobuf.Method</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>The entity service method to invoke.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>message</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">object</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>The message to send to that service.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>synchronous</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">boolean</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Whether the effect should be execute synchronously or not, default is false.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>metadata</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="module-akkaserverless.Metadata.html">module:akkaserverless.Metadata</a></span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Metadata to send with the effect.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    <p>This reply after adding the effect.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="module-akkaserverless.replies.Reply.html">module:akkaserverless.replies.Reply</a></span>
+
+
+
+    </dd>
+</dl>
+
+
+        
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="addEffects"><span class="type-signature"></span>addEffects(effects)</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Attach the given effect(s) to this reply</p>
+    </div>
+    
+
+    
+
+    
+
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>effects</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Array.&lt;Effect></span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>One or more service calls to execute as side effects</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    <p>This reply after adding the effects.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="module-akkaserverless.replies.Reply.html">module:akkaserverless.replies.Reply</a></span>
+
+
+
+    </dd>
+</dl>
+
+
+        
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="isEmpty"><span class="type-signature"></span>isEmpty()</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Whether this reply is empty: does not have a message, forward, or failure.</p>
+    </div>
+    
+
+    
+
+    
+
+    
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    <p>Whether the reply is empty.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">boolean</span>
+
+
+
+    </dd>
+</dl>
+
+
+        
+
+    
+</dd>
+
+        </dl>
+    
 
     
 
@@ -250,7 +768,7 @@
 
 
 <span class="jsdoc-message">
-	Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.6</a>
+	Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.7</a>
 	
 	using the <a href="https://github.com/docstrap/docstrap">DocStrap template</a>.
 </span>
