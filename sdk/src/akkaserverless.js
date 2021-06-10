@@ -128,6 +128,10 @@ class AkkaServerless {
     }
 
     this.components = [];
+    this.proxySeen = false
+    this.proxyHasTerminated = false
+    this.waitingForProxyTermination = false
+    this.devMode = false;
   }
 
   /**
@@ -183,13 +187,24 @@ class AkkaServerless {
 
     this.server.addService(discovery, {
       discover: this.discover.bind(this),
-      reportError: this.reportError.bind(this)
+      reportError: this.reportError.bind(this),
+      proxyTerminated: this.proxyTerminated.bind(this)
     });
 
     const boundPort = this.server.bind(opts.bindAddress + ":" + opts.bindPort, grpc.ServerCredentials.createInsecure());
     this.server.start();
     console.log("gRPC server started on " + opts.bindAddress + ":" + boundPort);
 
+    process.on('SIGTERM', function onSigterm () {
+      if (!this.proxySeen || this.proxyHasTerminated || this.devMode) {
+        debug('Got SIGTERM. Shutting down')
+        this.terminate()
+      } else {
+        debug('Got SIGTERM. But did not yet see proxy terminating, deferring shutdown until proxy stops')
+        // no timeout because process will be SIGKILLed anyway if it does not get the proxy termination in time
+        this.waitingForProxyTermination = true
+      }
+    }.bind(this))
     return boundPort;
   }
 
@@ -214,6 +229,10 @@ class AkkaServerless {
       // only (silently) send service info for hybrid proxy version probe
       callback(null, { serviceInfo: serviceInfo })
     } else {
+      debug(proxyInfo)
+      this.proxySeen = true
+      this.devMode = proxyInfo.devMode
+      this.proxyHasTerminated = false
       debug("Discover call with info %o, sending %s components", proxyInfo, this.components.length);
       const components = this.components.map(component => {
         const passivationTimeout = component.options.entityPassivationStrategy ? component.options.entityPassivationStrategy.timeout : null;
@@ -277,6 +296,13 @@ class AkkaServerless {
     callback(null, {});
   }
 
+  proxyTerminated() {
+    this.proxyHasTerminated = true
+    if (this.waitingForProxyTermination) {
+      this.terminate()
+    }
+  }
+
   formatSource(location) {
     let startLine = location.startLine;
     if (startLine === undefined) {
@@ -333,6 +359,11 @@ class AkkaServerless {
     this.server.tryShutdown(() => {
       console.log("gRPC server has shutdown.");
     });
+  }
+
+  terminate() {
+    this.server.forceShutdown()
+    process.exit(0)
   }
 }
 
