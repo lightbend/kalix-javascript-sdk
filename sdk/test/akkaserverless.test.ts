@@ -162,6 +162,7 @@ At package.test.json:2:4:
       options: {
         includeDirs: ['./test'],
         entityType: 'my-entity-type',
+        forwardHeaders: ['x-my-header'],
       },
       componentType: () => {
         return 'my-type';
@@ -179,6 +180,9 @@ At package.test.json:2:4:
     comp.getComponentType().should.equal('my-type');
     comp.getEntity()?.getEntityType().should.equal('my-entity-type');
     comp.getEntity()?.getPassivationStrategy()?.should.be.undefined;
+    comp.getEntity()?.getForwardHeadersList().should.have.same.members([
+      'x-my-header',
+    ]);
   });
 
   it('discovery service should return correct components with passivation', () => {
