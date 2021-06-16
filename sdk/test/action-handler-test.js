@@ -64,6 +64,17 @@ class MockUnaryCall {
       return anySupport.deserialize(response.forward.payload)
     })
   }
+
+  effects() {
+    return this.value.then(response => {
+      return response.sideEffects.map(effect => ({
+        serviceName: effect.serviceName,
+        commandName: effect.commandName,
+        payload: anySupport.deserialize(effect.payload),
+        synchronous: effect.synchronous
+      }))
+    })
+  }
 }
 
 function createAction(handler) {
@@ -153,9 +164,46 @@ describe("ActionHandler", () => {
       context.forward(ExampleService.methods.DoSomething, { field: "forwarded:" + message.field })
     }).forward().should.eventually.have.property("field", "forwarded:message").then(() => {
       console.warn.should.have.been.calledOnceWith(
-        "WARNING: Command context 'forward' is deprecated. Please use 'ReplyFactory.forward' instead."
+        "WARNING: Action context 'forward' is deprecated. Please use 'ReplyFactory.forward' instead."
       )
     })
+  })
+
+  it("should side effect with returned Reply effects", async () => {
+    const call = testActionHandler("message", message => {
+      return replies
+        .message({ field: "replied:" + message.field })
+        .addEffect(ExampleService.methods.DoSomething, { field: "side effect" });
+    });
+    (await call.reply()).should.have.property("field", "replied:message");
+    (await call.effects()).should.have.deep.members([
+      {
+        serviceName: "com.example.ExampleService",
+        commandName: "DoSomething",
+        payload: In.create({ field: "side effect" }),
+        synchronous: false
+      }
+    ]);
+    console.warn.should.not.have.been.called;
+  })
+
+  it("should side effect with (deprecated) context effects", async () => {
+    const call = testActionHandler("message", (message, context) => {
+      context.effect(ExampleService.methods.DoSomething, { field: "side effect" });
+      return { field: "returned:" + message.field };
+    });
+    (await call.reply()).should.have.property("field", "returned:message");
+    (await call.effects()).should.have.deep.members([
+      {
+        serviceName: "com.example.ExampleService",
+        commandName: "DoSomething",
+        payload: In.create({ field: "side effect" }),
+        synchronous: false
+      }
+    ]);
+    console.warn.should.have.been.calledOnceWith(
+      "WARNING: Action context 'effect' is deprecated. Please use 'Reply.addEffect' instead."
+    )
   })
 
   it("should only reply with previously context written value and warn about returned value", () => {
@@ -164,7 +212,7 @@ describe("ActionHandler", () => {
       return { field: "returned:" + message.field } // not used as already sent reply with context.write
     }).reply().should.eventually.have.property("field", "wrote:something").then(() => {
       console.warn.should.have.been.calledOnceWith(
-        "WARNING: Command handler for ExampleService.DoSomething both sent a reply through the context and returned a value, ignoring return value."
+        "WARNING: Action handler for ExampleService.DoSomething both sent a reply through the context and returned a value, ignoring return value."
       )
     })
   })
@@ -263,7 +311,7 @@ describe("ActionHandler", () => {
       })
     }).forward().should.eventually.have.property("field", "forwarded:promised:async:message").then(() => {
       console.warn.should.have.been.calledOnceWith(
-        "WARNING: Command context 'forward' is deprecated. Please use 'ReplyFactory.forward' instead."
+        "WARNING: Action context 'forward' is deprecated. Please use 'ReplyFactory.forward' instead."
       )
     })
   })
@@ -274,9 +322,89 @@ describe("ActionHandler", () => {
       context.forward(ExampleService.methods.DoSomething, { field: "forwarded:awaited:" + something.field })
     }).forward().should.eventually.have.property("field", "forwarded:awaited:async:message").then(() => {
       console.warn.should.have.been.calledOnceWith(
-        "WARNING: Command context 'forward' is deprecated. Please use 'ReplyFactory.forward' instead."
+        "WARNING: Action context 'forward' is deprecated. Please use 'ReplyFactory.forward' instead."
       )
     })
+  })
+
+  it("should side effect with returned promise with Reply effects", async () => {
+    const call = testActionHandler("message", message => {
+      return doSomethingAsync(message).then(something => {
+        return replies
+          .message({ field: "promised:" + something.field })
+          .addEffect(ExampleService.methods.DoSomething, { field: "side effect" });
+        });
+    });
+    (await call.reply()).should.have.property("field", "promised:async:message");
+    (await call.effects()).should.have.deep.members([
+      {
+        serviceName: "com.example.ExampleService",
+        commandName: "DoSomething",
+        payload: In.create({ field: "side effect" }),
+        synchronous: false
+      }
+    ]);
+    console.warn.should.not.have.been.called;
+  })
+
+  it("should side effect with returned async Reply effects", async () => {
+    const call = testActionHandler("message", async message => {
+      const something = await doSomethingAsync(message);
+      return replies
+        .message({ field: "awaited:" + something.field })
+        .addEffect(ExampleService.methods.DoSomething, { field: "side effect" });
+    });
+    (await call.reply()).should.have.property("field", "awaited:async:message");
+    (await call.effects()).should.have.deep.members([
+      {
+        serviceName: "com.example.ExampleService",
+        commandName: "DoSomething",
+        payload: In.create({ field: "side effect" }),
+        synchronous: false
+      }
+    ]);
+    console.warn.should.not.have.been.called;
+  })
+
+  it("should side effect with (deprecated) context effects in returned promise", async () => {
+    const call = testActionHandler("message", (message, context) => {
+      return doSomethingAsync(message).then(something => {
+        context.effect(ExampleService.methods.DoSomething, { field: "side effect" });
+        return { field: "promised:" + something.field };
+      });
+    });
+    (await call.reply()).should.have.property("field", "promised:async:message");
+    (await call.effects()).should.have.deep.members([
+      {
+        serviceName: "com.example.ExampleService",
+        commandName: "DoSomething",
+        payload: In.create({ field: "side effect" }),
+        synchronous: false
+      }
+    ]);
+    console.warn.should.have.been.calledOnceWith(
+      "WARNING: Action context 'effect' is deprecated. Please use 'Reply.addEffect' instead."
+    )
+  })
+
+  it("should side effect with (deprecated) context effects in returned promise", async () => {
+    const call = testActionHandler("message", async (message, context) => {
+      const something = await doSomethingAsync(message);
+      context.effect(ExampleService.methods.DoSomething, { field: "side effect" });
+      return { field: "awaited:" + something.field };
+    });
+    (await call.reply()).should.have.property("field", "awaited:async:message");
+    (await call.effects()).should.have.deep.members([
+      {
+        serviceName: "com.example.ExampleService",
+        commandName: "DoSomething",
+        payload: In.create({ field: "side effect" }),
+        synchronous: false
+      }
+    ]);
+    console.warn.should.have.been.calledOnceWith(
+      "WARNING: Action context 'effect' is deprecated. Please use 'Reply.addEffect' instead."
+    )
   })
 
   it("should only reply with previously context written value and warn about returned value in promise", () => {
@@ -287,7 +415,7 @@ describe("ActionHandler", () => {
       })
     }).reply().should.eventually.have.property("field", "wrote:promised:async:something").then(() => {
       console.warn.should.have.been.calledOnceWith(
-        "WARNING: Command handler for ExampleService.DoSomething both sent a reply through the context and returned a value, ignoring return value."
+        "WARNING: Action handler for ExampleService.DoSomething both sent a reply through the context and returned a value, ignoring return value."
       )
     })
   })
@@ -299,7 +427,7 @@ describe("ActionHandler", () => {
       return { field: "promised:" + something.field } // not used as already sent reply with context.write
     }).reply().should.eventually.have.property("field", "wrote:awaited:async:something").then(() => {
       console.warn.should.have.been.calledOnceWith(
-        "WARNING: Command handler for ExampleService.DoSomething both sent a reply through the context and returned a value, ignoring return value."
+        "WARNING: Action handler for ExampleService.DoSomething both sent a reply through the context and returned a value, ignoring return value."
       )
     })
   })
