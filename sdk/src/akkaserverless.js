@@ -15,10 +15,13 @@
  */
 
 const path = require("path");
-const grpc = require("grpc");
-const protoLoader = require("@grpc/proto-loader");
+const grpc = require("@grpc/grpc-js");
 const fs = require("fs");
 const settings = require("../settings");
+
+const discovery_messages = require('../proto/akkaserverless/protocol/discovery_pb');
+const discovery_services = require('../proto/akkaserverless/protocol/discovery_grpc_pb');
+const google_protobuf_empty_pb = require('google-protobuf/google/protobuf/empty_pb');
 
 const debug = require("debug")("akkaserverless");
 // Bind to stdout
@@ -52,6 +55,19 @@ try {
 } catch (e) {
   // ignore, if we can't find it, no big deal
 }
+
+// Specific error-link bindings
+const specificCodes = new Map([
+  ["AS-00112", "javascript/views.html#changing"],
+  ["AS-00402", "javascript/topic-eventing.html"],
+  ["AS-00406", "javascript/topic-eventing.html"]
+]);
+const codeCategories = new Map([
+  ["AS-001", "javascript/views.html"],
+  ["AS-002", "javascript/value-entity.html"],
+  ["AS-003", "javascript/eventsourced.html"],
+  ["AS-004", "javascript/"] // no single page for eventing
+])
 
 /**
  * An Akka Serverless server.
@@ -174,126 +190,145 @@ class AkkaServerless {
       services.register(this.server);
     });
 
-    const includeDirs = [
-      path.join(__dirname, "..", "proto"),
-      path.join(__dirname, "..", "protoc", "include")
-    ];
-    const packageDefinition = protoLoader.loadSync(path.join("akkaserverless", "protocol", "discovery.proto"), {
-      includeDirs: includeDirs
-    });
-    const grpcDescriptor = grpc.loadPackageDefinition(packageDefinition);
-
-    const discovery = grpcDescriptor.akkaserverless.protocol.Discovery.service;
-
-    this.server.addService(discovery, {
+    this.server.addService(discovery_services.DiscoveryService, {
       discover: this.discover.bind(this),
       reportError: this.reportError.bind(this),
       proxyTerminated: this.proxyTerminated.bind(this)
     });
 
-    const boundPort = this.server.bind(opts.bindAddress + ":" + opts.bindPort, grpc.ServerCredentials.createInsecure());
-    this.server.start();
-    console.log("gRPC server started on " + opts.bindAddress + ":" + boundPort);
+    const afterStart = (port) => {
+      console.log("gRPC server started on " + opts.bindAddress + ":" + port);
 
-    process.on('SIGTERM', function onSigterm () {
-      if (!this.proxySeen || this.proxyHasTerminated || this.devMode) {
-        debug('Got SIGTERM. Shutting down')
-        this.terminate()
-      } else {
-        debug('Got SIGTERM. But did not yet see proxy terminating, deferring shutdown until proxy stops')
-        // no timeout because process will be SIGKILLed anyway if it does not get the proxy termination in time
-        this.waitingForProxyTermination = true
-      }
-    }.bind(this))
-    return boundPort;
+      process.on('SIGTERM', function onSigterm () {
+        if (!this.proxySeen || this.proxyHasTerminated || this.devMode) {
+          debug('Got SIGTERM. Shutting down')
+          this.terminate()
+        } else {
+          debug('Got SIGTERM. But did not yet see proxy terminating, deferring shutdown until proxy stops')
+          // no timeout because process will be SIGKILLed anyway if it does not get the proxy termination in time
+          this.waitingForProxyTermination = true
+        }
+      }.bind(this));
+    }
+
+    return new Promise((resolve, reject) => {
+      this.server.bindAsync(
+        opts.bindAddress + ":" + opts.bindPort,
+        grpc.ServerCredentials.createInsecure(),
+        (err, port) => {
+          if (err) {
+            console.error(`Server error: ${err.message}`);
+            reject(err);
+          } else {
+            console.log(`Server bound on port: ${port}`);
+            this.server.start();
+            afterStart(port);
+            resolve(port);
+          }
+        },
+      );
+    });
   }
 
   // detect hybrid proxy version probes when protocol version 0.0 (or undefined)
   isVersionProbe(info) {
-    return !info.protocolMajorVersion && !info.protocolMinorVersion
+    return !info.getProtocolMajorVersion() && !info.getProtocolMinorVersion()
+  }
+
+  discoveryLogic(proxyInfo) {
+    const protocolVersion = settings.protocolVersion();
+    const serviceInfo = new discovery_messages.ServiceInfo();
+    serviceInfo.setServiceName(this.options.serviceName);
+    serviceInfo.setServiceVersion(this.options.serviceVersion);
+    serviceInfo.setServiceRuntime(process.title + " " + process.version);
+    serviceInfo.setSupportLibraryName(packageInfo.name);
+    serviceInfo.setSupportLibraryVersion(packageInfo.version);
+    serviceInfo.setProtocolMajorVersion(protocolVersion.major);
+    serviceInfo.setProtocolMinorVersion(protocolVersion.minor);
+
+    const spec = new discovery_messages.Spec();
+    spec.setServiceInfo(serviceInfo)
+
+    if (this.isVersionProbe(proxyInfo)) {
+      // only (silently) send service info for hybrid proxy version probe
+    } else {
+      debug(proxyInfo)
+      this.proxySeen = true
+      this.devMode = proxyInfo.getDevMode()
+      this.proxyHasTerminated = false
+      debug("Discover call with info %o, sending %s components", proxyInfo, this.components.length);
+
+      const components = this.components.map(component => {
+        const res = new discovery_messages.Component();
+
+        res.setServiceName(component.serviceName);
+        res.setComponentType(component.componentType());
+
+        const entity = new discovery_messages.EntitySettings();
+        entity.setEntityType(component.options.entityType);
+        if (component.options.entityPassivationStrategy) {
+          const ps = new discovery_messages.PassivationStrategy();
+          const tps = new discovery_messages.TimeoutPassivationStrategy();
+          tps.setTimeout(component.options.entityPassivationStrategy.timeout);
+          ps.setTimeout(tps);
+          entity.setPassivationStrategy(ps);
+        }
+
+        res.setEntity(entity);
+
+        return res;
+      });
+
+      spec.setProto(this.proto);
+      spec.setComponentsList(components);
+    }
+
+    return spec;
   }
 
   discover(call, callback) {
     const proxyInfo = call.request;
-    const protocolVersion = settings.protocolVersion();
-    const serviceInfo = {
-      serviceName: this.options.serviceName,
-      serviceVersion: this.options.serviceVersion,
-      serviceRuntime: process.title + " " + process.version,
-      supportLibraryName: packageInfo.name,
-      supportLibraryVersion: packageInfo.version,
-      protocolMajorVersion: protocolVersion.major,
-      protocolMinorVersion: protocolVersion.minor
-    }
-    if (this.isVersionProbe(proxyInfo)) {
-      // only (silently) send service info for hybrid proxy version probe
-      callback(null, { serviceInfo: serviceInfo })
-    } else {
-      debug(proxyInfo)
-      this.proxySeen = true
-      this.devMode = proxyInfo.devMode
-      this.proxyHasTerminated = false
-      debug("Discover call with info %o, sending %s components", proxyInfo, this.components.length);
-      const components = this.components.map(component => {
-        const passivationTimeout = component.options.entityPassivationStrategy ? component.options.entityPassivationStrategy.timeout : null;
-        const passivationStrategy = passivationTimeout ? { timeout: { timeout: passivationTimeout } } : {};
-        return {
-          componentType: component.componentType(),
-          serviceName: component.serviceName,
-          entity: {
-            entityType: component.options.entityType,
-            passivationStrategy: passivationStrategy
-          }
-        };
-      });
-      callback(null, {
-        proto: this.proto,
-        components: components,
-        serviceInfo: serviceInfo
-      });
-    }
+    const spec = this.discoveryLogic(proxyInfo);
+
+    callback(null, spec);
   }
 
   docLinkFor(code) {
-    const specificCodes = {
-      "AS-00112": "js-services/views.html#changing",
-      "AS-00402": "js-services/topic-eventing.html",
-      "AS-00406": "js-services/topic-eventing.html"
-    }
-    let path = specificCodes[code]
-    if (!path) {
-      const codeCategories = {
-        // "AS-001": "js-services/views.html", not in place yet
-        "AS-002": "js-services/value-entity.html",
-        "AS-003": "js-services/eventsourced.html",
-        "AS-004": "js-services/" // no single page for eventing
-      }
-      path = codeCategories[code.substr(0, 6)]
-    }
+    const baseUrl = "https://developer.lightbend.com/docs/akka-serverless/"
 
-    if (path)
-      return "https://developer.lightbend.com/docs/akka-serverless/" + path
-    else
-      return ""
+    const shortCode = code.substr(0, 6);
+    if (specificCodes.has(code)) {
+      return `${baseUrl}${specificCodes.get(code)}`;
+    } else if (codeCategories.has(shortCode)) {
+      return `${baseUrl}${codeCategories.get(shortCode)}`;
+    } else {
+      return '';
+    }
   }
 
-  reportError(call, callback) {
-    let msg = "Error reported from Akka system: " + call.request.code + " " + call.request.message;
-    if (call.request.detail) {
-      msg += "\n\n" + call.request.detail;
+  reportErrorLogic(userError) {
+    let msg = "Error reported from Akka system: " + userError.getCode() + " " + userError.getMessage();
+    if (userError.getDetail()) {
+      msg += "\n\n" + userError.getDetail();
     }
 
-    if(call.request.code) {
-      const docLink = this.docLinkFor(call.request.code)
+    if(userError.getCode()) {
+      const docLink = this.docLinkFor(userError.getCode())
       if (docLink)
         msg += " See documentation: " + docLink
-      for (const location of (call.request.sourceLocations || [])) {
+      for (const location of (userError.getSourceLocationsList() || [])) {
         msg += "\n\n" + this.formatSource(location)
       }
     }
+
+    return msg;
+  }
+
+  reportError(call, callback) {
+    const msg = this.reportErrorLogic(call.request)
     
     console.error(msg);
-    callback(null, {});
+    callback(null, new google_protobuf_empty_pb.Empty().toObject());
   }
 
   proxyTerminated() {
@@ -304,31 +339,31 @@ class AkkaServerless {
   }
 
   formatSource(location) {
-    let startLine = location.startLine;
+    let startLine = location.getStartLine();
     if (startLine === undefined) {
       startLine = 0;
     }
-    let endLine = location.endLine;
+    let endLine = location.getEndLine();
     if (endLine === undefined) {
       endLine = 0;
     }
-    let startCol = location.startCol;
+    let startCol = location.getStartCol();
     if (startCol === undefined) {
       startCol = 0;
     }
-    let endCol = location.endCol;
+    let endCol = location.getEndCol();
     if (endCol === undefined) {
       endCol = 0;
     }
     if (endLine === 0 && endCol === 0) {
       // It's been sent without line/col data
-      return "At " + location.fileName;
+      return "At " + location.getFileName();
     }
     // First, we need to location the protobuf file that it's from. To do that, we need to look in the include dirs
     // of each entity.
     for (const component of this.components) {
       for (const includeDir of component.options.includeDirs) {
-        const file = path.resolve(includeDir, location.fileName);
+        const file = path.resolve(includeDir, location.getFileName());
         if (fs.existsSync(file)) {
           const lines = fs.readFileSync(file).toString("utf-8")
               .split(/\r?\n/)
@@ -348,11 +383,11 @@ class AkkaServerless {
             }
             content += "^";
           }
-          return "At " + location.fileName + ":" + (startLine + 1) + ":" + (startCol + 1) + ":" + "\n" + content
+          return "At " + location.getFileName() + ":" + (startLine + 1) + ":" + (startCol + 1) + ":" + "\n" + content
         }
       }
     }
-    return "At " + location.fileName + ":" + (startLine + 1) + ":" + (startCol + 1);
+    return "At " + location.getFileName() + ":" + (startLine + 1) + ":" + (startCol + 1);
   }
 
   shutdown() {
