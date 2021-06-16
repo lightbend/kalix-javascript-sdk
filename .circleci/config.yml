@@ -30,13 +30,10 @@ jobs:
       - run:
           name: "run tests"
           command: |
-            pushd sdk && npm ci && npm test && popd
-
-            mkdir ~/.npm-packages && npm config set prefix ~/.npm-packages
-            pushd sdk && npm ci && npm link && popd
-            pushd samples/valueentity-counter && npm link @lightbend/akkaserverless-javascript-sdk && npm install && npm run build && npm run test && popd
-            pushd samples/js-valueentity-shopping-cart && npm link @lightbend/akkaserverless-javascript-sdk && npm install && npm run build && npm run test && popd
-            pushd samples/js-eventsourced-shopping-cart && npm link @lightbend/akkaserverless-javascript-sdk && npm install && npm run build && npm run test && popd
+            pushd sdk && npm ci && npm test && npm pack && popd
+            pushd samples/valueentity-counter && npm install ../../sdk/lightbend-akkaserverless-javascript-sdk-0.0.0.tgz && npm install && npm run build && npm test && popd
+            pushd samples/js-valueentity-shopping-cart && npm install ../../sdk/lightbend-akkaserverless-javascript-sdk-0.0.0.tgz && npm install && npm run build && npm test && popd
+            pushd samples/js-eventsourced-shopping-cart && npm install ../../sdk/lightbend-akkaserverless-javascript-sdk-0.0.0.tgz && npm install && npm run build && npm test && popd
 
   integration-tests:
     machine: true
