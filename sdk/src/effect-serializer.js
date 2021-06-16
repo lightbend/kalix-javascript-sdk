@@ -75,7 +75,7 @@ module.exports = class EffectSerializer {
 
   serializeSideEffect(method, message, synchronous, metadata) {
     const msg = this.serializeEffect(method, message, metadata);
-    msg.synchronous = synchronous;
+    msg.synchronous = typeof synchronous === "boolean" ? synchronous : false;
     return msg;
   }
 
