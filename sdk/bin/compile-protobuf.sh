@@ -16,7 +16,7 @@ pbjs -t static-module -p ./proto -p ./protoc/include \
 OUT_DIR="${PWD}/proto"
 TS_OUT_DIR="${PWD}/proto"
 IN_DIR="${PWD}/proto"
-PROTOC="$(npm bin)/grpc_tools_node_protoc"
+PROTOC="${PWD}/protoc/bin/protoc"
 PROTOC_GEN_TS_PATH="$(npm bin)/protoc-gen-ts"
 PROTOC_GEN_GRPC_PATH="$(npm bin)/grpc_tools_node_protoc_plugin"
 
