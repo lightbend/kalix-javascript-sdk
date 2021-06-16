@@ -15,7 +15,7 @@
  */
 
 /**
- * Mocks the behaviour of a single Akka Serverless Event-sourced entity.
+ * Mocks the behaviour of a single Akka Serverless EventSourcedEntity.
  *
  * Handles any commands and events, internally tracking the state and maintaining an event log.
  *
