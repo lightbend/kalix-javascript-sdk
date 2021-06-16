@@ -27,12 +27,12 @@ const Reply = require("./reply").Reply;
  */
 class CommandHelper {
 
-  constructor(entityId, service, streamId, call, handlerFactory, allComponents, debug) {
+  constructor(entityId, service, streamId, call, handlerFactory, debug) {
     this.entityId = entityId;
     this.service = service;
     this.streamId = streamId;
     this.call = call;
-    this.effectSerializer = new EffectSerializer(allComponents);
+    this.effectSerializer = new EffectSerializer();
     this.debug = debug;
     this.handlerFactory = handlerFactory;
   }

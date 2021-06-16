@@ -27,12 +27,12 @@ const CloudEvents = require("./cloudevents");
 const Reply = require("./reply").Reply;
 
 class ActionSupport {
-  constructor(root, service, commandHandlers, allComponents) {
+  constructor(root, service, commandHandlers) {
     this.root = root;
     this.service = service;
     this.commandHandlers = commandHandlers;
     this.anySupport = new AnySupport(this.root);
-    this.effectSerializer = new EffectSerializer(allComponents);
+    this.effectSerializer = new EffectSerializer();
   }
 }
 
@@ -509,9 +509,8 @@ module.exports = class ActionServices {
     this.services = {};
   }
 
-  addService(component, allComponents) {
-    this.services[component.serviceName] = new ActionSupport(component.root, component.service,
-        component.commandHandlers, allComponents);
+  addService(component) {
+    this.services[component.serviceName] = new ActionSupport(component.root, component.service, component.commandHandlers);
   }
 
   componentType() {

@@ -150,8 +150,8 @@ class ReplicatedEntity {
     return this.root.lookupType(messageType);
   }
 
-  register(allComponents) {
-    replicatedEntityServices.addService(this, allComponents);
+  register() {
+    replicatedEntityServices.addService(this);
     return replicatedEntityServices;
   }
 

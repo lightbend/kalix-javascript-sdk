@@ -157,14 +157,9 @@ class AkkaServerless {
       ...options
     };
 
-    const allComponentsMap = {};
-    this.components.forEach(component => {
-      allComponentsMap[component.serviceName] = component.service;
-    });
-
     const componentTypes = {};
     this.components.forEach(component => {
-      const componentServices = component.register(allComponentsMap);
+      const componentServices = component.register();
       componentTypes[componentServices.componentType()] = componentServices;
     });
 

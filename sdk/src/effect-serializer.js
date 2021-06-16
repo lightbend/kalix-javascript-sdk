@@ -19,9 +19,7 @@ const util = require("util");
 
 module.exports = class EffectSerializer {
 
-  constructor(allComponents) {
-    this.allComponents = allComponents;
-  }
+  constructor() {}
 
   serializeEffect(method, message, metadata) {
     let serviceName, commandName;
@@ -38,30 +36,24 @@ module.exports = class EffectSerializer {
       commandName = method.name;
     }
 
-    const service = this.allComponents[serviceName];
+    const command = method;
+    if (command !== undefined) {
+      const payload = AnySupport.serialize(command.resolvedRequestType.create(message), false, false);
+      const effect = {
+        serviceName: serviceName,
+        commandName: commandName,
+        payload: payload
+      };
 
-    if (service !== undefined) {
-      const command = service.methods[commandName];
-      if (command !== undefined) {
-        const payload = AnySupport.serialize(command.resolvedRequestType.create(message), false, false);
-        const effect = {
-          serviceName: serviceName,
-          commandName: commandName,
-          payload: payload
-        };
-
-        if (metadata && metadata.entries) {
-          effect.metadata = {
-            entries: metadata.entries
-          }
+      if (metadata && metadata.entries) {
+        effect.metadata = {
+          entries: metadata.entries
         }
-
-        return effect;
-      } else {
-        throw new Error(util.format("Command [%s] unknown on service [%s].", commandName, serviceName))
       }
+
+      return effect;
     } else {
-      throw new Error(util.format("Service [%s] has not been registered as an entity in this user function, and so can't be used as a side effect or forward.", service))
+      throw new Error(util.format("Command [%s] unknown on service [%s].", commandName, serviceName))
     }
   }
 

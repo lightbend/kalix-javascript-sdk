@@ -31,7 +31,7 @@ module.exports = class ViewServices {
     this.services = {};
   }
 
-  addService(component, allComponents) {
+  addService(component) {
     this.services[component.serviceName] = component;
   }
 

@@ -134,8 +134,8 @@ class Action {
     return this.root.lookupType(messageType);
   }
 
-  register(allComponents) {
-    actionServices.addService(this, allComponents);
+  register() {
+    actionServices.addService(this);
     return actionServices;
   }
 

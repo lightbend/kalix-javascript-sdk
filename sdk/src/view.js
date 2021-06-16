@@ -118,8 +118,8 @@ class View {
     return this;
   }
 
-  register(allComponents) {
-    viewServices.addService(this, allComponents);
+  register() {
+    viewServices.addService(this);
     return viewServices;
   }
 

@@ -34,12 +34,12 @@ class ReplicatedEntityServices {
     ];
   }
 
-  addService(entity, allComponents) {
+  addService(entity) {
     this.services[entity.serviceName] = new ReplicatedEntitySupport(entity.root, entity.service, {
       commandHandlers: entity.commandHandlers,
       onStateSet: entity.onStateSet,
       defaultValue: entity.defaultValue
-    }, allComponents);
+    });
   }
 
   componentType() {
@@ -112,14 +112,13 @@ class ReplicatedEntityServices {
 
 class ReplicatedEntitySupport {
 
-  constructor(root, service, handlers, allComponents) {
+  constructor(root, service, handlers) {
     this.root = root;
     this.service = service;
     this.anySupport = new AnySupport(this.root);
     this.commandHandlers = handlers.commandHandlers;
     this.onStateSet = handlers.onStateSet;
     this.defaultValue = handlers.defaultValue;
-    this.allComponents = allComponents;
   }
 
   create(call, init) {
@@ -170,7 +169,7 @@ class ReplicatedEntityHandler {
     this.streamId = Math.random().toString(16).substr(2, 7);
 
     this.commandHelper = new CommandHelper(this.entityId, support.service, this.streamId, call,
-      this.commandHandlerFactory.bind(this), support.allComponents, debug);
+      this.commandHandlerFactory.bind(this), debug);
 
     this.streamDebug("Started new stream");
 

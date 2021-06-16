@@ -152,8 +152,8 @@ class ValueEntity {
     return this;
   }
 
-  register(allComponents) {
-    valueEntityServices.addService(this, allComponents);
+  register() {
+    valueEntityServices.addService(this);
     return valueEntityServices;
   }
 

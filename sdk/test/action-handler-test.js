@@ -79,8 +79,6 @@ class MockUnaryCall {
 
 function createAction(handler) {
   const actionSupport = new ActionSupport()
-  const allComponents = {}
-  allComponents[ExampleServiceName] = ExampleService
   actionSupport.addService({
     root: root,
     serviceName: ExampleServiceName,
@@ -88,7 +86,7 @@ function createAction(handler) {
     commandHandlers: {
       DoSomething: handler
     }
-  }, allComponents)
+  })
   return actionSupport
 }
 
