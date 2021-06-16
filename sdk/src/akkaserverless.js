@@ -19,6 +19,7 @@ const grpc = require("grpc");
 const protoLoader = require("@grpc/proto-loader");
 const fs = require("fs");
 const settings = require("../settings");
+const crypto = require('crypto');
 
 const debug = require("debug")("akkaserverless");
 // Bind to stdout
@@ -52,6 +53,9 @@ try {
 } catch (e) {
   // ignore, if we can't find it, no big deal
 }
+const serviceInstanceUUID = ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, c =>
+    (c ^ (crypto.randomBytes(1)[0] & (15 >> (c / 4)))).toString(16)
+)
 
 /**
  * An Akka Serverless server.
@@ -223,7 +227,8 @@ class AkkaServerless {
       supportLibraryName: packageInfo.name,
       supportLibraryVersion: packageInfo.version,
       protocolMajorVersion: protocolVersion.major,
-      protocolMinorVersion: protocolVersion.minor
+      protocolMinorVersion: protocolVersion.minor,
+      serviceInstanceUuid: serviceInstanceUUID,
     }
     if (this.isVersionProbe(proxyInfo)) {
       // only (silently) send service info for hybrid proxy version probe
