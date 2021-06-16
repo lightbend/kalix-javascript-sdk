@@ -328,7 +328,7 @@ class AkkaServerless {
     const msg = this.reportErrorLogic(call.request)
     
     console.error(msg);
-    callback(null, new google_protobuf_empty_pb.Empty().toObject());
+    callback(null, new google_protobuf_empty_pb.Empty());
   }
 
   proxyTerminated() {
