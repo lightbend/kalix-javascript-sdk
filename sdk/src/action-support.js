@@ -157,7 +157,7 @@ class ActionHandler {
   handleSingleReturn(value) {
     if (value) {
       if (this.ctx.alreadyReplied) {
-        console.warn(`WARNING: Command handler for ${this.support.service.name}.${this.grpcMethod.name} both sent a reply through the context and returned a value, ignoring return value.`)
+        console.warn(`WARNING: Action handler for ${this.support.service.name}.${this.grpcMethod.name} both sent a reply through the context and returned a value, ignoring return value.`)
       } else if (value instanceof Reply) {
         this.passReplyThroughContext(this.ctx, value)
       } else if (typeof value.then === "function") {
@@ -254,7 +254,7 @@ class ActionHandler {
       this.streamDebug("Forwarding to %s", method);
       this.ctx.alreadyReplied = true;
       if (!internalCall)
-        console.warn("WARNING: Command context 'forward' is deprecated. Please use 'ReplyFactory.forward' instead.");
+        console.warn("WARNING: Action context 'forward' is deprecated. Please use 'ReplyFactory.forward' instead.");
       const forward = this.support.effectSerializer.serializeEffect(method, message, metadata);
       this.grpcCallback(null, {
         forward: forward,
@@ -289,8 +289,10 @@ class ActionHandler {
       }
     };
 
-    this.ctx.effect = (method, message, synchronous, metadata) => {
+    this.ctx.effect = (method, message, synchronous, metadata, internalCall) => {
       this.ensureNotCancelled();
+      if (!internalCall)
+        console.warn("WARNING: Action context 'effect' is deprecated. Please use 'Reply.addEffect' instead.");
       this.streamDebug("Emitting effect to %s", method);
       effects.push(this.support.effectSerializer.serializeSideEffect(method, message, synchronous, metadata));
     };
@@ -397,8 +399,10 @@ class ActionHandler {
       effects = []; // clear effects after each streamed write
     };
 
-    this.ctx.effect = (method, message, synchronous, metadata) => {
+    this.ctx.effect = (method, message, synchronous, metadata, internalCall) => {
       this.ensureNotCancelled();
+      if (!internalCall)
+        console.warn("WARNING: Action context 'effect' is deprecated. Please use 'Reply.addEffect' instead.");
       this.streamDebug("Emitting effect to %s", method);
       effects.push(this.support.effectSerializer.serializeSideEffect(method, message, synchronous, metadata));
     };
