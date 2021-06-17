@@ -437,19 +437,19 @@ class ReplicatedEntityHandler {
       };
 
       try {
-        this.commandHelper.invokeHandler(() => {
+        const handler = () => {
           const userReply = subscriber.handler(this.currentState, ctx.context);
           if (this.currentState.getAndResetDelta() !== null) {
             throw new Error("State change handler attempted to modify state");
           }
           return userReply;
-        }, ctx, subscriber.grpcMethod, msg => {
-          if (ctx.effects.length > 0 || ctx.reply.endStream === true || ctx.reply.clientAction !== undefined) {
-            return {
-              streamedMessage: msg
-            };
-          }
-        })
+        }
+        const msg = this.commandHelper.invokeHandlerLogic(handler, ctx, subscriber.grpcMethod);
+        if ((!this.commandHelper.isFailure(msg)) && (ctx.effects.length > 0 || ctx.reply.endStream === true || ctx.reply.clientAction !== undefined)) {
+          this.call.write({
+            streamedMessage: msg
+          });
+        }
       } catch (e) {
         this.call.write({
           failure: {
