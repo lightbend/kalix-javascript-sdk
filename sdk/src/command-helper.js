@@ -32,7 +32,6 @@ class CommandHelper {
     this.service = service;
     this.streamId = streamId;
     this.call = call;
-    this.effectSerializer = new EffectSerializer();
     this.debug = debug;
     this.handlerFactory = handlerFactory;
   }
@@ -158,7 +157,7 @@ class CommandHelper {
         ctx.reply.commandId = ctx.commandId;
         if (userReply.effects) {
           ctx.reply.sideEffects = userReply.effects.map(effect =>
-            this.effectSerializer.serializeSideEffect(effect.method, effect.message, effect.synchronous, effect.metadata)
+            EffectSerializer.serializeSideEffect(effect.method, effect.message, effect.synchronous, effect.metadata)
           )
         }
         if (userReply.message) {
@@ -171,7 +170,7 @@ class CommandHelper {
           ctx.commandDebug("%s reply with type [%s] with %d side effects.", desc, ctx.reply.clientAction.reply.payload.type_url, ctx.effects.length);
         } else if (userReply.forward) {
           ctx.reply.clientAction = {
-            forward: this.effectSerializer.serializeEffect(
+            forward: EffectSerializer.serializeEffect(
               userReply.forward.method, userReply.forward.message, userReply.forward.metadata)
           }
           ctx.commandDebug("%s forward to %s with %d side effects.", desc, userReply.forward.method, ctx.effects.length);
@@ -289,7 +288,7 @@ class CommandHelper {
         accessor.ensureActive();
         if (!internalCall)
           console.warn("WARNING: Command context 'effect' is deprecated. Please use 'Reply.addEffect' instead.");
-        accessor.effects.push(this.effectSerializer.serializeSideEffect(method, message, synchronous, metadata))
+        accessor.effects.push(EffectSerializer.serializeSideEffect(method, message, synchronous, metadata))
       },
 
       // FIXME: remove for version 0.8 (https://github.com/lightbend/akkaserverless-framework/issues/410)
@@ -319,7 +318,7 @@ class CommandHelper {
         accessor.ensureActive();
         if (!internalCall)
           console.warn("WARNING: Command context 'forward' is deprecated. Please use 'ReplyFactory.forward' instead.");
-        accessor.forward = this.effectSerializer.serializeEffect(method, message, metadata);
+        accessor.forward = EffectSerializer.serializeEffect(method, message, metadata);
       },
 
       /**

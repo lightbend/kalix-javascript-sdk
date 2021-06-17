@@ -17,58 +17,57 @@
 const AnySupport = require("./protobuf-any");
 const util = require("util");
 
-module.exports = class EffectSerializer {
+function serializeEffect(method, message, metadata) {
+  let serviceName, commandName;
+  // We support either the grpc method, or a protobufjs method being passed
+  if (typeof method.path === "string") {
+    const r = new RegExp("^/([^/]+)/([^/]+)$").exec(method.path);
+    if (r == null) {
+      throw new Error(util.format("Not a valid gRPC method path '%s' on object '%o'", method.path, method));
+    }
+    serviceName = r[1];
+    commandName = r[2];
+  } else if (method.type === "rpc") {
+    serviceName = fullName(method.parent);
+    commandName = method.name;
+  }
 
-  constructor() {}
+  const command = method;
+  if (command !== undefined) {
+    const payload = AnySupport.serialize(command.resolvedRequestType.create(message), false, false);
+    const effect = {
+      serviceName: serviceName,
+      commandName: commandName,
+      payload: payload
+    };
 
-  serializeEffect(method, message, metadata) {
-    let serviceName, commandName;
-    // We support either the grpc method, or a protobufjs method being passed
-    if (typeof method.path === "string") {
-      const r = new RegExp("^/([^/]+)/([^/]+)$").exec(method.path);
-      if (r == null) {
-        throw new Error(util.format("Not a valid gRPC method path '%s' on object '%o'", method.path, method));
+    if (metadata && metadata.entries) {
+      effect.metadata = {
+        entries: metadata.entries
       }
-      serviceName = r[1];
-      commandName = r[2];
-    } else if (method.type === "rpc") {
-      serviceName = this.fullName(method.parent);
-      commandName = method.name;
     }
 
-    const command = method;
-    if (command !== undefined) {
-      const payload = AnySupport.serialize(command.resolvedRequestType.create(message), false, false);
-      const effect = {
-        serviceName: serviceName,
-        commandName: commandName,
-        payload: payload
-      };
-
-      if (metadata && metadata.entries) {
-        effect.metadata = {
-          entries: metadata.entries
-        }
-      }
-
-      return effect;
-    } else {
-      throw new Error(util.format("Command [%s] unknown on service [%s].", commandName, serviceName))
-    }
+    return effect;
+  } else {
+    throw new Error(util.format("Command [%s] unknown on service [%s].", commandName, serviceName))
   }
+}
 
-  fullName(item) {
-    if (item.parent && item.parent.name !== "") {
-      return this.fullName(item.parent) + "." + item.name;
-    } else {
-      return item.name;
-    }
+function fullName(item) {
+  if (item.parent && item.parent.name !== "") {
+    return fullName(item.parent) + "." + item.name;
+  } else {
+    return item.name;
   }
+}
 
-  serializeSideEffect(method, message, synchronous, metadata) {
-    const msg = this.serializeEffect(method, message, metadata);
-    msg.synchronous = typeof synchronous === "boolean" ? synchronous : false;
-    return msg;
-  }
+function serializeSideEffect(method, message, synchronous, metadata) {
+  const msg = this.serializeEffect(method, message, metadata);
+  msg.synchronous = typeof synchronous === "boolean" ? synchronous : false;
+  return msg;
+}
 
+module.exports = {
+  serializeEffect: serializeEffect,
+  serializeSideEffect: serializeSideEffect
 };

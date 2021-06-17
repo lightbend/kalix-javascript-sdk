@@ -32,7 +32,6 @@ class ActionSupport {
     this.service = service;
     this.commandHandlers = commandHandlers;
     this.anySupport = new AnySupport(this.root);
-    this.effectSerializer = new EffectSerializer();
   }
 }
 
@@ -255,7 +254,7 @@ class ActionHandler {
       this.ctx.alreadyReplied = true;
       if (!internalCall)
         console.warn("WARNING: Action context 'forward' is deprecated. Please use 'ReplyFactory.forward' instead.");
-      const forward = this.support.effectSerializer.serializeEffect(method, message, metadata);
+      const forward = EffectSerializer.serializeEffect(method, message, metadata);
       this.grpcCallback(null, {
         forward: forward,
         sideEffects: effects
@@ -294,7 +293,7 @@ class ActionHandler {
       if (!internalCall)
         console.warn("WARNING: Action context 'effect' is deprecated. Please use 'Reply.addEffect' instead.");
       this.streamDebug("Emitting effect to %s", method);
-      effects.push(this.support.effectSerializer.serializeSideEffect(method, message, synchronous, metadata));
+      effects.push(EffectSerializer.serializeSideEffect(method, message, synchronous, metadata));
     };
 
     this.ctx.fail = error => {
@@ -364,7 +363,7 @@ class ActionHandler {
     this.ctx.forward = (method, message, metadata) => {
       this.ensureNotCancelled();
       this.streamDebug("Forwarding to %s", method);
-      const forward = this.support.effectSerializer.serializeEffect(method, message, metadata);
+      const forward = EffectSerializer.serializeEffect(method, message, metadata);
       this.call.write({
         forward: forward,
         sideEffects: effects
@@ -404,7 +403,7 @@ class ActionHandler {
       if (!internalCall)
         console.warn("WARNING: Action context 'effect' is deprecated. Please use 'Reply.addEffect' instead.");
       this.streamDebug("Emitting effect to %s", method);
-      effects.push(this.support.effectSerializer.serializeSideEffect(method, message, synchronous, metadata));
+      effects.push(EffectSerializer.serializeSideEffect(method, message, synchronous, metadata));
     };
 
     this.ctx.fail = error => {
