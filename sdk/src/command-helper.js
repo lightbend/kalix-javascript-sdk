@@ -103,7 +103,7 @@ class CommandHelper {
           if (reply && reply.reply) {
             return reply;
           } else {
-            return {reply};
+            return {reply: reply};
           }
         } else {
           const msg = "No handler registered for command '" + command.name + "'";
