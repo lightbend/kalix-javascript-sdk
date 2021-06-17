@@ -445,7 +445,7 @@ class ReplicatedEntityHandler {
           return userReply;
         }
         const msg = this.commandHelper.invokeHandlerLogic(handler, ctx, subscriber.grpcMethod);
-        if ((!this.commandHelper.isFailure(msg)) && (ctx.effects.length > 0 || ctx.reply.endStream === true || ctx.reply.clientAction !== undefined)) {
+        if (ctx.effects.length > 0 || ctx.reply.endStream === true || ctx.reply.clientAction !== undefined) {
           this.call.write({
             streamedMessage: msg
           });

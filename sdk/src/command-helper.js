@@ -53,6 +53,9 @@ class CommandHelper {
       if (err.failure && err.failure.commandId === command.id) {
         this.call.write(err);
         this.call.end();
+      } else {
+        console.error(err);
+        throw err;
       }
     }
   }
@@ -95,15 +98,13 @@ class CommandHelper {
 
           ctx.streamed = command.streamed;
 
-          // const reply = this.invokeHandlerLogic(() => handler(deserCommand, ctx), ctx, grpcMethod, reply => { return {reply}; }, "Command");
           const reply = this.invokeHandlerLogic(() => handler(deserCommand, ctx), ctx, grpcMethod, "Command");
 
-          if (reply !== undefined && !this.isFailure(reply)) {
-            return {reply};
-          } else {
+          if (reply && reply.reply) {
             return reply;
+          } else {
+            return {reply};
           }
-
         } else {
           const msg = "No handler registered for command '" + command.name + "'";
           ctx.commandDebug(msg);
@@ -198,7 +199,6 @@ class CommandHelper {
           }
         }
 
-        // const x = new Object(ctx.reply);
         return ctx.reply;
       }
     } else {
@@ -225,22 +225,6 @@ class CommandHelper {
       return ctx.reply;
     }
   }
-
-  isFailure(reply) {
-    return (reply.reply && reply.reply.clientAction && reply.reply.clientAction.failure);
-  }
-
-  // invokeHandler(handler, ctx, grpcMethod, createReply, desc) {
-  //   let reply = this.invokeHandlerLogic(handler, ctx, grpcMethod, desc);
-
-  //   if (!this.isFailure(reply)) {
-  //     reply = createReply(reply);
-  //   }
-
-  //   if (reply !== undefined) {
-  //     this.call.write(reply);
-  //   }
-  // }
 
   commandDebug(msg, ...args) {
     this.debug("%s [%s] (%s) - " + msg, ...[this.streamId, this.entityId].concat(args));
