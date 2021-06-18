@@ -99,7 +99,7 @@ class ValueEntityHandler {
     return this.withState(state => {
       if (this.entity.commandHandlers.hasOwnProperty(commandName)) {
 
-        return (command, ctx) => {
+        return async (command, ctx) => {
           let updatedAnyState = null,
               deleted = false;
 
@@ -137,7 +137,7 @@ class ValueEntityHandler {
             deleted = true;
           }
 
-          const userReply = this.entity.commandHandlers[commandName](command, state, ctx.context);
+          const userReply = await this.entity.commandHandlers[commandName](command, state, ctx.context);
 
           if (deleted) {
             ctx.reply.stateAction = { delete: {} };

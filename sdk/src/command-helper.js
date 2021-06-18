@@ -43,9 +43,9 @@ class CommandHelper {
    * @param command The command to handle.
    * @private
    */
-  handleCommand(command) {
+  async handleCommand(command) {
     try {
-      const reply = this.handleCommandLogic(command);
+      const reply = await this.handleCommandLogic(command);
       if (reply !== undefined) {
         this.call.write(reply);
       }
@@ -60,7 +60,7 @@ class CommandHelper {
     }
   }
 
-  handleCommandLogic(command) {
+  async handleCommandLogic(command) {
     let metadata = new Metadata([]);
     if (command.metadata && command.metadata.entries) {
       metadata = new Metadata(command.metadata.entries);
@@ -98,7 +98,7 @@ class CommandHelper {
 
           ctx.streamed = command.streamed;
 
-          const reply = this.invokeHandlerLogic(() => handler(deserCommand, ctx), ctx, grpcMethod, "Command");
+          const reply = await this.invokeHandlerLogic(() => handler(deserCommand, ctx), ctx, grpcMethod, "Command");
 
           if (reply && reply.reply) {
             return reply;
@@ -120,11 +120,11 @@ class CommandHelper {
     }
   }
 
-  invoke(handler, ctx) {
+  async invoke(handler, ctx) {
     ctx.reply = {};
     let userReply = null;
     try {
-      userReply = handler();
+      userReply = await Promise.resolve(handler());
     } catch (err) {
       if (ctx.error === null) {
         // If the error field isn't null, then that means we were explicitly told
@@ -155,8 +155,8 @@ class CommandHelper {
     }
   }
 
-  invokeHandlerLogic(handler, ctx, grpcMethod, desc) {
-    const userReply = this.invoke(handler, ctx);
+  async invokeHandlerLogic(handler, ctx, grpcMethod, desc) {
+    const userReply = await this.invoke(handler, ctx);
 
     if (ctx.error !== null) {
       return this.errorReply(ctx.error.message, ctx, desc);

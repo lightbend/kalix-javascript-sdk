@@ -105,7 +105,7 @@ class EventSourcedEntityHandler {
 
       if (behavior.commandHandlers.hasOwnProperty(commandName)) {
 
-        return (command, ctx) => {
+        return async (command, ctx) => {
 
           /**
            * Context for an event sourced command.
@@ -134,7 +134,7 @@ class EventSourcedEntityHandler {
             ctx.commandDebug("Emitting event '%s'", serEvent.type_url);
           };
 
-          const userReply = behavior.commandHandlers[commandName](command, state, ctx.context);
+          const userReply = await behavior.commandHandlers[commandName](command, state, ctx.context);
 
           // when not using Reply a failure is signaled by throwing, but
           // when using Reply a failed reply also means applying events & creating snapshots should be skipped

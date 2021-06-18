@@ -59,9 +59,9 @@ class MockCall {
 
   get() {
     if (this.written.length === 0) {
-      throw new Error("No messages in call written buffer!")
+      throw new Error("No messages in call written buffer!");
     } else {
-      return this.written.shift()
+      return this.written.shift();
     }
   }
 
@@ -103,8 +103,8 @@ function roundTripReplicatedEntityStreamIn(msg) {
   return ReplicatedEntityStreamIn.decode(ReplicatedEntityStreamIn.encode(msg).finish());
 }
 
-function handleCommand(handler, command, name = "DoSomething", id = 10, streamed = false) {
-  const response = doHandleCommand(handler, command, name, id, streamed);
+async function handleCommand(handler, command, name = "DoSomething", id = 10, streamed = false) {
+  const response = await doHandleCommand(handler, command, name, id, streamed);
   if (response.failure !== null) {
     throw new Error(response.failure.description)
   }
@@ -113,8 +113,8 @@ function handleCommand(handler, command, name = "DoSomething", id = 10, streamed
   return reply;
 }
 
-function doHandleCommand(handler, command, name = "DoSomething", id = 10, streamed = false) {
-  send(handler, {
+async function doHandleCommand(handler, command, name = "DoSomething", id = 10, streamed = false) {
+  await send(handler, {
     command: {
       entityId: "foo",
       id: id,
@@ -126,8 +126,8 @@ function doHandleCommand(handler, command, name = "DoSomething", id = 10, stream
   return call.get();
 }
 
-function handleFailedCommand(handler, command, name = "DoSomething", id = 10, streamed = false) {
-  const response = doHandleCommand(handler, command, name, id, streamed);
+async function handleFailedCommand(handler, command, name = "DoSomething", id = 10, streamed = false) {
+  const response = await doHandleCommand(handler, command, name, id, streamed);
   if (response.failure !== null) {
     return response.failure;
   } else {
@@ -142,8 +142,8 @@ function expectFailure() {
   return response.failure;
 }
 
-function send(handler, streamIn) {
-  handler.onData(roundTripReplicatedEntityStreamIn(streamIn));
+async function send(handler, streamIn) {
+  await Promise.resolve(handler.onData(roundTripReplicatedEntityStreamIn(streamIn)));
 }
 
 function assertHasNoAction(reply) {
@@ -155,18 +155,18 @@ function assertHasNoAction(reply) {
 
 describe("ReplicatedEntityHandler", () => {
 
-  it("should start with no state", () => {
+  it("should start with no state", async () => {
     const handler = createHandler((cmd, ctx) => {
       should.equal(ctx.state, null);
       return outMsg;
     });
 
-    const reply = handleCommand(handler, inMsg);
+    const reply = await handleCommand(handler, inMsg);
     assertHasNoAction(reply);
     anySupport.deserialize(reply.clientAction.reply.payload).field.should.equal(outMsg.field);
   });
 
-  it("should populate state with the initial delta from init if present", () => {
+  it("should populate state with the initial delta from init if present", async () => {
     const handler = createHandler((cmd, ctx) => {
       ctx.state.value.should.equal(5);
       return outMsg;
@@ -176,21 +176,21 @@ describe("ReplicatedEntityHandler", () => {
       }
     });
 
-    assertHasNoAction(handleCommand(handler, inMsg));
+    assertHasNoAction(await handleCommand(handler, inMsg));
   });
 
-  it("should create state when a new state is set", () => {
+  it("should create state when a new state is set", async () => {
     const handler = createHandler((cmd, ctx) => {
       ctx.state = new replicatedData.GCounter();
       return outMsg;
     });
 
-    const reply = handleCommand(handler, inMsg);
+    const reply = await handleCommand(handler, inMsg);
     assertHasNoAction(reply);
     anySupport.deserialize(reply.clientAction.reply.payload).field.should.equal(outMsg.field);
   });
 
-  it("should send an update when the state is updated", () => {
+  it("should send an update when the state is updated", async () => {
     const handler = createHandler((cmd, ctx) => {
       ctx.state.increment(3);
       return outMsg;
@@ -199,11 +199,11 @@ describe("ReplicatedEntityHandler", () => {
         increment: 5
       }
     });
-    const reply = handleCommand(handler, inMsg);
+    const reply = await handleCommand(handler, inMsg);
     reply.stateAction.update.gcounter.increment.toNumber().should.equal(3);
   });
 
-  it("should set the state when it receives an initial delta", () => {
+  it("should set the state when it receives an initial delta", async () => {
     const handler = createHandler((cmd, ctx) => {
       ctx.state.value.should.equal(5);
       return outMsg;
@@ -215,10 +215,10 @@ describe("ReplicatedEntityHandler", () => {
         }
       }
     });
-    assertHasNoAction(handleCommand(handler, inMsg));
+    assertHasNoAction(await handleCommand(handler, inMsg));
   });
 
-  it("should update the state when it receives a delta message", () => {
+  it("should update the state when it receives a delta message", async () => {
     const handler = createHandler((cmd, ctx) => {
       ctx.state.value.should.equal(7);
       return outMsg;
@@ -234,10 +234,10 @@ describe("ReplicatedEntityHandler", () => {
         }
       }
     });
-    assertHasNoAction(handleCommand(handler, inMsg));
+    assertHasNoAction(await handleCommand(handler, inMsg));
   });
 
-  it("should allow deleting an entity", () => {
+  it("should allow deleting an entity", async () => {
     const handler = createHandler((cmd, ctx) => {
       ctx.delete();
       return outMsg;
@@ -246,19 +246,19 @@ describe("ReplicatedEntityHandler", () => {
         increment: 2
       }
     });
-    const reply = handleCommand(handler, inMsg);
+    const reply = await handleCommand(handler, inMsg);
     reply.stateAction.delete.should.not.be.null;
   });
 
-  it("should not allow deleting an entity that hasn't been created", () => {
+  it("should not allow deleting an entity that hasn't been created", async () => {
     const handler = createHandler((cmd, ctx) => {
       ctx.delete();
       return outMsg;
     });
-    handleFailedCommand(handler, inMsg);
+    await handleFailedCommand(handler, inMsg);
   });
 
-  it("should allow streaming", () => {
+  it("should allow streaming", async () => {
     const handler = create({
       commandHandlers: {
         StreamSomething: (cmd, ctx) => {
@@ -276,9 +276,9 @@ describe("ReplicatedEntityHandler", () => {
       }
     });
 
-    const reply = handleCommand(handler, inMsg, "StreamSomething", 5, true);
+    const reply = await handleCommand(handler, inMsg, "StreamSomething", 5, true);
     reply.streamed.should.be.true;
-    send(handler, {
+    await send(handler, {
       delta: {
         gcounter: {
           increment: 3
@@ -290,7 +290,7 @@ describe("ReplicatedEntityHandler", () => {
     anySupport.deserialize(streamed.clientAction.reply.payload).field.should.equal("pushed");
   });
 
-  it("should not allow subscribing a non streamed command", () => {
+  it("should not allow subscribing a non streamed command", async () => {
     const handler = create({
       commandHandlers: {
         StreamSomething: (cmd, ctx) => {
@@ -301,11 +301,10 @@ describe("ReplicatedEntityHandler", () => {
       }
     });
 
-    handleFailedCommand(handler, inMsg, "StreamSomething", 5, false);
+    await handleFailedCommand(handler, inMsg, "StreamSomething", 5, false);
   });
 
-
-  it("should not allow not subscribing to a streamed command", () => {
+  it("should not allow not subscribing to a streamed command", async () => {
     const handler = create({
       commandHandlers: {
         StreamSomething: (cmd, ctx) => {
@@ -315,11 +314,11 @@ describe("ReplicatedEntityHandler", () => {
       }
     });
 
-    const reply = handleCommand(handler, inMsg, "StreamSomething", 5, true);
+    const reply = await handleCommand(handler, inMsg, "StreamSomething", 5, true);
     reply.streamed.should.be.false;
   });
 
-  it("should allow closing a stream", () => {
+  it("should allow closing a stream", async () => {
     let ended = false;
 
     const handler = create({
@@ -341,17 +340,18 @@ describe("ReplicatedEntityHandler", () => {
       }
     });
 
-    handleCommand(handler, inMsg, "StreamSomething", 5, true);
-    send(handler, {
+    await handleCommand(handler, inMsg, "StreamSomething", 5, true);
+    await send(handler, {
       delta: {
         gcounter: {
           increment: 3
         }
       }
     });
+
     const streamed = call.get().streamedMessage;
     streamed.endStream.should.be.true;
-    send(handler, {
+    await send(handler, {
       delta: {
         gcounter: {
           increment: 3
@@ -361,7 +361,7 @@ describe("ReplicatedEntityHandler", () => {
     call.expectNoWrites();
   });
 
-  it("should handle stream cancelled events", () => {
+  it("should handle stream cancelled events", async () => {
     const handler = create({
       commandHandlers: {
         StreamSomething: (cmd, ctx) => {
@@ -378,8 +378,8 @@ describe("ReplicatedEntityHandler", () => {
       }
     });
 
-    handleCommand(handler, inMsg, "StreamSomething", 5, true);
-    send(handler, {
+    await handleCommand(handler, inMsg, "StreamSomething", 5, true);
+    await send(handler, {
       streamCancelled: {
         id: 5
       }

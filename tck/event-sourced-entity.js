@@ -65,7 +65,10 @@ function process(request, state, context) {
     effects.forEach(effect =>
       reply.addEffect(two.service.methods.Call, { id: effect.id }, effect.synchronous)
     )
-  return reply
+
+  return new Promise((resolve, reject) => {
+    setTimeout(() => resolve(reply), 10);
+  });
 }
 
 function persisted(event, state) {
