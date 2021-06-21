@@ -30,7 +30,7 @@ jobs:
       - run:
           name: "check vulnerabilities in transitive dependencies"
           command: |
-            pushd sdk && npm audit --omit dev && popd
+            pushd sdk && npm audit --production && popd
       - run:
           name: "run tests"
           command: |
