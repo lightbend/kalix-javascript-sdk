@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-const grpc = require("grpc");
+const grpc = require("@grpc/grpc-js");
 const AkkaServerless = require("./akkaserverless");
 const settings = require("../settings");
 const { GenericContainer, TestContainers, Wait } = require("testcontainers");
@@ -50,13 +50,16 @@ class IntegrationTestkit {
 
   start(callback) {
     // First start this user function
-    const boundPort = this.akkaServerless.start({
+    const boundPortPromise = this.akkaServerless.start({
       bindPort: 0
     });
 
-    TestContainers.exposeHostPorts(boundPort);
+    const tcExposePortPromise = (boundPort) => {
+      TestContainers.exposeHostPorts(boundPort);
+      return boundPort;
+    }
 
-    const serverPromise = new GenericContainer(this.options.dockerImage)
+    const serverPromise = (boundPort) => new GenericContainer(this.options.dockerImage)
         .withExposedPorts(9000)
         .withEnv("USER_FUNCTION_HOST", "host.testcontainers.internal")
         .withEnv("USER_FUNCTION_PORT", boundPort.toString())
@@ -82,10 +85,14 @@ class IntegrationTestkit {
           return this;
     });
 
+    const executionPromise = boundPortPromise
+      .then(tcExposePortPromise)
+      .then(serverPromise)
+
     if (typeof callback === "function") {
-      serverPromise.then(() => callback(), error => callback(error));
+      executionPromise.then(() => callback(), error => callback(error));
     } else {
-      return serverPromise;
+      return executionPromise;
     }
   }
 

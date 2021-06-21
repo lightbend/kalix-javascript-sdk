@@ -1,6 +1,6 @@
 {
   "ignoreFile": "sdk/.gitignore",
-  "ignore": ["build", "docs", "**/.*", "**/bin", "**/Dockerfile", "**/*.md", "**/*.yml", "samples/*/lib/generated"],
+  "ignore": ["build", "docs", "**/.*", "**/bin", "**/Dockerfile", "**/*.md", "**/*.yml", "samples/*/lib/generated", "sdk/test/*.desc"],
   "license": "build/header.txt",
   "licenseFormats": {
     "js": {
