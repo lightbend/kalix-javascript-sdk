@@ -28,6 +28,10 @@ jobs:
           command: |
             npm ci && npm run license-check
       - run:
+          name: "check vulnerabilities in transitive dependencies"
+          command: |
+            pushd sdk && npm audit --production && popd
+      - run:
           name: "run tests"
           command: |
             pushd sdk && npm ci && npm test && npm pack && popd
