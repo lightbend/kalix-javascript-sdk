@@ -14,14 +14,18 @@
  * limitations under the License.
  */
 
-const should = require("chai").should();
-const Vote = require("../../src/replicated-data/vote");
-const protobufHelper = require("../../src/protobuf-helper");
+const should = require('chai').should();
+const Vote = require('../../src/replicated-data/vote');
+const protobufHelper = require('../../src/protobuf-helper');
 
-const ReplicatedEntityDelta = protobufHelper.moduleRoot.akkaserverless.component.replicatedentity.ReplicatedEntityDelta;
+const ReplicatedEntityDelta =
+  protobufHelper.moduleRoot.akkaserverless.component.replicatedentity
+    .ReplicatedEntityDelta;
 
 function roundTripDelta(delta) {
-  return ReplicatedEntityDelta.decode(ReplicatedEntityDelta.encode(delta).finish());
+  return ReplicatedEntityDelta.decode(
+    ReplicatedEntityDelta.encode(delta).finish(),
+  );
 }
 
 function voteDelta(totalVoters, votesFor, selfVote) {
@@ -29,14 +33,13 @@ function voteDelta(totalVoters, votesFor, selfVote) {
     vote: {
       totalVoters: totalVoters,
       votesFor: votesFor,
-      selfVote: selfVote
-    }
+      selfVote: selfVote,
+    },
   });
 }
 
-describe("Vote", () => {
-
-  it("should have zero voters, votes and no self vote when instantiated", () => {
+describe('Vote', () => {
+  it('should have zero voters, votes and no self vote when instantiated', () => {
     const vote = new Vote();
     vote.votesFor.should.equal(0);
     vote.totalVoters.should.equal(1);
@@ -44,7 +47,7 @@ describe("Vote", () => {
     should.equal(vote.getAndResetDelta(), null);
   });
 
-  it("should reflect an initial delta", () => {
+  it('should reflect an initial delta', () => {
     const vote = new Vote();
     vote.applyDelta(voteDelta(5, 3, true));
     vote.votesFor.should.equal(3);
@@ -53,21 +56,23 @@ describe("Vote", () => {
     should.equal(vote.getAndResetDelta(), null);
   });
 
-  it("should reflect a delta update", () => {
+  it('should reflect a delta update', () => {
     const vote = new Vote();
-    vote.applyDelta(voteDelta(5, 3, false))
-    vote.applyDelta(roundTripDelta({
-      vote: {
-        totalVoters: 4,
-        votesFor: 2,
-      }
-    }));
+    vote.applyDelta(voteDelta(5, 3, false));
+    vote.applyDelta(
+      roundTripDelta({
+        vote: {
+          totalVoters: 4,
+          votesFor: 2,
+        },
+      }),
+    );
     vote.votesFor.should.equal(2);
     vote.totalVoters.should.equal(4);
     vote.vote.should.equal(false);
   });
 
-  it("should generate deltas", () => {
+  it('should generate deltas', () => {
     const vote = new Vote();
     vote.vote = true;
     roundTripDelta(vote.getAndResetDelta()).vote.selfVote.should.be.true;
@@ -82,7 +87,7 @@ describe("Vote", () => {
     vote.vote.should.equal(false);
   });
 
-  it("should correctly calculate a majority vote", () => {
+  it('should correctly calculate a majority vote', () => {
     const vote = new Vote();
     vote.applyDelta(voteDelta(5, 3, true));
     vote.majority.should.equal(true);
@@ -98,7 +103,7 @@ describe("Vote", () => {
     vote.majority.should.equal(true);
   });
 
-  it("should correctly calculate an at least one vote", () => {
+  it('should correctly calculate an at least one vote', () => {
     const vote = new Vote();
     vote.applyDelta(voteDelta(1, 0, false));
     vote.atLeastOne.should.equal(false);
@@ -112,7 +117,7 @@ describe("Vote", () => {
     vote.atLeastOne.should.equal(true);
   });
 
-  it("should correctly calculate an all votes", () => {
+  it('should correctly calculate an all votes', () => {
     const vote = new Vote();
     vote.applyDelta(voteDelta(1, 0, false));
     vote.all.should.equal(false);
@@ -126,14 +131,13 @@ describe("Vote", () => {
     vote.all.should.equal(true);
   });
 
-  it("should support empty initial deltas (for ORMap added)", () => {
+  it('should support empty initial deltas (for ORMap added)', () => {
     const vote = new Vote();
     vote.votesFor.should.equal(0);
     vote.totalVoters.should.equal(1);
     vote.vote.should.equal(false);
     should.equal(vote.getAndResetDelta(), null);
-    const delta = roundTripDelta(vote.getAndResetDelta(/* initial = */ true))
+    const delta = roundTripDelta(vote.getAndResetDelta(/* initial = */ true));
     delta.vote.selfVote.should.be.false;
   });
-
 });

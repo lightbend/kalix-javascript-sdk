@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-const debug = require("debug")("akkaserverless-replicated-entity");
-const util = require("util");
-const AnySupport = require("../protobuf-any");
+const debug = require('debug')('akkaserverless-replicated-entity');
+const util = require('util');
+const AnySupport = require('../protobuf-any');
 
 /**
  * @classdesc An Observed-Removed Set Replicated Data type.
@@ -32,7 +32,7 @@ function ORSet() {
   let delta = {
     added: new Map(),
     removed: new Map(),
-    cleared: false
+    cleared: false,
   };
 
   /**
@@ -53,10 +53,10 @@ function ORSet() {
    * @type {number}
    * @readonly
    */
-  Object.defineProperty(this, "size", {
+  Object.defineProperty(this, 'size', {
     get: function () {
       return currentValue.size;
-    }
+    },
   });
 
   /**
@@ -97,7 +97,7 @@ function ORSet() {
     const comparable = AnySupport.toComparable(element);
     if (!currentValue.has(comparable)) {
       if (delta.removed.has(comparable)) {
-        delta.removed.delete(comparable)
+        delta.removed.delete(comparable);
       } else {
         const serializedElement = AnySupport.serialize(element, true, true);
         delta.added.set(comparable, serializedElement);
@@ -149,13 +149,18 @@ function ORSet() {
   };
 
   this.getAndResetDelta = function (initial) {
-    if (delta.cleared || delta.added.size > 0 || delta.removed.size > 0 || initial) {
+    if (
+      delta.cleared ||
+      delta.added.size > 0 ||
+      delta.removed.size > 0 ||
+      initial
+    ) {
       const currentDelta = {
         orset: {
           cleared: delta.cleared,
           removed: Array.from(delta.removed.values()),
-          added: Array.from(delta.added.values())
-        }
+          added: Array.from(delta.added.values()),
+        },
       };
       delta.cleared = false;
       delta.added.clear();
@@ -168,28 +173,34 @@ function ORSet() {
 
   this.applyDelta = function (delta, anySupport) {
     if (!delta.orset) {
-      throw new Error(util.format("Cannot apply delta %o to ORSet", delta));
+      throw new Error(util.format('Cannot apply delta %o to ORSet', delta));
     }
     if (delta.orset.cleared) {
       currentValue.clear();
     }
     if (delta.orset.removed !== undefined) {
-      delta.orset.removed.forEach(element => {
+      delta.orset.removed.forEach((element) => {
         const value = anySupport.deserialize(element);
         const comparable = AnySupport.toComparable(value);
         if (currentValue.has(comparable)) {
           currentValue.delete(comparable);
         } else {
-          debug("Delta instructed to delete element [%o], but it wasn't in the ORSet.", comparable)
+          debug(
+            "Delta instructed to delete element [%o], but it wasn't in the ORSet.",
+            comparable,
+          );
         }
       });
     }
     if (delta.orset.added !== undefined) {
-      delta.orset.added.forEach(element => {
+      delta.orset.added.forEach((element) => {
         const value = anySupport.deserialize(element);
         const comparable = AnySupport.toComparable(value);
         if (currentValue.has(comparable)) {
-          debug("Delta instructed to add value [%o], but it's already present in the ORSet", comparable);
+          debug(
+            "Delta instructed to add value [%o], but it's already present in the ORSet",
+            comparable,
+          );
         } else {
           currentValue.set(comparable, value);
         }
@@ -198,7 +209,7 @@ function ORSet() {
   };
 
   this.toString = function () {
-    return "ORSet(" + Array.from(currentValue).join(",") + ")";
+    return 'ORSet(' + Array.from(currentValue).join(',') + ')';
   };
 }
 

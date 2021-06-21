@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-const protobufHelper = require("./protobuf-helper");
-const grpc = require("@grpc/grpc-js");
-const protoLoader = require("@grpc/proto-loader");
-const ViewServices = require("./view-support");
-const AkkaServerless = require("./akkaserverless");
+const protobufHelper = require('./protobuf-helper');
+const grpc = require('@grpc/grpc-js');
+const protoLoader = require('@grpc/proto-loader');
+const ViewServices = require('./view-support');
+const AkkaServerless = require('./akkaserverless');
 
 const viewServices = new ViewServices();
 
@@ -56,7 +56,6 @@ const viewServices = new ViewServices();
  * @implements module:akkaserverless.Entity
  */
 class View {
-
   /**
    * Create a new view.
    *
@@ -65,19 +64,19 @@ class View {
    * @param {module:akkaserverless.View~options=} options The options for this view
    */
   constructor(desc, serviceName, options) {
-
     this.options = {
       ...{
-        includeDirs: ["."],
+        includeDirs: ['.'],
         viewId: serviceName,
       },
-      ...options
+      ...options,
     };
 
     this.options.entityType = this.options.viewId;
 
-    const allIncludeDirs = protobufHelper.moduleIncludeDirs
-      .concat(this.options.includeDirs);
+    const allIncludeDirs = protobufHelper.moduleIncludeDirs.concat(
+      this.options.includeDirs,
+    );
 
     this.root = protobufHelper.loadSync(desc, allIncludeDirs);
 
@@ -86,7 +85,7 @@ class View {
     this.service = this.root.lookupService(serviceName);
 
     const packageDefinition = protoLoader.loadSync(desc, {
-      includeDirs: allIncludeDirs
+      includeDirs: allIncludeDirs,
     });
     this.grpc = grpc.loadPackageDefinition(packageDefinition);
   }
@@ -125,7 +124,7 @@ class View {
 
   start(options) {
     if (this.server !== undefined) {
-      throw new Error("Server already started!")
+      throw new Error('Server already started!');
     }
     this.server = new AkkaServerless();
     this.server.addComponent(this);
@@ -135,12 +134,11 @@ class View {
 
   shutdown() {
     if (this.server === undefined) {
-      throw new Error("Server not started!")
+      throw new Error('Server not started!');
     }
     this.server.shutdown();
     delete this.server;
   }
-
 }
 
 module.exports = View;

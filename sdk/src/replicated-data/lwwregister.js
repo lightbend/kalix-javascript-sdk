@@ -14,11 +14,13 @@
  * limitations under the License.
  */
 
-const util = require("util");
-const protobufHelper = require("../protobuf-helper");
-const AnySupport = require("../protobuf-any");
+const util = require('util');
+const protobufHelper = require('../protobuf-helper');
+const AnySupport = require('../protobuf-any');
 
-const Clocks = protobufHelper.moduleRoot.akkaserverless.component.replicatedentity.ReplicatedEntityClock;
+const Clocks =
+  protobufHelper.moduleRoot.akkaserverless.component.replicatedentity
+    .ReplicatedEntityClock;
 
 /**
  * @classdesc A Last-Write-Wins Register Replicated Data type.
@@ -35,7 +37,7 @@ const Clocks = protobufHelper.moduleRoot.akkaserverless.component.replicatedenti
  */
 function LWWRegister(value, clock = Clocks.DEFAULT, customClockValue = 0) {
   if (value === null || value === undefined) {
-    throw new Error("LWWRegister must be instantiated with an initial value.")
+    throw new Error('LWWRegister must be instantiated with an initial value.');
   }
   // Make sure the value can be serialized.
   let serializedValue = AnySupport.serialize(value, true, true);
@@ -44,7 +46,7 @@ function LWWRegister(value, clock = Clocks.DEFAULT, customClockValue = 0) {
   let delta = {
     value: serializedValue,
     clock: clock,
-    customClockValue: customClockValue
+    customClockValue: customClockValue,
   };
 
   /**
@@ -55,13 +57,13 @@ function LWWRegister(value, clock = Clocks.DEFAULT, customClockValue = 0) {
    * @name module:akkaserverless.replicatedentity.LWWRegister#value
    * @type {module:akkaserverless.Serializable}
    */
-  Object.defineProperty(this, "value", {
+  Object.defineProperty(this, 'value', {
     get: function () {
       return currentValue;
     },
     set: function (value) {
-      this.setWithClock(value)
-    }.bind(this)
+      this.setWithClock(value);
+    }.bind(this),
   });
 
   /**
@@ -72,7 +74,11 @@ function LWWRegister(value, clock = Clocks.DEFAULT, customClockValue = 0) {
    * @param {module:akkaserverless.replicatedentity.Clock} [clock=Clocks.DEFAULT] The clock.
    * @param {number} [customClockValue=0] Ignored if a custom clock isn't specified.
    */
-  this.setWithClock = function (value, clock = Clocks.DEFAULT, customClockValue = 0) {
+  this.setWithClock = function (
+    value,
+    clock = Clocks.DEFAULT,
+    customClockValue = 0,
+  ) {
     delta.value = AnySupport.serialize(value, true, true);
     if (clock !== undefined) {
       delta.clock = clock;
@@ -82,20 +88,20 @@ function LWWRegister(value, clock = Clocks.DEFAULT, customClockValue = 0) {
     return this;
   };
 
-  this.resetDelta = function() {
+  this.resetDelta = function () {
     delta = {
       value: null,
       clock: null,
-      customClockValue: 0
+      customClockValue: 0,
     };
-  }
+  };
 
   this.getAndResetDelta = function () {
     if (delta.value !== null) {
       const toReturn = delta;
       this.resetDelta();
       return {
-        lwwregister: toReturn
+        lwwregister: toReturn,
       };
     } else {
       return null;
@@ -104,14 +110,16 @@ function LWWRegister(value, clock = Clocks.DEFAULT, customClockValue = 0) {
 
   this.applyDelta = function (delta, anySupport) {
     if (!delta.lwwregister) {
-      throw new Error(util.format("Cannot apply delta %o to LWWRegister", delta));
+      throw new Error(
+        util.format('Cannot apply delta %o to LWWRegister', delta),
+      );
     }
     this.resetDelta();
     currentValue = anySupport.deserialize(delta.lwwregister.value);
   };
 
   this.toString = function () {
-    return "LWWRegister(" + currentValue + ")";
+    return 'LWWRegister(' + currentValue + ')';
   };
 }
 

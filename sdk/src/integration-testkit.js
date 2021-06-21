@@ -14,26 +14,25 @@
  * limitations under the License.
  */
 
-const grpc = require("@grpc/grpc-js");
-const AkkaServerless = require("./akkaserverless");
-const settings = require("../settings");
-const { GenericContainer, TestContainers, Wait } = require("testcontainers");
-const util = require("util");
+const grpc = require('@grpc/grpc-js');
+const AkkaServerless = require('./akkaserverless');
+const settings = require('../settings');
+const { GenericContainer, TestContainers, Wait } = require('testcontainers');
+const util = require('util');
 
 const defaultOptions = {
-  dockerImage: `gcr.io/akkaserverless-public/akkaserverless-proxy:${settings.frameworkVersion}`
-}
+  dockerImage: `gcr.io/akkaserverless-public/akkaserverless-proxy:${settings.frameworkVersion}`,
+};
 
 /**
  * @private
  */
 class IntegrationTestkit {
-
   constructor(options) {
     this.options = {
       ...defaultOptions,
-      ...options
-    }
+      ...options,
+    };
 
     this.clients = {};
     this.akkaServerless = new AkkaServerless(options);
@@ -51,46 +50,54 @@ class IntegrationTestkit {
   start(callback) {
     // First start this user function
     const boundPortPromise = this.akkaServerless.start({
-      bindPort: 0
+      bindPort: 0,
     });
 
     const tcExposePortPromise = (boundPort) => {
       TestContainers.exposeHostPorts(boundPort);
       return boundPort;
-    }
+    };
 
-    const serverPromise = (boundPort) => new GenericContainer(this.options.dockerImage)
+    const serverPromise = (boundPort) =>
+      new GenericContainer(this.options.dockerImage)
         .withExposedPorts(9000)
-        .withEnv("USER_FUNCTION_HOST", "host.testcontainers.internal")
-        .withEnv("USER_FUNCTION_PORT", boundPort.toString())
-        .withEnv("HTTP_PORT", "9000")
-        .withWaitStrategy(Wait.forLogMessage("Akka Serverless proxy online"))
-        .start().then(proxyContainer => {
-
+        .withEnv('USER_FUNCTION_HOST', 'host.testcontainers.internal')
+        .withEnv('USER_FUNCTION_PORT', boundPort.toString())
+        .withEnv('HTTP_PORT', '9000')
+        .withWaitStrategy(Wait.forLogMessage('Akka Serverless proxy online'))
+        .start()
+        .then((proxyContainer) => {
           this.proxyContainer = proxyContainer;
 
           const proxyPort = proxyContainer.getMappedPort(9000);
 
           // Create clients
-          this.akkaServerless.components.forEach(entity => {
-            const parts = entity.serviceName.split(".")
+          this.akkaServerless.components.forEach((entity) => {
+            const parts = entity.serviceName.split('.');
             let stub = entity.grpc;
-            parts.forEach(part => {
+            parts.forEach((part) => {
               stub = stub[part];
             });
-            const client = new stub("localhost:" + proxyPort, grpc.credentials.createInsecure());
-            this.clients[parts[parts.length - 1]] = this.promisifyClient(client);
+            const client = new stub(
+              'localhost:' + proxyPort,
+              grpc.credentials.createInsecure(),
+            );
+            this.clients[parts[parts.length - 1]] =
+              this.promisifyClient(client);
           });
 
           return this;
-    });
+        });
 
     const executionPromise = boundPortPromise
       .then(tcExposePortPromise)
-      .then(serverPromise)
+      .then(serverPromise);
 
-    if (typeof callback === "function") {
-      executionPromise.then(() => callback(), error => callback(error));
+    if (typeof callback === 'function') {
+      executionPromise.then(
+        () => callback(),
+        (error) => callback(error),
+      );
     } else {
       return executionPromise;
     }
@@ -100,8 +107,13 @@ class IntegrationTestkit {
   promisifyClient(client) {
     Object.keys(Object.getPrototypeOf(client)).forEach((methodName) => {
       const methodFunction = client[methodName];
-      if (methodFunction.requestStream == false && methodFunction.responseStream == false) {
-        client[methodName + "Async"] = util.promisify(methodFunction).bind(client);
+      if (
+        methodFunction.requestStream == false &&
+        methodFunction.responseStream == false
+      ) {
+        client[methodName + 'Async'] = util
+          .promisify(methodFunction)
+          .bind(client);
       }
     });
     return client;
@@ -109,16 +121,16 @@ class IntegrationTestkit {
 
   shutdown(callback) {
     if (this.proxyContainer !== undefined) {
-      this.proxyContainer.stop()
+      this.proxyContainer.stop();
     }
 
-    Object.getOwnPropertyNames(this.clients).forEach(client => {
+    Object.getOwnPropertyNames(this.clients).forEach((client) => {
       this.clients[client].close();
     });
 
     this.akkaServerless.shutdown();
 
-    if (typeof callback === "function") {
+    if (typeof callback === 'function') {
       callback();
     }
   }

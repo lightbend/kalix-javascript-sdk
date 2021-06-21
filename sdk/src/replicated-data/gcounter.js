@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-const util = require("util");
-const Long = require("long");
+const util = require('util');
+const Long = require('long');
 
 /**
  * @classdesc A Grow-only counter Replicated Data type.
@@ -38,10 +38,10 @@ function GCounter() {
    * @type {Long}
    * @readonly
    */
-  Object.defineProperty(this, "longValue", {
+  Object.defineProperty(this, 'longValue', {
     get: function () {
       return currentValue;
-    }
+    },
   });
 
   /**
@@ -53,10 +53,10 @@ function GCounter() {
    * @type {number}
    * @readonly
    */
-  Object.defineProperty(this, "value", {
+  Object.defineProperty(this, 'value', {
     get: function () {
       return currentValue.toNumber();
-    }
+    },
   });
 
   /**
@@ -69,7 +69,7 @@ function GCounter() {
    */
   this.increment = function (increment) {
     if (Long.ZERO.comp(increment) === 1) {
-      throw new Error("Cannot decrement a GCounter");
+      throw new Error('Cannot decrement a GCounter');
     }
     currentValue = currentValue.add(increment);
     delta = delta.add(increment);
@@ -80,8 +80,8 @@ function GCounter() {
     if (delta.greaterThan(0) || initial) {
       const currentDelta = {
         gcounter: {
-          increment: delta
-        }
+          increment: delta,
+        },
       };
       delta = Long.UZERO;
       return currentDelta;
@@ -92,13 +92,13 @@ function GCounter() {
 
   this.applyDelta = function (delta) {
     if (!delta.gcounter) {
-      throw new Error(util.format("Cannot apply delta %o to GCounter", delta));
+      throw new Error(util.format('Cannot apply delta %o to GCounter', delta));
     }
     currentValue = currentValue.add(delta.gcounter.increment);
   };
 
   this.toString = function () {
-    return "GCounter(" + currentValue + ")";
+    return 'GCounter(' + currentValue + ')';
   };
 }
 

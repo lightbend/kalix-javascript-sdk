@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 
-const AnySupport = require("./protobuf-any");
-const util = require("util");
+const AnySupport = require('./protobuf-any');
+const util = require('util');
 
 module.exports = class EffectSerializer {
-
   constructor(allComponents) {
     this.allComponents = allComponents;
   }
@@ -26,14 +25,20 @@ module.exports = class EffectSerializer {
   serializeEffect(method, message, metadata) {
     let serviceName, commandName;
     // We support either the grpc method, or a protobufjs method being passed
-    if (typeof method.path === "string") {
-      const r = new RegExp("^/([^/]+)/([^/]+)$").exec(method.path);
+    if (typeof method.path === 'string') {
+      const r = new RegExp('^/([^/]+)/([^/]+)$').exec(method.path);
       if (r == null) {
-        throw new Error(util.format("Not a valid gRPC method path '%s' on object '%o'", method.path, method));
+        throw new Error(
+          util.format(
+            "Not a valid gRPC method path '%s' on object '%o'",
+            method.path,
+            method,
+          ),
+        );
       }
       serviceName = r[1];
       commandName = r[2];
-    } else if (method.type === "rpc") {
+    } else if (method.type === 'rpc') {
       serviceName = this.fullName(method.parent);
       commandName = method.name;
     }
@@ -43,31 +48,46 @@ module.exports = class EffectSerializer {
     if (service !== undefined) {
       const command = service.methods[commandName];
       if (command !== undefined) {
-        const payload = AnySupport.serialize(command.resolvedRequestType.create(message), false, false);
+        const payload = AnySupport.serialize(
+          command.resolvedRequestType.create(message),
+          false,
+          false,
+        );
         const effect = {
           serviceName: serviceName,
           commandName: commandName,
-          payload: payload
+          payload: payload,
         };
 
         if (metadata && metadata.entries) {
           effect.metadata = {
-            entries: metadata.entries
-          }
+            entries: metadata.entries,
+          };
         }
 
         return effect;
       } else {
-        throw new Error(util.format("Command [%s] unknown on service [%s].", commandName, serviceName))
+        throw new Error(
+          util.format(
+            'Command [%s] unknown on service [%s].',
+            commandName,
+            serviceName,
+          ),
+        );
       }
     } else {
-      throw new Error(util.format("Service [%s] has not been registered as an entity in this user function, and so can't be used as a side effect or forward.", service))
+      throw new Error(
+        util.format(
+          "Service [%s] has not been registered as an entity in this user function, and so can't be used as a side effect or forward.",
+          service,
+        ),
+      );
     }
   }
 
   fullName(item) {
-    if (item.parent && item.parent.name !== "") {
-      return this.fullName(item.parent) + "." + item.name;
+    if (item.parent && item.parent.name !== '') {
+      return this.fullName(item.parent) + '.' + item.name;
     } else {
       return item.name;
     }
@@ -75,8 +95,7 @@ module.exports = class EffectSerializer {
 
   serializeSideEffect(method, message, synchronous, metadata) {
     const msg = this.serializeEffect(method, message, metadata);
-    msg.synchronous = typeof synchronous === "boolean" ? synchronous : false;
+    msg.synchronous = typeof synchronous === 'boolean' ? synchronous : false;
     return msg;
   }
-
 };

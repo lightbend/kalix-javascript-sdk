@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-const fs = require("fs");
-const protobufHelper = require("./protobuf-helper");
-const grpc = require("@grpc/grpc-js");
-const protoLoader = require("@grpc/proto-loader");
-const AkkaServerless = require("./akkaserverless");
-const replicatedData = require("./replicated-data");
-const support = require("./replicated-entity-support");
+const fs = require('fs');
+const protobufHelper = require('./protobuf-helper');
+const grpc = require('@grpc/grpc-js');
+const protoLoader = require('@grpc/proto-loader');
+const AkkaServerless = require('./akkaserverless');
+const replicatedData = require('./replicated-data');
+const support = require('./replicated-entity-support');
 
 const replicatedEntityServices = new support.ReplicatedEntityServices();
 
@@ -68,7 +68,6 @@ const replicatedEntityServices = new support.ReplicatedEntityServices();
  * @implements module:akkaserverless.Entity
  */
 class ReplicatedEntity {
-
   /**
    * Create a Replicated Entity.
    *
@@ -80,18 +79,18 @@ class ReplicatedEntity {
    * @param options {module:akkaserverless.replicatedentity.ReplicatedEntity~options=} The options.
    */
   constructor(desc, serviceName, entityType, options) {
-
     this.options = {
       ...{
-        includeDirs: ["."],
-        entityType: entityType
+        includeDirs: ['.'],
+        entityType: entityType,
       },
-      ...options
+      ...options,
     };
-    if (!entityType) throw Error("EntityType must contain a name")
+    if (!entityType) throw Error('EntityType must contain a name');
 
-    const allIncludeDirs = protobufHelper.moduleIncludeDirs
-      .concat(this.options.includeDirs);
+    const allIncludeDirs = protobufHelper.moduleIncludeDirs.concat(
+      this.options.includeDirs,
+    );
 
     this.root = protobufHelper.loadSync(desc, allIncludeDirs);
 
@@ -100,7 +99,7 @@ class ReplicatedEntity {
     this.service = this.root.lookupService(serviceName);
 
     const packageDefinition = protoLoader.loadSync(desc, {
-      includeDirs: allIncludeDirs
+      includeDirs: allIncludeDirs,
     });
     this.grpc = grpc.loadPackageDefinition(packageDefinition);
 
@@ -157,7 +156,7 @@ class ReplicatedEntity {
 
   start(options) {
     if (this.server !== undefined) {
-      throw new Error("Server already started!")
+      throw new Error('Server already started!');
     }
     this.server = new AkkaServerless();
     this.server.addComponent(this);
@@ -167,7 +166,7 @@ class ReplicatedEntity {
 
   shutdown() {
     if (this.server === undefined) {
-      throw new Error("Server not started!")
+      throw new Error('Server not started!');
     }
     this.server.shutdown();
     delete this.server;
@@ -186,6 +185,6 @@ module.exports = {
     ORMap: replicatedData.ORMap,
     Vote: replicatedData.Vote,
     Clocks: replicatedData.Clocks,
-    WriteConsistencies: replicatedData.WriteConsistencies
-  }
+    WriteConsistencies: replicatedData.WriteConsistencies,
+  },
 };

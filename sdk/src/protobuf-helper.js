@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-const fs = require("fs");
-const path = require("path");
-const protobuf = require("protobufjs");
+const fs = require('fs');
+const path = require('path');
+const protobuf = require('protobufjs');
 
-module.exports.loadSync = function(desc, includeDirs) {
+module.exports.loadSync = function (desc, includeDirs) {
   const root = new protobuf.Root();
   root.resolvePath = function (origin, target) {
     for (let i = 0; i < includeDirs.length; i++) {
@@ -27,8 +27,7 @@ module.exports.loadSync = function(desc, includeDirs) {
       try {
         fs.accessSync(fullPath, fs.constants.R_OK);
         return fullPath;
-      } catch (err) {
-      }
+      } catch (err) {}
     }
     return null;
   };
@@ -39,8 +38,8 @@ module.exports.loadSync = function(desc, includeDirs) {
 };
 
 module.exports.moduleIncludeDirs = [
-  path.join(__dirname, "..", "proto"),
-  path.join(__dirname, "..", "protoc", "include")
+  path.join(__dirname, '..', 'proto'),
+  path.join(__dirname, '..', 'protoc', 'include'),
 ];
 
-module.exports.moduleRoot = require("../proto/protobuf-bundle");
+module.exports.moduleRoot = require('../proto/protobuf-bundle');

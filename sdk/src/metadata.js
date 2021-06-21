@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-const CloudEvents = require("./cloudevents");
+const CloudEvents = require('./cloudevents');
 
 function valueFromEntry(entry) {
   if (entry.bytesValue !== undefined) {
@@ -61,40 +61,45 @@ function Metadata(entries) {
    * @name module:akkaserverless.Metadata#getMap
    * @type {Object<String, module:akkaserverless.MetadataValue>}
    */
-  this.getMap = new Proxy({}, {
-    get: (target, key) => {
-      for (const idx in entries) {
-        const entry = entries[idx];
-        if (key.toLowerCase() === entry.key.toLowerCase()) {
-          return valueFromEntry(entry);
+  this.getMap = new Proxy(
+    {},
+    {
+      get: (target, key) => {
+        for (const idx in entries) {
+          const entry = entries[idx];
+          if (key.toLowerCase() === entry.key.toLowerCase()) {
+            return valueFromEntry(entry);
+          }
         }
-      }
+      },
+      set: (target, key, value) => {
+        this.set(key, value);
+      },
+      deleteProperty: (target, key) => this.delete(key),
+      ownKeys: (target) => {
+        const keys = [];
+        entries.forEach((entry) => {
+          keys.push(entry.key);
+        });
+        return keys;
+      },
+      has: (target, key) => this.has(key),
+      defineProperty: () => {
+        throw new Error('Metadata.getMap does not support defining properties');
+      },
+      getOwnPropertyDescriptor: (target, key) => {
+        const value = this.get(key);
+        return value
+          ? {
+              value: value,
+              writable: true,
+              enumerable: true,
+              configurable: true,
+            }
+          : undefined;
+      },
     },
-    set: (target, key, value) => {
-      this.set(key, value)
-    },
-    deleteProperty: (target, key) => this.delete(key),
-    ownKeys: (target) => {
-      const keys = [];
-      entries.forEach(entry => {
-        keys.push(entry.key);
-      });
-      return keys;
-    },
-    has: (target, key) => this.has(key),
-    defineProperty: () => {
-      throw new Error("Metadata.getMap does not support defining properties");
-    },
-    getOwnPropertyDescriptor: (target, key) => {
-      const value = this.get(key);
-      return value ? {
-        value: value,
-        writable: true,
-        enumerable: true,
-        configurable: true
-      } : undefined;
-    }
-  });
+  );
 
   /**
    * Get all the values for the given key.
@@ -105,9 +110,9 @@ function Metadata(entries) {
    * @param {string} key The key to get.
    * @returns {Array<module:akkaserverless.MetadataValue>} All the values, or an empty array if no values exist for the key.
    */
-  this.get = key => {
+  this.get = (key) => {
     const values = [];
-    entries.forEach(entry => {
+    entries.forEach((entry) => {
       if (key.toLowerCase() === entry.key.toLowerCase()) {
         values.push(valueFromEntry(entry));
       }
@@ -125,8 +130,8 @@ function Metadata(entries) {
    * @param {module:akkaserverless.MetadataValue} value The value to set.
    */
   this.set = (key, value) => {
-    const entry = {key};
-    if (typeof value === "string") {
+    const entry = { key };
+    if (typeof value === 'string') {
       entry.stringValue = value;
     } else if (Buffer.isBuffer(value)) {
       entry.bytesValue = value;
@@ -144,7 +149,7 @@ function Metadata(entries) {
    * @function module:akkaserverless.Metadata#delete
    * @param {string} key The key to delete.
    */
-  this.delete = key => {
+  this.delete = (key) => {
     let idx = 0;
     while (idx < entries.length) {
       const entry = entries[idx];
@@ -164,7 +169,7 @@ function Metadata(entries) {
    * @function module:akkaserverless.Metadata#has
    * @param {string} key The key to check.
    */
-  this.has = key => {
+  this.has = (key) => {
     for (const idx in entries) {
       const entry = entries[idx];
       if (key.toLowerCase() === entry.key.toLowerCase()) {

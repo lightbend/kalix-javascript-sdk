@@ -14,22 +14,21 @@
  * limitations under the License.
  */
 
-const path = require("path");
-const grpc = require("@grpc/grpc-js");
-const protoLoader = require("@grpc/proto-loader");
+const path = require('path');
+const grpc = require('@grpc/grpc-js');
+const protoLoader = require('@grpc/proto-loader');
 
-const debug = require("debug")("akkaserverless-event-sourced-entity");
+const debug = require('debug')('akkaserverless-event-sourced-entity');
 // Bind to stdout
 debug.log = console.log.bind(console);
-const AnySupport = require("./protobuf-any");
-const CommandHelper = require("./command-helper");
-const Reply = require("./reply").Reply;
+const AnySupport = require('./protobuf-any');
+const CommandHelper = require('./command-helper');
+const Reply = require('./reply').Reply;
 
 /**
  * @private
  */
 class EventSourcedEntitySupport {
-
   constructor(root, service, behavior, initial, options, allComponents) {
     this.root = root;
     this.service = service;
@@ -39,11 +38,20 @@ class EventSourcedEntitySupport {
     this.anySupport = new AnySupport(this.root);
     this.allComponents = allComponents;
     if (!this.options.snapshotEvery)
-      console.warn("Snapshotting disabled for entity " + this.option.entityType + ", this is not recommended.")
+      console.warn(
+        'Snapshotting disabled for entity ' +
+          this.option.entityType +
+          ', this is not recommended.',
+      );
   }
 
   serialize(obj, requireJsonType) {
-    return AnySupport.serialize(obj, this.options.serializeAllowPrimitives, this.options.serializeFallbackToJson, requireJsonType);
+    return AnySupport.serialize(
+      obj,
+      this.options.serializeAllowPrimitives,
+      this.options.serializeFallbackToJson,
+      requireJsonType,
+    );
   }
 
   deserialize(any) {
@@ -59,7 +67,7 @@ class EventSourcedEntitySupport {
   create(call, init) {
     const handler = new EventSourcedEntityHandler(this, call, init.entityId);
     if (init.snapshot) {
-      handler.handleSnapshot(init.snapshot)
+      handler.handleSnapshot(init.snapshot);
     }
     return handler;
   }
@@ -70,7 +78,6 @@ class EventSourcedEntitySupport {
  * @private
  */
 class EventSourcedEntityHandler {
-
   /**
    * @param {EventSourcedEntitySupport} support
    * @param call
@@ -90,23 +97,27 @@ class EventSourcedEntityHandler {
 
     this.streamId = Math.random().toString(16).substr(2, 7);
 
-    this.commandHelper = new CommandHelper(this.entityId, support.service, this.streamId, call,
-      this.commandHandlerFactory.bind(this), support.allComponents, debug);
+    this.commandHelper = new CommandHelper(
+      this.entityId,
+      support.service,
+      this.streamId,
+      call,
+      this.commandHandlerFactory.bind(this),
+      support.allComponents,
+      debug,
+    );
 
-    this.streamDebug("Started new stream")
+    this.streamDebug('Started new stream');
   }
 
   streamDebug(msg, ...args) {
-    debug("%s [%s] - " + msg, ...[this.streamId, this.entityId].concat(args));
+    debug('%s [%s] - ' + msg, ...[this.streamId, this.entityId].concat(args));
   }
 
   commandHandlerFactory(commandName) {
     return this.withBehaviorAndState((behavior, state) => {
-
       if (behavior.commandHandlers.hasOwnProperty(commandName)) {
-
         return async (command, ctx) => {
-
           /**
            * Context for an event sourced command.
            *
@@ -134,15 +145,18 @@ class EventSourcedEntityHandler {
             ctx.commandDebug("Emitting event '%s'", serEvent.type_url);
           };
 
-          const userReply = await behavior.commandHandlers[commandName](command, state, ctx.context);
+          const userReply = await behavior.commandHandlers[commandName](
+            command,
+            state,
+            ctx.context,
+          );
 
           // when not using Reply a failure is signaled by throwing, but
           // when using Reply a failed reply also means applying events & creating snapshots should be skipped
           if (!(userReply instanceof Reply) || !userReply.failure) {
-
             // Invoke event handlers first
             let snapshot = false;
-            ctx.events.forEach(event => {
+            ctx.events.forEach((event) => {
               this.handleEvent(event);
               this.sequence++;
               if (this.sequence % this.entity.options.snapshotEvery === 0) {
@@ -151,13 +165,16 @@ class EventSourcedEntityHandler {
             });
 
             if (ctx.events.length > 0) {
-              ctx.commandDebug("Emitting %d events", ctx.events.length);
+              ctx.commandDebug('Emitting %d events', ctx.events.length);
             }
             ctx.reply.events = ctx.events;
 
             if (snapshot) {
-              ctx.commandDebug("Snapshotting current state with type '%s'", this.anyState.type_url);
-              ctx.reply.snapshot = this.anyState
+              ctx.commandDebug(
+                "Snapshotting current state with type '%s'",
+                this.anyState.type_url,
+              );
+              ctx.reply.snapshot = this.anyState;
             }
           }
           return userReply;
@@ -170,7 +187,11 @@ class EventSourcedEntityHandler {
 
   handleSnapshot(snapshot) {
     this.sequence = snapshot.snapshotSequence;
-    this.streamDebug("Handling snapshot with type '%s' at sequence %s", snapshot.snapshot.type_url, this.sequence);
+    this.streamDebug(
+      "Handling snapshot with type '%s' at sequence %s",
+      snapshot.snapshot.type_url,
+      this.sequence,
+    );
     this.anyState = snapshot.snapshot;
   }
 
@@ -178,13 +199,17 @@ class EventSourcedEntityHandler {
     try {
       this.handleEventSourcedStreamIn(eventSourcedStreamIn);
     } catch (err) {
-      this.streamDebug("Error handling message, terminating stream: %o", eventSourcedStreamIn);
+      this.streamDebug(
+        'Error handling message, terminating stream: %o',
+        eventSourcedStreamIn,
+      );
       console.error(err);
       this.call.write({
         failure: {
           commandId: 0,
-          description: "Fatal error handling message, check user container logs."
-        }
+          description:
+            'Fatal error handling message, check user container logs.',
+        },
       });
       this.call.end();
     }
@@ -192,16 +217,16 @@ class EventSourcedEntityHandler {
 
   handleEventSourcedStreamIn(eventSourcedStreamIn) {
     if (eventSourcedStreamIn.event) {
-
       const event = eventSourcedStreamIn.event;
       this.sequence = event.sequence;
-      this.streamDebug("Received event %s with type '%s'", this.sequence, event.payload.type_url);
+      this.streamDebug(
+        "Received event %s with type '%s'",
+        this.sequence,
+        event.payload.type_url,
+      );
       this.handleEvent(event.payload);
-
     } else if (eventSourcedStreamIn.command) {
-
       this.commandHelper.handleCommand(eventSourcedStreamIn.command);
-
     }
   }
 
@@ -213,7 +238,7 @@ class EventSourcedEntityHandler {
       if (behavior.eventHandlers.hasOwnProperty(fqName)) {
         handler = behavior.eventHandlers[fqName];
       } else {
-        const idx = fqName.lastIndexOf(".");
+        const idx = fqName.lastIndexOf('.');
         let name;
         if (idx >= 0) {
           name = fqName.substring(idx + 1);
@@ -245,84 +270,111 @@ class EventSourcedEntityHandler {
   }
 
   onEnd() {
-    this.streamDebug("Stream terminating");
+    this.streamDebug('Stream terminating');
     this.call.end();
   }
-
 }
 
-
 module.exports = class EventSourcedEntityServices {
-
   constructor() {
     this.services = {};
   }
 
   addService(entity, allComponents) {
-    this.services[entity.serviceName] = new EventSourcedEntitySupport(entity.root, entity.service, entity.behavior,
-      entity.initial, entity.options, allComponents);
+    this.services[entity.serviceName] = new EventSourcedEntitySupport(
+      entity.root,
+      entity.service,
+      entity.behavior,
+      entity.initial,
+      entity.options,
+      allComponents,
+    );
   }
 
   componentType() {
-    return "akkaserverless.component.eventsourcedentity.EventSourcedEntities";
+    return 'akkaserverless.component.eventsourcedentity.EventSourcedEntities';
   }
 
   register(server) {
     const includeDirs = [
-      path.join(__dirname, "..", "proto"),
-      path.join(__dirname, "..", "protoc", "include")
+      path.join(__dirname, '..', 'proto'),
+      path.join(__dirname, '..', 'protoc', 'include'),
     ];
-    const packageDefinition = protoLoader.loadSync(path.join("akkaserverless", "component", "eventsourcedentity", "event_sourced_entity.proto"), {
-      includeDirs: includeDirs
-    });
+    const packageDefinition = protoLoader.loadSync(
+      path.join(
+        'akkaserverless',
+        'component',
+        'eventsourcedentity',
+        'event_sourced_entity.proto',
+      ),
+      {
+        includeDirs: includeDirs,
+      },
+    );
     const grpcDescriptor = grpc.loadPackageDefinition(packageDefinition);
 
-    const entityService = grpcDescriptor.akkaserverless.component.eventsourcedentity.EventSourcedEntities.service;
+    const entityService =
+      grpcDescriptor.akkaserverless.component.eventsourcedentity
+        .EventSourcedEntities.service;
 
     server.addService(entityService, {
-      handle: this.handle.bind(this)
+      handle: this.handle.bind(this),
     });
   }
 
   handle(call) {
     let service;
 
-    call.on("data", eventSourcedStreamIn => {
+    call.on('data', (eventSourcedStreamIn) => {
       if (eventSourcedStreamIn.init) {
         if (service != null) {
-          service.streamDebug("Terminating entity due to duplicate init message.");
-          console.error("Terminating entity due to duplicate init message.");
+          service.streamDebug(
+            'Terminating entity due to duplicate init message.',
+          );
+          console.error('Terminating entity due to duplicate init message.');
           call.write({
             failure: {
-              description: "Init message received twice."
-            }
+              description: 'Init message received twice.',
+            },
           });
           call.end();
         } else if (eventSourcedStreamIn.init.serviceName in this.services) {
-          service = this.services[eventSourcedStreamIn.init.serviceName].create(call, eventSourcedStreamIn.init);
+          service = this.services[eventSourcedStreamIn.init.serviceName].create(
+            call,
+            eventSourcedStreamIn.init,
+          );
         } else {
-          console.error("Received command for unknown service: '%s'", eventSourcedStreamIn.init.serviceName);
+          console.error(
+            "Received command for unknown service: '%s'",
+            eventSourcedStreamIn.init.serviceName,
+          );
           call.write({
             failure: {
-              description: "Service '" + eventSourcedStreamIn.init.serviceName + "' unknown."
-            }
+              description:
+                "Service '" +
+                eventSourcedStreamIn.init.serviceName +
+                "' unknown.",
+            },
           });
           call.end();
         }
       } else if (service != null) {
         service.onData(eventSourcedStreamIn);
       } else {
-        console.error("Unknown message received before init %o", eventSourcedStreamIn);
+        console.error(
+          'Unknown message received before init %o',
+          eventSourcedStreamIn,
+        );
         call.write({
           failure: {
-            description: "Unknown message received before init"
-          }
+            description: 'Unknown message received before init',
+          },
         });
         call.end();
       }
     });
 
-    call.on("end", () => {
+    call.on('end', () => {
       if (service != null) {
         service.onEnd();
       } else {

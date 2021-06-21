@@ -14,93 +14,124 @@
  * limitations under the License.
  */
 
-const path = require("path");
-const debug = require("debug")("akkaserverless-replicated-entity");
-const util = require("util");
-const grpc = require("@grpc/grpc-js");
-const protoLoader = require("@grpc/proto-loader");
-const protoHelper = require("./protobuf-helper");
-const AnySupport = require("./protobuf-any");
-const replicatedData = require("./replicated-data");
-const CommandHelper = require("./command-helper");
-const Metadata = require("./metadata");
+const path = require('path');
+const debug = require('debug')('akkaserverless-replicated-entity');
+const util = require('util');
+const grpc = require('@grpc/grpc-js');
+const protoLoader = require('@grpc/proto-loader');
+const protoHelper = require('./protobuf-helper');
+const AnySupport = require('./protobuf-any');
+const replicatedData = require('./replicated-data');
+const CommandHelper = require('./command-helper');
+const Metadata = require('./metadata');
 
 class ReplicatedEntityServices {
   constructor() {
     this.services = {};
     this.includeDirs = [
-      path.join(__dirname, "..", "proto"),
-      path.join(__dirname, "..", "protoc", "include")
+      path.join(__dirname, '..', 'proto'),
+      path.join(__dirname, '..', 'protoc', 'include'),
     ];
   }
 
   addService(entity, allComponents) {
-    this.services[entity.serviceName] = new ReplicatedEntitySupport(entity.root, entity.service, {
-      commandHandlers: entity.commandHandlers,
-      onStateSet: entity.onStateSet,
-      defaultValue: entity.defaultValue
-    }, allComponents);
+    this.services[entity.serviceName] = new ReplicatedEntitySupport(
+      entity.root,
+      entity.service,
+      {
+        commandHandlers: entity.commandHandlers,
+        onStateSet: entity.onStateSet,
+        defaultValue: entity.defaultValue,
+      },
+      allComponents,
+    );
   }
 
   componentType() {
-    return "akkaserverless.component.replicatedentity.ReplicatedEntities";
+    return 'akkaserverless.component.replicatedentity.ReplicatedEntities';
   }
 
   register(server) {
-    const packageDefinition = protoLoader.loadSync(path.join("akkaserverless", "component", "replicatedentity", "replicated_entity.proto"), {
-      includeDirs: this.includeDirs
-    });
+    const packageDefinition = protoLoader.loadSync(
+      path.join(
+        'akkaserverless',
+        'component',
+        'replicatedentity',
+        'replicated_entity.proto',
+      ),
+      {
+        includeDirs: this.includeDirs,
+      },
+    );
     const grpcDescriptor = grpc.loadPackageDefinition(packageDefinition);
 
-    const entityService = grpcDescriptor.akkaserverless.component.replicatedentity.ReplicatedEntities.service;
+    const entityService =
+      grpcDescriptor.akkaserverless.component.replicatedentity
+        .ReplicatedEntities.service;
 
     server.addService(entityService, {
-      handle: this.handle.bind(this)
+      handle: this.handle.bind(this),
     });
   }
 
   handle(call) {
     let service;
 
-    call.on("data", replicatedEntityStreamIn => {
+    call.on('data', (replicatedEntityStreamIn) => {
       // cycle through the ReplicatedEntityStreamIn type, this will ensure default values are initialised
-      replicatedEntityStreamIn = protoHelper.moduleRoot.akkaserverless.component.replicatedentity.ReplicatedEntityStreamIn.fromObject(replicatedEntityStreamIn);
+      replicatedEntityStreamIn =
+        protoHelper.moduleRoot.akkaserverless.component.replicatedentity.ReplicatedEntityStreamIn.fromObject(
+          replicatedEntityStreamIn,
+        );
 
       if (replicatedEntityStreamIn.init) {
         if (service != null) {
-          service.streamDebug("Terminating entity due to duplicate init message.");
-          console.error("Terminating entity due to duplicate init message.");
+          service.streamDebug(
+            'Terminating entity due to duplicate init message.',
+          );
+          console.error('Terminating entity due to duplicate init message.');
           call.write({
             failure: {
-              description: "Init message received twice."
-            }
+              description: 'Init message received twice.',
+            },
           });
           call.end();
         } else if (replicatedEntityStreamIn.init.serviceName in this.services) {
-          service = this.services[replicatedEntityStreamIn.init.serviceName].create(call, replicatedEntityStreamIn.init);
+          service = this.services[
+            replicatedEntityStreamIn.init.serviceName
+          ].create(call, replicatedEntityStreamIn.init);
         } else {
-          console.error("Received command for unknown Replicated Entity service: '%s'", replicatedEntityStreamIn.init.serviceName);
+          console.error(
+            "Received command for unknown Replicated Entity service: '%s'",
+            replicatedEntityStreamIn.init.serviceName,
+          );
           call.write({
             failure: {
-              description: "Replicated Entity service '" + replicatedEntityStreamIn.init.serviceName + "' unknown."
-            }
+              description:
+                "Replicated Entity service '" +
+                replicatedEntityStreamIn.init.serviceName +
+                "' unknown.",
+            },
           });
           call.end();
         }
       } else if (service != null) {
         service.onData(replicatedEntityStreamIn);
       } else {
-        console.error("Unknown message received before init %o", replicatedEntityStreamIn);
+        console.error(
+          'Unknown message received before init %o',
+          replicatedEntityStreamIn,
+        );
         call.write({
           failure: {
-            description: "Unknown message received before init"
-          }
+            description: 'Unknown message received before init',
+          },
         });
         call.end();
       }
     });
 
-    call.on("end", () => {
+    call.on('end', () => {
       if (service != null) {
         service.onEnd();
       } else {
@@ -111,7 +142,6 @@ class ReplicatedEntityServices {
 }
 
 class ReplicatedEntitySupport {
-
   constructor(root, service, handlers, allComponents) {
     this.root = root;
     this.service = service;
@@ -125,7 +155,7 @@ class ReplicatedEntitySupport {
   create(call, init) {
     const handler = new ReplicatedEntityHandler(this, call, init.entityId);
     if (init.delta) {
-      handler.handleInitialDelta(init.delta)
+      handler.handleInitialDelta(init.delta);
     }
     return handler;
   }
@@ -159,7 +189,6 @@ class ReplicatedEntitySupport {
  * Handler for a single Replicated Entity.
  */
 class ReplicatedEntityHandler {
-
   constructor(support, call, entityId) {
     this.entity = support;
     this.call = call;
@@ -169,10 +198,17 @@ class ReplicatedEntityHandler {
 
     this.streamId = Math.random().toString(16).substr(2, 7);
 
-    this.commandHelper = new CommandHelper(this.entityId, support.service, this.streamId, call,
-      this.commandHandlerFactory.bind(this), support.allComponents, debug);
+    this.commandHelper = new CommandHelper(
+      this.entityId,
+      support.service,
+      this.streamId,
+      call,
+      this.commandHandlerFactory.bind(this),
+      support.allComponents,
+      debug,
+    );
 
-    this.streamDebug("Started new stream");
+    this.streamDebug('Started new stream');
 
     this.subscribers = new Map();
     this.cancelledCallbacks = new Map();
@@ -180,9 +216,7 @@ class ReplicatedEntityHandler {
 
   commandHandlerFactory(commandName, grpcMethod) {
     if (this.entity.commandHandlers.hasOwnProperty(commandName)) {
-
       return async (command, ctx) => {
-
         /**
          * Context for a Replicated Entity command handler.
          *
@@ -207,20 +241,22 @@ class ReplicatedEntityHandler {
          * @name module:akkaserverless.replicatedentity.ReplicatedEntityCommandContext#onStateChange
          * @type {module:akkaserverless.replicatedentity.ReplicatedEntityCommandContext~onStateChangeCallback}
          */
-        Object.defineProperty(ctx.context, "onStateChange", {
+        Object.defineProperty(ctx.context, 'onStateChange', {
           set: (handler) => {
             ctx.ensureActive();
             if (!ctx.streamed) {
-              throw new Error("Cannot subscribe to updates from non streamed command")
+              throw new Error(
+                'Cannot subscribe to updates from non streamed command',
+              );
             }
             this.subscribers.set(ctx.commandId.toString(), {
               commandId: ctx.commandId,
               handler: handler,
               grpcMethod: grpcMethod,
-              metadata: ctx.context.metadata
+              metadata: ctx.context.metadata,
             });
             ctx.subscribed = true;
-          }
+          },
         });
 
         /**
@@ -234,19 +270,21 @@ class ReplicatedEntityHandler {
          * @name module:akkaserverless.replicatedentity.ReplicatedEntityCommandContext#onStreamCancel
          * @type {module:akkaserverless.replicatedentity.ReplicatedEntityCommandContext~onStreamCancelCallback}
          */
-        Object.defineProperty(ctx.context, "onStreamCancel", {
+        Object.defineProperty(ctx.context, 'onStreamCancel', {
           set: (handler) => {
             ctx.ensureActive();
             if (!ctx.streamed) {
-              throw new Error("Cannot receive stream cancelled from non streamed command")
+              throw new Error(
+                'Cannot receive stream cancelled from non streamed command',
+              );
             }
             this.cancelledCallbacks.set(ctx.commandId.toString(), {
               commandId: command.id,
               handler: handler,
-              grpcMethod: grpcMethod
+              grpcMethod: grpcMethod,
             });
             ctx.subscribed = true;
-          }
+          },
         });
 
         /**
@@ -256,8 +294,8 @@ class ReplicatedEntityHandler {
          * @type {boolean}
          * @readonly
          */
-        Object.defineProperty(ctx.context, "streamed", {
-          get: () => ctx.streamed === true
+        Object.defineProperty(ctx.context, 'streamed', {
+          get: () => ctx.streamed === true,
         });
 
         /**
@@ -266,15 +304,20 @@ class ReplicatedEntityHandler {
          * @name module:akkaserverless.replicatedentity.ReplicatedEntityCommandContext#writeConsistency
          * @type {module:akkaserverless.replicatedentity.WriteConsistency}
          */
-        Object.defineProperty(ctx.context, "writeConsistency", {
+        Object.defineProperty(ctx.context, 'writeConsistency', {
           get: () => ctx.writeConsistency,
-          set: (writeConsistency) => ctx.writeConsistency = writeConsistency
+          set: (writeConsistency) => (ctx.writeConsistency = writeConsistency),
         });
 
-        const userReply = await this.entity.commandHandlers[commandName](command, ctx.context);
+        const userReply = await this.entity.commandHandlers[commandName](
+          command,
+          ctx.context,
+        );
         if (ctx.streamed && ctx.subscription === null) {
           // todo relax this requirement
-          throw new Error("Streamed commands must be subscribed to using ctx.subscribe()");
+          throw new Error(
+            'Streamed commands must be subscribed to using ctx.subscribe()',
+          );
         }
 
         await this.setStateActionOnReply(ctx);
@@ -292,20 +335,20 @@ class ReplicatedEntityHandler {
 
   async setStateActionOnReply(ctx) {
     if (ctx.deleted) {
-      ctx.commandDebug("Deleting entity");
+      ctx.commandDebug('Deleting entity');
       ctx.reply.stateAction = {
         delete: {},
-        writeConsistency: ctx.writeConsistency
+        writeConsistency: ctx.writeConsistency,
       };
       this.currentState = null;
       await this.handleStateChange();
     } else if (this.currentState !== null) {
       const delta = this.currentState.getAndResetDelta();
       if (delta != null) {
-        ctx.commandDebug("Updating entity");
+        ctx.commandDebug('Updating entity');
         ctx.reply.stateAction = {
           update: delta,
-          writeConsistency: ctx.writeConsistency
+          writeConsistency: ctx.writeConsistency,
         };
         await this.handleStateChange();
       }
@@ -353,7 +396,7 @@ class ReplicatedEntityHandler {
      * @name module:akkaserverless.replicatedentity.StateManagementContext#state
      * @type {module:akkaserverless.replicatedentity.ReplicatedData}
      */
-    Object.defineProperty(ctx.context, "state", {
+    Object.defineProperty(ctx.context, 'state', {
       get: () => {
         ctx.ensureActive();
         return this.currentState;
@@ -361,27 +404,38 @@ class ReplicatedEntityHandler {
       set: (state) => {
         ctx.ensureActive();
         if (this.currentState !== null) {
-          throw new Error("Cannot create a new Replicated Entity state after it's been created.")
-        } else if (typeof state.getAndResetDelta !== "function") {
-          throw new Error(util.format("%o is not a Replicated Data type", state));
+          throw new Error(
+            "Cannot create a new Replicated Entity state after it's been created.",
+          );
+        } else if (typeof state.getAndResetDelta !== 'function') {
+          throw new Error(
+            util.format('%o is not a Replicated Data type', state),
+          );
         } else {
           this.currentState = state;
           this.entity.onStateSet(this.currentState, this.entityId);
         }
-      }
+      },
     });
   }
 
   streamDebug(msg, ...args) {
-    debug("%s [%s] - " + msg, ...[this.streamId, this.entityId].concat(args));
+    debug('%s [%s] - ' + msg, ...[this.streamId, this.entityId].concat(args));
   }
 
   handleInitialDelta(delta) {
-    this.streamDebug("Handling initial delta for Replicated Data type %s", delta.delta);
+    this.streamDebug(
+      'Handling initial delta for Replicated Data type %s',
+      delta.delta,
+    );
     if (this.currentState === null) {
       this.currentState = replicatedData.createForDelta(delta);
     }
-    this.currentState.applyDelta(delta, this.entity.anySupport, replicatedData.createForDelta);
+    this.currentState.applyDelta(
+      delta,
+      this.entity.anySupport,
+      replicatedData.createForDelta,
+    );
     this.entity.onStateSet(this.currentState, this.entityId);
   }
 
@@ -389,80 +443,100 @@ class ReplicatedEntityHandler {
     try {
       await this.handleReplicatedEntityStreamIn(replicatedEntityStreamIn);
     } catch (err) {
-      this.streamDebug("Error handling message, terminating stream: %o", replicatedEntityStreamIn);
+      this.streamDebug(
+        'Error handling message, terminating stream: %o',
+        replicatedEntityStreamIn,
+      );
       console.error(err);
       this.call.write({
         failure: {
           commandId: 0,
-          description: "Fatal error handling message, check user container logs."
-        }
+          description:
+            'Fatal error handling message, check user container logs.',
+        },
       });
       this.call.end();
     }
   }
 
   async handleStateChange() {
-    await Promise.all(Array.from(this.subscribers).map(async (sub, k) => {
-      const key = sub[0];
-      const subscriber = sub[1];
-      /**
-       * Context passed to {@link module:akkaserverless.replicatedentity.ReplicatedEntityCommandContext#onStateChange} handlers.
-       *
-       * @interface module:akkaserverless.replicatedentity.StateChangedContext
-       * @extends module:akkaserverless.CommandContext
-       * @extends module:akkaserverless.EntityContext
-       */
-      const ctx = this.commandHelper.createContext(subscriber.commandId, subscriber.metadata);
+    await Promise.all(
+      Array.from(this.subscribers).map(async (sub, k) => {
+        const key = sub[0];
+        const subscriber = sub[1];
+        /**
+         * Context passed to {@link module:akkaserverless.replicatedentity.ReplicatedEntityCommandContext#onStateChange} handlers.
+         *
+         * @interface module:akkaserverless.replicatedentity.StateChangedContext
+         * @extends module:akkaserverless.CommandContext
+         * @extends module:akkaserverless.EntityContext
+         */
+        const ctx = this.commandHelper.createContext(
+          subscriber.commandId,
+          subscriber.metadata,
+        );
 
-      /**
-       * The Replicated Data state for a Replicated Entity.
-       *
-       * @name module:akkaserverless.replicatedentity.StateChangedContext#state
-       * @type module:akkaserverless.replicatedentity.ReplicatedData
-       * @readonly
-       */
-      Object.defineProperty(ctx.context, "state", {
-        get: () => {
-          return this.currentState;
-        }
-      });
-
-      /**
-       * End this stream.
-       *
-       * @function module:akkaserverless.replicatedentity.StateChangedContext#end
-       */
-      ctx.context.end = () => {
-        ctx.reply.endStream = true;
-        this.subscribers.delete(key);
-        this.cancelledCallbacks.delete(key);
-      };
-
-      try {
-        const handler = () => {
-          const userReply = subscriber.handler(this.currentState, ctx.context);
-          if (this.currentState.getAndResetDelta() !== null) {
-            throw new Error("State change handler attempted to modify state");
-          }
-          return userReply;
-        }
-        const msg = await this.commandHelper.invokeHandlerLogic(handler, ctx, subscriber.grpcMethod);
-        if (ctx.effects.length > 0 || ctx.reply.endStream === true || ctx.reply.clientAction !== undefined) {
-          this.call.write({
-            streamedMessage: msg
-          });
-        }
-      } catch (e) {
-        this.call.write({
-          failure: {
-            commandId: subscriber.commandId,
-            description: util.format("Error: %o", e)
-          }
+        /**
+         * The Replicated Data state for a Replicated Entity.
+         *
+         * @name module:akkaserverless.replicatedentity.StateChangedContext#state
+         * @type module:akkaserverless.replicatedentity.ReplicatedData
+         * @readonly
+         */
+        Object.defineProperty(ctx.context, 'state', {
+          get: () => {
+            return this.currentState;
+          },
         });
-        this.call.end();
-        // Probably rethrow?
-      }
-    }));
+
+        /**
+         * End this stream.
+         *
+         * @function module:akkaserverless.replicatedentity.StateChangedContext#end
+         */
+        ctx.context.end = () => {
+          ctx.reply.endStream = true;
+          this.subscribers.delete(key);
+          this.cancelledCallbacks.delete(key);
+        };
+
+        try {
+          const handler = () => {
+            const userReply = subscriber.handler(
+              this.currentState,
+              ctx.context,
+            );
+            if (this.currentState.getAndResetDelta() !== null) {
+              throw new Error('State change handler attempted to modify state');
+            }
+            return userReply;
+          };
+          const msg = await this.commandHelper.invokeHandlerLogic(
+            handler,
+            ctx,
+            subscriber.grpcMethod,
+          );
+          if (
+            ctx.effects.length > 0 ||
+            ctx.reply.endStream === true ||
+            ctx.reply.clientAction !== undefined
+          ) {
+            this.call.write({
+              streamedMessage: msg,
+            });
+          }
+        } catch (e) {
+          this.call.write({
+            failure: {
+              commandId: subscriber.commandId,
+              description: util.format('Error: %o', e),
+            },
+          });
+          this.call.end();
+          // Probably rethrow?
+        }
+      }),
+    );
   }
 
   handleStreamCancelled(cancelled) {
@@ -475,7 +549,7 @@ class ReplicatedEntityHandler {
     this.subscribers.delete(subscriberKey);
 
     let response = {
-      commandId: cancelled.id
+      commandId: cancelled.id,
     };
 
     try {
@@ -497,21 +571,20 @@ class ReplicatedEntityHandler {
 
         subscriber.handler(this.currentState, ctx.context);
         this.setStateActionOnReply(ctx);
-        ctx.commandDebug("Sending streamed cancelled response");
+        ctx.commandDebug('Sending streamed cancelled response');
 
         response = ctx.reply;
       }
 
       this.call.write({
-        streamCancelledResponse: response
+        streamCancelledResponse: response,
       });
-
     } catch (e) {
       this.call.write({
         failure: {
           commandId: cancelled.id,
-          description: util.format("Error: %o", e)
-        }
+          description: util.format('Error: %o', e),
+        },
       });
       this.call.end();
     }
@@ -519,39 +592,50 @@ class ReplicatedEntityHandler {
 
   async handleReplicatedEntityStreamIn(replicatedEntityStreamIn) {
     if (replicatedEntityStreamIn.delta && this.currentState === null) {
-      await this.handleInitialDelta(replicatedEntityStreamIn.delta)
+      await this.handleInitialDelta(replicatedEntityStreamIn.delta);
     } else if (replicatedEntityStreamIn.delta) {
-      this.streamDebug("Received delta for Replicated Data type %s", replicatedEntityStreamIn.delta.delta);
-      this.currentState.applyDelta(replicatedEntityStreamIn.delta, this.entity.anySupport, replicatedData.createForDelta);
+      this.streamDebug(
+        'Received delta for Replicated Data type %s',
+        replicatedEntityStreamIn.delta.delta,
+      );
+      this.currentState.applyDelta(
+        replicatedEntityStreamIn.delta,
+        this.entity.anySupport,
+        replicatedData.createForDelta,
+      );
       await this.handleStateChange();
     } else if (replicatedEntityStreamIn.delete) {
-      this.streamDebug("Received Replicated Entity delete");
+      this.streamDebug('Received Replicated Entity delete');
       this.currentState = null;
       await this.handleStateChange();
     } else if (replicatedEntityStreamIn.command) {
       await this.commandHelper.handleCommand(replicatedEntityStreamIn.command);
     } else if (replicatedEntityStreamIn.streamCancelled) {
-      await this.handleStreamCancelled(replicatedEntityStreamIn.streamCancelled)
+      await this.handleStreamCancelled(
+        replicatedEntityStreamIn.streamCancelled,
+      );
     } else {
       this.call.write({
         failure: {
           commandId: 0,
-          description: util.format("Unknown message: %o", replicatedEntityStreamIn)
-        }
+          description: util.format(
+            'Unknown message: %o',
+            replicatedEntityStreamIn,
+          ),
+        },
       });
       this.call.end();
     }
   }
 
   onEnd() {
-    this.streamDebug("Stream terminating");
+    this.streamDebug('Stream terminating');
     this.call.end();
   }
-
 }
 
 module.exports = {
   ReplicatedEntityServices: ReplicatedEntityServices,
   ReplicatedEntitySupport: ReplicatedEntitySupport,
-  ReplicatedEntityHandler: ReplicatedEntityHandler
+  ReplicatedEntityHandler: ReplicatedEntityHandler,
 };

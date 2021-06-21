@@ -25,7 +25,6 @@
  * @memberOf module:akkaserverless.replies
  */
 class Reply {
-
   /**
    * Attach the given effect(s) to this reply
    *
@@ -36,8 +35,8 @@ class Reply {
    * @return {module:akkaserverless.replies.Reply} This reply after adding the effect.
    */
   addEffect(method, message, synchronous, metadata) {
-    this.addEffects([new Effect(method, message, synchronous, metadata)])
-    return this
+    this.addEffects([new Effect(method, message, synchronous, metadata)]);
+    return this;
   }
 
   /**
@@ -47,9 +46,9 @@ class Reply {
    * @return {module:akkaserverless.replies.Reply} This reply after adding the effects.
    */
   addEffects(effects) {
-    if (this.effects) this.effects.push(...effects)
-    else this.effects = effects
-    return this
+    if (this.effects) this.effects.push(...effects);
+    else this.effects = effects;
+    return this;
   }
 
   /**
@@ -58,7 +57,7 @@ class Reply {
    * @return {boolean} Whether the reply is empty.
    */
   isEmpty() {
-    return !this.message && !this.forward && !this.failure
+    return !this.message && !this.forward && !this.failure;
   }
 }
 
@@ -66,7 +65,6 @@ class Reply {
  * @memberOf module:akkaserverless.replies
  */
 class Effect {
-
   /**
    * @param {protobuf.Method} method The entity service method to invoke.
    * @param {object} message The message to send to that service.
@@ -74,10 +72,10 @@ class Effect {
    * @param {module:akkaserverless.Metadata} [metadata] Metadata to send with the effect.
    */
   constructor(method, message, synchronous, metadata) {
-    this.method = method
-    this.message = message
-    this.synchronous = typeof synchronous === "boolean" ? synchronous : false
-    this.metadata = metadata
+    this.method = method;
+    this.message = message;
+    this.synchronous = typeof synchronous === 'boolean' ? synchronous : false;
+    this.metadata = metadata;
   }
 }
 
@@ -94,10 +92,10 @@ class ReplyFactory {
    * @return {module:akkaserverless.replies.Reply} A message reply
    */
   message(message, metadata) {
-    const reply = new Reply()
-    reply.message = message
-    reply.metadata = metadata
-    return reply
+    const reply = new Reply();
+    reply.message = message;
+    reply.metadata = metadata;
+    return reply;
   }
 
   /**
@@ -107,13 +105,13 @@ class ReplyFactory {
    * @return {module:akkaserverless.replies.Reply} A forward reply.
    */
   forward(method, message, metadata) {
-    const reply = new Reply()
+    const reply = new Reply();
     reply.forward = {
       method: method,
       message: message,
-      metadata: metadata
-    }
-    return reply
+      metadata: metadata,
+    };
+    return reply;
   }
 
   /**
@@ -121,9 +119,9 @@ class ReplyFactory {
    * @return {module:akkaserverless.replies.Reply} A failure reply.
    */
   failure(description) {
-    const reply = new Reply()
-    reply.failure = description
-    return reply
+    const reply = new Reply();
+    reply.failure = description;
+    return reply;
   }
 
   /**
@@ -134,12 +132,11 @@ class ReplyFactory {
    * @return {module:akkaserverless.replies.Reply} An empty reply
    */
   noReply() {
-    return new Reply()
+    return new Reply();
   }
-
 }
 
-const replies = new ReplyFactory()
-replies.Reply = Reply
-replies.Effect = Effect
-module.exports = replies
+const replies = new ReplyFactory();
+replies.Reply = Reply;
+replies.Effect = Effect;
+module.exports = replies;

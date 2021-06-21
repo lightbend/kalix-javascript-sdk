@@ -14,27 +14,32 @@
  * limitations under the License.
  */
 
-const path = require("path");
-const util = require("util");
-const protobufHelper = require("./protobuf-helper");
-const protobuf = require("protobufjs");
-const Long = require("long");
-const stableJsonStringify = require("json-stable-stringify");
+const path = require('path');
+const util = require('util');
+const protobufHelper = require('./protobuf-helper');
+const protobuf = require('protobufjs');
+const Long = require('long');
+const stableJsonStringify = require('json-stable-stringify');
 
 const Any = protobufHelper.moduleRoot.google.protobuf.Any;
 
 // To allow primitive types to be stored, Akka Serverless defines a number of primitive type URLs, based on protobuf types.
 // The serialized values are valid protobuf messages that contain a value of that type as their single field at index
 // 15.
-const AkkaServerlessPrimitive = "p.akkaserverless.com/";
+const AkkaServerlessPrimitive = 'p.akkaserverless.com/';
 // Chosen because it reduces the likelihood of clashing with something else.
 const AkkaServerlessPrimitiveFieldNumber = 1;
-const AkkaServerlessPrimitiveFieldNumberEncoded = AkkaServerlessPrimitiveFieldNumber << 3; // 8
+const AkkaServerlessPrimitiveFieldNumberEncoded =
+  AkkaServerlessPrimitiveFieldNumber << 3; // 8
 const AkkaServerlessSupportedPrimitiveTypes = new Set();
-["string", "bytes", "int64", "bool", "double"].forEach(AkkaServerlessSupportedPrimitiveTypes.add.bind(AkkaServerlessSupportedPrimitiveTypes));
+['string', 'bytes', 'int64', 'bool', 'double'].forEach(
+  AkkaServerlessSupportedPrimitiveTypes.add.bind(
+    AkkaServerlessSupportedPrimitiveTypes,
+  ),
+);
 const EmptyArray = Object.freeze([]);
 
-const AkkaServerlessJson = "json.akkaserverless.com/";
+const AkkaServerlessJson = 'json.akkaserverless.com/';
 
 /**
  * This is any type that has been returned by the protobufjs Message.create method.
@@ -71,18 +76,18 @@ class AnySupport {
 
   static fullNameOf(descriptor) {
     function namespace(desc) {
-      if (desc.name === "") {
-        return "";
+      if (desc.name === '') {
+        return '';
       } else {
-        return namespace(desc.parent) + desc.name + ".";
+        return namespace(desc.parent) + desc.name + '.';
       }
     }
     return namespace(descriptor.parent) + descriptor.name;
   }
 
   static stripHostName(url) {
-    const idx = url.indexOf("/");
-    if (url.indexOf("/") >= 0) {
+    const idx = url.indexOf('/');
+    if (url.indexOf('/') >= 0) {
       return url.substr(idx + 1);
     } else {
       // fail?
@@ -101,7 +106,11 @@ class AnySupport {
     const writer = new protobuf.Writer();
     // First write the field key.
     // Field index is always 15, which gets shifted left by 3 bits (ie, 120).
-    writer.uint32((AkkaServerlessPrimitiveFieldNumberEncoded | protobuf.types.basic[type]) >>> 0);
+    writer.uint32(
+      (AkkaServerlessPrimitiveFieldNumberEncoded |
+        protobuf.types.basic[type]) >>>
+        0,
+    );
     // Now write the primitive
     writer[type](obj);
     return writer.finish();
@@ -111,7 +120,7 @@ class AnySupport {
     return Any.create({
       // I have *no* idea why it's type_url and not typeUrl, but it is.
       type_url: AkkaServerlessPrimitive + type,
-      value: this.serializePrimitiveValue(obj, type)
+      value: this.serializePrimitiveValue(obj, type),
     });
   }
 
@@ -131,23 +140,32 @@ class AnySupport {
    */
   static toComparable(obj) {
     // When outputting strings, we prefix with a letter for the type, to guarantee uniqueness of different types.
-    if (typeof obj === "string") {
-      return "s" + obj;
-    } else if (typeof obj === "number") {
+    if (typeof obj === 'string') {
+      return 's' + obj;
+    } else if (typeof obj === 'number') {
       return obj;
     } else if (Buffer.isBuffer(obj)) {
-      return "b" + obj.toString("base64");
-    } else if (typeof obj === "boolean") {
+      return 'b' + obj.toString('base64');
+    } else if (typeof obj === 'boolean') {
       return obj;
     } else if (Long.isLong(obj)) {
-      return "l" + obj.toString();
-    } else if (obj.constructor && typeof obj.constructor.encode === "function" && obj.constructor.$type) {
-      return "p" + obj.constructor.encode(obj).finish().toString("base64");
-    } else if (typeof obj === "object") {
-      return "j" + stableJsonStringify(obj);
+      return 'l' + obj.toString();
+    } else if (
+      obj.constructor &&
+      typeof obj.constructor.encode === 'function' &&
+      obj.constructor.$type
+    ) {
+      return 'p' + obj.constructor.encode(obj).finish().toString('base64');
+    } else if (typeof obj === 'object') {
+      return 'j' + stableJsonStringify(obj);
     } else {
-      throw new Error(util.format("Object %o is not a protobuf object, object or supported primitive type, and " +
-        "hence can't be dynamically serialized.", obj));
+      throw new Error(
+        util.format(
+          'Object %o is not a protobuf object, object or supported primitive type, and ' +
+            "hence can't be dynamically serialized.",
+          obj,
+        ),
+      );
     }
   }
 
@@ -162,42 +180,62 @@ class AnySupport {
    *        called type is required.
    * @private
    */
-  static serialize(obj, allowPrimitives, fallbackToJson, requireJsonType = false) {
+  static serialize(
+    obj,
+    allowPrimitives,
+    fallbackToJson,
+    requireJsonType = false,
+  ) {
     if (allowPrimitives) {
-      if (typeof obj === "string") {
-        return this.serializePrimitive(obj, "string");
-      } else if (typeof obj === "number") {
-        return this.serializePrimitive(obj, "double");
+      if (typeof obj === 'string') {
+        return this.serializePrimitive(obj, 'string');
+      } else if (typeof obj === 'number') {
+        return this.serializePrimitive(obj, 'double');
       } else if (Buffer.isBuffer(obj)) {
-        return this.serializePrimitive(obj, "bytes");
-      } else if (typeof obj === "boolean") {
-        return this.serializePrimitive(obj, "bool");
+        return this.serializePrimitive(obj, 'bytes');
+      } else if (typeof obj === 'boolean') {
+        return this.serializePrimitive(obj, 'bool');
       } else if (Long.isLong(obj)) {
-        return this.serializePrimitive(obj, "int64");
+        return this.serializePrimitive(obj, 'int64');
       }
     }
-    if (obj.constructor && typeof obj.constructor.encode === "function" && obj.constructor.$type) {
+    if (
+      obj.constructor &&
+      typeof obj.constructor.encode === 'function' &&
+      obj.constructor.$type
+    ) {
       return Any.create({
         // I have *no* idea why it's type_url and not typeUrl, but it is.
-        type_url: "type.googleapis.com/" + AnySupport.fullNameOf(obj.constructor.$type),
-        value: obj.constructor.encode(obj).finish()
+        type_url:
+          'type.googleapis.com/' + AnySupport.fullNameOf(obj.constructor.$type),
+        value: obj.constructor.encode(obj).finish(),
       });
-    } else if (fallbackToJson && typeof obj === "object") {
+    } else if (fallbackToJson && typeof obj === 'object') {
       let type = obj.type;
       if (type === undefined) {
         if (requireJsonType) {
-          throw new Error(util.format("Fallback to JSON serialization supported, but object does not define a type property: %o", obj));
+          throw new Error(
+            util.format(
+              'Fallback to JSON serialization supported, but object does not define a type property: %o',
+              obj,
+            ),
+          );
         } else {
-          type = "object";
+          type = 'object';
         }
       }
       return Any.create({
         type_url: AkkaServerlessJson + type,
-        value: this.serializePrimitiveValue(stableJsonStringify(obj), "string")
+        value: this.serializePrimitiveValue(stableJsonStringify(obj), 'string'),
       });
     } else {
-      throw new Error(util.format("Object %o is not a protobuf object, and hence can't be dynamically " +
-        "serialized. Try passing the object to the protobuf classes create function.", obj));
+      throw new Error(
+        util.format(
+          "Object %o is not a protobuf object, and hence can't be dynamically " +
+            'serialized. Try passing the object to the protobuf classes create function.',
+          obj,
+        ),
+      );
     }
   }
 
@@ -209,10 +247,10 @@ class AnySupport {
    */
   deserialize(any) {
     const url = any.type_url;
-    const idx = url.indexOf("/");
-    let hostName = "";
+    const idx = url.indexOf('/');
+    let hostName = '';
     let type = url;
-    if (url.indexOf("/") >= 0) {
+    if (url.indexOf('/') >= 0) {
       hostName = url.substr(0, idx + 1);
       type = url.substr(idx + 1);
     }
@@ -224,7 +262,7 @@ class AnySupport {
     }
 
     if (hostName === AkkaServerlessJson) {
-      const json = AnySupport.deserializePrimitive(bytes, "string");
+      const json = AnySupport.deserializePrimitive(bytes, 'string');
       return JSON.parse(json);
     }
 
@@ -233,14 +271,14 @@ class AnySupport {
   }
 
   static primitiveDefaultValue(type) {
-    if (type === "int64") return Long.ZERO;
-    else if (type === "bytes") return Buffer.alloc(0);
+    if (type === 'int64') return Long.ZERO;
+    else if (type === 'bytes') return Buffer.alloc(0);
     else return protobuf.types.defaults[type];
   }
 
   static deserializePrimitive(bytes, type) {
     if (!AkkaServerlessSupportedPrimitiveTypes.has(type)) {
-      throw new Error("Unsupported AkkaServerless primitive Any type: " + type);
+      throw new Error('Unsupported AkkaServerless primitive Any type: ' + type);
     }
 
     if (!bytes.length) return this.primitiveDefaultValue(type);
@@ -257,7 +295,14 @@ class AnySupport {
         reader.skipType(pType);
       } else {
         if (pType !== protobuf.types.basic[type]) {
-          throw new Error("Unexpected protobuf type " + pType + ", was expecting " + protobuf.types.basic[type] + " for decoding a " + type);
+          throw new Error(
+            'Unexpected protobuf type ' +
+              pType +
+              ', was expecting ' +
+              protobuf.types.basic[type] +
+              ' for decoding a ' +
+              type,
+          );
         }
         return reader[type]();
       }
@@ -266,6 +311,6 @@ class AnySupport {
     // We didn't find the field, just return the default.
     return this.primitiveDefaultValue(type);
   }
-};
+}
 
 module.exports = AnySupport;

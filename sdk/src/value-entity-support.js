@@ -14,21 +14,20 @@
  * limitations under the License.
  */
 
-const path = require("path");
-const grpc = require("@grpc/grpc-js");
-const protoLoader = require("@grpc/proto-loader");
+const path = require('path');
+const grpc = require('@grpc/grpc-js');
+const protoLoader = require('@grpc/proto-loader');
 
-const debug = require("debug")("akkaserverless-value-entity");
+const debug = require('debug')('akkaserverless-value-entity');
 // Bind to stdout
 debug.log = console.log.bind(console);
-const AnySupport = require("./protobuf-any");
-const CommandHelper = require("./command-helper");
+const AnySupport = require('./protobuf-any');
+const CommandHelper = require('./command-helper');
 
 /**
  * @private
  */
 class ValueEntitySupport {
-
   constructor(root, service, commandHandlers, initial, options, allComponents) {
     this.root = root;
     this.service = service;
@@ -40,7 +39,12 @@ class ValueEntitySupport {
   }
 
   serialize(obj, requireJsonType) {
-    return AnySupport.serialize(obj, this.options.serializeAllowPrimitives, this.options.serializeFallbackToJson, requireJsonType);
+    return AnySupport.serialize(
+      obj,
+      this.options.serializeAllowPrimitives,
+      this.options.serializeFallbackToJson,
+      requireJsonType,
+    );
   }
 
   deserialize(any) {
@@ -63,7 +67,6 @@ class ValueEntitySupport {
  * @private
  */
 class ValueEntityHandler {
-
   /**
    * @param {ValueEntitySupport} support
    * @param call
@@ -85,23 +88,29 @@ class ValueEntityHandler {
 
     this.streamId = Math.random().toString(16).substr(2, 7);
 
-    this.commandHelper = new CommandHelper(this.entityId, support.service, this.streamId, call,
-      this.commandHandlerFactory.bind(this), support.allComponents, debug);
+    this.commandHelper = new CommandHelper(
+      this.entityId,
+      support.service,
+      this.streamId,
+      call,
+      this.commandHandlerFactory.bind(this),
+      support.allComponents,
+      debug,
+    );
 
-    this.streamDebug("Started new stream")
+    this.streamDebug('Started new stream');
   }
 
   streamDebug(msg, ...args) {
-    debug("%s [%s] - " + msg, ...[this.streamId, this.entityId].concat(args));
+    debug('%s [%s] - ' + msg, ...[this.streamId, this.entityId].concat(args));
   }
 
   commandHandlerFactory(commandName) {
-    return this.withState(state => {
+    return this.withState((state) => {
       if (this.entity.commandHandlers.hasOwnProperty(commandName)) {
-
         return async (command, ctx) => {
           let updatedAnyState = null,
-              deleted = false;
+            deleted = false;
 
           /**
            * Context for an value entity command.
@@ -122,10 +131,11 @@ class ValueEntityHandler {
            */
           ctx.context.updateState = (newState) => {
             ctx.ensureActive();
-            if (newState === null) throw new Error("Entity state cannot be set to 'null'")
+            if (newState === null)
+              throw new Error("Entity state cannot be set to 'null'");
             if (deleted) deleted = false; // update after delete cancels delete
             updatedAnyState = this.entity.serialize(newState, true);
-          }
+          };
 
           /**
            * Delete this entity.
@@ -135,9 +145,13 @@ class ValueEntityHandler {
           ctx.context.deleteState = () => {
             ctx.ensureActive();
             deleted = true;
-          }
+          };
 
-          const userReply = await this.entity.commandHandlers[commandName](command, state, ctx.context);
+          const userReply = await this.entity.commandHandlers[commandName](
+            command,
+            state,
+            ctx.context,
+          );
 
           if (deleted) {
             ctx.reply.stateAction = { delete: {} };
@@ -146,8 +160,8 @@ class ValueEntityHandler {
           } else if (updatedAnyState !== null) {
             ctx.reply.stateAction = {
               update: {
-                value: updatedAnyState
-              }
+                value: updatedAnyState,
+              },
             };
             this.anyState = updatedAnyState; // already serialized
             ctx.commandDebug("Updating state '%s'", updatedAnyState.type_url);
@@ -166,16 +180,20 @@ class ValueEntityHandler {
       if (valueEntityStreamIn.command) {
         this.commandHelper.handleCommand(valueEntityStreamIn.command);
       } else {
-        throw new Error("Unknown message in value entity stream.")
+        throw new Error('Unknown message in value entity stream.');
       }
     } catch (err) {
-      this.streamDebug("Error handling message, terminating stream: %o", valueEntityStreamIn);
+      this.streamDebug(
+        'Error handling message, terminating stream: %o',
+        valueEntityStreamIn,
+      );
       console.error(err);
       this.call.write({
         failure: {
           commandId: 0,
-          description: "Fatal error handling message, check user container logs."
-        }
+          description:
+            'Fatal error handling message, check user container logs.',
+        },
       });
       this.call.end();
     }
@@ -189,7 +207,8 @@ class ValueEntityHandler {
   withState(callback) {
     if (this.anyState === null) {
       const initial = this.entity.initial(this.entityId);
-      if (initial === null) throw new Error("Initial entity state must not be 'null'")
+      if (initial === null)
+        throw new Error("Initial entity state must not be 'null'");
       this.updateState(initial);
     }
     // serialize/deserialize makes sure only ctx.update(state) makes changes
@@ -199,84 +218,110 @@ class ValueEntityHandler {
   }
 
   onEnd() {
-    this.streamDebug("Stream terminating");
+    this.streamDebug('Stream terminating');
     this.call.end();
   }
-
 }
 
-
 module.exports = class ValueEntityServices {
-
   constructor() {
     this.services = {};
   }
 
   addService(entity, allComponents) {
-    this.services[entity.serviceName] = new ValueEntitySupport(entity.root, entity.service, entity.commandHandlers,
-      entity.initial, entity.options, allComponents);
+    this.services[entity.serviceName] = new ValueEntitySupport(
+      entity.root,
+      entity.service,
+      entity.commandHandlers,
+      entity.initial,
+      entity.options,
+      allComponents,
+    );
   }
 
   componentType() {
-    return "akkaserverless.component.valueentity.ValueEntities";
+    return 'akkaserverless.component.valueentity.ValueEntities';
   }
 
   register(server) {
     const includeDirs = [
-      path.join(__dirname, "..", "proto"),
-      path.join(__dirname, "..", "protoc", "include")
+      path.join(__dirname, '..', 'proto'),
+      path.join(__dirname, '..', 'protoc', 'include'),
     ];
-    const packageDefinition = protoLoader.loadSync(path.join("akkaserverless", "component", "valueentity", "value_entity.proto"), {
-      includeDirs: includeDirs
-    });
+    const packageDefinition = protoLoader.loadSync(
+      path.join(
+        'akkaserverless',
+        'component',
+        'valueentity',
+        'value_entity.proto',
+      ),
+      {
+        includeDirs: includeDirs,
+      },
+    );
     const grpcDescriptor = grpc.loadPackageDefinition(packageDefinition);
 
-    const entityService = grpcDescriptor.akkaserverless.component.valueentity.ValueEntities.service;
+    const entityService =
+      grpcDescriptor.akkaserverless.component.valueentity.ValueEntities.service;
 
     server.addService(entityService, {
-      handle: this.handle.bind(this)
+      handle: this.handle.bind(this),
     });
   }
 
   handle(call) {
     let service;
 
-    call.on("data", valueEntityStreamIn => {
+    call.on('data', (valueEntityStreamIn) => {
       if (valueEntityStreamIn.init) {
         if (service != null) {
-          service.streamDebug("Terminating entity due to duplicate init message.");
-          console.error("Terminating entity due to duplicate init message.");
+          service.streamDebug(
+            'Terminating entity due to duplicate init message.',
+          );
+          console.error('Terminating entity due to duplicate init message.');
           call.write({
             failure: {
-              description: "Init message received twice."
-            }
+              description: 'Init message received twice.',
+            },
           });
           call.end();
         } else if (valueEntityStreamIn.init.serviceName in this.services) {
-          service = this.services[valueEntityStreamIn.init.serviceName].create(call, valueEntityStreamIn.init);
+          service = this.services[valueEntityStreamIn.init.serviceName].create(
+            call,
+            valueEntityStreamIn.init,
+          );
         } else {
-          console.error("Received command for unknown service: '%s'", valueEntityStreamIn.init.serviceName);
+          console.error(
+            "Received command for unknown service: '%s'",
+            valueEntityStreamIn.init.serviceName,
+          );
           call.write({
             failure: {
-              description: "Service '" + valueEntityStreamIn.init.serviceName + "' unknown."
-            }
+              description:
+                "Service '" +
+                valueEntityStreamIn.init.serviceName +
+                "' unknown.",
+            },
           });
           call.end();
         }
       } else if (service != null) {
         service.onData(valueEntityStreamIn);
       } else {
-        console.error("Unknown message received before init %o", valueEntityStreamIn);
+        console.error(
+          'Unknown message received before init %o',
+          valueEntityStreamIn,
+        );
         call.write({
           failure: {
-            description: "Unknown message received before init"
-          }
+            description: 'Unknown message received before init',
+          },
         });
         call.end();
       }
     });
 
-    call.on("end", () => {
+    call.on('end', () => {
       if (service != null) {
         service.onEnd();
       } else {

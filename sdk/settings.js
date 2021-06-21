@@ -15,15 +15,15 @@
  */
 
 const settings = {
-  frameworkVersion: "0.7.0-beta.10",
-  protocolVersion: function() {
-    const versions = this.frameworkVersion.split(/[.-]/)
-    return { major: versions[0], minor: versions[1] }
+  frameworkVersion: '0.7.0-beta.10',
+  protocolVersion: function () {
+    const versions = this.frameworkVersion.split(/[.-]/);
+    return { major: versions[0], minor: versions[1] };
   },
-  baseVersion: function() {
-    const version = this.protocolVersion()
-    return `${version.major}.${version.minor}`
-  }
-}
+  baseVersion: function () {
+    const version = this.protocolVersion();
+    return `${version.major}.${version.minor}`;
+  },
+};
 
-module.exports = settings
+module.exports = settings;

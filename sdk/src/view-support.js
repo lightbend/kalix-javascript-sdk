@@ -14,19 +14,17 @@
  * limitations under the License.
  */
 
-const path = require("path");
-const grpc = require("@grpc/grpc-js");
-const protoLoader = require("@grpc/proto-loader");
+const path = require('path');
+const grpc = require('@grpc/grpc-js');
+const protoLoader = require('@grpc/proto-loader');
 
-const debug = require("debug")("akkaserverless-view");
+const debug = require('debug')('akkaserverless-view');
 // Bind to stdout
 debug.log = console.log.bind(console);
-const AnySupport = require("./protobuf-any");
-const Metadata = require("./metadata");
-
+const AnySupport = require('./protobuf-any');
+const Metadata = require('./metadata');
 
 module.exports = class ViewServices {
-
   constructor() {
     this.services = {};
   }
@@ -36,29 +34,33 @@ module.exports = class ViewServices {
   }
 
   componentType() {
-    return "akkaserverless.component.view.Views";
+    return 'akkaserverless.component.view.Views';
   }
 
   register(server) {
     // Nothing to register
     const includeDirs = [
-      path.join(__dirname, "..", "proto"),
-      path.join(__dirname, "..", "protoc", "include")
+      path.join(__dirname, '..', 'proto'),
+      path.join(__dirname, '..', 'protoc', 'include'),
     ];
-    const packageDefinition = protoLoader.loadSync(path.join("akkaserverless", "component", "view", "view.proto"), {
-      includeDirs: includeDirs
-    });
+    const packageDefinition = protoLoader.loadSync(
+      path.join('akkaserverless', 'component', 'view', 'view.proto'),
+      {
+        includeDirs: includeDirs,
+      },
+    );
     const grpcDescriptor = grpc.loadPackageDefinition(packageDefinition);
 
-    const viewService = grpcDescriptor.akkaserverless.component.view.Views.service;
+    const viewService =
+      grpcDescriptor.akkaserverless.component.view.Views.service;
 
     server.addService(viewService, {
-      handle: this.handle.bind(this)
+      handle: this.handle.bind(this),
     });
   }
 
   handle(call) {
-    const failAndEndCall = function(description) {
+    const failAndEndCall = function (description) {
       // FIXME no failure reporting in protocol and this does not reach the proxy as a failure
       /*
       call.write({
@@ -67,80 +69,109 @@ module.exports = class ViewServices {
         }
       })
       */
-      call.end()
-    }
+      call.end();
+    };
 
-    call.on("data", viewStreamIn => {
+    call.on('data', (viewStreamIn) => {
       // FIXME: It is currently only implemented to support one request (ReceiveEvent) with one response (Upsert).
       // see https://github.com/lightbend/akkaserverless-framework/issues/186
       // and https://github.com/lightbend/akkaserverless-framework/issues/187
       if (viewStreamIn.receive) {
         const receiveEvent = viewStreamIn.receive,
-          service = this.services[receiveEvent.serviceName]
+          service = this.services[receiveEvent.serviceName];
         if (service) {
-          const updateHandler = service.updateHandlers[receiveEvent.commandName]
+          const updateHandler =
+            service.updateHandlers[receiveEvent.commandName];
           if (updateHandler) {
             try {
               const anySupport = new AnySupport(service.root),
-                  metadata = new Metadata(receiveEvent.metada ? receiveEvent.metadata.entries : []),
-                  payload = anySupport.deserialize(receiveEvent.payload),
-                  existingState = (receiveEvent.bySubjectLookupResult ? anySupport.deserialize(receiveEvent.bySubjectLookupResult.value) : undefined),
-                  grpcMethod = service.service.methods[receiveEvent.commandName],
-                  /**
-                   * Context for a view update event.
-                   *
-                   * @interface module:akkaserverless.View.UpdateHandlerContext
-                   * @property {String} eventSubject The origin subject of the CloudEvent. For example, the entity key when the event was emitted from an entity.
-                   * @property {module:akkaserverless.Metadata} metadata for the event
-                   * @property {String} commandName
-                   */
-                  context = {
-                    "viewId": service.viewId,
-                    "eventSubject": receiveEvent.metadata["ce-subject"],
-                    "metadata": metadata,
-                    "commandName": receiveEvent.commandName
-                 }
-              const result = updateHandler(payload, existingState, context)
+                metadata = new Metadata(
+                  receiveEvent.metada ? receiveEvent.metadata.entries : [],
+                ),
+                payload = anySupport.deserialize(receiveEvent.payload),
+                existingState = receiveEvent.bySubjectLookupResult
+                  ? anySupport.deserialize(
+                      receiveEvent.bySubjectLookupResult.value,
+                    )
+                  : undefined,
+                grpcMethod = service.service.methods[receiveEvent.commandName],
+                /**
+                 * Context for a view update event.
+                 *
+                 * @interface module:akkaserverless.View.UpdateHandlerContext
+                 * @property {String} eventSubject The origin subject of the CloudEvent. For example, the entity key when the event was emitted from an entity.
+                 * @property {module:akkaserverless.Metadata} metadata for the event
+                 * @property {String} commandName
+                 */
+                context = {
+                  viewId: service.viewId,
+                  eventSubject: receiveEvent.metadata['ce-subject'],
+                  metadata: metadata,
+                  commandName: receiveEvent.commandName,
+                };
+              const result = updateHandler(payload, existingState, context);
               if (result) {
-                const resultProto = grpcMethod.resolvedResponseType.create(result),
-                  resultPayload = AnySupport.serialize(resultProto, false, false);
+                const resultProto =
+                    grpcMethod.resolvedResponseType.create(result),
+                  resultPayload = AnySupport.serialize(
+                    resultProto,
+                    false,
+                    false,
+                  );
                 call.write({
                   upsert: {
                     row: {
                       index: receiveEvent.initialTable,
                       key: receiveEvent.key,
-                      value: resultPayload
-                    }
-                  }
+                      value: resultPayload,
+                    },
+                  },
                 });
               } else {
                 call.write({
                   upsert: {
-                    row: null
-                  }
+                    row: null,
+                  },
                 });
               }
               call.end();
             } catch (err) {
-              console.error("Error handling event, terminating stream: %o", viewStreamIn);
+              console.error(
+                'Error handling event, terminating stream: %o',
+                viewStreamIn,
+              );
               console.error(err);
-              failAndEndCall("Fatal error handling event, check user container logs.");
+              failAndEndCall(
+                'Fatal error handling event, check user container logs.',
+              );
             }
           } else {
-            console.error("No handler defined for commandName: '%s'", receiveEvent.commandName);
-            failAndEndCall("No handler defined for commandName '" + receiveEvent.commandName + "'.")
+            console.error(
+              "No handler defined for commandName: '%s'",
+              receiveEvent.commandName,
+            );
+            failAndEndCall(
+              "No handler defined for commandName '" +
+                receiveEvent.commandName +
+                "'.",
+            );
           }
         } else {
-          console.error("Received event for unknown service: '%s'", viewStreamIn.init.serviceName);
-          failAndEndCall("Service '" + viewStreamIn.init.serviceName + "' unknown.");
+          console.error(
+            "Received event for unknown service: '%s'",
+            viewStreamIn.init.serviceName,
+          );
+          failAndEndCall(
+            "Service '" + viewStreamIn.init.serviceName + "' unknown.",
+          );
         }
       } else {
-        console.error("Unknown view message received %o", viewStreamIn);
-        failAndEndCall("Unknown view message received")
+        console.error('Unknown view message received %o', viewStreamIn);
+        failAndEndCall('Unknown view message received');
       }
     });
 
-    call.on("end", () => {
+    call.on('end', () => {
       call.end();
     });
   }

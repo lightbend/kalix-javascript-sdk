@@ -14,20 +14,27 @@
  * limitations under the License.
  */
 
-const AnySupport = require("./protobuf-any");
-const EffectSerializer = require("./effect-serializer");
-const ContextFailure = require("./context-failure");
-const Metadata = require("./metadata");
-const CloudEvents = require("./cloudevents");
-const Reply = require("./reply").Reply;
+const AnySupport = require('./protobuf-any');
+const EffectSerializer = require('./effect-serializer');
+const ContextFailure = require('./context-failure');
+const Metadata = require('./metadata');
+const CloudEvents = require('./cloudevents');
+const Reply = require('./reply').Reply;
 
 /**
  * Creates the base for context objects.
  * @private
  */
 class CommandHelper {
-
-  constructor(entityId, service, streamId, call, handlerFactory, allComponents, debug) {
+  constructor(
+    entityId,
+    service,
+    streamId,
+    call,
+    handlerFactory,
+    allComponents,
+    debug,
+  ) {
     this.entityId = entityId;
     this.service = service;
     this.streamId = streamId;
@@ -70,41 +77,46 @@ class CommandHelper {
       return {
         failure: {
           commandId: command.id,
-          description: msg
-        }
-      }
+          description: msg,
+        },
+      };
     };
 
     if (!this.service.methods.hasOwnProperty(command.name)) {
       ctx.commandDebug("Command '%s' unknown", command.name);
-      return errorReply("Unknown command named " + command.name);
+      return errorReply('Unknown command named ' + command.name);
     } else {
-
       try {
         const grpcMethod = this.service.methods[command.name];
 
         // todo maybe reconcile whether the command URL of the Any type matches the gRPC response type
         let commandBuffer = command.payload.value;
-        if (typeof commandBuffer === "undefined") {
-          commandBuffer = new Buffer(0)
+        if (typeof commandBuffer === 'undefined') {
+          commandBuffer = new Buffer(0);
         }
-        const deserCommand = grpcMethod.resolvedRequestType.decode(commandBuffer);
+        const deserCommand =
+          grpcMethod.resolvedRequestType.decode(commandBuffer);
 
         const handler = this.handlerFactory(command.name, grpcMethod);
 
         if (handler !== null) {
-
           ctx.streamed = command.streamed;
 
-          const reply = await this.invokeHandlerLogic(() => handler(deserCommand, ctx), ctx, grpcMethod, "Command");
+          const reply = await this.invokeHandlerLogic(
+            () => handler(deserCommand, ctx),
+            ctx,
+            grpcMethod,
+            'Command',
+          );
 
           if (reply && reply.reply) {
             return reply;
           } else {
-            return {reply: reply};
+            return { reply: reply };
           }
         } else {
-          const msg = "No handler registered for command '" + command.name + "'";
+          const msg =
+            "No handler registered for command '" + command.name + "'";
           ctx.commandDebug(msg);
           return errorReply(msg);
         }
@@ -113,7 +125,7 @@ class CommandHelper {
         ctx.commandDebug(error);
         console.error(err);
 
-        throw errorReply(error + ": " + err);
+        throw errorReply(error + ': ' + err);
       }
     }
   }
@@ -146,11 +158,11 @@ class CommandHelper {
         clientAction: {
           failure: {
             commandId: ctx.commandId,
-            description: msg
-          }
-        }
-      }
-    }
+            description: msg,
+          },
+        },
+      },
+    };
   }
 
   async invokeHandlerLogic(handler, ctx, grpcMethod, desc) {
@@ -167,34 +179,64 @@ class CommandHelper {
         // note that we amend the ctx.reply to get events etc passed along from the entities
         ctx.reply.commandId = ctx.commandId;
         if (userReply.effects) {
-          ctx.reply.sideEffects = userReply.effects.map(effect =>
-            this.effectSerializer.serializeSideEffect(effect.method, effect.message, effect.synchronous, effect.metadata)
-          )
+          ctx.reply.sideEffects = userReply.effects.map((effect) =>
+            this.effectSerializer.serializeSideEffect(
+              effect.method,
+              effect.message,
+              effect.synchronous,
+              effect.metadata,
+            ),
+          );
         }
         if (userReply.message) {
           ctx.reply.clientAction = {
             reply: {
-              payload: AnySupport.serialize(grpcMethod.resolvedResponseType.create(userReply.message), false, false),
-              metadata: userReply.metadata || null
-            }
-          }
-          ctx.commandDebug("%s reply with type [%s] with %d side effects.", desc, ctx.reply.clientAction.reply.payload.type_url, ctx.effects.length);
+              payload: AnySupport.serialize(
+                grpcMethod.resolvedResponseType.create(userReply.message),
+                false,
+                false,
+              ),
+              metadata: userReply.metadata || null,
+            },
+          };
+          ctx.commandDebug(
+            '%s reply with type [%s] with %d side effects.',
+            desc,
+            ctx.reply.clientAction.reply.payload.type_url,
+            ctx.effects.length,
+          );
         } else if (userReply.forward) {
           ctx.reply.clientAction = {
             forward: this.effectSerializer.serializeEffect(
-              userReply.forward.method, userReply.forward.message, userReply.forward.metadata)
-          }
-          ctx.commandDebug("%s forward to %s with %d side effects.", desc, userReply.forward.method, ctx.effects.length);
+              userReply.forward.method,
+              userReply.forward.message,
+              userReply.forward.metadata,
+            ),
+          };
+          ctx.commandDebug(
+            '%s forward to %s with %d side effects.',
+            desc,
+            userReply.forward.method,
+            ctx.effects.length,
+          );
         } else {
           // empty reply
           // FIXME should this be Protobuf Empty rather than no reply at all?
-          ctx.commandDebug("%s no reply with %d side effects.", desc, ctx.effects.length);
+          ctx.commandDebug(
+            '%s no reply with %d side effects.',
+            desc,
+            ctx.effects.length,
+          );
           ctx.reply.clientAction = {
             reply: {
-              payload: AnySupport.serialize(grpcMethod.resolvedResponseType.create({}), false, false),
-              metadata: userReply.metadata || null
-            }
-          }
+              payload: AnySupport.serialize(
+                grpcMethod.resolvedResponseType.create({}),
+                false,
+                false,
+              ),
+              metadata: userReply.metadata || null,
+            },
+          };
         }
 
         return ctx.reply;
@@ -205,19 +247,40 @@ class CommandHelper {
 
       if (ctx.forward !== null) {
         ctx.reply.clientAction = {
-          forward: ctx.forward
+          forward: ctx.forward,
         };
-        ctx.commandDebug("%s forward to %s.%s with %d side effects.", desc, ctx.forward.serviceName, ctx.forward.commandName, ctx.effects.length);
+        ctx.commandDebug(
+          '%s forward to %s.%s with %d side effects.',
+          desc,
+          ctx.forward.serviceName,
+          ctx.forward.commandName,
+          ctx.effects.length,
+        );
       } else if (userReply !== undefined) {
         ctx.reply.clientAction = {
           reply: {
-            payload: AnySupport.serialize(grpcMethod.resolvedResponseType.create(userReply), false, false),
-            metadata: (ctx.replyMetadata.entries.length) ? { entries: ctx.replyMetadata.entries } : null
-          }
+            payload: AnySupport.serialize(
+              grpcMethod.resolvedResponseType.create(userReply),
+              false,
+              false,
+            ),
+            metadata: ctx.replyMetadata.entries.length
+              ? { entries: ctx.replyMetadata.entries }
+              : null,
+          },
         };
-        ctx.commandDebug("%s reply with type [%s] with %d side effects.", desc, ctx.reply.clientAction.reply.payload.type_url, ctx.effects.length);
+        ctx.commandDebug(
+          '%s reply with type [%s] with %d side effects.',
+          desc,
+          ctx.reply.clientAction.reply.payload.type_url,
+          ctx.effects.length,
+        );
       } else {
-        ctx.commandDebug("%s no reply with %d side effects.", desc, ctx.effects.length);
+        ctx.commandDebug(
+          '%s no reply with %d side effects.',
+          desc,
+          ctx.effects.length,
+        );
       }
 
       return ctx.reply;
@@ -225,7 +288,10 @@ class CommandHelper {
   }
 
   commandDebug(msg, ...args) {
-    this.debug("%s [%s] (%s) - " + msg, ...[this.streamId, this.entityId].concat(args));
+    this.debug(
+      '%s [%s] (%s) - ' + msg,
+      ...[this.streamId, this.entityId].concat(args),
+    );
   }
 
   // This creates the context. Note that the context has two levels, first is the internal implementation context, this
@@ -244,7 +310,7 @@ class CommandHelper {
     accessor.active = true;
     accessor.ensureActive = () => {
       if (!accessor.active) {
-        throw new Error("Command context no longer active!");
+        throw new Error('Command context no longer active!');
       }
     };
     accessor.error = null;
@@ -290,11 +356,26 @@ class CommandHelper {
        * @param {boolean} synchronous Whether the effect should be execute synchronously or not.
        * @param {module:akkaserverless.Metadata} metadata Metadata to send with the effect.
        */
-      effect: (method, message, synchronous = false, metadata, internalCall) => {
+      effect: (
+        method,
+        message,
+        synchronous = false,
+        metadata,
+        internalCall,
+      ) => {
         accessor.ensureActive();
         if (!internalCall)
-          console.warn("WARNING: Command context 'effect' is deprecated. Please use 'Reply.addEffect' instead.");
-        accessor.effects.push(this.effectSerializer.serializeSideEffect(method, message, synchronous, metadata))
+          console.warn(
+            "WARNING: Command context 'effect' is deprecated. Please use 'Reply.addEffect' instead.",
+          );
+        accessor.effects.push(
+          this.effectSerializer.serializeSideEffect(
+            method,
+            message,
+            synchronous,
+            metadata,
+          ),
+        );
       },
 
       // FIXME: remove for version 0.8 (https://github.com/lightbend/akkaserverless-framework/issues/410)
@@ -323,8 +404,14 @@ class CommandHelper {
       forward: (method, message, metadata, internalCall) => {
         accessor.ensureActive();
         if (!internalCall)
-          console.warn("WARNING: Command context 'forward' is deprecated. Please use 'ReplyFactory.forward' instead.");
-        accessor.forward = this.effectSerializer.serializeEffect(method, message, metadata);
+          console.warn(
+            "WARNING: Command context 'forward' is deprecated. Please use 'ReplyFactory.forward' instead.",
+          );
+        accessor.forward = this.effectSerializer.serializeEffect(
+          method,
+          message,
+          metadata,
+        );
       },
 
       /**
@@ -348,6 +435,6 @@ class CommandHelper {
     };
     return accessor;
   }
-};
+}
 
 module.exports = CommandHelper;
