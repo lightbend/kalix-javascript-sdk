@@ -181,7 +181,7 @@ class ReplicatedEntityHandler {
   commandHandlerFactory(commandName, grpcMethod) {
     if (this.entity.commandHandlers.hasOwnProperty(commandName)) {
 
-      return (command, ctx) => {
+      return async (command, ctx) => {
 
         /**
          * Context for a Replicated Entity command handler.
@@ -271,13 +271,13 @@ class ReplicatedEntityHandler {
           set: (writeConsistency) => ctx.writeConsistency = writeConsistency
         });
 
-        const userReply = this.entity.commandHandlers[commandName](command, ctx.context);
+        const userReply = await this.entity.commandHandlers[commandName](command, ctx.context);
         if (ctx.streamed && ctx.subscription === null) {
           // todo relax this requirement
           throw new Error("Streamed commands must be subscribed to using ctx.subscribe()");
         }
 
-        this.setStateActionOnReply(ctx);
+        await this.setStateActionOnReply(ctx);
 
         if (ctx.subscribed) {
           ctx.reply.streamed = true;
@@ -290,7 +290,7 @@ class ReplicatedEntityHandler {
     }
   }
 
-  setStateActionOnReply(ctx) {
+  async setStateActionOnReply(ctx) {
     if (ctx.deleted) {
       ctx.commandDebug("Deleting entity");
       ctx.reply.stateAction = {
@@ -298,7 +298,7 @@ class ReplicatedEntityHandler {
         writeConsistency: ctx.writeConsistency
       };
       this.currentState = null;
-      this.handleStateChange();
+      await this.handleStateChange();
     } else if (this.currentState !== null) {
       const delta = this.currentState.getAndResetDelta();
       if (delta != null) {
@@ -307,7 +307,7 @@ class ReplicatedEntityHandler {
           update: delta,
           writeConsistency: ctx.writeConsistency
         };
-        this.handleStateChange();
+        await this.handleStateChange();
       }
     }
   }
@@ -385,9 +385,9 @@ class ReplicatedEntityHandler {
     this.entity.onStateSet(this.currentState, this.entityId);
   }
 
-  onData(replicatedEntityStreamIn) {
+  async onData(replicatedEntityStreamIn) {
     try {
-      this.handleReplicatedEntityStreamIn(replicatedEntityStreamIn);
+      await this.handleReplicatedEntityStreamIn(replicatedEntityStreamIn);
     } catch (err) {
       this.streamDebug("Error handling message, terminating stream: %o", replicatedEntityStreamIn);
       console.error(err);
@@ -401,8 +401,10 @@ class ReplicatedEntityHandler {
     }
   }
 
-  handleStateChange() {
-    this.subscribers.forEach((subscriber, key) => {
+  async handleStateChange() {
+    await Promise.all(Array.from(this.subscribers).map(async (sub, k) => {
+      const key = sub[0];
+      const subscriber = sub[1];
       /**
        * Context passed to {@link module:akkaserverless.replicatedentity.ReplicatedEntityCommandContext#onStateChange} handlers.
        *
@@ -437,19 +439,19 @@ class ReplicatedEntityHandler {
       };
 
       try {
-        this.commandHelper.invokeHandler(() => {
+        const handler = () => {
           const userReply = subscriber.handler(this.currentState, ctx.context);
           if (this.currentState.getAndResetDelta() !== null) {
             throw new Error("State change handler attempted to modify state");
           }
           return userReply;
-        }, ctx, subscriber.grpcMethod, msg => {
-          if (ctx.effects.length > 0 || ctx.reply.endStream === true || ctx.reply.clientAction !== undefined) {
-            return {
-              streamedMessage: msg
-            };
-          }
-        })
+        }
+        const msg = await this.commandHelper.invokeHandlerLogic(handler, ctx, subscriber.grpcMethod);
+        if (ctx.effects.length > 0 || ctx.reply.endStream === true || ctx.reply.clientAction !== undefined) {
+          this.call.write({
+            streamedMessage: msg
+          });
+        }
       } catch (e) {
         this.call.write({
           failure: {
@@ -460,7 +462,7 @@ class ReplicatedEntityHandler {
         this.call.end();
         // Probably rethrow?
       }
-    });
+    }));
   }
 
   handleStreamCancelled(cancelled) {
@@ -515,21 +517,21 @@ class ReplicatedEntityHandler {
     }
   }
 
-  handleReplicatedEntityStreamIn(replicatedEntityStreamIn) {
+  async handleReplicatedEntityStreamIn(replicatedEntityStreamIn) {
     if (replicatedEntityStreamIn.delta && this.currentState === null) {
-      this.handleInitialDelta(replicatedEntityStreamIn.delta)
+      await this.handleInitialDelta(replicatedEntityStreamIn.delta)
     } else if (replicatedEntityStreamIn.delta) {
       this.streamDebug("Received delta for Replicated Data type %s", replicatedEntityStreamIn.delta.delta);
       this.currentState.applyDelta(replicatedEntityStreamIn.delta, this.entity.anySupport, replicatedData.createForDelta);
-      this.handleStateChange();
+      await this.handleStateChange();
     } else if (replicatedEntityStreamIn.delete) {
       this.streamDebug("Received Replicated Entity delete");
       this.currentState = null;
-      this.handleStateChange();
+      await this.handleStateChange();
     } else if (replicatedEntityStreamIn.command) {
-      this.commandHelper.handleCommand(replicatedEntityStreamIn.command);
+      await this.commandHelper.handleCommand(replicatedEntityStreamIn.command);
     } else if (replicatedEntityStreamIn.streamCancelled) {
-      this.handleStreamCancelled(replicatedEntityStreamIn.streamCancelled)
+      await this.handleStreamCancelled(replicatedEntityStreamIn.streamCancelled)
     } else {
       this.call.write({
         failure: {
