@@ -14,77 +14,84 @@
  * limitations under the License.
  */
 
-const should = require("chai").should();
-const protobuf = require("protobufjs");
-const path = require("path");
-const replicatedData = require("../../src/replicated-data");
+const should = require('chai').should();
+const protobuf = require('protobufjs');
+const path = require('path');
+const replicatedData = require('../../src/replicated-data');
 const ORMap = replicatedData.ORMap;
-const protobufHelper = require("../../src/protobuf-helper");
-const AnySupport = require("../../src/protobuf-any");
+const protobufHelper = require('../../src/protobuf-helper');
+const AnySupport = require('../../src/protobuf-any');
 
-const ReplicatedEntityDelta = protobufHelper.moduleRoot.akkaserverless.component.replicatedentity.ReplicatedEntityDelta;
+const ReplicatedEntityDelta =
+  protobufHelper.moduleRoot.akkaserverless.component.replicatedentity
+    .ReplicatedEntityDelta;
 
 const root = new protobuf.Root();
-root.loadSync(path.join(__dirname, "..", "example.proto"));
+root.loadSync(path.join(__dirname, '..', 'example.proto'));
 root.resolveAll();
-const Example = root.lookupType("com.example.Example");
+const Example = root.lookupType('com.example.Example');
 const anySupport = new AnySupport(root);
 
 function roundTripDelta(delta) {
-  return ReplicatedEntityDelta.decode(ReplicatedEntityDelta.encode(delta).finish());
+  return ReplicatedEntityDelta.decode(
+    ReplicatedEntityDelta.encode(delta).finish(),
+  );
 }
 
 function toAny(value) {
-  return AnySupport.serialize(value, true, true)
+  return AnySupport.serialize(value, true, true);
 }
 
 function fromAnys(values) {
-  return values.map(any => anySupport.deserialize(any));
+  return values.map((any) => anySupport.deserialize(any));
 }
 
 function fromEntries(entries) {
-  return entries.map(entry => {
+  return entries.map((entry) => {
     return {
       key: anySupport.deserialize(entry.key),
-      delta: entry.delta
-    }
+      delta: entry.delta,
+    };
   });
 }
 
 function toMapCounterEntry(key, value) {
-  return { key: toAny(key), delta: { gcounter: { increment : value } } };
+  return { key: toAny(key), delta: { gcounter: { increment: value } } };
 }
 
-describe("ORMap", () => {
-
-  it("should have no elements when instantiated", () => {
+describe('ORMap', () => {
+  it('should have no elements when instantiated', () => {
     const map = new ORMap();
     map.size.should.equal(0);
     should.equal(map.getAndResetDelta(), null);
   });
 
-  it("should reflect an initial delta", () => {
+  it('should reflect an initial delta', () => {
     const map = new ORMap();
-    map.applyDelta(roundTripDelta({
-      ormap: {
-        added: [toMapCounterEntry("one", 5), toMapCounterEntry("two", 7)]
-      }
-    }), anySupport, replicatedData.createForDelta);
+    map.applyDelta(
+      roundTripDelta({
+        ormap: {
+          added: [toMapCounterEntry('one', 5), toMapCounterEntry('two', 7)],
+        },
+      }),
+      anySupport,
+      replicatedData.createForDelta,
+    );
     map.size.should.equal(2);
-    new Set(map.keys()).should.include("one", "two");
+    new Set(map.keys()).should.include('one', 'two');
     map.asObject.one.value.should.equal(5);
     map.asObject.two.value.should.equal(7);
     should.equal(map.getAndResetDelta(), null);
   });
 
-  it("should generate an add delta", () => {
-    const map = new ORMap().set("one", new replicatedData.GCounter());
-    map.has("one").should.be.true;
+  it('should generate an add delta', () => {
+    const map = new ORMap().set('one', new replicatedData.GCounter());
+    map.has('one').should.be.true;
     map.size.should.equal(1);
     const delta1 = roundTripDelta(map.getAndResetDelta());
     delta1.ormap.added.should.have.lengthOf(1);
     const entry = fromEntries(delta1.ormap.added)[0];
-    entry.key.should.equal("one");
+    entry.key.should.equal('one');
     entry.delta.gcounter.increment.toNumber().should.equal(0);
     should.equal(map.getAndResetDelta(), null);
 
@@ -94,50 +101,50 @@ describe("ORMap", () => {
     const delta2 = roundTripDelta(map.getAndResetDelta());
     delta2.ormap.added.should.have.lengthOf(1);
     const entry2 = fromEntries(delta2.ormap.added)[0];
-    entry2.key.should.equal("two");
+    entry2.key.should.equal('two');
     entry2.delta.gcounter.increment.toNumber().should.equal(10);
     should.equal(map.getAndResetDelta(), null);
 
     delta2.ormap.updated.should.have.lengthOf(0);
   });
 
-  it("should generate a remove delta", () => {
+  it('should generate a remove delta', () => {
     const map = new ORMap()
-      .set("one", new replicatedData.GCounter())
-      .set("two", new replicatedData.GCounter())
-      .set("three", new replicatedData.GCounter());
+      .set('one', new replicatedData.GCounter())
+      .set('two', new replicatedData.GCounter())
+      .set('three', new replicatedData.GCounter());
     map.getAndResetDelta();
-    map.has("one").should.be.true;
-    map.has("two").should.be.true;
-    map.has("three").should.be.true;
+    map.has('one').should.be.true;
+    map.has('two').should.be.true;
+    map.has('three').should.be.true;
     map.size.should.equal(3);
-    map.delete("one").delete("two");
+    map.delete('one').delete('two');
     map.size.should.equal(1);
-    map.has("three").should.be.true;
-    map.has("one").should.be.false;
-    map.has("two").should.be.false;
+    map.has('three').should.be.true;
+    map.has('one').should.be.false;
+    map.has('two').should.be.false;
     const delta = roundTripDelta(map.getAndResetDelta());
     delta.ormap.removed.should.have.lengthOf(2);
-    fromAnys(delta.ormap.removed).should.include.members(["one", "two"]);
+    fromAnys(delta.ormap.removed).should.include.members(['one', 'two']);
     should.equal(map.getAndResetDelta(), null);
   });
 
-  it("should generate an update delta", () => {
-    const map = new ORMap().set("one", new replicatedData.GCounter());
+  it('should generate an update delta', () => {
+    const map = new ORMap().set('one', new replicatedData.GCounter());
     map.getAndResetDelta();
-    map.get("one").increment(5);
+    map.get('one').increment(5);
     const delta = roundTripDelta(map.getAndResetDelta());
     delta.ormap.updated.should.have.lengthOf(1);
     const entry = fromEntries(delta.ormap.updated)[0];
-    entry.key.should.equal("one");
+    entry.key.should.equal('one');
     entry.delta.gcounter.increment.toNumber().should.equal(5);
     should.equal(map.getAndResetDelta(), null);
   });
 
-  it("should generate a clear delta", () => {
+  it('should generate a clear delta', () => {
     const map = new ORMap()
-      .set("one", new replicatedData.GCounter())
-      .set("two", new replicatedData.GCounter());
+      .set('one', new replicatedData.GCounter())
+      .set('two', new replicatedData.GCounter());
     map.getAndResetDelta();
     map.clear().size.should.equal(0);
     const delta = roundTripDelta(map.getAndResetDelta());
@@ -145,73 +152,76 @@ describe("ORMap", () => {
     should.equal(map.getAndResetDelta(), null);
   });
 
-  it("should generate a clear delta when everything is removed", () => {
+  it('should generate a clear delta when everything is removed', () => {
     const map = new ORMap()
-      .set("one", new replicatedData.GCounter())
-      .set("two", new replicatedData.GCounter());
+      .set('one', new replicatedData.GCounter())
+      .set('two', new replicatedData.GCounter());
     map.getAndResetDelta();
-    map.delete("one").delete("two").size.should.equal(0);
+    map.delete('one').delete('two').size.should.equal(0);
     const delta = roundTripDelta(map.getAndResetDelta());
     delta.ormap.cleared.should.be.true;
     should.equal(map.getAndResetDelta(), null);
   });
 
-  it("should not generate a delta when an added element is removed", () => {
-    const map = new ORMap()
-      .set("one", new replicatedData.GCounter());
+  it('should not generate a delta when an added element is removed', () => {
+    const map = new ORMap().set('one', new replicatedData.GCounter());
     map.getAndResetDelta();
-    map.set("two", new replicatedData.GCounter()).delete("two").size.should.equal(1);
+    map
+      .set('two', new replicatedData.GCounter())
+      .delete('two')
+      .size.should.equal(1);
     should.equal(map.getAndResetDelta(), null);
   });
 
-  it("should generate a delta when a removed element is added", () => {
+  it('should generate a delta when a removed element is added', () => {
     const map = new ORMap()
-      .set("one", new replicatedData.GCounter())
-      .set("two", new replicatedData.GCounter());
+      .set('one', new replicatedData.GCounter())
+      .set('two', new replicatedData.GCounter());
     map.getAndResetDelta();
-    map.delete("two").set("two", new replicatedData.GCounter()).size.should.equal(2);
+    map
+      .delete('two')
+      .set('two', new replicatedData.GCounter())
+      .size.should.equal(2);
     const delta = roundTripDelta(map.getAndResetDelta());
     delta.ormap.removed.should.have.lengthOf(1);
     delta.ormap.added.should.have.lengthOf(1);
     delta.ormap.updated.should.have.lengthOf(0);
   });
 
-  it("should generate a delta when an already existing element is set", () => {
-    const map = new ORMap()
-      .set("one", new replicatedData.GCounter());
+  it('should generate a delta when an already existing element is set', () => {
+    const map = new ORMap().set('one', new replicatedData.GCounter());
     map.getAndResetDelta();
-    map.set("one", new replicatedData.GCounter()).size.should.equal(1);
+    map.set('one', new replicatedData.GCounter()).size.should.equal(1);
     const delta = roundTripDelta(map.getAndResetDelta());
     delta.ormap.removed.should.have.lengthOf(1);
     delta.ormap.added.should.have.lengthOf(1);
     delta.ormap.updated.should.have.lengthOf(0);
   });
 
-  it("should not generate a delta when a non existing element is removed", () => {
-    const map = new ORMap()
-      .set("one", new replicatedData.GCounter());
+  it('should not generate a delta when a non existing element is removed', () => {
+    const map = new ORMap().set('one', new replicatedData.GCounter());
     map.getAndResetDelta();
-    map.delete("two").size.should.equal(1);
+    map.delete('two').size.should.equal(1);
     should.equal(map.getAndResetDelta(), null);
   });
 
-  it("should generate a delta when an already existing element is set", () => {
-    const map = new ORMap()
-      .set("one", new replicatedData.GCounter());
+  it('should generate a delta when an already existing element is set', () => {
+    const map = new ORMap().set('one', new replicatedData.GCounter());
     map.getAndResetDelta();
-    map.set("one", new replicatedData.GCounter()).size.should.equal(1);
+    map.set('one', new replicatedData.GCounter()).size.should.equal(1);
     const delta = roundTripDelta(map.getAndResetDelta());
     delta.ormap.removed.should.have.lengthOf(1);
     delta.ormap.added.should.have.lengthOf(1);
     delta.ormap.updated.should.have.lengthOf(0);
   });
 
-  it("clear all other deltas when the set is cleared", () => {
-    const map = new ORMap().set("one", new replicatedData.GCounter())
-      .set("two", new replicatedData.GCounter());
+  it('clear all other deltas when the set is cleared', () => {
+    const map = new ORMap()
+      .set('one', new replicatedData.GCounter())
+      .set('two', new replicatedData.GCounter());
     map.getAndResetDelta();
     map.asObject.two.increment(10);
-    map.set("one", new replicatedData.GCounter()).clear().size.should.equal(0);
+    map.set('one', new replicatedData.GCounter()).clear().size.should.equal(0);
     const delta = roundTripDelta(map.getAndResetDelta());
     delta.ormap.cleared.should.be.true;
     delta.ormap.added.should.have.lengthOf(0);
@@ -219,80 +229,96 @@ describe("ORMap", () => {
     delta.ormap.updated.should.have.lengthOf(0);
   });
 
-  it("should reflect a delta add", () => {
-    const map = new ORMap()
-      .set("one", new replicatedData.GCounter());
+  it('should reflect a delta add', () => {
+    const map = new ORMap().set('one', new replicatedData.GCounter());
     map.getAndResetDelta();
-    map.applyDelta(roundTripDelta({
-      ormap: {
-        added: [ { key: toAny("two"), delta : {
-          gcounter: { increment: 4 }
-        } } ]
-      }
-    }), anySupport, replicatedData.createForDelta);
+    map.applyDelta(
+      roundTripDelta({
+        ormap: {
+          added: [
+            {
+              key: toAny('two'),
+              delta: {
+                gcounter: { increment: 4 },
+              },
+            },
+          ],
+        },
+      }),
+      anySupport,
+      replicatedData.createForDelta,
+    );
     map.size.should.equal(2);
-    new Set(map.keys()).should.include("one", "two");
+    new Set(map.keys()).should.include('one', 'two');
     map.asObject.two.value.should.equal(4);
     should.equal(map.getAndResetDelta(), null);
   });
 
-  it("should reflect a delta remove", () => {
+  it('should reflect a delta remove', () => {
     const map = new ORMap()
-      .set("one", new replicatedData.GCounter())
-      .set("two", new replicatedData.GCounter());
+      .set('one', new replicatedData.GCounter())
+      .set('two', new replicatedData.GCounter());
     map.getAndResetDelta();
-    map.applyDelta(roundTripDelta({
-      ormap: {
-        removed: [toAny("two")]
-      }
-    }), anySupport);
+    map.applyDelta(
+      roundTripDelta({
+        ormap: {
+          removed: [toAny('two')],
+        },
+      }),
+      anySupport,
+    );
     map.size.should.equal(1);
-    new Set(map.keys()).should.include("one");
+    new Set(map.keys()).should.include('one');
     should.equal(map.getAndResetDelta(), null);
   });
 
-  it("should reflect a delta clear", () => {
+  it('should reflect a delta clear', () => {
     const map = new ORMap()
-      .set("one", new replicatedData.GCounter())
-      .set("two", new replicatedData.GCounter());
+      .set('one', new replicatedData.GCounter())
+      .set('two', new replicatedData.GCounter());
     map.getAndResetDelta();
-    map.applyDelta(roundTripDelta({
-      ormap: {
-        cleared: true
-      }
-    }), anySupport);
+    map.applyDelta(
+      roundTripDelta({
+        ormap: {
+          cleared: true,
+        },
+      }),
+      anySupport,
+    );
     map.size.should.equal(0);
     should.equal(map.getAndResetDelta(), null);
   });
 
-  it("should work with protobuf keys", () => {
+  it('should work with protobuf keys', () => {
     const map = new ORMap()
-      .set(Example.create({ field1: "one" }), new replicatedData.GCounter())
-      .set(Example.create({ field1: "two" }), new replicatedData.GCounter());
+      .set(Example.create({ field1: 'one' }), new replicatedData.GCounter())
+      .set(Example.create({ field1: 'two' }), new replicatedData.GCounter());
     map.getAndResetDelta();
-    map.delete(Example.create({ field1: "one" }));
+    map.delete(Example.create({ field1: 'one' }));
     map.size.should.equal(1);
     const delta = roundTripDelta(map.getAndResetDelta());
     delta.ormap.removed.should.have.lengthOf(1);
-    fromAnys(delta.ormap.removed)[0].field1.should.equal("one");
+    fromAnys(delta.ormap.removed)[0].field1.should.equal('one');
   });
 
-  it("should work with json types", () => {
+  it('should work with json types', () => {
     const map = new ORMap()
-      .set({ foo: "bar" }, new replicatedData.GCounter())
-      .set({ foo: "baz" }, new replicatedData.GCounter());
+      .set({ foo: 'bar' }, new replicatedData.GCounter())
+      .set({ foo: 'baz' }, new replicatedData.GCounter());
     map.getAndResetDelta();
-    map.delete({ foo: "bar" });
+    map.delete({ foo: 'bar' });
     map.size.should.equal(1);
     const delta = roundTripDelta(map.getAndResetDelta());
     delta.ormap.removed.should.have.lengthOf(1);
-    fromAnys(delta.ormap.removed)[0].foo.should.equal("bar");
+    fromAnys(delta.ormap.removed)[0].foo.should.equal('bar');
   });
 
-  it("should support empty initial deltas (for ORMap added)", () => {
+  it('should support empty initial deltas (for ORMap added)', () => {
     const map = new ORMap();
     map.size.should.equal(0);
     should.equal(map.getAndResetDelta(), null);
-    roundTripDelta(map.getAndResetDelta(/* initial = */ true)).ormap.added.should.have.lengthOf(0);
+    roundTripDelta(
+      map.getAndResetDelta(/* initial = */ true),
+    ).ormap.added.should.have.lengthOf(0);
   });
 });

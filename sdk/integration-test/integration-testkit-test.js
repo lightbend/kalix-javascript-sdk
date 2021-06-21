@@ -14,106 +14,144 @@
  * limitations under the License.
  */
 
-const should = require("chai").should();
-const akkaserverless = require("../");
+const should = require('chai').should();
+const akkaserverless = require('../');
 
-const action = new akkaserverless.Action("./test/example.proto", "com.example.ExampleService");
+const action = new akkaserverless.Action(
+  './test/example.proto',
+  'com.example.ExampleService',
+);
 
 action.commandHandlers = {
-  DoSomething: input => {
-    return {field: "Received " + input.field};
+  DoSomething: (input) => {
+    return { field: 'Received ' + input.field };
   },
   StreamSomething: (input, ctx) => {
-    ctx.write({field: "Received " + input.field});
+    ctx.write({ field: 'Received ' + input.field });
     ctx.end();
-  }
+  },
 };
 
-const value_entity = new akkaserverless.ValueEntity("./test/example.proto", "com.example.ExampleServiceTwo", "value-entity-example-service");
+const value_entity = new akkaserverless.ValueEntity(
+  './test/example.proto',
+  'com.example.ExampleServiceTwo',
+  'value-entity-example-service',
+);
 
-value_entity.setInitial(entityId => (value_entity.lookupType("com.example.Example").create({})));
+value_entity.setInitial((entityId) =>
+  value_entity.lookupType('com.example.Example').create({}),
+);
 
 value_entity.commandHandlers = {
-  DoSomethingOne: input => {
-    return {field: "ValueEntity Received " + input.field};
+  DoSomethingOne: (input) => {
+    return { field: 'ValueEntity Received ' + input.field };
   },
-  DoSomethingTwo: input => {
+  DoSomethingTwo: (input) => {
     return new Promise((resolve) => {
-      setTimeout(() => resolve({field: "ValueEntityAsync Received " + input.field}), 1000);
+      setTimeout(
+        () => resolve({ field: 'ValueEntityAsync Received ' + input.field }),
+        1000,
+      );
     });
-  }
+  },
 };
 
-const entity = new akkaserverless.EventSourcedEntity("./test/example.proto", "com.example.ExampleServiceThree", "event-sourced-entity-example-service");
+const entity = new akkaserverless.EventSourcedEntity(
+  './test/example.proto',
+  'com.example.ExampleServiceThree',
+  'event-sourced-entity-example-service',
+);
 
-entity.setInitial(entityId => (entity.lookupType("com.example.Example").create({})));
+entity.setInitial((entityId) =>
+  entity.lookupType('com.example.Example').create({}),
+);
 
-entity.setBehavior(e => {
+entity.setBehavior((e) => {
   return {
     commandHandlers: {
-      DoSomethingOne: input => {
-        return {field: "EventSourcedEntity Received " + input.field};
+      DoSomethingOne: (input) => {
+        return { field: 'EventSourcedEntity Received ' + input.field };
       },
-      DoSomethingTwo: input => {
+      DoSomethingTwo: (input) => {
         return new Promise((resolve) => {
-          setTimeout(() => resolve({field: "EventSourcedEntityAsync Received " + input.field}), 1000);
+          setTimeout(
+            () =>
+              resolve({
+                field: 'EventSourcedEntityAsync Received ' + input.field,
+              }),
+            1000,
+          );
         });
-      }
+      },
     },
-    eventHandlers: {}
+    eventHandlers: {},
   };
 });
 
 const testkit = new akkaserverless.IntegrationTestkit({
-  descriptorSetPath: "integration-test/user-function.desc",
+  descriptorSetPath: 'integration-test/user-function.desc',
 });
 
 testkit.addComponent(action);
 testkit.addComponent(value_entity);
 testkit.addComponent(entity);
 
-describe("The AkkaServerless IntegrationTestkit", function() {
-
+describe('The AkkaServerless IntegrationTestkit', function () {
   this.timeout(60000);
-  before(done => testkit.start(done));
-  after(done => testkit.shutdown(done));
+  before((done) => testkit.start(done));
+  after((done) => testkit.shutdown(done));
 
-  it("should handle actions", (done) => {
-    testkit.clients.ExampleService.DoSomething({field: "hello"}, (err, msg) => {
-      if (err) {
-        done(err);
-      } else {
-        msg.field.should.equal("Received hello");
+  it('should handle actions', (done) => {
+    testkit.clients.ExampleService.DoSomething(
+      { field: 'hello' },
+      (err, msg) => {
+        if (err) {
+          done(err);
+        } else {
+          msg.field.should.equal('Received hello');
+          done();
+        }
+      },
+    );
+  });
+
+  it('should handle value entities sync handlers', (done) => {
+    testkit.clients.ExampleServiceTwo.DoSomethingOne(
+      { field: 'hello' },
+      (err, msg) => {
+        msg.field.should.equal('ValueEntity Received hello');
         done();
-      }
-    });
+      },
+    );
   });
 
-  it("should handle value entities sync handlers", (done) => {
-    testkit.clients.ExampleServiceTwo.DoSomethingOne({field: "hello"}, (err, msg) => {
-      msg.field.should.equal("ValueEntity Received hello");
-      done();
-    });
+  it('should handle value entities async handlers', (done) => {
+    testkit.clients.ExampleServiceTwo.DoSomethingTwo(
+      { field: 'hello' },
+      (err, msg) => {
+        msg.field.should.equal('ValueEntityAsync Received hello');
+        done();
+      },
+    );
   });
 
-  it("should handle value entities async handlers", (done) => {
-    testkit.clients.ExampleServiceTwo.DoSomethingTwo({field: "hello"}, (err, msg) => {
-      msg.field.should.equal("ValueEntityAsync Received hello");
-      done();
-    });
+  it('should handle event sourced entities sync handlers', (done) => {
+    testkit.clients.ExampleServiceThree.DoSomethingOne(
+      { field: 'hello' },
+      (err, msg) => {
+        msg.field.should.equal('EventSourcedEntity Received hello');
+        done();
+      },
+    );
   });
 
-  it("should handle event sourced entities sync handlers", (done) => {
-    testkit.clients.ExampleServiceThree.DoSomethingOne({field: "hello"}, (err, msg) => {
-      msg.field.should.equal("EventSourcedEntity Received hello");
-      done();
-    });
-  });
-
-  it("should handle event sourced entities async handlers", (done) => {
-    testkit.clients.ExampleServiceThree.DoSomethingTwo({field: "hello"}, (err, msg) => {
-      msg.field.should.equal("EventSourcedEntityAsync Received hello");
-      done();
-    });
+  it('should handle event sourced entities async handlers', (done) => {
+    testkit.clients.ExampleServiceThree.DoSomethingTwo(
+      { field: 'hello' },
+      (err, msg) => {
+        msg.field.should.equal('EventSourcedEntityAsync Received hello');
+        done();
+      },
+    );
   });
 });

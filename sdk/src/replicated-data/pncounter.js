@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-const util = require("util");
-const Long = require("long");
+const util = require('util');
+const Long = require('long');
 
 /**
  * @classdesc A Positive-Negative Counter Replicated Data type.
@@ -38,10 +38,10 @@ function PNCounter() {
    * @type {Long}
    * @readonly
    */
-  Object.defineProperty(this, "longValue", {
+  Object.defineProperty(this, 'longValue', {
     get: function () {
       return currentValue;
-    }
+    },
   });
 
   /**
@@ -53,10 +53,10 @@ function PNCounter() {
    * @type {number}
    * @readonly
    */
-  Object.defineProperty(this, "value", {
+  Object.defineProperty(this, 'value', {
     get: function () {
       return currentValue.toNumber();
-    }
+    },
   });
 
   /**
@@ -89,8 +89,8 @@ function PNCounter() {
     if (!delta.isZero() || initial) {
       const currentDelta = {
         pncounter: {
-          change: delta
-        }
+          change: delta,
+        },
       };
       delta = Long.ZERO;
       return currentDelta;
@@ -101,13 +101,13 @@ function PNCounter() {
 
   this.applyDelta = function (delta) {
     if (!delta.pncounter) {
-      throw new Error(util.format("Cannot apply delta %o to PNCounter", delta));
+      throw new Error(util.format('Cannot apply delta %o to PNCounter', delta));
     }
     currentValue = currentValue.add(delta.pncounter.change);
   };
 
   this.toString = function () {
-    return "PNCounter(" + currentValue + ")";
+    return 'PNCounter(' + currentValue + ')';
   };
 }
 

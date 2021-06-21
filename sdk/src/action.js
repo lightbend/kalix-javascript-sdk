@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-const fs = require("fs");
-const protobufHelper = require("./protobuf-helper");
-const grpc = require("@grpc/grpc-js");
-const protoLoader = require("@grpc/proto-loader");
-const ActionSupport = require("./action-support");
-const AkkaServerless = require("./akkaserverless");
+const fs = require('fs');
+const protobufHelper = require('./protobuf-helper');
+const grpc = require('@grpc/grpc-js');
+const protoLoader = require('@grpc/proto-loader');
+const ActionSupport = require('./action-support');
+const AkkaServerless = require('./akkaserverless');
 
 const actionServices = new ActionSupport();
 
@@ -78,7 +78,6 @@ const actionServices = new ActionSupport();
  * @implements module:akkaserverless.Entity
  */
 class Action {
-
   /**
    * Create a new action.
    *
@@ -87,16 +86,16 @@ class Action {
    * @param {module:akkaserverless.Action~options=} options The options for this action
    */
   constructor(desc, serviceName, options) {
-
     this.options = {
       ...{
-        includeDirs: ["."],
+        includeDirs: ['.'],
       },
-      ...options
+      ...options,
     };
 
-    const allIncludeDirs = protobufHelper.moduleIncludeDirs
-      .concat(this.options.includeDirs);
+    const allIncludeDirs = protobufHelper.moduleIncludeDirs.concat(
+      this.options.includeDirs,
+    );
 
     this.root = protobufHelper.loadSync(desc, allIncludeDirs);
 
@@ -105,7 +104,7 @@ class Action {
     this.service = this.root.lookupService(serviceName);
 
     const packageDefinition = protoLoader.loadSync(desc, {
-      includeDirs: allIncludeDirs
+      includeDirs: allIncludeDirs,
     });
     this.grpc = grpc.loadPackageDefinition(packageDefinition);
 
@@ -141,7 +140,7 @@ class Action {
 
   start(options) {
     if (this.server !== undefined) {
-      throw new Error("Server already started!")
+      throw new Error('Server already started!');
     }
     this.server = new AkkaServerless();
     this.server.addComponent(this);
@@ -151,12 +150,11 @@ class Action {
 
   shutdown() {
     if (this.server === undefined) {
-      throw new Error("Server not started!")
+      throw new Error('Server not started!');
     }
     this.server.shutdown();
     delete this.server;
   }
-
 }
 
 module.exports = Action;

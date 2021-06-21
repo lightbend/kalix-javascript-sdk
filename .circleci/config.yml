@@ -26,7 +26,7 @@ jobs:
       - run:
           name: "run checks"
           command: |
-            npm ci && npm run license-check
+            npm ci && npm run license-check && npm run prettier-check
       - run:
           name: "check vulnerabilities in transitive dependencies"
           command: |

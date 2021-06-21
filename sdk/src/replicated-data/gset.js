@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-const debug = require("debug")("akkaserverless-replicated-entity");
-const util = require("util");
-const AnySupport = require("../protobuf-any");
+const debug = require('debug')('akkaserverless-replicated-entity');
+const util = require('util');
+const AnySupport = require('../protobuf-any');
 
 /**
  * @classdesc A Grow-only Set Replicated Data type.
@@ -49,10 +49,10 @@ function GSet() {
    * @type {number}
    * @readonly
    */
-  Object.defineProperty(this, "size", {
+  Object.defineProperty(this, 'size', {
     get: function () {
       return currentValue.size;
-    }
+    },
   });
 
   /**
@@ -104,8 +104,8 @@ function GSet() {
     if (delta.size > 0 || initial) {
       const currentDelta = {
         gset: {
-          added: Array.from(delta)
-        }
+          added: Array.from(delta),
+        },
       };
       delta.clear();
       return currentDelta;
@@ -116,21 +116,21 @@ function GSet() {
 
   this.applyDelta = function (delta, anySupport) {
     if (!delta.gset) {
-      throw new Error(util.format("Cannot apply delta %o to GSet", delta));
+      throw new Error(util.format('Cannot apply delta %o to GSet', delta));
     }
     if (delta.gset.added !== undefined) {
-      delta.gset.added.forEach(element => {
+      delta.gset.added.forEach((element) => {
         const value = anySupport.deserialize(element);
         const comparable = AnySupport.toComparable(value);
         currentValue.set(comparable, value);
       });
     } else {
-      debug("GSet delta with no items to add?");
+      debug('GSet delta with no items to add?');
     }
   };
 
   this.toString = function () {
-    return "GSet(" + Array.from(currentValue.keys()).join(",") + ")";
+    return 'GSet(' + Array.from(currentValue.keys()).join(',') + ')';
   };
 }
 

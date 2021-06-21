@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
-const util = require("util");
-const protobufHelper = require("../protobuf-helper");
+const util = require('util');
+const protobufHelper = require('../protobuf-helper');
 
-const GCounter = require("./gcounter");
-const PNCounter = require("./pncounter");
-const GSet = require("./gset");
-const ORSet = require("./orset");
-const LWWRegister = require("./lwwregister");
-const Flag = require("./flag");
-const ORMap = require("./ormap");
-const Vote = require("./vote");
+const GCounter = require('./gcounter');
+const PNCounter = require('./pncounter');
+const GSet = require('./gset');
+const ORSet = require('./orset');
+const LWWRegister = require('./lwwregister');
+const Flag = require('./flag');
+const ORMap = require('./ormap');
+const Vote = require('./vote');
 
 const Empty = protobufHelper.moduleRoot.google.protobuf.Empty;
 
@@ -58,12 +58,15 @@ const Empty = protobufHelper.moduleRoot.google.protobuf.Empty;
  * is less than the existing clock value.
  */
 const Clocks = (function () {
-  const ReplicatedEntityClock = protobufHelper.moduleRoot.akkaserverless.component.replicatedentity.ReplicatedEntityClock;
+  const ReplicatedEntityClock =
+    protobufHelper.moduleRoot.akkaserverless.component.replicatedentity
+      .ReplicatedEntityClock;
   const values = {
     DEFAULT: ReplicatedEntityClock.REPLICATED_ENTITY_CLOCK_DEFAULT_UNSPECIFIED,
     REVERSE: ReplicatedEntityClock.REPLICATED_ENTITY_CLOCK_REVERSE,
     CUSTOM: ReplicatedEntityClock.REPLICATED_ENTITY_CLOCK_CUSTOM,
-    CUSTOM_AUTO_INCREMENT: ReplicatedEntityClock.REPLICATED_ENTITY_CLOCK_CUSTOM_AUTO_INCREMENT
+    CUSTOM_AUTO_INCREMENT:
+      ReplicatedEntityClock.REPLICATED_ENTITY_CLOCK_CUSTOM_AUTO_INCREMENT,
   };
   return Object.freeze(values);
 })();
@@ -86,12 +89,16 @@ const Clocks = (function () {
  * @property ALL Updates will be written immediately to all replicas.
  */
 const WriteConsistencies = (function () {
-  const ReplicatedEntityWriteConsistency = protobufHelper.moduleRoot.akkaserverless.component.replicatedentity.ReplicatedEntityWriteConsistency;
+  const ReplicatedEntityWriteConsistency =
+    protobufHelper.moduleRoot.akkaserverless.component.replicatedentity
+      .ReplicatedEntityWriteConsistency;
   const values = {
-    LOCAL: ReplicatedEntityWriteConsistency.REPLICATED_ENTITY_WRITE_CONSISTENCY_LOCAL_UNSPECIFIED,
-    MAJORITY: ReplicatedEntityWriteConsistency.REPLICATED_ENTITY_WRITE_CONSISTENCY_MAJORITY,
-    ALL: ReplicatedEntityWriteConsistency.REPLICATED_ENTITY_WRITE_CONSISTENCY_ALL
-  }
+    LOCAL:
+      ReplicatedEntityWriteConsistency.REPLICATED_ENTITY_WRITE_CONSISTENCY_LOCAL_UNSPECIFIED,
+    MAJORITY:
+      ReplicatedEntityWriteConsistency.REPLICATED_ENTITY_WRITE_CONSISTENCY_MAJORITY,
+    ALL: ReplicatedEntityWriteConsistency.REPLICATED_ENTITY_WRITE_CONSISTENCY_ALL,
+  };
   return Object.freeze(values);
 })();
 
@@ -114,7 +121,7 @@ function createForDelta(delta) {
   } else if (delta.vote) {
     return new Vote();
   } else {
-    throw new Error(util.format("Unknown Replicated Data type: %o", delta))
+    throw new Error(util.format('Unknown Replicated Data type: %o', delta));
   }
 }
 
@@ -129,5 +136,5 @@ module.exports = {
   ORMap: ORMap,
   Vote: Vote,
   Clocks: Clocks,
-  WriteConsistencies: WriteConsistencies
+  WriteConsistencies: WriteConsistencies,
 };

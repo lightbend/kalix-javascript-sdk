@@ -14,22 +14,22 @@
  * limitations under the License.
  */
 
-const path = require("path");
-const grpc = require("@grpc/grpc-js");
-const fs = require("fs");
-const settings = require("../settings");
+const path = require('path');
+const grpc = require('@grpc/grpc-js');
+const fs = require('fs');
+const settings = require('../settings');
 
 const discovery_messages = require('../proto/akkaserverless/protocol/discovery_pb');
 const discovery_services = require('../proto/akkaserverless/protocol/discovery_grpc_pb');
 const google_protobuf_empty_pb = require('google-protobuf/google/protobuf/empty_pb');
 
-const debug = require("debug")("akkaserverless");
+const debug = require('debug')('akkaserverless');
 // Bind to stdout
 debug.log = console.log.bind(console);
 
 const defaultOptions = {
-  bindAddress: "127.0.0.1",
-  bindPort: 8080
+  bindAddress: '127.0.0.1',
+  bindPort: 8080,
 };
 
 if (process.env.PORT !== undefined) {
@@ -39,13 +39,13 @@ if (process.env.HOST !== undefined) {
   defaultOptions.bindAddress = process.env.HOST;
 }
 
-const packageInfo = require(path.join(__dirname, "..", "package.json"));
+const packageInfo = require(path.join(__dirname, '..', 'package.json'));
 const serviceInfo = {
-  serviceName: "",
-  serviceVersion: ""
+  serviceName: '',
+  serviceVersion: '',
 };
 try {
-  const thisPackageInfo = require(path.join(process.cwd(), "package.json"));
+  const thisPackageInfo = require(path.join(process.cwd(), 'package.json'));
   if (thisPackageInfo.name) {
     serviceInfo.serviceName = thisPackageInfo.name;
   }
@@ -58,16 +58,16 @@ try {
 
 // Specific error-link bindings
 const specificCodes = new Map([
-  ["AS-00112", "javascript/views.html#changing"],
-  ["AS-00402", "javascript/topic-eventing.html"],
-  ["AS-00406", "javascript/topic-eventing.html"]
+  ['AS-00112', 'javascript/views.html#changing'],
+  ['AS-00402', 'javascript/topic-eventing.html'],
+  ['AS-00406', 'javascript/topic-eventing.html'],
 ]);
 const codeCategories = new Map([
-  ["AS-001", "javascript/views.html"],
-  ["AS-002", "javascript/value-entity.html"],
-  ["AS-003", "javascript/eventsourced.html"],
-  ["AS-004", "javascript/"] // no single page for eventing
-])
+  ['AS-001', 'javascript/views.html'],
+  ['AS-002', 'javascript/value-entity.html'],
+  ['AS-003', 'javascript/eventsourced.html'],
+  ['AS-004', 'javascript/'], // no single page for eventing
+]);
 
 /**
  * An Akka Serverless server.
@@ -104,7 +104,6 @@ const codeCategories = new Map([
  * @extends module:akkaserverless.Server
  */
 
-
 /**
  * An Akka Serverless root server.
  *
@@ -112,7 +111,6 @@ const codeCategories = new Map([
  * @implements module:akkaserverless.Server
  */
 class AkkaServerless {
-
   /**
    * @typedef module:akkaserverless.AkkaServerless~options
    * @property {string} [serviceName=<name from package.json>] The name of this service.
@@ -130,23 +128,26 @@ class AkkaServerless {
   constructor(options) {
     this.options = {
       ...{
-        descriptorSetPath: "user-function.desc"
+        descriptorSetPath: 'user-function.desc',
       },
       ...serviceInfo,
-      ...options
+      ...options,
     };
 
     try {
       this.proto = fs.readFileSync(this.options.descriptorSetPath);
     } catch (e) {
-      console.error("Unable to read protobuf descriptor from: " + this.options.descriptorSetPath);
+      console.error(
+        'Unable to read protobuf descriptor from: ' +
+          this.options.descriptorSetPath,
+      );
       throw e;
     }
 
     this.components = [];
-    this.proxySeen = false
-    this.proxyHasTerminated = false
-    this.waitingForProxyTermination = false
+    this.proxySeen = false;
+    this.proxyHasTerminated = false;
+    this.waitingForProxyTermination = false;
     this.devMode = false;
   }
 
@@ -170,50 +171,55 @@ class AkkaServerless {
   start(options) {
     const opts = {
       ...defaultOptions,
-      ...options
+      ...options,
     };
 
     const allComponentsMap = {};
-    this.components.forEach(component => {
+    this.components.forEach((component) => {
       allComponentsMap[component.serviceName] = component.service;
     });
 
     const componentTypes = {};
-    this.components.forEach(component => {
+    this.components.forEach((component) => {
       const componentServices = component.register(allComponentsMap);
       componentTypes[componentServices.componentType()] = componentServices;
     });
 
     this.server = new grpc.Server();
 
-    Object.values(componentTypes).forEach(services => {
+    Object.values(componentTypes).forEach((services) => {
       services.register(this.server);
     });
 
     this.server.addService(discovery_services.DiscoveryService, {
       discover: this.discover.bind(this),
       reportError: this.reportError.bind(this),
-      proxyTerminated: this.proxyTerminated.bind(this)
+      proxyTerminated: this.proxyTerminated.bind(this),
     });
 
     const afterStart = (port) => {
-      console.log("gRPC server started on " + opts.bindAddress + ":" + port);
+      console.log('gRPC server started on ' + opts.bindAddress + ':' + port);
 
-      process.on('SIGTERM', function onSigterm () {
-        if (!this.proxySeen || this.proxyHasTerminated || this.devMode) {
-          debug('Got SIGTERM. Shutting down')
-          this.terminate()
-        } else {
-          debug('Got SIGTERM. But did not yet see proxy terminating, deferring shutdown until proxy stops')
-          // no timeout because process will be SIGKILLed anyway if it does not get the proxy termination in time
-          this.waitingForProxyTermination = true
-        }
-      }.bind(this));
-    }
+      process.on(
+        'SIGTERM',
+        function onSigterm() {
+          if (!this.proxySeen || this.proxyHasTerminated || this.devMode) {
+            debug('Got SIGTERM. Shutting down');
+            this.terminate();
+          } else {
+            debug(
+              'Got SIGTERM. But did not yet see proxy terminating, deferring shutdown until proxy stops',
+            );
+            // no timeout because process will be SIGKILLed anyway if it does not get the proxy termination in time
+            this.waitingForProxyTermination = true;
+          }
+        }.bind(this),
+      );
+    };
 
     return new Promise((resolve, reject) => {
       this.server.bindAsync(
-        opts.bindAddress + ":" + opts.bindPort,
+        opts.bindAddress + ':' + opts.bindPort,
         grpc.ServerCredentials.createInsecure(),
         (err, port) => {
           if (err) {
@@ -232,7 +238,7 @@ class AkkaServerless {
 
   // detect hybrid proxy version probes when protocol version 0.0 (or undefined)
   isVersionProbe(info) {
-    return !info.getProtocolMajorVersion() && !info.getProtocolMinorVersion()
+    return !info.getProtocolMajorVersion() && !info.getProtocolMinorVersion();
   }
 
   discoveryLogic(proxyInfo) {
@@ -240,25 +246,29 @@ class AkkaServerless {
     const serviceInfo = new discovery_messages.ServiceInfo();
     serviceInfo.setServiceName(this.options.serviceName);
     serviceInfo.setServiceVersion(this.options.serviceVersion);
-    serviceInfo.setServiceRuntime(process.title + " " + process.version);
+    serviceInfo.setServiceRuntime(process.title + ' ' + process.version);
     serviceInfo.setSupportLibraryName(packageInfo.name);
     serviceInfo.setSupportLibraryVersion(packageInfo.version);
     serviceInfo.setProtocolMajorVersion(protocolVersion.major);
     serviceInfo.setProtocolMinorVersion(protocolVersion.minor);
 
     const spec = new discovery_messages.Spec();
-    spec.setServiceInfo(serviceInfo)
+    spec.setServiceInfo(serviceInfo);
 
     if (this.isVersionProbe(proxyInfo)) {
       // only (silently) send service info for hybrid proxy version probe
     } else {
-      debug(proxyInfo)
-      this.proxySeen = true
-      this.devMode = proxyInfo.getDevMode()
-      this.proxyHasTerminated = false
-      debug("Discover call with info %o, sending %s components", proxyInfo, this.components.length);
+      debug(proxyInfo);
+      this.proxySeen = true;
+      this.devMode = proxyInfo.getDevMode();
+      this.proxyHasTerminated = false;
+      debug(
+        'Discover call with info %o, sending %s components',
+        proxyInfo,
+        this.components.length,
+      );
 
-      const components = this.components.map(component => {
+      const components = this.components.map((component) => {
         const res = new discovery_messages.Component();
 
         res.setServiceName(component.serviceName);
@@ -294,7 +304,7 @@ class AkkaServerless {
   }
 
   docLinkFor(code) {
-    const baseUrl = "https://developer.lightbend.com/docs/akka-serverless/"
+    const baseUrl = 'https://developer.lightbend.com/docs/akka-serverless/';
 
     const shortCode = code.substr(0, 6);
     if (specificCodes.has(code)) {
@@ -307,17 +317,20 @@ class AkkaServerless {
   }
 
   reportErrorLogic(userError) {
-    let msg = "Error reported from Akka system: " + userError.getCode() + " " + userError.getMessage();
+    let msg =
+      'Error reported from Akka system: ' +
+      userError.getCode() +
+      ' ' +
+      userError.getMessage();
     if (userError.getDetail()) {
-      msg += "\n\n" + userError.getDetail();
+      msg += '\n\n' + userError.getDetail();
     }
 
-    if(userError.getCode()) {
-      const docLink = this.docLinkFor(userError.getCode())
-      if (docLink)
-        msg += " See documentation: " + docLink
-      for (const location of (userError.getSourceLocationsList() || [])) {
-        msg += "\n\n" + this.formatSource(location)
+    if (userError.getCode()) {
+      const docLink = this.docLinkFor(userError.getCode());
+      if (docLink) msg += ' See documentation: ' + docLink;
+      for (const location of userError.getSourceLocationsList() || []) {
+        msg += '\n\n' + this.formatSource(location);
       }
     }
 
@@ -325,16 +338,16 @@ class AkkaServerless {
   }
 
   reportError(call, callback) {
-    const msg = this.reportErrorLogic(call.request)
-    
+    const msg = this.reportErrorLogic(call.request);
+
     console.error(msg);
     callback(null, new google_protobuf_empty_pb.Empty());
   }
 
   proxyTerminated() {
-    this.proxyHasTerminated = true
+    this.proxyHasTerminated = true;
     if (this.waitingForProxyTermination) {
-      this.terminate()
+      this.terminate();
     }
   }
 
@@ -357,7 +370,7 @@ class AkkaServerless {
     }
     if (endLine === 0 && endCol === 0) {
       // It's been sent without line/col data
-      return "At " + location.getFileName();
+      return 'At ' + location.getFileName();
     }
     // First, we need to location the protobuf file that it's from. To do that, we need to look in the include dirs
     // of each entity.
@@ -365,40 +378,59 @@ class AkkaServerless {
       for (const includeDir of component.options.includeDirs) {
         const file = path.resolve(includeDir, location.getFileName());
         if (fs.existsSync(file)) {
-          const lines = fs.readFileSync(file).toString("utf-8")
-              .split(/\r?\n/)
-              .slice(startLine, endLine + 1)
-          let content = "";
+          const lines = fs
+            .readFileSync(file)
+            .toString('utf-8')
+            .split(/\r?\n/)
+            .slice(startLine, endLine + 1);
+          let content = '';
           if (lines.length > 1) {
-            content = lines.join("\n")
+            content = lines.join('\n');
           } else if (lines.length === 1) {
-            const line = lines[0]
-            content = line + "\n";
+            const line = lines[0];
+            content = line + '\n';
             for (let i = 0; i < Math.min(line.length, startCol); i++) {
-              if (line.charAt(i) === "\t") {
-                content += "\t";
+              if (line.charAt(i) === '\t') {
+                content += '\t';
               } else {
-                content += " ";
+                content += ' ';
               }
             }
-            content += "^";
+            content += '^';
           }
-          return "At " + location.getFileName() + ":" + (startLine + 1) + ":" + (startCol + 1) + ":" + "\n" + content
+          return (
+            'At ' +
+            location.getFileName() +
+            ':' +
+            (startLine + 1) +
+            ':' +
+            (startCol + 1) +
+            ':' +
+            '\n' +
+            content
+          );
         }
       }
     }
-    return "At " + location.getFileName() + ":" + (startLine + 1) + ":" + (startCol + 1);
+    return (
+      'At ' +
+      location.getFileName() +
+      ':' +
+      (startLine + 1) +
+      ':' +
+      (startCol + 1)
+    );
   }
 
   shutdown() {
     this.server.tryShutdown(() => {
-      console.log("gRPC server has shutdown.");
+      console.log('gRPC server has shutdown.');
     });
   }
 
   terminate() {
-    this.server.forceShutdown()
-    process.exit(0)
+    this.server.forceShutdown();
+    process.exit(0);
   }
 }
 

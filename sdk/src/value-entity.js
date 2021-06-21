@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-const fs = require("fs");
-const protobufHelper = require("./protobuf-helper");
-const grpc = require("@grpc/grpc-js");
-const protoLoader = require("@grpc/proto-loader");
-const ValueEntityServices = require("./value-entity-support");
-const AkkaServerless = require("./akkaserverless");
+const fs = require('fs');
+const protobufHelper = require('./protobuf-helper');
+const grpc = require('@grpc/grpc-js');
+const protoLoader = require('@grpc/proto-loader');
+const ValueEntityServices = require('./value-entity-support');
+const AkkaServerless = require('./akkaserverless');
 
 const valueEntityServices = new ValueEntityServices();
 
@@ -70,7 +70,6 @@ const valueEntityServices = new ValueEntityServices();
  * @implements module:akkaserverless.Entity
  */
 class ValueEntity {
-
   /**
    * Create a new value entity.
    *
@@ -81,20 +80,20 @@ class ValueEntity {
    * @param {module:akkaserverless.ValueEntity~options=} options The options for this entity
    */
   constructor(desc, serviceName, entityType, options) {
-
     this.options = {
       ...{
         entityType: entityType,
-        includeDirs: ["."],
+        includeDirs: ['.'],
         serializeAllowPrimitives: false,
-        serializeFallbackToJson: false
+        serializeFallbackToJson: false,
       },
-      ...options
+      ...options,
     };
-    if (!entityType) throw Error("EntityType must contain a name")
+    if (!entityType) throw Error('EntityType must contain a name');
 
-    const allIncludeDirs = protobufHelper.moduleIncludeDirs
-      .concat(this.options.includeDirs);
+    const allIncludeDirs = protobufHelper.moduleIncludeDirs.concat(
+      this.options.includeDirs,
+    );
 
     this.root = protobufHelper.loadSync(desc, allIncludeDirs);
 
@@ -103,7 +102,7 @@ class ValueEntity {
     this.service = this.root.lookupService(serviceName);
 
     const packageDefinition = protoLoader.loadSync(desc, {
-      includeDirs: allIncludeDirs
+      includeDirs: allIncludeDirs,
     });
     this.grpc = grpc.loadPackageDefinition(packageDefinition);
   }
@@ -159,7 +158,7 @@ class ValueEntity {
 
   start(options) {
     if (this.server !== undefined) {
-      throw new Error("Server already started!")
+      throw new Error('Server already started!');
     }
     this.server = new AkkaServerless();
     this.server.addComponent(this);
@@ -169,12 +168,11 @@ class ValueEntity {
 
   shutdown() {
     if (this.server === undefined) {
-      throw new Error("Server not started!")
+      throw new Error('Server not started!');
     }
     this.server.shutdown();
     delete this.server;
   }
-
 }
 
 module.exports = ValueEntity;

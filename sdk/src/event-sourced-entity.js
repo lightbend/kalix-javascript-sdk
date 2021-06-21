@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-const fs = require("fs");
-const protobufHelper = require("./protobuf-helper");
-const grpc = require("@grpc/grpc-js");
-const protoLoader = require("@grpc/proto-loader");
-const EventSourcedEntityServices = require("./event-sourced-entity-support");
-const AkkaServerless = require("./akkaserverless");
+const fs = require('fs');
+const protobufHelper = require('./protobuf-helper');
+const grpc = require('@grpc/grpc-js');
+const protoLoader = require('@grpc/proto-loader');
+const EventSourcedEntityServices = require('./event-sourced-entity-support');
+const AkkaServerless = require('./akkaserverless');
 
 const eventSourcedEntityServices = new EventSourcedEntityServices();
 
@@ -98,7 +98,6 @@ const eventSourcedEntityServices = new EventSourcedEntityServices();
  * @implements module:akkaserverless.Entity
  */
 class EventSourcedEntity {
-
   /**
    * Create a new event sourced entity.
    *
@@ -110,22 +109,22 @@ class EventSourcedEntity {
    *                            a service that stored data of this type
    * @param {module:akkaserverless.EventSourcedEntity~options=} options The options for this event sourced entity
    */
-  constructor(desc, serviceName, entityType,  options) {
-
+  constructor(desc, serviceName, entityType, options) {
     this.options = {
       ...{
         entityType: entityType,
         snapshotEvery: 100,
-        includeDirs: ["."],
+        includeDirs: ['.'],
         serializeAllowPrimitives: false,
-        serializeFallbackToJson: false
+        serializeFallbackToJson: false,
       },
-      ...options
+      ...options,
     };
-    if (!entityType) throw Error("EntityType must contain a name")
+    if (!entityType) throw Error('EntityType must contain a name');
 
-    const allIncludeDirs = protobufHelper.moduleIncludeDirs
-      .concat(this.options.includeDirs);
+    const allIncludeDirs = protobufHelper.moduleIncludeDirs.concat(
+      this.options.includeDirs,
+    );
 
     this.root = protobufHelper.loadSync(desc, allIncludeDirs);
 
@@ -134,7 +133,7 @@ class EventSourcedEntity {
     this.service = this.root.lookupService(serviceName);
 
     const packageDefinition = protoLoader.loadSync(desc, {
-      includeDirs: allIncludeDirs
+      includeDirs: allIncludeDirs,
     });
     this.grpc = grpc.loadPackageDefinition(packageDefinition);
   }
@@ -197,7 +196,7 @@ class EventSourcedEntity {
 
   start(options) {
     if (this.server !== undefined) {
-      throw new Error("Server already started!")
+      throw new Error('Server already started!');
     }
     this.server = new AkkaServerless();
     this.server.addComponent(this);
@@ -207,12 +206,11 @@ class EventSourcedEntity {
 
   shutdown() {
     if (this.server === undefined) {
-      throw new Error("Server not started!")
+      throw new Error('Server not started!');
     }
     this.server.shutdown();
     delete this.server;
   }
-
 }
 
 module.exports = EventSourcedEntity;

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-const util = require("util");
+const util = require('util');
 
 /**
  * @classdesc A flag Replicated Data type.
@@ -35,10 +35,10 @@ function Flag() {
    * @type {boolean}
    * @readonly
    */
-  Object.defineProperty(this, "value", {
+  Object.defineProperty(this, 'value', {
     get: function () {
       return currentValue;
-    }
+    },
   });
 
   /**
@@ -60,8 +60,8 @@ function Flag() {
       delta = false;
       return {
         flag: {
-          value: currentValue
-        }
+          value: currentValue,
+        },
       };
     } else {
       return null;
@@ -70,13 +70,13 @@ function Flag() {
 
   this.applyDelta = function (delta) {
     if (!delta.flag) {
-      throw new Error(util.format("Cannot apply delta %o to Flag", delta));
+      throw new Error(util.format('Cannot apply delta %o to Flag', delta));
     }
     currentValue = currentValue || delta.flag.value;
   };
 
   this.toString = function () {
-    return "Flag(" + currentValue + ")";
+    return 'Flag(' + currentValue + ')';
   };
 }
 
