@@ -41,3 +41,13 @@ service ExampleService {
     rpc DoSomething(In) returns (Out);
     rpc StreamSomething(In) returns (stream Out);
 }
+
+service ExampleServiceTwo {
+    rpc DoSomethingOne(In) returns (Out);
+    rpc DoSomethingTwo(In) returns (Out);
+}
+
+service ExampleServiceThree {
+    rpc DoSomethingOne(In) returns (Out);
+    rpc DoSomethingTwo(In) returns (Out);
+}

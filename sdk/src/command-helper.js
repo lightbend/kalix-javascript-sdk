@@ -43,7 +43,22 @@ class CommandHelper {
    * @param command The command to handle.
    * @private
    */
-  handleCommand(command) {
+  async handleCommand(command) {
+    try {
+      const reply = await this.handleCommandLogic(command);
+      this.call.write(reply);
+    } catch (err) {
+      if (err.failure && err.failure.commandId === command.id) {
+        this.call.write(err);
+        this.call.end();
+      } else {
+        console.error(err);
+        throw err;
+      }
+    }
+  }
+
+  async handleCommandLogic(command) {
     let metadata = new Metadata([]);
     if (command.metadata && command.metadata.entries) {
       metadata = new Metadata(command.metadata.entries);
@@ -51,14 +66,18 @@ class CommandHelper {
 
     const ctx = this.createContext(command.id, metadata);
 
-    if (!this.service.methods.hasOwnProperty(command.name)) {
-      ctx.commandDebug("Command '%s' unknown", command.name);
-      this.call.write({
+    const errorReply = (msg) => {
+      return {
         failure: {
           commandId: command.id,
-          description: "Unknown command named " + command.name
+          description: msg
         }
-      })
+      }
+    };
+
+    if (!this.service.methods.hasOwnProperty(command.name)) {
+      ctx.commandDebug("Command '%s' unknown", command.name);
+      return errorReply("Unknown command named " + command.name);
     } else {
 
       try {
@@ -77,41 +96,33 @@ class CommandHelper {
 
           ctx.streamed = command.streamed;
 
-          this.invokeHandler(() => handler(deserCommand, ctx), ctx, grpcMethod, reply => { return {reply}; }, "Command");
+          const reply = await this.invokeHandlerLogic(() => handler(deserCommand, ctx), ctx, grpcMethod, "Command");
 
+          if (reply && reply.reply) {
+            return reply;
+          } else {
+            return {reply: reply};
+          }
         } else {
           const msg = "No handler registered for command '" + command.name + "'";
           ctx.commandDebug(msg);
-          this.call.write({
-            failure: {
-              commandId: command.id,
-              description: msg
-            }
-          })
+          return errorReply(msg);
         }
       } catch (err) {
         const error = "Error handling command '" + command.name + "'";
         ctx.commandDebug(error);
         console.error(err);
 
-        this.call.write({
-          failure: {
-            commandId: command.id,
-            description: error + ": " + err
-          }
-        });
-
-        this.call.end();
+        throw errorReply(error + ": " + err);
       }
     }
-
   }
 
-  invokeHandler(handler, ctx, grpcMethod, createReply, desc) {
+  async invoke(handler, ctx) {
     ctx.reply = {};
     let userReply = null;
     try {
-      userReply = handler();
+      userReply = await Promise.resolve(handler());
     } catch (err) {
       if (ctx.error === null) {
         // If the error field isn't null, then that means we were explicitly told
@@ -124,34 +135,33 @@ class CommandHelper {
       ctx.active = false;
     }
 
-    if (ctx.error !== null) {
-      ctx.commandDebug("%s failed with message '%s'", desc, ctx.error.message);
-      this.call.write({
-        reply: {
-          commandId: ctx.commandId,
-          clientAction: {
-            failure: {
-              commandId: ctx.commandId,
-              description: ctx.error.message
-            }
+    return userReply;
+  }
+
+  errorReply(msg, ctx, desc) {
+    ctx.commandDebug("%s failed with message '%s'", desc, msg);
+    return {
+      reply: {
+        commandId: ctx.commandId,
+        clientAction: {
+          failure: {
+            commandId: ctx.commandId,
+            description: msg
           }
         }
-      });
+      }
+    }
+  }
+
+  async invokeHandlerLogic(handler, ctx, grpcMethod, desc) {
+    const userReply = await this.invoke(handler, ctx);
+
+    if (ctx.error !== null) {
+      return this.errorReply(ctx.error.message, ctx, desc);
     } else if (userReply instanceof Reply) {
       if (userReply.failure) {
         // handle failure with a separate write to make sure we don't write back events etc
-        ctx.commandDebug("%s failed with message '%s'", desc, userReply.failure);
-        this.call.write({
-          reply: {
-            commandId: ctx.commandId,
-            clientAction: {
-              failure: {
-                commandId: ctx.commandId,
-                description: userReply.failure
-              }
-            }
-          }
-        })
+        return this.errorReply(userReply.failure, ctx, desc);
       } else {
         // effects need to go first to end up in reply
         // note that we amend the ctx.reply to get events etc passed along from the entities
@@ -186,10 +196,8 @@ class CommandHelper {
             }
           }
         }
-        const reply = createReply(ctx.reply);
-        if (reply !== undefined) {
-          this.call.write(reply);
-        }
+
+        return ctx.reply;
       }
     } else {
       ctx.reply.commandId = ctx.commandId;
@@ -212,10 +220,7 @@ class CommandHelper {
         ctx.commandDebug("%s no reply with %d side effects.", desc, ctx.effects.length);
       }
 
-      const reply = createReply(ctx.reply);
-      if (reply !== undefined) {
-        this.call.write(reply);
-      }
+      return ctx.reply;
     }
   }
 
