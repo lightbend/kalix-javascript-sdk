@@ -16,7 +16,7 @@
 
 const fs = require("fs");
 const protobufHelper = require("./protobuf-helper");
-const grpc = require("grpc");
+const grpc = require("@grpc/grpc-js");
 const protoLoader = require("@grpc/proto-loader");
 const ValueEntityServices = require("./value-entity-support");
 const AkkaServerless = require("./akkaserverless");

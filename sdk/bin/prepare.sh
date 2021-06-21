@@ -21,19 +21,8 @@ function download_protocol {
 download_protocol proxy
 download_protocol sdk
 
-# Generate the protobuf bundle and typescript definitions
-pbjs -t static-module -w commonjs -o ./proto/protobuf-bundle.js -p ./proto -p ./protoc/include \
-  ./proto/akkaserverless/*.proto \
-  ./proto/akkaserverless/protocol/*.proto \
-  ./proto/akkaserverless/component/*.proto \
-  ./proto/akkaserverless/component/*/*.proto
-
-pbjs -t static-module -p ./proto -p ./protoc/include \
-  ./proto/akkaserverless/*.proto \
-  ./proto/akkaserverless/protocol/*.proto \
-  ./proto/akkaserverless/component/*.proto \
-  ./proto/akkaserverless/component/*/*.proto \
-  | pbts -o ./proto/protobuf-bundle.d.ts -
+# Compile protobuf
+./bin/compile-protobuf.sh
 
 # Generate TS type definitions based on the JSDocs
 jsdoc -t ./node_modules/@lightbend/tsd-jsdoc/dist -c ./jsdoc.json -d .
