@@ -46,9 +46,7 @@ class CommandHelper {
   async handleCommand(command) {
     try {
       const reply = await this.handleCommandLogic(command);
-      if (reply !== undefined) {
-        this.call.write(reply);
-      }
+      this.call.write(reply);
     } catch (err) {
       if (err.failure && err.failure.commandId === command.id) {
         this.call.write(err);
