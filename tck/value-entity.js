@@ -56,9 +56,7 @@ function process(request, state, context) {
     reply.addEffect(two.service.methods.Call, { id: effect.id }, effect.synchronous)
   )
 
-  return new Promise((resolve, reject) => {
-    setTimeout(() => resolve(reply), 10);
-  });
+  return reply;
 }
 
 const two = new ValueEntity(
