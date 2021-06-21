@@ -14,45 +14,52 @@
  * limitations under the License.
  */
 
-const should = require("chai").should();
-const Flag = require("../../src/replicated-data/flag");
-const protobufHelper = require("../../src/protobuf-helper");
+const should = require('chai').should();
+const Flag = require('../../src/replicated-data/flag');
+const protobufHelper = require('../../src/protobuf-helper');
 
-const ReplicatedEntityDelta = protobufHelper.moduleRoot.akkaserverless.component.replicatedentity.ReplicatedEntityDelta;
+const ReplicatedEntityDelta =
+  protobufHelper.moduleRoot.akkaserverless.component.replicatedentity
+    .ReplicatedEntityDelta;
 
 function roundTripDelta(delta) {
-  return ReplicatedEntityDelta.decode(ReplicatedEntityDelta.encode(delta).finish());
+  return ReplicatedEntityDelta.decode(
+    ReplicatedEntityDelta.encode(delta).finish(),
+  );
 }
 
-describe("Flag", () => {
-
-  it("should be disabled when instantiated", () => {
+describe('Flag', () => {
+  it('should be disabled when instantiated', () => {
     const flag = new Flag();
     flag.value.should.be.false;
     should.equal(flag.getAndResetDelta(), null);
   });
 
-  it("should reflect an initial delta", () => {
+  it('should reflect an initial delta', () => {
     const flag = new Flag();
-    flag.applyDelta(roundTripDelta({
-      flag: {
-        value: true
-      }
-    }));
+    flag.applyDelta(
+      roundTripDelta({
+        flag: {
+          value: true,
+        },
+      }),
+    );
     flag.value.should.be.true;
   });
 
-  it("should reflect a delta update", () => {
+  it('should reflect a delta update', () => {
     const flag = new Flag();
-    flag.applyDelta(roundTripDelta({
-      flag: {
-        value: true
-      }
-    }));
+    flag.applyDelta(
+      roundTripDelta({
+        flag: {
+          value: true,
+        },
+      }),
+    );
     flag.value.should.be.true;
   });
 
-  it("should generate deltas", () => {
+  it('should generate deltas', () => {
     const flag = new Flag();
     should.equal(flag.getAndResetDelta(), null);
     flag.enable();
@@ -60,11 +67,11 @@ describe("Flag", () => {
     should.equal(flag.getAndResetDelta(), null);
   });
 
-  it("should support empty initial deltas (for ORMap added)", () => {
+  it('should support empty initial deltas (for ORMap added)', () => {
     const flag = new Flag();
     flag.value.should.be.false;
     should.equal(flag.getAndResetDelta(), null);
-    roundTripDelta(flag.getAndResetDelta(/* initial = */ true)).flag.value.should.be.false;
+    roundTripDelta(flag.getAndResetDelta(/* initial = */ true)).flag.value
+      .should.be.false;
   });
-
 });

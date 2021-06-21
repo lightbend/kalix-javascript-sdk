@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-const debug = require("debug")("akkaserverless-replicated-entity");
-const util = require("util");
-const AnySupport = require("../protobuf-any");
+const debug = require('debug')('akkaserverless-replicated-entity');
+const util = require('util');
+const AnySupport = require('../protobuf-any');
 
 function mapIterator(iter, f) {
   const mapped = {
@@ -25,15 +25,15 @@ function mapIterator(iter, f) {
       const next = iter.next();
       if (next.done) {
         return {
-          done: true
+          done: true,
         };
       } else {
         return {
           value: f(next.value),
-          done: false
+          done: false,
         };
       }
-    }
+    },
   };
   return mapped;
 }
@@ -60,7 +60,7 @@ function ORMap() {
   let delta = {
     added: new Map(),
     removed: new Map(),
-    cleared: false
+    cleared: false,
   };
 
   /**
@@ -102,7 +102,7 @@ function ORMap() {
    * @param {module:akkaserverless.Serializable} key The key to check.
    * @returns {boolean} True if this map contains a value of the given key.
    */
-  this.has = function(key) {
+  this.has = function (key) {
     return currentValue.has(AnySupport.toComparable(key));
   };
 
@@ -113,10 +113,10 @@ function ORMap() {
    * @type {number}
    * @readonly
    */
-  Object.defineProperty(this, "size", {
+  Object.defineProperty(this, 'size', {
     get: function () {
       return currentValue.size;
-    }
+    },
   });
 
   /**
@@ -134,8 +134,10 @@ function ORMap() {
    * @function module:akkaserverless.replicatedentity.ORMap#forEach
    * @param {module:akkaserverless.replicatedentity.ORMap~forEachCallback} callback The callback to handle each element.
    */
-  this.forEach = function(callback) {
-    return currentValue.forEach((value, key) => callback(value.value, value.key, this));
+  this.forEach = function (callback) {
+    return currentValue.forEach((value, key) =>
+      callback(value.value, value.key, this),
+    );
   };
 
   /**
@@ -144,9 +146,12 @@ function ORMap() {
    * @function module:akkaserverless.replicatedentity.ORMap#entries
    * @returns {Iterator<Array>}
    */
-  this.entries = function() {
+  this.entries = function () {
     // For some reason, these arrays are key, value, even though callbacks are passed value, key
-    return mapIterator(currentValue.values(), value => [value.key, value.value]);
+    return mapIterator(currentValue.values(), (value) => [
+      value.key,
+      value.value,
+    ]);
   };
 
   /**
@@ -155,7 +160,7 @@ function ORMap() {
    * @function module:akkaserverless.replicatedentity.ORMap#iterator
    * @returns {Iterator<Array>}
    */
-  this[Symbol.iterator] = function() {
+  this[Symbol.iterator] = function () {
     return entries();
   };
 
@@ -165,8 +170,8 @@ function ORMap() {
    * @function module:akkaserverless.replicatedentity.ORMap#values
    * @returns {Iterator<module:akkaserverless.replicatedentity.ReplicatedData>}
    */
-  this.values = function() {
-    return mapIterator(currentValue.values(), value => value.value);
+  this.values = function () {
+    return mapIterator(currentValue.values(), (value) => value.value);
   };
 
   /**
@@ -175,8 +180,8 @@ function ORMap() {
    * @function module:akkaserverless.replicatedentity.ORMap#keys
    * @returns {Iterator<module:akkaserverless.Serializable>}
    */
-  this.keys = function() {
-    return mapIterator(currentValue.values(), value => value.key);
+  this.keys = function () {
+    return mapIterator(currentValue.values(), (value) => value.key);
   };
 
   /**
@@ -193,39 +198,44 @@ function ORMap() {
     } else {
       const maybeDefault = this.defaultValue(key);
       if (maybeDefault !== undefined) {
-        this.set(key, maybeDefault)
+        this.set(key, maybeDefault);
       }
       return maybeDefault;
     }
   };
 
-  const asObject = new Proxy({}, {
-    get: (target, key) => this.get(key),
-    set: (target, key, value) => this.set(key, value),
-    deleteProperty: (target, key) => this.delete(key),
-    ownKeys: (target) => {
-      const keys = [];
-      this.forEach((value, key) => {
-        if (typeof key === "string") {
-          keys.push(key);
-        }
-      });
-      return keys;
+  const asObject = new Proxy(
+    {},
+    {
+      get: (target, key) => this.get(key),
+      set: (target, key, value) => this.set(key, value),
+      deleteProperty: (target, key) => this.delete(key),
+      ownKeys: (target) => {
+        const keys = [];
+        this.forEach((value, key) => {
+          if (typeof key === 'string') {
+            keys.push(key);
+          }
+        });
+        return keys;
+      },
+      has: (target, key) => this.has(key),
+      defineProperty: () => {
+        throw new Error('ORMap.asObject does not support defining properties');
+      },
+      getOwnPropertyDescriptor: (target, key) => {
+        const value = this.get(key);
+        return value
+          ? {
+              value: value,
+              writable: true,
+              enumerable: true,
+              configurable: true,
+            }
+          : undefined;
+      },
     },
-    has: (target, key) => this.has(key),
-    defineProperty: () => {
-      throw new Error("ORMap.asObject does not support defining properties");
-    },
-    getOwnPropertyDescriptor: (target, key) => {
-      const value = this.get(key);
-      return value ? {
-        value: value,
-        writable: true,
-        enumerable: true,
-        configurable: true
-      } : undefined;
-    }
-  });
+  );
 
   /**
    * A representation of this map as an object.
@@ -236,8 +246,8 @@ function ORMap() {
    * @name module:akkaserverless.replicatedentity.ORMap#asObject
    * @type {Object<String, module:akkaserverless.replicatedentity.ReplicatedData>}
    */
-  Object.defineProperty(this, "asObject", {
-    get: () => asObject
+  Object.defineProperty(this, 'asObject', {
+    get: () => asObject,
   });
 
   /**
@@ -248,25 +258,37 @@ function ORMap() {
    * @param {module:akkaserverless.replicatedentity.ReplicatedData} value The value to set.
    * @return {module:akkaserverless.replicatedentity.ORMap} This map.
    */
-  this.set = function(key, value) {
-    if (!value.hasOwnProperty("getAndResetDelta")) {
-      throw new Error(util.format("Cannot add %o with value %o to ORMap, only Replicated Data types may be added as values.", key, value))
+  this.set = function (key, value) {
+    if (!value.hasOwnProperty('getAndResetDelta')) {
+      throw new Error(
+        util.format(
+          'Cannot add %o with value %o to ORMap, only Replicated Data types may be added as values.',
+          key,
+          value,
+        ),
+      );
     }
     const comparable = AnySupport.toComparable(key);
     const serializedKey = AnySupport.serialize(key, true, true);
     if (!currentValue.has(comparable)) {
       if (delta.removed.has(comparable)) {
-        debug("Removing then adding key [%o] in the same operation can have unintended effects, as the old value may end up being merged with the new.", key);
+        debug(
+          'Removing then adding key [%o] in the same operation can have unintended effects, as the old value may end up being merged with the new.',
+          key,
+        );
       }
     } else if (!delta.added.has(comparable)) {
-      debug("Setting an existing key [%o] to a new value can have unintended effects, as the old value may end up being merged with the new.", key);
+      debug(
+        'Setting an existing key [%o] to a new value can have unintended effects, as the old value may end up being merged with the new.',
+        key,
+      );
       delta.removed.set(comparable, serializedKey);
     }
     // We'll get the actual state later
     delta.added.set(comparable, serializedKey);
     currentValue.set(comparable, {
       key: key,
-      value: value
+      value: value,
     });
     return this;
   };
@@ -278,7 +300,7 @@ function ORMap() {
    * @param {module:akkaserverless.Serializable} key The key to delete.
    * @return {module:akkaserverless.replicatedentity.ORMap} This map.
    */
-  this.delete = function(key) {
+  this.delete = function (key) {
     const comparable = AnySupport.toComparable(key);
     if (currentValue.has(comparable)) {
       if (currentValue.size === 1) {
@@ -302,7 +324,7 @@ function ORMap() {
    * @function module:akkaserverless.replicatedentity.ORMap#clear
    * @return {module:akkaserverless.replicatedentity.ORMap} This map.
    */
-  this.clear = function() {
+  this.clear = function () {
     if (currentValue.size > 0) {
       delta.cleared = true;
       delta.added.clear();
@@ -312,34 +334,40 @@ function ORMap() {
     return this;
   };
 
-  this.getAndResetDelta = function(initial) {
+  this.getAndResetDelta = function (initial) {
     const updateDeltas = [];
     const addedDeltas = [];
     currentValue.forEach((value, key) => {
       if (delta.added.has(key)) {
         addedDeltas.push({
           key: delta.added.get(key),
-          delta: value.value.getAndResetDelta(/* initial = */ true)
+          delta: value.value.getAndResetDelta(/* initial = */ true),
         });
       } else {
         const entryDelta = value.value.getAndResetDelta();
         if (entryDelta !== null) {
           updateDeltas.push({
             key: AnySupport.serialize(value.key, true, true),
-            delta: entryDelta
+            delta: entryDelta,
           });
         }
       }
     });
 
-    if (delta.cleared || delta.removed.size > 0 || updateDeltas.length > 0 || addedDeltas.length > 0 || initial) {
+    if (
+      delta.cleared ||
+      delta.removed.size > 0 ||
+      updateDeltas.length > 0 ||
+      addedDeltas.length > 0 ||
+      initial
+    ) {
       const currentDelta = {
         ormap: {
           cleared: delta.cleared,
           removed: Array.from(delta.removed.values()),
           added: addedDeltas,
-          updated: updateDeltas
-        }
+          updated: updateDeltas,
+        },
       };
       delta.cleared = false;
       delta.added.clear();
@@ -350,58 +378,75 @@ function ORMap() {
     }
   };
 
-  this.applyDelta = function(delta, anySupport, createForDelta) {
+  this.applyDelta = function (delta, anySupport, createForDelta) {
     if (!delta.ormap) {
-      throw new Error(util.format("Cannot apply delta %o to ORMap", delta));
+      throw new Error(util.format('Cannot apply delta %o to ORMap', delta));
     }
     if (delta.ormap.cleared) {
       currentValue.clear();
     }
     if (delta.ormap.removed !== undefined) {
-      delta.ormap.removed.forEach(key => {
+      delta.ormap.removed.forEach((key) => {
         const deserializedKey = anySupport.deserialize(key);
         const comparable = AnySupport.toComparable(deserializedKey);
         if (currentValue.has(comparable)) {
           currentValue.delete(comparable);
         } else {
-          debug("Delta instructed to delete key [%o], but it wasn't in the ORMap.", deserializedKey)
+          debug(
+            "Delta instructed to delete key [%o], but it wasn't in the ORMap.",
+            deserializedKey,
+          );
         }
       });
     }
     if (delta.ormap.added !== undefined) {
-      delta.ormap.added.forEach(entry => {
+      delta.ormap.added.forEach((entry) => {
         const value = createForDelta(entry.delta);
         value.applyDelta(entry.delta, anySupport, createForDelta);
         const key = anySupport.deserialize(entry.key);
         const comparable = AnySupport.toComparable(key);
         if (currentValue.has(comparable)) {
-          debug("Delta instructed to add key [%o], but it's already present in the ORMap. Updating with delta instead.", key);
-          currentValue.get(comparable).value.applyDelta(entry.delta, anySupport, createForDelta);
+          debug(
+            "Delta instructed to add key [%o], but it's already present in the ORMap. Updating with delta instead.",
+            key,
+          );
+          currentValue
+            .get(comparable)
+            .value.applyDelta(entry.delta, anySupport, createForDelta);
         } else {
           currentValue.set(comparable, {
             key: key,
-            value: value
+            value: value,
           });
         }
       });
     }
     if (delta.ormap.updated !== undefined) {
-      delta.ormap.updated.forEach(entry => {
+      delta.ormap.updated.forEach((entry) => {
         const key = anySupport.deserialize(entry.key);
         const comparable = AnySupport.toComparable(key);
         if (currentValue.has(comparable)) {
-          currentValue.get(comparable).value.applyDelta(entry.delta, anySupport, createForDelta);
+          currentValue
+            .get(comparable)
+            .value.applyDelta(entry.delta, anySupport, createForDelta);
         } else {
-          debug("Delta instructed to update key [%o], but it's not present in the ORMap.", key);
+          debug(
+            "Delta instructed to update key [%o], but it's not present in the ORMap.",
+            key,
+          );
         }
       });
     }
   };
 
-  this.toString = function() {
-    return "ORMap(" + Array.from(currentValue.values())
-      .map(entry => entry.key + " -> " + entry.value.toString())
-      .join(",") + ")";
+  this.toString = function () {
+    return (
+      'ORMap(' +
+      Array.from(currentValue.values())
+        .map((entry) => entry.key + ' -> ' + entry.value.toString())
+        .join(',') +
+      ')'
+    );
   };
 }
 

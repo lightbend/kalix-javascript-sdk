@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-const util = require("util");
+const util = require('util');
 
 /**
  * @classdesc A Vote Replicated Data type.
@@ -37,10 +37,10 @@ function Vote() {
    * @type {number}
    * @readonly
    */
-  Object.defineProperty(this, "votesFor", {
+  Object.defineProperty(this, 'votesFor', {
     get: function () {
       return currentVotesFor;
-    }
+    },
   });
 
   /**
@@ -50,10 +50,10 @@ function Vote() {
    * @type {number}
    * @readonly
    */
-  Object.defineProperty(this, "totalVoters", {
+  Object.defineProperty(this, 'totalVoters', {
     get: function () {
       return currentTotalVoters;
-    }
+    },
   });
 
   /**
@@ -63,10 +63,10 @@ function Vote() {
    * @type {boolean}
    * @readonly
    */
-  Object.defineProperty(this, "atLeastOne", {
+  Object.defineProperty(this, 'atLeastOne', {
     get: function () {
       return currentVotesFor > 0;
-    }
+    },
   });
 
   /**
@@ -76,10 +76,10 @@ function Vote() {
    * @type {boolean}
    * @readonly
    */
-  Object.defineProperty(this, "majority", {
+  Object.defineProperty(this, 'majority', {
     get: function () {
       return currentVotesFor > currentTotalVoters / 2;
-    }
+    },
   });
 
   /**
@@ -89,10 +89,10 @@ function Vote() {
    * @type {boolean}
    * @readonly
    */
-  Object.defineProperty(this, "all", {
+  Object.defineProperty(this, 'all', {
     get: function () {
       return currentVotesFor === currentTotalVoters;
-    }
+    },
   });
 
   /**
@@ -103,11 +103,11 @@ function Vote() {
    * @name module:akkaserverless.replicatedentity.Vote#vote
    * @type {boolean}
    */
-  Object.defineProperty(this, "vote", {
+  Object.defineProperty(this, 'vote', {
     get: function () {
       return currentSelfVote;
     },
-    set: function(value) {
+    set: function (value) {
       if (value && !currentSelfVote) {
         currentSelfVote = true;
         currentVotesFor += 1;
@@ -117,7 +117,7 @@ function Vote() {
         currentVotesFor -= 1;
         delta = false;
       }
-    }
+    },
   });
 
   this.getAndResetDelta = function (initial) {
@@ -129,8 +129,8 @@ function Vote() {
       delta = null;
       return {
         vote: {
-          selfVote: vote
-        }
+          selfVote: vote,
+        },
       };
     } else {
       return null;
@@ -139,7 +139,7 @@ function Vote() {
 
   this.applyDelta = function (delta) {
     if (!delta.vote) {
-      throw new Error(util.format("Cannot apply delta %o to Vote", delta));
+      throw new Error(util.format('Cannot apply delta %o to Vote', delta));
     }
     currentSelfVote = delta.vote.selfVote;
     currentVotesFor = delta.vote.votesFor;
@@ -147,7 +147,7 @@ function Vote() {
   };
 
   this.toString = function () {
-    return "Vote(" + currentSelfVote + ")";
+    return 'Vote(' + currentSelfVote + ')';
   };
 }
 

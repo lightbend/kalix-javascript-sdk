@@ -14,123 +14,133 @@
  * limitations under the License.
  */
 
-const should = require("chai").should();
-const protobuf = require("protobufjs");
-const path = require("path");
-const GSet = require("../../src/replicated-data/gset");
-const protobufHelper = require("../../src/protobuf-helper");
-const AnySupport = require("../../src/protobuf-any");
+const should = require('chai').should();
+const protobuf = require('protobufjs');
+const path = require('path');
+const GSet = require('../../src/replicated-data/gset');
+const protobufHelper = require('../../src/protobuf-helper');
+const AnySupport = require('../../src/protobuf-any');
 
-const ReplicatedEntityDelta = protobufHelper.moduleRoot.akkaserverless.component.replicatedentity.ReplicatedEntityDelta;
+const ReplicatedEntityDelta =
+  protobufHelper.moduleRoot.akkaserverless.component.replicatedentity
+    .ReplicatedEntityDelta;
 const root = new protobuf.Root();
-root.loadSync(path.join(__dirname, "..", "example.proto"));
+root.loadSync(path.join(__dirname, '..', 'example.proto'));
 root.resolveAll();
-const Example = root.lookupType("com.example.Example");
+const Example = root.lookupType('com.example.Example');
 const anySupport = new AnySupport(root);
 
 function roundTripDelta(delta) {
-  return ReplicatedEntityDelta.decode(ReplicatedEntityDelta.encode(delta).finish());
+  return ReplicatedEntityDelta.decode(
+    ReplicatedEntityDelta.encode(delta).finish(),
+  );
 }
 
 function toAny(value) {
-  return AnySupport.serialize(value, true, true)
+  return AnySupport.serialize(value, true, true);
 }
 
 function fromAnys(values) {
-  return values.map(any => anySupport.deserialize(any));
+  return values.map((any) => anySupport.deserialize(any));
 }
 
-describe("GSet", () => {
-
-  it("should have no elements when instantiated", () => {
+describe('GSet', () => {
+  it('should have no elements when instantiated', () => {
     const set = new GSet();
     set.size.should.equal(0);
     should.equal(set.getAndResetDelta(), null);
   });
 
-  it("should reflect an initial delta", () => {
+  it('should reflect an initial delta', () => {
     const set = new GSet();
     should.equal(set.getAndResetDelta(), null);
-    set.applyDelta(roundTripDelta({
-      gset: {
-        added: [toAny("one"), toAny("two")]
-      }
-    }), anySupport);
+    set.applyDelta(
+      roundTripDelta({
+        gset: {
+          added: [toAny('one'), toAny('two')],
+        },
+      }),
+      anySupport,
+    );
     set.size.should.equal(2);
-    new Set(set).should.include("one", "two");
+    new Set(set).should.include('one', 'two');
     should.equal(set.getAndResetDelta(), null);
   });
 
-  it("should generate an add delta", () => {
-    const set = new GSet().add("one");
-    set.has("one").should.be.true;
+  it('should generate an add delta', () => {
+    const set = new GSet().add('one');
+    set.has('one').should.be.true;
     set.size.should.equal(1);
     const delta1 = roundTripDelta(set.getAndResetDelta());
     delta1.gset.added.should.have.lengthOf(1);
-    fromAnys(delta1.gset.added).should.include("one");
+    fromAnys(delta1.gset.added).should.include('one');
     should.equal(set.getAndResetDelta(), null);
 
-    set.add("two").add("three");
+    set.add('two').add('three');
     set.size.should.equal(3);
     const delta2 = roundTripDelta(set.getAndResetDelta());
     delta2.gset.added.should.have.lengthOf(2);
-    fromAnys(delta2.gset.added).should.include.members(["two", "three"]);
+    fromAnys(delta2.gset.added).should.include.members(['two', 'three']);
     should.equal(set.getAndResetDelta(), null);
   });
 
-  it("should not generate a delta when an already existing element is added", () => {
-    const set = new GSet().add("one");
+  it('should not generate a delta when an already existing element is added', () => {
+    const set = new GSet().add('one');
     set.getAndResetDelta();
-    set.add("one").size.should.equal(1);
+    set.add('one').size.should.equal(1);
     should.equal(set.getAndResetDelta(), null);
   });
 
-  it("should reflect a delta add", () => {
-    const set = new GSet().add("one");
+  it('should reflect a delta add', () => {
+    const set = new GSet().add('one');
     const delta1 = roundTripDelta(set.getAndResetDelta());
     delta1.gset.added.should.have.lengthOf(1);
-    fromAnys(delta1.gset.added).should.include("one");
-    set.applyDelta(roundTripDelta({
-      gset: {
-        added: [toAny("two")]
-      }
-    }), anySupport);
+    fromAnys(delta1.gset.added).should.include('one');
+    set.applyDelta(
+      roundTripDelta({
+        gset: {
+          added: [toAny('two')],
+        },
+      }),
+      anySupport,
+    );
     set.size.should.equal(2);
-    new Set(set).should.include("one", "two");
+    new Set(set).should.include('one', 'two');
     should.equal(set.getAndResetDelta(), null);
   });
 
-  it("should work with protobuf types", () => {
-    const set = new GSet().add(Example.create({ field1: "one" }));
+  it('should work with protobuf types', () => {
+    const set = new GSet().add(Example.create({ field1: 'one' }));
     set.getAndResetDelta();
     // Equality check, make sure two equal protobufs are equal.
-    set.add(Example.create({ field1: "one" }));
+    set.add(Example.create({ field1: 'one' }));
     set.size.should.equal(1);
     // Now add a non equal element and check.
-    set.add(Example.create({ field1: "two" }));
+    set.add(Example.create({ field1: 'two' }));
     set.size.should.equal(2);
     const delta = roundTripDelta(set.getAndResetDelta());
     delta.gset.added.should.have.lengthOf(1);
-    fromAnys(delta.gset.added)[0].field1.should.equal("two");
+    fromAnys(delta.gset.added)[0].field1.should.equal('two');
   });
 
-  it("should work with json types", () => {
-    const set = new GSet().add({ foo: "bar" });
+  it('should work with json types', () => {
+    const set = new GSet().add({ foo: 'bar' });
     set.getAndResetDelta();
-    set.add({ foo: "bar" });
+    set.add({ foo: 'bar' });
     set.size.should.equal(1);
-    set.add({ foo: "baz" });
+    set.add({ foo: 'baz' });
     set.size.should.equal(2);
     const delta = roundTripDelta(set.getAndResetDelta());
     delta.gset.added.should.have.lengthOf(1);
-    fromAnys(delta.gset.added)[0].foo.should.equal("baz");
+    fromAnys(delta.gset.added)[0].foo.should.equal('baz');
   });
 
-  it("should support empty initial deltas (for ORMap added)", () => {
+  it('should support empty initial deltas (for ORMap added)', () => {
     const set = new GSet();
     set.size.should.equal(0);
     should.equal(set.getAndResetDelta(), null);
-    roundTripDelta(set.getAndResetDelta(/* initial = */ true)).gset.added.should.have.lengthOf(0);
+    roundTripDelta(
+      set.getAndResetDelta(/* initial = */ true),
+    ).gset.added.should.have.lengthOf(0);
   });
-
 });

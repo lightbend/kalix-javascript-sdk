@@ -14,83 +14,99 @@
  * limitations under the License.
  */
 
-const should = require("chai").should();
-const Long = require("long");
-const GCounter = require("../../src/replicated-data/gcounter");
-const protobufHelper = require("../../src/protobuf-helper");
+const should = require('chai').should();
+const Long = require('long');
+const GCounter = require('../../src/replicated-data/gcounter');
+const protobufHelper = require('../../src/protobuf-helper');
 
-const ReplicatedEntityDelta = protobufHelper.moduleRoot.akkaserverless.component.replicatedentity.ReplicatedEntityDelta;
+const ReplicatedEntityDelta =
+  protobufHelper.moduleRoot.akkaserverless.component.replicatedentity
+    .ReplicatedEntityDelta;
 
 function roundTripDelta(delta) {
-  return ReplicatedEntityDelta.decode(ReplicatedEntityDelta.encode(delta).finish());
+  return ReplicatedEntityDelta.decode(
+    ReplicatedEntityDelta.encode(delta).finish(),
+  );
 }
 
-describe("GCounter", () => {
-
-  it("should have a value of zero when instantiated", () => {
+describe('GCounter', () => {
+  it('should have a value of zero when instantiated', () => {
     const counter = new GCounter();
     counter.value.should.equal(0);
     should.equal(counter.getAndResetDelta(), null);
   });
 
-  it("should reflect a delta update", () => {
+  it('should reflect a delta update', () => {
     const counter = new GCounter();
-    counter.applyDelta(roundTripDelta({
-      gcounter: {
-        increment: 10
-      }
-    }));
+    counter.applyDelta(
+      roundTripDelta({
+        gcounter: {
+          increment: 10,
+        },
+      }),
+    );
     counter.value.should.equal(10);
     // Try incrementing it again
-    counter.applyDelta(roundTripDelta({
-      gcounter: {
-        increment: 5
-      }
-    }));
+    counter.applyDelta(
+      roundTripDelta({
+        gcounter: {
+          increment: 5,
+        },
+      }),
+    );
     counter.value.should.equal(15);
   });
 
-  it("should generate deltas", () => {
+  it('should generate deltas', () => {
     const counter = new GCounter();
     counter.increment(10);
     counter.value.should.equal(10);
-    roundTripDelta(counter.getAndResetDelta()).gcounter.increment.toNumber().should.equal(10);
+    roundTripDelta(counter.getAndResetDelta())
+      .gcounter.increment.toNumber()
+      .should.equal(10);
     should.equal(counter.getAndResetDelta(), null);
     counter.increment(3);
     counter.value.should.equal(13);
     counter.increment(4);
     counter.value.should.equal(17);
-    roundTripDelta(counter.getAndResetDelta()).gcounter.increment.toNumber().should.equal(7);
+    roundTripDelta(counter.getAndResetDelta())
+      .gcounter.increment.toNumber()
+      .should.equal(7);
     should.equal(counter.getAndResetDelta(), null);
   });
 
-  it("should not allow decrementing", () => {
+  it('should not allow decrementing', () => {
     const counter = new GCounter();
     (() => counter.increment(-10)).should.throw();
   });
 
-  it("should support long values", () => {
+  it('should support long values', () => {
     const impossibleDouble = Long.UZERO.add(Number.MAX_SAFE_INTEGER).add(1);
     const counter = new GCounter();
     counter.increment(Number.MAX_SAFE_INTEGER);
     counter.increment(1);
     counter.longValue.should.eql(impossibleDouble);
-    roundTripDelta(counter.getAndResetDelta()).gcounter.increment.should.eql(impossibleDouble);
+    roundTripDelta(counter.getAndResetDelta()).gcounter.increment.should.eql(
+      impossibleDouble,
+    );
   });
 
-  it("should support incrementing by long values", () => {
+  it('should support incrementing by long values', () => {
     const impossibleDouble = Long.UZERO.add(Number.MAX_SAFE_INTEGER).add(1);
     const counter = new GCounter();
     counter.increment(impossibleDouble);
     counter.longValue.should.eql(impossibleDouble);
-    roundTripDelta(counter.getAndResetDelta()).gcounter.increment.should.eql(impossibleDouble);
+    roundTripDelta(counter.getAndResetDelta()).gcounter.increment.should.eql(
+      impossibleDouble,
+    );
   });
 
-  it("should support empty initial deltas (for ORMap added)", () => {
+  it('should support empty initial deltas (for ORMap added)', () => {
     const counter = new GCounter();
     counter.value.should.equal(0);
     should.equal(counter.getAndResetDelta(), null);
-    roundTripDelta(counter.getAndResetDelta(/* initial = */ true)).gcounter.increment.toNumber().should.equal(0);
+    roundTripDelta(counter.getAndResetDelta(/* initial = */ true))
+      .gcounter.increment.toNumber()
+      .should.equal(0);
   });
-
 });

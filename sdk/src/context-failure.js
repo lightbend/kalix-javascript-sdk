@@ -20,6 +20,6 @@ module.exports = class ContextFailure extends Error {
     if (Error.captureStackTrace) {
       Error.captureStackTrace(this, ContextFailure);
     }
-    this.name = "ContextFailure";
+    this.name = 'ContextFailure';
   }
 };
