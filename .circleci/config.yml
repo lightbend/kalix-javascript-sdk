@@ -34,6 +34,7 @@ jobs:
       - run:
           name: "run tests"
           command: |
+            echo "@lightbend:registry=https://npm.cloudsmith.io/lightbend/akkaserverless" > ~/.npmrc
             pushd sdk && npm ci && npm test && npm pack && popd
             pushd samples/valueentity-counter && npm install ../../sdk/lightbend-akkaserverless-javascript-sdk-0.0.0.tgz && npm install && npm run build && npm test && popd
             pushd samples/js-valueentity-shopping-cart && npm install ../../sdk/lightbend-akkaserverless-javascript-sdk-0.0.0.tgz && npm install && npm run build && npm test && popd
@@ -48,6 +49,7 @@ jobs:
           name: "run integration tests"
           command: |
             source /opt/circleci/.nvm/nvm.sh
+            echo "@lightbend:registry=https://npm.cloudsmith.io/lightbend/akkaserverless" > ~/.npmrc
             pushd sdk && nvm install && npm ci && DEBUG='testcontainers*' npm run integration-test && popd
             pushd samples/js-customer-registry && npm ci && npm run integration-test && popd
 
@@ -65,6 +67,7 @@ jobs:
           name: "run TCK tests"
           command: |
             source /opt/circleci/.nvm/nvm.sh
+            echo "@lightbend:registry=https://npm.cloudsmith.io/lightbend/akkaserverless" > ~/.npmrc
             pushd sdk && nvm install && npm ci && popd
             pushd tck && nvm install && npm ci && npm run tck && popd
 
@@ -77,6 +80,7 @@ jobs:
           name: "validate docs"
           command: |
             source /opt/circleci/.nvm/nvm.sh
+            echo "@lightbend:registry=https://npm.cloudsmith.io/lightbend/akkaserverless" > ~/.npmrc
             pushd sdk && nvm install && popd
             make -C docs
 
@@ -89,7 +93,7 @@ jobs:
           name: "publish to npm"
           command: |
             echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/.npmrc
-            pushd sdk && npm ci && npm publish --access public && popd
+            pushd sdk && npm ci && npm publish --access public --userconfig /.npmrc-publishing && popd
 
   publish-tck:
     machine: true
