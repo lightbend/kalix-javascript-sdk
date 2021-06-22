@@ -93,7 +93,7 @@ jobs:
           name: "publish to npm"
           command: |
             echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/.npmrc
-            pushd sdk && npm ci && npm publish --access public --userconfig /.npmrc-publishing && popd
+            pushd sdk && npm ci && npm publish --access public && popd
 
   publish-tck:
     machine: true
