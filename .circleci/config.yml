@@ -34,7 +34,7 @@ jobs:
       - run:
           name: "run tests"
           command: |
-            pushd sdk && npm ci --scope=@lightbend --registry=https://npm.cloudsmith.io/lightbend/akkaserverless && npm test && npm pack && popd
+            pushd sdk && npm ci && npm test && npm pack && popd
             pushd samples/valueentity-counter && npm install ../../sdk/lightbend-akkaserverless-javascript-sdk-0.0.0.tgz && npm install && npm run build && npm test && popd
             pushd samples/js-valueentity-shopping-cart && npm install ../../sdk/lightbend-akkaserverless-javascript-sdk-0.0.0.tgz && npm install && npm run build && npm test && popd
             pushd samples/js-eventsourced-shopping-cart && npm install ../../sdk/lightbend-akkaserverless-javascript-sdk-0.0.0.tgz && npm install && npm run build && npm test && popd
@@ -48,10 +48,10 @@ jobs:
           name: "run integration tests"
           command: |
             source /opt/circleci/.nvm/nvm.sh
-            pushd sdk && nvm install && npm ci --scope=@lightbend --registry=https://npm.cloudsmith.io/lightbend/akkaserverless && DEBUG='testcontainers*' npm run integration-test && popd
+            pushd sdk && nvm install && npm ci && DEBUG='testcontainers*' npm run integration-test && popd
             pushd samples/js-customer-registry && npm ci && npm run integration-test && popd
 
-            pushd sdk && nvm install && npm ci --scope=@lightbend --registry=https://npm.cloudsmith.io/lightbend/akkaserverless && npm link && popd
+            pushd sdk && nvm install && npm ci && npm link && popd
             pushd samples/valueentity-counter && npm link @lightbend/akkaserverless-javascript-sdk && npm install && npm run build && npm run integration-test && popd
             pushd samples/js-valueentity-shopping-cart && npm link @lightbend/akkaserverless-javascript-sdk && npm install && npm run build && npm run integration-test && popd
             pushd samples/js-eventsourced-shopping-cart && npm link @lightbend/akkaserverless-javascript-sdk && npm install && npm run build && npm run integration-test && popd
@@ -65,7 +65,7 @@ jobs:
           name: "run TCK tests"
           command: |
             source /opt/circleci/.nvm/nvm.sh
-            pushd sdk && nvm install && npm ci --scope=@lightbend --registry=https://npm.cloudsmith.io/lightbend/akkaserverless && popd
+            pushd sdk && nvm install && npm ci && popd
             pushd tck && nvm install && npm ci && npm run tck && popd
 
   validate-docs:
@@ -89,7 +89,7 @@ jobs:
           name: "publish to npm"
           command: |
             echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/.npmrc
-            pushd sdk && npm ci --scope=@lightbend --registry=https://npm.cloudsmith.io/lightbend/akkaserverless && npm publish --access public && popd
+            pushd sdk && npm ci && npm publish --access public && popd
 
   publish-tck:
     machine: true
