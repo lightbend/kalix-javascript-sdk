@@ -20,7 +20,7 @@
     "allowSyntheticDefaultImports": true,
     "experimentalDecorators": true,
     "sourceMap": true,
-    "outDir": "./dist/tsc/",
+    "outDir": "./dist",
     "lib": ["ES6"]
   },
   "include": ["src/**/*"]
