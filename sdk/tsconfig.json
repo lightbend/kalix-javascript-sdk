@@ -3,7 +3,7 @@
     "target": "es6",
     "module": "commonjs",
     "moduleResolution": "node",
-    // "declaration": true,
+    "declaration": true,
     "composite": true,
     "strict": true,
     "allowJs": true,
@@ -24,5 +24,6 @@
     "outDir": "./dist",
     "lib": ["ES6"]
   },
-  "include": ["src/**/*", "settings.js"]
+  "include": ["src/**/*", "settings.js", "package.json"],
+  "exclude": ["node_modules"]
 }

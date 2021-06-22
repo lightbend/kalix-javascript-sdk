@@ -56,13 +56,6 @@ function GSet() {
   });
 
   /**
-   * Callback for handling elements iterated through by {@link module:akkaserverless.replicatedentity.GSet#forEach}.
-   *
-   * @callback module:akkaserverless.replicatedentity.GSet~forEachCallback
-   * @param {module:akkaserverless.Serializable} element The element.
-   */
-
-  /**
    * Execute the given callback for each element.
    *
    * @function module:akkaserverless.replicatedentity.GSet#forEach

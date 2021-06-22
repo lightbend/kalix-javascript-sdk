@@ -34,6 +34,11 @@
     "index.d.ts",
     "settings.js"
   ],
+  "directories": {
+    "dist": "./dist",
+    "src": "./src",
+    "test": "./test"
+  },
   "dependencies": {
     "@grpc/grpc-js": "^1.3.2",
     "@grpc/proto-loader": "^0.5.6",
@@ -48,11 +53,14 @@
     "rimraf": "^2.6.3",
     "test": "^0.6.0",
     "testcontainers": "7.5.0",
+    "tslib": "^2.3.0",
     "unzipper": "^0.9.15"
   },
   "devDependencies": {
     "@lightbend/tsd-jsdoc": "^2.5.1",
+    "@types/chai": "^4.2.19",
     "@types/debug": "^4.1.5",
+    "@types/mocha": "^8.2.2",
     "@types/node": "^14.17.3",
     "chai": "4.2.0",
     "chai-as-promised": "7.1.1",
@@ -63,6 +71,7 @@
     "nyc": "^14.1.1",
     "sinon": "10.0.0",
     "sinon-chai": "3.6.0",
+    "ts-node": "^10.0.0",
     "typescript": "^4.3.4"
   },
   "bin": {
@@ -82,10 +91,11 @@
   },
   "scripts": {
     "compile": "tsc",
+    "prepublish": "npm run compile",
     "print-version": "echo $npm_package_version",
     "watch-jsdoc": "npm-watch jsdoc",
     "jsdoc": "jsdoc -c jsdoc.json",
-    "test": "mocha --recursive --unhandled-rejections=strict",
+    "test": "mocha -r ts-node/register --recursive --unhandled-rejections=strict",
     "integration-test": "mocha integration-test",
     "preintegration-test": "bin/compile-descriptor.js test/example.proto --descriptor_set_out=integration-test/user-function.desc",
     "prepare": "bin/prepare.sh",
