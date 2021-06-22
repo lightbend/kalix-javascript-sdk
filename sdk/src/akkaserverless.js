@@ -195,6 +195,7 @@ class AkkaServerless {
       discover: this.discover.bind(this),
       reportError: this.reportError.bind(this),
       proxyTerminated: this.proxyTerminated.bind(this),
+      healthCheck: this.healthCheck.bind(this),
     });
 
     const afterStart = (port) => {
@@ -349,6 +350,10 @@ class AkkaServerless {
     if (this.waitingForProxyTermination) {
       this.terminate();
     }
+  }
+
+  healthCheck(empty, callback) {
+    callback(null, new google_protobuf_empty_pb.Empty());
   }
 
   formatSource(location) {

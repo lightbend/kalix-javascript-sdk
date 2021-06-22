@@ -17,9 +17,17 @@ function download_protocol {
   rm -rf "akkaserverless-$module-protocol-$framework_version.zip" "akkaserverless-$module-protocol-$framework_version"
 }
 
-# Download and unzip the proxy and SDK protocols to the proto directory
-download_protocol proxy
-download_protocol sdk
+if [ -n "$PROXY_SNAPSHOT_DIRECTORY" ]; then
+   # Use local proxy and sdk sources, useful for development, point PROXY_SNAPSHOTS_DIRECTORY to the local
+   # proxy project source directory
+   echo "Using snapshot of proxy and sdk protocols from '$PROXY_SNAPSHOT_DIRECTORY'"
+   cp -rf $PROXY_SNAPSHOT_DIRECTORY/protocols/proxy/src/main/protobuf/* ./proto/
+   cp -rf $PROXY_SNAPSHOT_DIRECTORY/protocols/sdk/src/main/protobuf/* ./proto/
+ else
+   # Download and unzip the proxy and SDK protocols to the proto directory
+   download_protocol proxy
+   download_protocol sdk
+ fi
 
 # Compile protobuf
 ./bin/compile-protobuf.sh
