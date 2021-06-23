@@ -38,6 +38,8 @@ module.exports.loadSync = function (desc, includeDirs) {
 };
 
 module.exports.moduleIncludeDirs = [
+  path.join(__dirname, '..', 'proto'),
+  path.join(__dirname, '..', 'protoc', 'include'),
   path.join(__dirname, '..', '..', 'proto'),
   path.join(__dirname, '..', '..', 'protoc', 'include'),
 ];

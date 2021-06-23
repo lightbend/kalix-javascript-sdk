@@ -297,6 +297,8 @@ module.exports = class EventSourcedEntityServices {
 
   register(server) {
     const includeDirs = [
+      path.join(__dirname, '..', 'proto'),
+      path.join(__dirname, '..', 'protoc', 'include'),
       path.join(__dirname, '..', '..', 'proto'),
       path.join(__dirname, '..', '..', 'protoc', 'include'),
     ];

@@ -40,6 +40,8 @@ module.exports = class ViewServices {
   register(server) {
     // Nothing to register
     const includeDirs = [
+      path.join(__dirname, '..', 'proto'),
+      path.join(__dirname, '..', 'protoc', 'include'),
       path.join(__dirname, '..', '..', 'proto'),
       path.join(__dirname, '..', '..', 'protoc', 'include'),
     ];
