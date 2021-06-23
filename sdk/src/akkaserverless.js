@@ -99,6 +99,15 @@ const codeCategories = new Map([
  */
 
 /**
+ * @typedef module:akkaserverless.AkkaServerless~options
+ * @property {string} serviceName - [serviceName=<name from package.json>] The name of this service.
+ * @property {string} serviceVersion - [serviceVersion=<version from package.json>] The version of this service.
+ * @property {string} descriptorSetPath - [descriptorSetPath="user-function.desc"] A path to a compiled Protobuf FileDescriptor set,
+ * as output by protoc --descriptor_set_out=somefile.desc. This file must contain all of the component services that
+ * this user function serves.
+ */
+
+/**
  * An Akka Serverless entity.
  *
  * @interface module:akkaserverless.Entity
@@ -112,6 +121,7 @@ const codeCategories = new Map([
  * @implements module:akkaserverless.Server
  */
 class AkkaServerless {
+
   /**
    * Create a new akkaserverless server.
    *

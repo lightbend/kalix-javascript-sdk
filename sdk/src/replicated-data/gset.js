@@ -59,7 +59,7 @@ function GSet() {
    * Execute the given callback for each element.
    *
    * @function module:akkaserverless.replicatedentity.GSet#forEach
-   * @param {module:akkaserverless.replicatedentity.GSet~forEachCallback} callback The callback to handle each element.
+   * @param {module:akkaserverless.replicatedentity.GSet~forEachCallback} callback - The callback to handle each element.
    */
   this.forEach = function (callback) {
     currentValue.forEach((value, key) => callback(value));

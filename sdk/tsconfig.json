@@ -21,9 +21,10 @@
     "allowSyntheticDefaultImports": true,
     "experimentalDecorators": true,
     "sourceMap": true,
+    "rootDir": "./",
     "outDir": "./dist",
     "lib": ["ES6"]
   },
-  "include": ["src/**/*", "settings.js", "package.json"],
+  "include": ["src/**/*", "./settings.js", "./package.json", "./index.js", "proto"],
   "exclude": ["node_modules"]
 }
