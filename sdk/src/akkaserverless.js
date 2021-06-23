@@ -121,7 +121,6 @@ const codeCategories = new Map([
  * @implements module:akkaserverless.Server
  */
 class AkkaServerless {
-
   /**
    * Create a new akkaserverless server.
    *
