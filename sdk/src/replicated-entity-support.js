@@ -29,8 +29,8 @@ class ReplicatedEntityServices {
   constructor() {
     this.services = {};
     this.includeDirs = [
-      path.join(__dirname, '..', 'proto'),
-      path.join(__dirname, '..', 'protoc', 'include'),
+      path.join(__dirname, '..', '..', 'proto'),
+      path.join(__dirname, '..', '..', 'protoc', 'include'),
     ];
   }
 
