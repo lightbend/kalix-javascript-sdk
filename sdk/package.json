@@ -94,7 +94,6 @@
     "clean": "rm -rf ./dist",
     "copy-files": "cp -r ./proto/ ./dist/proto",
     "compile": "tsc && npm run copy-files",
-    "prepublish": "npm run compile",
     "prepack": "npm run compile",
     "print-version": "echo $npm_package_version",
     "watch-jsdoc": "npm-watch jsdoc",
