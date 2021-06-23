@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-const request = require('request');
+const fetch = require('node-fetch');
 const unzipper = require('unzipper');
 const mkdirp = require('mkdirp');
 const path = require('path');
@@ -74,32 +74,35 @@ if (!fs.existsSync(protocZipFile)) {
   console.log('Downloading protoc from ' + downloadUrl);
 
   const file = fs.createWriteStream(protocZipFile);
-  request(downloadUrl)
-    .pipe(file)
-    .on('finish', () => {
-      fs.createReadStream(protocZipFile)
-        .pipe(unzipper.Parse())
-        .on('entry', function (entry) {
-          const extractPath = path.join(protocDir, entry.path);
-          const extractDirectory =
-            'Directory' === entry.type
-              ? extractPath
-              : path.dirname(extractPath);
-
-          mkdirp(extractDirectory, function (err) {
-            if (err) throw err;
-            if ('File' === entry.type) {
-              entry
-                .pipe(fs.createWriteStream(extractPath))
-                .on('finish', function () {
-                  if (protocBin === extractPath) {
-                    fs.chmod(extractPath, 0o755, function (err) {
-                      if (err) throw err;
+  fetch(downloadUrl)
+    .then(res => {
+      res.body
+        .pipe(file)
+        .on('finish', () => {
+          fs.createReadStream(protocZipFile)
+            .pipe(unzipper.Parse())
+            .on('entry', function (entry) {
+              const extractPath = path.join(protocDir, entry.path);
+              const extractDirectory =
+                'Directory' === entry.type
+                  ? extractPath
+                  : path.dirname(extractPath);
+    
+              mkdirp(extractDirectory, function (err) {
+                if (err) throw err;
+                if ('File' === entry.type) {
+                  entry
+                    .pipe(fs.createWriteStream(extractPath))
+                    .on('finish', function () {
+                      if (protocBin === extractPath) {
+                        fs.chmod(extractPath, 0o755, function (err) {
+                          if (err) throw err;
+                        });
+                      }
                     });
-                  }
-                });
-            }
-          });
+                }
+              });
+            });
         });
     });
 }
