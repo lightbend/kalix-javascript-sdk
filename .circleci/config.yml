@@ -65,7 +65,7 @@ jobs:
           name: "run TCK tests"
           command: |
             source /opt/circleci/.nvm/nvm.sh
-            pushd sdk && nvm install && npm pack && npm ci && popd
+            pushd sdk && nvm install && npm ci && npm pack && popd
             pushd tck && nvm install && npm install ../../sdk/lightbend-akkaserverless-javascript-sdk-0.0.0.tgz && npm ci && npm run tck && popd
 
   validate-docs:
