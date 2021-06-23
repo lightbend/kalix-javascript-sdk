@@ -48,7 +48,7 @@ jobs:
           name: "run integration tests"
           command: |
             source /opt/circleci/.nvm/nvm.sh
-            pushd sdk && nvm install && npm ci && DEBUG='testcontainers*' npm run integration-test && popd
+            pushd sdk && nvm install && npm ci && DEBUG='testcontainers*' npm run integration-test && npm pack && popd
             pushd samples/js-customer-registry && npm install ../../sdk/lightbend-akkaserverless-javascript-sdk-0.0.0.tgz && npm ci && npm run integration-test && popd
 
             pushd sdk && nvm install && npm ci && npm pack && popd
