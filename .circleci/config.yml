@@ -68,6 +68,33 @@ jobs:
             pushd sdk && nvm install && npm ci && npm pack && popd
             pushd tck && nvm install && npm install ../sdk/lightbend-akkaserverless-javascript-sdk-0.0.0.tgz && npm ci && npm run tck && popd
 
+  tools-tests:
+    docker:
+      - image: cimg/node:14.16.1
+    description: "tools-tests"
+    steps:
+      - checkout-and-merge-to-main
+      - run:
+          name: "install codegen"
+          command: |
+            cd tools/create-akkasls-entity
+            npm ci
+      - run:
+          name: "install akkasls-scripts"
+          command: |
+            cd tools/akkasls-scripts
+            npm ci && npm link
+      - run:
+          name: "test everything"
+          working_directory: "~/tmp"
+          command: |
+            node "~/project/tools/create-akkasls-entity/create-akkasls-entity.js" generated-project
+            cd tools/create-akkasls-entity
+            npm link @lightbend/akkasls-scripts && \
+              npm ci && \
+              npm run build && \
+              npm run test
+
   validate-docs:
     machine: true
     description: "validate docs"
@@ -122,52 +149,53 @@ jobs:
 workflows:
   CI:
     jobs:
-      - tests:
-        filters: # required since publish jobs have tag filters and dependencies
-          tags:
-            only: /.*/
-      - integration-tests:
-          filters: # required since publish jobs have tag filters and dependencies
-            tags:
-              only: /.*/
-      - tck-tests:
-          filters: # required since publish jobs have tag filters and dependencies
-            tags:
-              only: /.*/
-      - validate-docs:
-          filters: # required since publish jobs have tag filters and dependencies
-            tags:
-              only: /.*/
-      - publish:
-          filters: # version tags only
-            tags:
-              only: /^v.*/
-            branches:
-              ignore: /.*/
-          requires:
-            - tests
-            - integration-tests
-            - tck-tests
-            - validate-docs
-      - publish-tck:
-          filters: # version tags only
-            tags:
-              only: /^v.*/
-            branches:
-              ignore: /.*/
-          requires:
-            - tests
-            - integration-tests
-            - tck-tests
-            - validate-docs
-      - publish-docs:
-          filters: # version tags only
-            tags:
-              only: /^v.*/
-            branches:
-              ignore: /.*/
-          requires:
-            - tests
-            - integration-tests
-            - tck-tests
-            - validate-docs
+      - tools-tests
+      # - tests:
+      #   filters: # required since publish jobs have tag filters and dependencies
+      #     tags:
+      #       only: /.*/
+      # - integration-tests:
+      #     filters: # required since publish jobs have tag filters and dependencies
+      #       tags:
+      #         only: /.*/
+      # - tck-tests:
+      #     filters: # required since publish jobs have tag filters and dependencies
+      #       tags:
+      #         only: /.*/
+      # - validate-docs:
+      #     filters: # required since publish jobs have tag filters and dependencies
+      #       tags:
+      #         only: /.*/
+      # - publish:
+      #     filters: # version tags only
+      #       tags:
+      #         only: /^v.*/
+      #       branches:
+      #         ignore: /.*/
+      #     requires:
+      #       - tests
+      #       - integration-tests
+      #       - tck-tests
+      #       - validate-docs
+      # - publish-tck:
+      #     filters: # version tags only
+      #       tags:
+      #         only: /^v.*/
+      #       branches:
+      #         ignore: /.*/
+      #     requires:
+      #       - tests
+      #       - integration-tests
+      #       - tck-tests
+      #       - validate-docs
+      # - publish-docs:
+      #     filters: # version tags only
+      #       tags:
+      #         only: /^v.*/
+      #       branches:
+      #         ignore: /.*/
+      #     requires:
+      #       - tests
+      #       - integration-tests
+      #       - tck-tests
+      #       - validate-docs
