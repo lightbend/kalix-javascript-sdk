@@ -16,7 +16,65 @@ commands:
       - build-tools/merge-with-parent:
           parent: main
 
+  setup_sbt:
+    description: "Set up sbt"
+    parameters:
+      version:
+        type: string
+        default: "1.4.9"
+    steps:
+      - install-java-11
+      - run:
+          name: Install sbt
+          command: |
+            curl -L -o sbt-<< parameters.version >>.deb https://repo.scala-sbt.org/scalasbt/debian/sbt-<< parameters.version >>.deb
+            sudo dpkg -i sbt-<< parameters.version >>.deb
+            rm sbt-<< parameters.version >>.deb
+
+  save_deps_cache:
+    description: "Save dependency cache"
+    steps:
+      - save_cache:
+          key: deps-cache-01
+          paths:
+            - "~/.ivy2/cache"
+            - "~/.sbt"
+            - "~/.cache/coursier"
+
+  restore_deps_cache:
+    description: "Restore dependency cache"
+    steps:
+      - restore_cache:
+          key: deps-cache-01
+
 jobs:
+
+  test-codegen:
+    docker:
+      - image: cimg/openjdk:11.0
+    description: "Checks"
+    steps:
+      - checkout-and-merge-to-main
+      - setup_sbt
+      - restore_deps_cache
+      - run:
+          name: Run scalafmt checks
+          working_directory: "~/project/codegen"
+          command: |
+            sbt scalafmtCheckAll scalafmtSbtCheck || \
+              { echo "[error] Code not formatted prior to commit. Run 'sbt scalafmtAll scalafmtSbt' then commit the reformatted code."; false; }
+      - run:
+          name: Run header checks
+          working_directory: "~/project/codegen"
+          command: |
+            sbt headerCheckAll || \
+              { echo "[error] Code missing headers prior to commit. Run 'sbt headerCreateAll' then commit the updated code."; false; }
+      - run:
+          name: Run the tests
+          working_directory: "~/project/codegen"
+          command: sbt test
+      - save_deps_cache
+
   tests:
     docker:
       - image: cimg/node:14.16.1

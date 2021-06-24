@@ -10,7 +10,8 @@
     "**/*.yml",
     "samples/*/lib/generated",
     "sdk/test/*.desc",
-    "tools/create-akkasls-entity/template/**/*.*"
+    "tools/create-akkasls-entity/template/**/*.*",
+    "codegen/**/*.*"
   ],
   "license": "build/header.txt",
   "licenseFormats": {
