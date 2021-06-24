@@ -83,17 +83,81 @@ jobs:
           name: "install akkasls-scripts"
           command: |
             cd tools/akkasls-scripts
-            npm ci && npm link
+            npm ci && npm pack
       - run:
           name: "test everything"
           working_directory: "~/tmp"
           command: |
-            node "~/project/tools/create-akkasls-entity/create-akkasls-entity.js" generated-project
-            cd tools/create-akkasls-entity
-            npm link @lightbend/akkasls-scripts && \
-              npm ci && \
+            node "${HOME}/project/tools/create-akkasls-entity/create-akkasls-entity.js" generated-project
+            cd generated-project
+            npm install "${HOME}/project/tools/akkasls-scripts/lightbend-akkasls-scripts-1.0.0.tgz" && \
+              npm install && \
               npm run build && \
               npm run test
+
+  e2e-tests:
+    machine:
+      image: ubuntu-2004:202104-01
+    description: "e2e-tests"
+    steps:
+      - checkout-and-merge-to-main
+      - run:
+          name: "install sdk"
+          working_directory: "~/project/sdk"
+          command: |
+            source /opt/circleci/.nvm/nvm.sh
+            nvm install
+            npm ci && npm pack
+      - run:
+          name: "install codegen"
+          working_directory: "~/project/tools/create-akkasls-entity"
+          command: |
+            source /opt/circleci/.nvm/nvm.sh
+            nvm install
+            npm ci
+      - run:
+          name: "install akkasls-scripts"
+          working_directory: "~/project/tools/akkasls-scripts"
+          command: |
+            source /opt/circleci/.nvm/nvm.sh
+            nvm install
+            npm ci && npm pack
+      - run:
+          name: "generate project"
+          working_directory: "~/tmp"
+          command: |
+            source /opt/circleci/.nvm/nvm.sh
+            nvm install v14
+            node "${HOME}/project/tools/create-akkasls-entity/create-akkasls-entity.js" generated-project --template event-sourced-entity
+      - run:
+          name: "test up to unit tests"
+          working_directory: "~/tmp/generated-project"
+          command: |
+            source /opt/circleci/.nvm/nvm.sh
+            nvm install v14
+            npm install "${HOME}/project/tools/akkasls-scripts/lightbend-akkasls-scripts-1.0.0.tgz" && \
+              npm install "${HOME}/project/sdk/lightbend-akkaserverless-javascript-sdk-0.0.0.tgz" && \
+              npm install && \
+              npm run build && \
+              npm run test
+      - run:
+          name: "test the full local dev env"
+          working_directory: "~/tmp/generated-project"
+          environment:
+            HOST: "0.0.0.0"
+            USER_FUNCTION_HOST: "172.17.0.1"
+          shell: /bin/bash
+          command: |
+            source /opt/circleci/.nvm/nvm.sh
+            nvm install v14
+            # Run proxy in background
+            docker-compose -f docker-compose.yml -f docker-compose.linux.yml up -d
+            # Run the service in background
+            npm run start &
+            # Test the event-sourced-entity
+            until curl -XPOST localhost:9000/com.example.MyServiceEntity/GetValue -H "Content-Type:application/json" -d '{"entityId":"test"}' -o response.txt; do sleep 5; done
+            echo "Validating expected error message"
+            test "$(cat response.txt)" = 'The command handler for `GetValue` is not implemented, yet'
 
   validate-docs:
     machine: true
@@ -117,6 +181,14 @@ jobs:
           command: |
             echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/.npmrc
             pushd sdk && npm ci && npm publish --access public && popd
+            pushd tools/create-akkasls-entity && \
+              'sed -i "s/  \"version\":.*/  \"version\": \"$(git tag|cut -c2-)\",/" package.json' && \
+              npm publish --access public && \
+              popd
+            pushd tools/akkasls-scripts && \
+              'sed -i "s/  \"version\":.*/  \"version\": \"$(git tag|cut -c2-)\",/" package.json' && \
+              npm publish --access public && \
+              popd
 
   publish-tck:
     machine: true
@@ -149,53 +221,66 @@ jobs:
 workflows:
   CI:
     jobs:
-      - tools-tests
-      # - tests:
-      #   filters: # required since publish jobs have tag filters and dependencies
-      #     tags:
-      #       only: /.*/
-      # - integration-tests:
-      #     filters: # required since publish jobs have tag filters and dependencies
-      #       tags:
-      #         only: /.*/
-      # - tck-tests:
-      #     filters: # required since publish jobs have tag filters and dependencies
-      #       tags:
-      #         only: /.*/
-      # - validate-docs:
-      #     filters: # required since publish jobs have tag filters and dependencies
-      #       tags:
-      #         only: /.*/
-      # - publish:
-      #     filters: # version tags only
-      #       tags:
-      #         only: /^v.*/
-      #       branches:
-      #         ignore: /.*/
-      #     requires:
-      #       - tests
-      #       - integration-tests
-      #       - tck-tests
-      #       - validate-docs
-      # - publish-tck:
-      #     filters: # version tags only
-      #       tags:
-      #         only: /^v.*/
-      #       branches:
-      #         ignore: /.*/
-      #     requires:
-      #       - tests
-      #       - integration-tests
-      #       - tck-tests
-      #       - validate-docs
-      # - publish-docs:
-      #     filters: # version tags only
-      #       tags:
-      #         only: /^v.*/
-      #       branches:
-      #         ignore: /.*/
-      #     requires:
-      #       - tests
-      #       - integration-tests
-      #       - tck-tests
-      #       - validate-docs
+      - tests:
+          filters: # required since publish jobs have tag filters and dependencies
+            tags:
+              only: /.*/
+      - integration-tests:
+          filters: # required since publish jobs have tag filters and dependencies
+            tags:
+              only: /.*/
+      - tck-tests:
+          filters: # required since publish jobs have tag filters and dependencies
+            tags:
+              only: /.*/
+      - validate-docs:
+          filters: # required since publish jobs have tag filters and dependencies
+            tags:
+              only: /.*/
+      - tools-tests:
+          filters: # required since publish jobs have tag filters and dependencies
+            tags:
+              only: /.*/
+      - e2e-tests:
+          filters: # required since publish jobs have tag filters and dependencies
+            tags:
+              only: /.*/
+      - publish:
+          filters: # version tags only
+            tags:
+              only: /^v.*/
+            branches:
+              ignore: /.*/
+          requires:
+            - tests
+            - integration-tests
+            - tck-tests
+            - validate-docs
+            - tools-tests
+            - e2e-tests
+      - publish-tck:
+          filters: # version tags only
+            tags:
+              only: /^v.*/
+            branches:
+              ignore: /.*/
+          requires:
+            - tests
+            - integration-tests
+            - tck-tests
+            - validate-docs
+            - tools-tests
+            - e2e-tests
+      - publish-docs:
+          filters: # version tags only
+            tags:
+              only: /^v.*/
+            branches:
+              ignore: /.*/
+          requires:
+            - tests
+            - integration-tests
+            - tck-tests
+            - validate-docs
+            - tools-tests
+            - e2e-tests

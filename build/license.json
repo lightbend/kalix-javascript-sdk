@@ -1,6 +1,17 @@
 {
   "ignoreFile": "sdk/.gitignore",
-  "ignore": ["build", "docs", "**/.*", "**/bin", "**/Dockerfile", "**/*.md", "**/*.yml", "samples/*/lib/generated", "sdk/test/*.desc"],
+  "ignore": [
+    "build",
+    "docs",
+    "**/.*",
+    "**/bin",
+    "**/Dockerfile",
+    "**/*.md",
+    "**/*.yml",
+    "samples/*/lib/generated",
+    "sdk/test/*.desc",
+    "tools/create-akkasls-entity/template/**/*.*"
+  ],
   "license": "build/header.txt",
   "licenseFormats": {
     "js": {
