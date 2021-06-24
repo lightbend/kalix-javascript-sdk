@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Create an Akka Serverless entity codebase with a single command.",
   "main": "create-akkasls-entity.js",
-  "repository": "https://github.com/lightbend/akkaserverless-npm-js",
+  "repository": "https://github.com/lightbend/akkaserverless-javascript-sdk",
   "author": "Lightbend Inc",
   "license": "Copyright (c) Lightbend Inc. 2021",
   "engines": {
@@ -15,7 +15,13 @@
     "scaffold-generator": "^3.0.4",
     "yargs": "^17.0.1"
   },
+  "scripts": {
+    "prova": "npm version --no-git-tag-version $(../../sdk/bin/version.sh)"
+  },
   "bin": {
     "create-akkasls-entity": "create-akkasls-entity.js"
+  },
+  "publishConfig": {
+    "@lightbend:registry": "https://registry.npmjs.org"
   }
 }
