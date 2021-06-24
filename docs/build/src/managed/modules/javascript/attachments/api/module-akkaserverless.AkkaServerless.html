@@ -65,6 +65,13 @@
 				</ul>
 			</li>
 			
+			<li class="dropdown">
+				<a href="global.html" class="dropdown-toggle" data-toggle="dropdown">Global<b class="caret"></b></a>
+				<ul class="dropdown-menu ">
+					<li><a href="global.html#replies">replies</a></li>
+				</ul>
+			</li>
+			
 		</ul>
         
             <div class="col-sm-3 col-md-3">
@@ -734,11 +741,7 @@
         <th>Type</th>
 
         
-        <th>Argument</th>
-        
 
-        
-        <th>Default</th>
         
 
         <th class="last">Description</th>
@@ -764,24 +767,10 @@
             </td>
 
             
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-                </td>
-            
 
             
-                <td class="default">
-                
-                    &lt;name from package.json>
-                
-                </td>
-            
 
-            <td class="description last"><p>The name of this service.</p></td>
+            <td class="description last"><p>[serviceName=<name from package.json>] The name of this service.</p></td>
         </tr>
 
     
@@ -802,24 +791,10 @@
             </td>
 
             
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-                </td>
-            
 
             
-                <td class="default">
-                
-                    &lt;version from package.json>
-                
-                </td>
-            
 
-            <td class="description last"><p>The version of this service.</p></td>
+            <td class="description last"><p>[serviceVersion=<version from package.json>] The version of this service.</p></td>
         </tr>
 
     
@@ -840,24 +815,10 @@
             </td>
 
             
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-                </td>
-            
 
             
-                <td class="default">
-                
-                    "user-function.desc"
-                
-                </td>
-            
 
-            <td class="description last"><p>A path to a compiled Protobuf FileDescriptor set,
+            <td class="description last"><p>[descriptorSetPath=&quot;user-function.desc&quot;] A path to a compiled Protobuf FileDescriptor set,
 as output by protoc --descriptor_set_out=somefile.desc. This file must contain all of the component services that
 this user function serves.</p></td>
         </tr>
