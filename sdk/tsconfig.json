@@ -4,6 +4,7 @@
     "module": "commonjs",
     "moduleResolution": "node",
     "declaration": true,
+    "composite": true,
     "strict": true,
     "allowJs": true,
     "noImplicitAny": true /* Raise error on expressions and declarations with an implied 'any' type. */,
@@ -20,8 +21,10 @@
     "allowSyntheticDefaultImports": true,
     "experimentalDecorators": true,
     "sourceMap": true,
-    "outDir": "./dist/tsc/",
+    "rootDir": "./",
+    "outDir": "./dist",
     "lib": ["ES6"]
   },
-  "include": ["src/**/*"]
+  "include": ["src/**/*", "./settings.js", "./package.json", "./index.js", "proto"],
+  "exclude": ["node_modules"]
 }

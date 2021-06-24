@@ -74,22 +74,6 @@ function ORMap() {
    * using default values, the get method should not be used in queries where an empty value for the Replicated Data
    * means the value is not present.
    *
-   * @callback module:akkaserverless.replicatedentity.ORMap~defaultValueCallback
-   * @param {module:akkaserverless.Serializable} key The key the default value is being generated for.
-   * @returns {undefined|module:akkaserverless.replicatedentity.ReplicatedData} The default value, or undefined if no default value should be returned.
-   */
-
-  /**
-   * Generator for default values.
-   *
-   * This is invoked by get when the current map has no Replicated Data defined for the key.
-   *
-   * If this returns a Replicated Data object, it will be added to the map.
-   *
-   * Care should be taken when using this, since it means that the get method can trigger elements to be created. If
-   * using default values, the get method should not be used in queries where an empty value for the Replicated Data
-   * means the value is not present.
-   *
    * @name module:akkaserverless.replicatedentity.ORMap#defaultValue
    * @type {module:akkaserverless.replicatedentity.ORMap~defaultValueCallback}
    */
@@ -118,15 +102,6 @@ function ORMap() {
       return currentValue.size;
     },
   });
-
-  /**
-   * Callback for handling elements iterated through by {@link module:akkaserverless.replicatedentity.ORMap#forEach}.
-   *
-   * @callback module:akkaserverless.replicatedentity.ORMap~forEachCallback
-   * @param {module:akkaserverless.replicatedentity.ReplicatedData} value The Replicated Data value.
-   * @param {module:akkaserverless.Serializable} key The key.
-   * @param {module:akkaserverless.ORMap} This map.
-   */
 
   /**
    * Execute the given callback for each element.

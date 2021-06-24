@@ -1,6 +1,3 @@
-dist
-proto
 protoc
 apidocs
 user-function.desc
-index.d.ts

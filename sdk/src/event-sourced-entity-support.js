@@ -299,6 +299,8 @@ module.exports = class EventSourcedEntityServices {
     const includeDirs = [
       path.join(__dirname, '..', 'proto'),
       path.join(__dirname, '..', 'protoc', 'include'),
+      path.join(__dirname, '..', '..', 'proto'),
+      path.join(__dirname, '..', '..', 'protoc', 'include'),
     ];
     const packageDefinition = protoLoader.loadSync(
       path.join(

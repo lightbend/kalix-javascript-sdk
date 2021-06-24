@@ -115,7 +115,7 @@ class ReplyFactory {
   }
 
   /**
-   * @param description {String} A description of the failure
+   * @param {String} description A description of the failure
    * @return {module:akkaserverless.replies.Reply} A failure reply.
    */
   failure(description) {
@@ -136,6 +136,7 @@ class ReplyFactory {
   }
 }
 
+/** @type {module:akkaserverless.replies.ReplyFactory} */
 const replies = new ReplyFactory();
 replies.Reply = Reply;
 replies.Effect = Effect;

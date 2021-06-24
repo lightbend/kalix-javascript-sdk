@@ -39,7 +39,8 @@ if (process.env.HOST !== undefined) {
   defaultOptions.bindAddress = process.env.HOST;
 }
 
-const packageInfo = require(path.join(__dirname, '..', 'package.json'));
+const pkgInfo = require('./package-info');
+const packageInfo = new pkgInfo.PackageInfo();
 const serviceInfo = {
   serviceName: '',
   serviceVersion: '',
@@ -98,6 +99,15 @@ const codeCategories = new Map([
  */
 
 /**
+ * @typedef module:akkaserverless.AkkaServerless~options
+ * @property {string} serviceName - [serviceName=<name from package.json>] The name of this service.
+ * @property {string} serviceVersion - [serviceVersion=<version from package.json>] The version of this service.
+ * @property {string} descriptorSetPath - [descriptorSetPath="user-function.desc"] A path to a compiled Protobuf FileDescriptor set,
+ * as output by protoc --descriptor_set_out=somefile.desc. This file must contain all of the component services that
+ * this user function serves.
+ */
+
+/**
  * An Akka Serverless entity.
  *
  * @interface module:akkaserverless.Entity
@@ -111,15 +121,6 @@ const codeCategories = new Map([
  * @implements module:akkaserverless.Server
  */
 class AkkaServerless {
-  /**
-   * @typedef module:akkaserverless.AkkaServerless~options
-   * @property {string} [serviceName=<name from package.json>] The name of this service.
-   * @property {string} [serviceVersion=<version from package.json>] The version of this service.
-   * @property {string} [descriptorSetPath="user-function.desc"] A path to a compiled Protobuf FileDescriptor set,
-   * as output by protoc --descriptor_set_out=somefile.desc. This file must contain all of the component services that
-   * this user function serves.
-   */
-
   /**
    * Create a new akkaserverless server.
    *

@@ -48,13 +48,13 @@ jobs:
           name: "run integration tests"
           command: |
             source /opt/circleci/.nvm/nvm.sh
-            pushd sdk && nvm install && npm ci && DEBUG='testcontainers*' npm run integration-test && popd
-            pushd samples/js-customer-registry && npm ci && npm run integration-test && popd
+            pushd sdk && nvm install && npm ci && DEBUG='testcontainers*' npm run integration-test && npm pack && popd
+            pushd samples/js-customer-registry && npm install ../../sdk/lightbend-akkaserverless-javascript-sdk-0.0.0.tgz && npm ci && npm run integration-test && popd
 
-            pushd sdk && nvm install && npm ci && npm link && popd
-            pushd samples/valueentity-counter && npm link @lightbend/akkaserverless-javascript-sdk && npm install && npm run build && npm run integration-test && popd
-            pushd samples/js-valueentity-shopping-cart && npm link @lightbend/akkaserverless-javascript-sdk && npm install && npm run build && npm run integration-test && popd
-            pushd samples/js-eventsourced-shopping-cart && npm link @lightbend/akkaserverless-javascript-sdk && npm install && npm run build && npm run integration-test && popd
+            pushd sdk && nvm install && npm ci && npm pack && popd
+            pushd samples/valueentity-counter && npm install ../../sdk/lightbend-akkaserverless-javascript-sdk-0.0.0.tgz && npm install && npm run build && npm run integration-test && popd
+            pushd samples/js-valueentity-shopping-cart && npm install ../../sdk/lightbend-akkaserverless-javascript-sdk-0.0.0.tgz && npm install && npm run build && npm run integration-test && popd
+            pushd samples/js-eventsourced-shopping-cart && npm install ../../sdk/lightbend-akkaserverless-javascript-sdk-0.0.0.tgz && npm install && npm run build && npm run integration-test && popd
 
   tck-tests:
     machine: true
@@ -65,8 +65,8 @@ jobs:
           name: "run TCK tests"
           command: |
             source /opt/circleci/.nvm/nvm.sh
-            pushd sdk && nvm install && npm ci && popd
-            pushd tck && nvm install && npm ci && npm run tck && popd
+            pushd sdk && nvm install && npm ci && npm pack && popd
+            pushd tck && nvm install && npm install ../sdk/lightbend-akkaserverless-javascript-sdk-0.0.0.tgz && npm ci && npm run tck && popd
 
   validate-docs:
     machine: true
