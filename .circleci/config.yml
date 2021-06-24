@@ -303,6 +303,10 @@ workflows:
           filters: # required since publish jobs have tag filters and dependencies
             tags:
               only: /.*/
+      - test-codegen:
+          filters: # required since publish jobs have tag filters and dependencies
+            tags:
+              only: /.*/
       - publish:
           filters: # version tags only
             tags:
