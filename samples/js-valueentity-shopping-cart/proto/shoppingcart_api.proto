@@ -23,9 +23,9 @@ package com.example.shoppingcart;
 // end::proto_package[]
 
 // tag::proto_imports[]
+import "google/protobuf/empty.proto";
 import "akkaserverless/annotations.proto";
 import "google/api/annotations.proto";
-import "google/protobuf/empty.proto";
 // end::proto_imports[]
 
 // tag::proto_messages[]
