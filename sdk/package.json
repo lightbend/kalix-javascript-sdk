@@ -25,22 +25,15 @@
   "engines": {
     "node": "~14"
   },
-  "files": [
-    "proto",
-    "protobuf-bundle.js",
-    "protobuf-bundle.d.ts",
-    "src",
-    "index.js",
-    "index.d.ts",
-    "settings.js"
-  ],
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "dependencies": {
     "@grpc/grpc-js": "^1.3.2",
     "@grpc/proto-loader": "^0.5.6",
-    "grpc-tools": "^1.11.1",
-    "grpc_tools_node_protoc_ts": "^5.3.0",
-    "debug": "^4.1.1",
+    "debug": "^4.3.1",
     "google-protobuf": "^3.0.0",
+    "grpc_tools_node_protoc_ts": "^5.3.0",
+    "grpc-tools": "^1.11.1",
     "json-stable-stringify": "^1.0.1",
     "minimist": ">=0.2.1",
     "mkdirp": "^0.5.1",
@@ -48,10 +41,15 @@
     "rimraf": "^2.6.3",
     "test": "^0.6.0",
     "testcontainers": "7.5.0",
+    "tslib": "^2.3.0",
     "unzipper": "^0.9.15"
   },
   "devDependencies": {
     "@lightbend/tsd-jsdoc": "^2.5.1",
+    "@types/chai": "^4.2.19",
+    "@types/debug": "^4.1.5",
+    "@types/mocha": "^8.2.2",
+    "@types/node": "^14.17.3",
     "chai": "4.2.0",
     "chai-as-promised": "7.1.1",
     "ink-docstrap": "^1.3.2",
@@ -60,7 +58,9 @@
     "npm-watch": "^0.6.0",
     "nyc": "^14.1.1",
     "sinon": "10.0.0",
-    "sinon-chai": "3.6.0"
+    "sinon-chai": "3.6.0",
+    "ts-node": "^10.0.0",
+    "typescript": "^4.3.4"
   },
   "bin": {
     "download-protoc": "bin/download-protoc.js",
@@ -78,6 +78,10 @@
     }
   },
   "scripts": {
+    "clean": "rm -rf ./dist",
+    "copy-files": "cp -r ./proto/ ./dist/proto",
+    "compile": "tsc && npm run copy-files",
+    "prepack": "npm run compile",
     "print-version": "echo $npm_package_version",
     "watch-jsdoc": "npm-watch jsdoc",
     "jsdoc": "jsdoc -c jsdoc.json",

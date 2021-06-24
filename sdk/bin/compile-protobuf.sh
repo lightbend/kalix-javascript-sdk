@@ -27,6 +27,7 @@ $PROTOC \
     --js_out=import_style=commonjs:$OUT_DIR \
     --grpc_out=grpc_js:$OUT_DIR \
     --ts_out=grpc_js:$TS_OUT_DIR \
+    ${PWD}/proto/google/api/*.proto \
     ${PWD}/proto/akkaserverless/*.proto \
     ${PWD}/proto/akkaserverless/protocol/*.proto \
     ${PWD}/proto/akkaserverless/component/*.proto \
