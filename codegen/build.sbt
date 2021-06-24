@@ -13,7 +13,6 @@ lazy val `akkasls-codegen` =
     )
     .aggregate(
       `akkasls-codegen-core`,
-      `akkasls-codegen-java`,
       `akkasls-codegen-js`,
       `akkasls-codegen-js-cli`
     )
@@ -31,29 +30,6 @@ lazy val `akkasls-codegen-core` =
         library.munitScalaCheck % Test
       )
     )
-
-lazy val `akkasls-codegen-java` =
-  project
-    .in(file("java-gen"))
-    .configs(IntegrationTest)
-    .enablePlugins(AutomateHeaderPlugin)
-    .settings(commonSettings, Defaults.itSettings)
-    .settings(
-      libraryDependencies ++= Seq(
-        library.kiama,
-        library.commonsIo       % "it,test",
-        library.munit           % "it,test",
-        library.munitScalaCheck % "it,test",
-        library.logback         % "it",
-        library.requests        % "it",
-        library.testcontainers  % "it",
-        library.typesafeConfig  % "it"
-      ),
-      testOptions in IntegrationTest += Tests.Argument(
-        s"-Djava-codegen.jar=${assembly.value}"
-      )
-    )
-    .dependsOn(`akkasls-codegen-core`)
 
 lazy val `akkasls-codegen-js` =
   project
