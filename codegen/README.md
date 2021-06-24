@@ -1,7 +1,5 @@
 # akkasls-codegen
 
-![Test](https://github.com/lightbend/akkaserverless-codegen/workflows/Test/badge.svg)
-
 akkasls-codegen is a JVM-based library that accepts protobuf descriptors and
 introspects them to build a graph of Cloudstate event-sourced entities, along with their commands,
 events and serializable state types. This graph can then be fed into code generation for which
@@ -35,11 +33,3 @@ To be able to truly validate generated code, each language has a full integratio
 These tests spin up a generated entity alongside the Akka Serverless proxy in a Docker network, and then validate against the published service. These tests can take several minutes to run due to the overhead of installing dependencies in a containerised environment, so will only be run when necessary.
 
 These tests are invoked with the `it:test` SBT task, either on the root project or within one of the subprojects that implements an integration test.
-
-#### Java
-
-For `java-gen`, this suite depends on a compatible version of the `akkaserverless-maven-java` codebase to be available. By default, this is expected to be a peer to this directory (`../akkaserverless-maven-java`), however this can be configured with the `akkaserverless-maven-java.path` property.
-
-The suite uses sbt-assembly to build a fat JAR file, and creates a Docker image containing that JAR and the contents of the `akkaserverless-maven-java` directory. The Maven plugin is adjusted to use this local JAR for codegen, and then both the archetype and the plugin are installed within the image.
-
-Each test then is able to invoke the archetype within a Docker container to create a new entity, make any adjustments, and validate requests against an instance of the Akka Serverless proxy.
