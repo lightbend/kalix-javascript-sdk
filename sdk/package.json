@@ -37,7 +37,7 @@
     "json-stable-stringify": "^1.0.1",
     "minimist": ">=0.2.1",
     "mkdirp": "^0.5.1",
-    "request": "^2.88.0",
+    "node-fetch": "^2.6.1",
     "rimraf": "^2.6.3",
     "test": "^0.6.0",
     "testcontainers": "7.5.0",

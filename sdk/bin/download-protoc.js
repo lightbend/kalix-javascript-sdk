@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-const request = require('request');
+const fetch = require('node-fetch');
 const unzipper = require('unzipper');
 const mkdirp = require('mkdirp');
 const path = require('path');
@@ -74,9 +74,8 @@ if (!fs.existsSync(protocZipFile)) {
   console.log('Downloading protoc from ' + downloadUrl);
 
   const file = fs.createWriteStream(protocZipFile);
-  request(downloadUrl)
-    .pipe(file)
-    .on('finish', () => {
+  fetch(downloadUrl).then((res) => {
+    res.body.pipe(file).on('finish', () => {
       fs.createReadStream(protocZipFile)
         .pipe(unzipper.Parse())
         .on('entry', function (entry) {
@@ -102,4 +101,5 @@ if (!fs.existsSync(protocZipFile)) {
           });
         });
     });
+  });
 }
