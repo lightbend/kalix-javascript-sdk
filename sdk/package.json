@@ -79,7 +79,7 @@
   },
   "scripts": {
     "clean": "rm -rf ./dist",
-    "copy-files": "cp -r ./proto/ ./dist/proto",
+    "copy-files": "cp -r ./proto/ ./dist/proto && cp index.d.ts ./dist",
     "compile": "tsc && npm run copy-files",
     "prepack": "npm run compile",
     "print-version": "echo $npm_package_version",
