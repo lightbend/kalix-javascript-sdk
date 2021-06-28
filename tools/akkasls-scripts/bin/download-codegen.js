@@ -9,7 +9,7 @@ const packageConfig = require("../package.json");
  */
 
 // Codegen tool version is defined in package.json
-const akkaslsCodegenVersion = packageConfig.version;
+const { akkaslsCodegenVersion } = packageConfig.config;
 const releases = {
   linux_x86_64: "akkasls-codegen-js-x86_64-unknown-linux-gnu",
   darwin_x86_64: "akkasls-codegen-js-x86_64-apple-darwin",
