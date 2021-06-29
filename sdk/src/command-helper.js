@@ -18,7 +18,6 @@ const AnySupport = require('./protobuf-any');
 const EffectSerializer = require('./effect-serializer');
 const ContextFailure = require('./context-failure');
 const Metadata = require('./metadata');
-const CloudEvents = require('./cloudevents');
 const Reply = require('./reply').Reply;
 
 /**
@@ -331,7 +330,6 @@ class CommandHelper {
      *
      * @interface module:akkaserverless.EffectContext
      * @property {module:akkaserverless.Metadata} metadata The metadata associated with the command.
-     * @property {module:akkaserverless.CloudEvent} cloudevent The CloudEvents metadata associated with the command.
      */
 
     /**
@@ -344,7 +342,6 @@ class CommandHelper {
       entityId: this.entityId,
       commandId: commandId,
       metadata: metadata,
-      cloudevent: CloudEvents.toCloudevent(metadata.getMap),
       replyMetadata: accessor.replyMetadata,
 
       /**

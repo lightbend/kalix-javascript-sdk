@@ -23,7 +23,6 @@ debug.log = console.log.bind(console);
 const AnySupport = require('./protobuf-any');
 const EffectSerializer = require('./effect-serializer');
 const Metadata = require('./metadata');
-const CloudEvents = require('./cloudevents');
 const Reply = require('./reply').Reply;
 
 class ActionSupport {
@@ -79,8 +78,6 @@ class ActionHandler {
    * @extends module:akkaserverless.CommandContext
    * @property {boolean} cancelled Whether the client is still connected.
    * @property {module:akkaserverless.Metadata} metadata The metadata associated with the command.
-   * @property {module:akkaserverless.CloudEvent} cloudevent The CloudEvents metadata associated with the command.
-   * @property {String} eventSubject The origin subject of the CloudEvent. For example, the entity key when the event was emitted from an entity.
    */
   createContext(metadata) {
     /**
@@ -96,19 +93,12 @@ class ActionHandler {
     if (metadata && metadata.entries) {
       metadataObject = new Metadata(metadata.entries);
     }
-    const cloudevent = CloudEvents.toCloudevent(metadataObject.getMap);
     const ctx = {
       get cancelled() {
         return call.cancelled;
       },
       get metadata() {
         return metadataObject;
-      },
-      get cloudevent() {
-        return cloudevent;
-      },
-      get eventSubject() {
-        return cloudevent.subject();
       },
     };
 

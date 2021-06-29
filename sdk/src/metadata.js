@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-const CloudEvents = require('./cloudevents');
-
 function valueFromEntry(entry) {
   if (entry.bytesValue !== undefined) {
     return entry.bytesValue;
@@ -49,6 +47,15 @@ function Metadata(entries) {
     this.entries = entries;
   } else {
     this.entries = [];
+  }
+
+  this.getSubject = () => {
+    const subject = this.get('ce-subject');
+    if (subject.length > 0) {
+      return subject[0];
+    } else {
+      return undefined;
+    }
   }
 
   /**
@@ -187,13 +194,6 @@ function Metadata(entries) {
     entries.splice(0, entries.length);
   };
 
-  /**
-   * The metadata, expressed as a CloudEvent.
-   *
-   * @name module:akkaserverless.Metadata#cloudevent
-   * @type {module:akkaserverless.CloudEvent}
-   */
-  this.cloudevent = CloudEvents.toCloudevent(this.getMap);
 }
 
 module.exports = Metadata;
