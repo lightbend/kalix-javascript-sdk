@@ -25,4 +25,4 @@ export class ContextFailure extends Error {
       Error.captureStackTrace(this, ContextFailure);
     }
   }
-};
+}

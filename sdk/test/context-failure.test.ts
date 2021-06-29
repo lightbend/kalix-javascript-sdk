@@ -19,9 +19,8 @@ import { ContextFailure } from '../src/context-failure';
 
 describe('ContextFailure', () => {
   it('should create a stack', () => {
-    const cf = new ContextFailure("my-msg");
+    const cf = new ContextFailure('my-msg');
 
-    expect(cf.stack).to.contain("ContextFailure: my-msg\n");
+    expect(cf.stack).to.contain('ContextFailure: my-msg\n');
   });
-
 });

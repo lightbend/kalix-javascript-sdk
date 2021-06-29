@@ -20,10 +20,9 @@ import { Metadata } from '../src/metadata';
 import * as replies from '../src/reply';
 
 describe('Replies', () => {
-
   it('should create an empty Reply', () => {
     const reply = replies.noReply();
-    
+
     expect(reply.isEmpty()).to.be.true;
     expect(reply.getMethod()).to.be.undefined;
     expect(reply.getMessage()).to.be.undefined;
@@ -34,20 +33,24 @@ describe('Replies', () => {
   });
 
   it('should create a failure Reply', () => {
-    const reply = replies.failure("my-msg");
+    const reply = replies.failure('my-msg');
 
     expect(reply.isEmpty()).to.be.false;
     expect(reply.getMethod()).to.be.undefined;
     expect(reply.getMessage()).to.be.undefined;
     expect(reply.getMetadata()).to.be.undefined;
     expect(reply.getForward()).to.be.undefined;
-    expect(reply.getFailure()).to.be.eq("my-msg");
+    expect(reply.getFailure()).to.be.eq('my-msg');
     expect(reply.getEffects()).to.be.empty;
   });
 
   it('should create a failure Reply', () => {
     // Arrange
-    const reply = replies.forward(new protobuf.Method("my-method", "rpc", "my-request", "my-response"), "my-msg", new Metadata());
+    const reply = replies.forward(
+      new protobuf.Method('my-method', 'rpc', 'my-request', 'my-response'),
+      'my-msg',
+      new Metadata(),
+    );
 
     // Act
     const forward = reply.getForward()!;
@@ -59,16 +62,16 @@ describe('Replies', () => {
     expect(reply.getMetadata()).to.be.undefined;
     expect(reply.getFailure()).to.be.undefined;
     expect(reply.getEffects()).to.be.empty;
-    expect(forward.getMethod()!.name).to.be.eq("my-method");
-    expect(forward.getMessage()).to.be.eq("my-msg");
+    expect(forward.getMethod()!.name).to.be.eq('my-method');
+    expect(forward.getMessage()).to.be.eq('my-msg');
   });
 
   it('should create a message Reply', () => {
-    const reply = replies.message("my-msg", new Metadata());
+    const reply = replies.message('my-msg', new Metadata());
 
     expect(reply.isEmpty()).to.be.false;
     expect(reply.getMethod()).to.be.undefined;
-    expect(reply.getMessage()).to.be.eq("my-msg");
+    expect(reply.getMessage()).to.be.eq('my-msg');
     expect(reply.getMetadata()!.entries).to.be.empty;
     expect(reply.getFailure()).to.be.undefined;
     expect(reply.getEffects()).to.be.empty;
@@ -77,30 +80,39 @@ describe('Replies', () => {
 
   it('should add synchronous effects to a message', () => {
     // Arrange
-    const reply = replies.message("my-msg", new Metadata());
+    const reply = replies.message('my-msg', new Metadata());
 
     // Act
-    reply.addEffect(new protobuf.Method("my-method", "rpc", "my-request", "my-response"), "my-msg", true, new Metadata());
-    const effect = reply.getEffects()![0]
+    reply.addEffect(
+      new protobuf.Method('my-method', 'rpc', 'my-request', 'my-response'),
+      'my-msg',
+      true,
+      new Metadata(),
+    );
+    const effect = reply.getEffects()![0];
 
     // Assert
-    expect(effect.method.name).to.be.eq("my-method");
-    expect(effect.message).to.be.eq("my-msg");
+    expect(effect.method.name).to.be.eq('my-method');
+    expect(effect.message).to.be.eq('my-msg');
     expect(effect.synchronous).to.be.true;
   });
 
   it('should add not synchronous effects to a message', () => {
     // Arrange
-    const reply = replies.message("my-msg", new Metadata());
+    const reply = replies.message('my-msg', new Metadata());
 
     // Act
-    reply.addEffect(new protobuf.Method("my-method", "rpc", "my-request", "my-response"), "my-msg", false, new Metadata());
-    const effect = reply.getEffects()![0]
+    reply.addEffect(
+      new protobuf.Method('my-method', 'rpc', 'my-request', 'my-response'),
+      'my-msg',
+      false,
+      new Metadata(),
+    );
+    const effect = reply.getEffects()![0];
 
     // Assert
-    expect(effect.method.name).to.be.eq("my-method");
-    expect(effect.message).to.be.eq("my-msg");
+    expect(effect.method.name).to.be.eq('my-method');
+    expect(effect.message).to.be.eq('my-msg');
     expect(effect.synchronous).to.be.false;
   });
-
 });

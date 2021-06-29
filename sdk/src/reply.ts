@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { Method } from "protobufjs";
-import { Metadata } from "./metadata";
+import { Method } from 'protobufjs';
+import { Metadata } from './metadata';
 
 /**
  * @memberOf module:akkaserverless.replies
@@ -31,7 +31,8 @@ class Effect {
     readonly method: Method,
     readonly message: any,
     readonly synchronous: boolean = false,
-    readonly metadata: Metadata) {}
+    readonly metadata: Metadata,
+  ) {}
 }
 
 /**
@@ -40,14 +41,14 @@ class Effect {
  * @memberOf module:akkaserverless.replies
  */
 export class Reply {
-
   constructor(
     private method: Method | undefined = undefined,
     private message: any | undefined = undefined,
     private metadata: Metadata | undefined = undefined,
     private forward: Reply | undefined = undefined,
     private failure: string | undefined = undefined,
-    private effects: Effect[] = []) {}
+    private effects: Effect[] = [],
+  ) {}
 
   getMethod() {
     return this.method;
@@ -102,7 +103,12 @@ export class Reply {
    * @param {boolean} [synchronous] Whether the effect should be execute synchronously or not, default is false.
    * @return {module:akkaserverless.replies.Reply} This reply after adding the effect.
    */
-  addEffect(method: Method, message: any, synchronous: boolean, metadata: Metadata): Reply {
+  addEffect(
+    method: Method,
+    message: any,
+    synchronous: boolean,
+    metadata: Metadata,
+  ): Reply {
     this.addEffects([new Effect(method, message, synchronous, metadata)]);
     return this;
   }
@@ -130,60 +136,53 @@ export class Reply {
 }
 
 /**
- * Factory for creating various types of replies from a component
- * @memberOf module:akkaserverless.replies
+ * Create a message reply.
+ *
+ * @param {object} message the message to reply with
+ * @param {module:akkaserverless.Metadata} [metadata] Optional metadata to pass with the reply
+ * @return {module:akkaserverless.replies.Reply} A message reply
  */
-// class ReplyFactory {
-  /**
-   * Create a message reply.
-   *
-   * @param {object} message the message to reply with
-   * @param {module:akkaserverless.Metadata} [metadata] Optional metadata to pass with the reply
-   * @return {module:akkaserverless.replies.Reply} A message reply
-   */
 export function message(message: any, metadata: Metadata): Reply {
-    const reply = new Reply()
-      .setMessage(message)
-      .setMetadata(metadata);
-    return reply;
-  }
+  const reply = new Reply().setMessage(message).setMetadata(metadata);
+  return reply;
+}
 
-  /**
-   * @param {protobuf.Method} method The service call representing the forward.
-   * @param {object} message The message to forward
-   * @param {module:akkaserverless.Metadata} [metadata] Optional metadata to pass with the forwarded message
-   * @return {module:akkaserverless.replies.Reply} A forward reply.
-   */
-export function forward(method: protobuf.Method, message: any, metadata: Metadata): Reply {
-    
-    const forward = new Reply()
-      .setMethod(method)
-      .setMessage(message)
-      .setMetadata(metadata);
+/**
+ * @param {protobuf.Method} method The service call representing the forward.
+ * @param {object} message The message to forward
+ * @param {module:akkaserverless.Metadata} [metadata] Optional metadata to pass with the forwarded message
+ * @return {module:akkaserverless.replies.Reply} A forward reply.
+ */
+export function forward(
+  method: protobuf.Method,
+  message: any,
+  metadata: Metadata,
+): Reply {
+  const forward = new Reply()
+    .setMethod(method)
+    .setMessage(message)
+    .setMetadata(metadata);
 
-    const reply = new Reply().setForward(forward);
-    return reply;
-  }
+  const reply = new Reply().setForward(forward);
+  return reply;
+}
 
-  /**
-   * @param {String} description A description of the failure
-   * @return {module:akkaserverless.replies.Reply} A failure reply.
-   */
+/**
+ * @param {String} description A description of the failure
+ * @return {module:akkaserverless.replies.Reply} A failure reply.
+ */
 export function failure(description: string): Reply {
-    const reply = new Reply().setFailure(description);
-    return reply;
-  }
+  const reply = new Reply().setFailure(description);
+  return reply;
+}
 
-  /**
-   * Create a reply that contains neither a message nor a forward nor a failure.
-   *
-   * This may be useful for emitting effects without sending a message.
-   *
-   * @return {module:akkaserverless.replies.Reply} An empty reply
-   */
+/**
+ * Create a reply that contains neither a message nor a forward nor a failure.
+ *
+ * This may be useful for emitting effects without sending a message.
+ *
+ * @return {module:akkaserverless.replies.Reply} An empty reply
+ */
 export function noReply(): Reply {
-    return new Reply();
-  }
-// }
-
-// export const replies = new ReplyFactory();
+  return new Reply();
+}
