@@ -22,8 +22,8 @@ const debug = require('debug')('akkaserverless-action');
 debug.log = console.log.bind(console);
 const AnySupport = require('./protobuf-any');
 const EffectSerializer = require('./effect-serializer');
-const Metadata = require('./metadata');
-const Reply = require('./reply').Reply;
+const { Metadata } = require('./metadata');
+const { Reply } = require('./reply');
 
 class ActionSupport {
   constructor(root, service, commandHandlers, allComponents) {

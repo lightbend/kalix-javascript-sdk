@@ -23,7 +23,7 @@ const debug = require('debug')('akkaserverless-event-sourced-entity');
 debug.log = console.log.bind(console);
 const AnySupport = require('./protobuf-any');
 const CommandHelper = require('./command-helper');
-const Reply = require('./reply').Reply;
+const { Reply } = require('./reply');
 
 /**
  * @private

@@ -15,7 +15,7 @@
  */
 
 const Action = require("@lightbend/akkaserverless-javascript-sdk").Action
-const replies = require("@lightbend/akkaserverless-javascript-sdk").replies;
+const { replies } = require("@lightbend/akkaserverless-javascript-sdk");
 
 const tckModel = new Action(
   "proto/action.proto",

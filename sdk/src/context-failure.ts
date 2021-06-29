@@ -14,12 +14,15 @@
  * limitations under the License.
  */
 
-module.exports = class ContextFailure extends Error {
-  constructor(msg) {
+export class ContextFailure extends Error {
+  readonly name: string = 'ContextFailure';
+  readonly msg: string;
+
+  constructor(msg: string) {
     super(msg);
+    this.msg = msg;
     if (Error.captureStackTrace) {
       Error.captureStackTrace(this, ContextFailure);
     }
-    this.name = 'ContextFailure';
   }
 };

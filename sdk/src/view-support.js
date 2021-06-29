@@ -22,7 +22,7 @@ const debug = require('debug')('akkaserverless-view');
 // Bind to stdout
 debug.log = console.log.bind(console);
 const AnySupport = require('./protobuf-any');
-const Metadata = require('./metadata');
+const { Metadata } = require('./metadata');
 
 module.exports = class ViewServices {
   constructor() {

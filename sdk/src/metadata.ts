@@ -14,20 +14,20 @@
  * limitations under the License.
  */
 
-function valueFromEntry(entry) {
-  if (entry.bytesValue !== undefined) {
-    return entry.bytesValue;
-  } else {
-    return entry.stringValue;
-  }
-}
-
 /**
  * A metadata value. Can either be a string or a buffer.
  *
  * @typedef module:akkaserverless.MetadataValue
  * @type {string|Buffer}
  */
+type MetadataValue = string | Buffer;
+
+// Using an interface for compatibility with legacy JS code
+interface MetadataEntry {
+  readonly key: string;
+  readonly bytesValue: Buffer | undefined;
+  readonly stringValue: string | undefined;
+}
 
 /**
  * @classdesc Akka Serverless metadata.
@@ -42,71 +42,42 @@ function valueFromEntry(entry) {
  * @interface module:akkaserverless.Metadata
  * @param {array} entries The list of entries
  */
-function Metadata(entries) {
-  if (entries) {
-    this.entries = entries;
-  } else {
-    this.entries = [];
+export class Metadata {
+  readonly entries: MetadataEntry[] = [];
+
+  constructor(entries: MetadataEntry[] = []) {
+    if (entries) {
+      this.entries = entries;
+    } else {
+    }
   }
 
-  this.getSubject = () => {
+  getSubject() {
     const subject = this.get('ce-subject');
     if (subject.length > 0) {
       return subject[0];
     } else {
       return undefined;
     }
-  };
+  }
 
-  /**
-   * The metadata expressed as an object.
-   *
-   * The object keys are case insensitive, ie, `metadata.foo` and `metadata.Foo` both return the same value. If there
-   * are multiple values for a given key, the first one set for that key will be returned. Setting a value will add it
-   * to the list of existing values for that key.
-   *
-   * @name module:akkaserverless.Metadata#getMap
-   * @type {Object<String, module:akkaserverless.MetadataValue>}
-   */
-  this.getMap = new Proxy(
-    {},
-    {
-      get: (target, key) => {
-        for (const idx in entries) {
-          const entry = entries[idx];
-          if (key.toLowerCase() === entry.key.toLowerCase()) {
-            return valueFromEntry(entry);
-          }
-        }
-      },
-      set: (target, key, value) => {
-        this.set(key, value);
-      },
-      deleteProperty: (target, key) => this.delete(key),
-      ownKeys: (target) => {
-        const keys = [];
-        entries.forEach((entry) => {
-          keys.push(entry.key);
-        });
-        return keys;
-      },
-      has: (target, key) => this.has(key),
-      defineProperty: () => {
-        throw new Error('Metadata.getMap does not support defining properties');
-      },
-      getOwnPropertyDescriptor: (target, key) => {
-        const value = this.get(key);
-        return value
-          ? {
-              value: value,
-              writable: true,
-              enumerable: true,
-              configurable: true,
-            }
-          : undefined;
-      },
-    },
-  );
+  getMetadataEntry(key: string, value: any): MetadataEntry {
+    if (typeof value === 'string') {
+      return { key: key, stringValue: value, bytesValue: undefined };
+    } else if (Buffer.isBuffer(value)) {
+      return { key: key, bytesValue: value, stringValue: undefined };
+    } else {
+      return { key: key, stringValue: value.toString(), bytesValue: undefined };
+    }
+  }
+
+  getValue(entry: MetadataEntry) {
+    if (entry.bytesValue !== undefined) {
+      return entry.bytesValue;
+    } else {
+      return entry.stringValue;
+    }
+  }
 
   /**
    * Get all the values for the given key.
@@ -117,15 +88,18 @@ function Metadata(entries) {
    * @param {string} key The key to get.
    * @returns {Array<module:akkaserverless.MetadataValue>} All the values, or an empty array if no values exist for the key.
    */
-  this.get = (key) => {
-    const values = [];
-    entries.forEach((entry) => {
+  get(key: string) {
+    const values: MetadataValue[] = [];
+    this.entries.forEach((entry) => {
       if (key.toLowerCase() === entry.key.toLowerCase()) {
-        values.push(valueFromEntry(entry));
+        const value = this.getValue(entry);
+        if (value) {
+          values.push(value);
+        }
       }
     });
     return values;
-  };
+  }
 
   /**
    * Set a given key value.
@@ -134,19 +108,12 @@ function Metadata(entries) {
    *
    * @function module:akkaserverless.Metadata#set
    * @param {string} key The key to set.
-   * @param {module:akkaserverless.MetadataValue} value The value to set.
+   * @param {any} value The value to set.
    */
-  this.set = (key, value) => {
-    const entry = { key };
-    if (typeof value === 'string') {
-      entry.stringValue = value;
-    } else if (Buffer.isBuffer(value)) {
-      entry.bytesValue = value;
-    } else {
-      entry.stringValue = value.toString();
-    }
-    entries.push(entry);
-  };
+  set(key: string, value: any) {
+    this.entries.push(this.getMetadataEntry(key, value));
+    return this;
+  }
 
   /**
    * Delete all values with the given key.
@@ -156,17 +123,18 @@ function Metadata(entries) {
    * @function module:akkaserverless.Metadata#delete
    * @param {string} key The key to delete.
    */
-  this.delete = (key) => {
+  delete(key: string) {
     let idx = 0;
-    while (idx < entries.length) {
-      const entry = entries[idx];
+    while (idx < this.entries.length) {
+      const entry = this.entries[idx];
       if (key.toLowerCase() !== entry.key.toLowerCase()) {
         idx++;
       } else {
-        entries.splice(idx, 1);
+        this.entries.splice(idx, 1);
       }
     }
-  };
+    return this;
+  }
 
   /**
    * Whether there exists a metadata value for the given key.
@@ -176,23 +144,23 @@ function Metadata(entries) {
    * @function module:akkaserverless.Metadata#has
    * @param {string} key The key to check.
    */
-  this.has = (key) => {
-    for (const idx in entries) {
-      const entry = entries[idx];
+  has(key: string) {
+    for (const idx in this.entries) {
+      const entry = this.entries[idx];
       if (key.toLowerCase() === entry.key.toLowerCase()) {
         return true;
       }
     }
-  };
+    return false;
+  }
 
   /**
    * Clear the metadata.
    *
    * @function module:akkaserverless.Metadata#clear
    */
-  this.clear = () => {
-    entries.splice(0, entries.length);
-  };
+  clear() {
+    this.entries.splice(0, this.entries.length);
+    return this;
+  }
 }
-
-module.exports = Metadata;
