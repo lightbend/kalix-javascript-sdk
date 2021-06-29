@@ -4,3 +4,4 @@ protoc
 apidocs
 user-function.desc
 index.d.ts
+*.tgz

@@ -141,7 +141,7 @@ function processEventTwo(event, context) {
 }
 
 function processAnyEvent(event, context) {
-  return Response.create({ id: context.cloudevent.subject, message: event.message });
+  return Response.create({ id: context.metadata.getSubject(), message: event.message });
 }
 
 function processValueOne(value, context) {
@@ -153,7 +153,7 @@ function processValueTwo(value, context) {
 }
 
 function processAnyValue(value, context) {
-  return Response.create({ id: context.cloudevent.subject, message: value.message });
+  return Response.create({ id: context.metadata.getSubject(), message: value.message });
 }
 
 function effect(request, context) {
@@ -161,7 +161,7 @@ function effect(request, context) {
 }
 
 function process(step, context) {
-  const id = context.cloudevent.subject;
+  const id = context.metadata.getSubject();
   if (step.reply)
     context.write(Response.create({ id: id, message: step.reply.message }));
   else if (step.forward)
