@@ -56,7 +56,7 @@ function Metadata(entries) {
     } else {
       return undefined;
     }
-  }
+  };
 
   /**
    * The metadata expressed as an object.
@@ -193,7 +193,6 @@ function Metadata(entries) {
   this.clear = () => {
     entries.splice(0, entries.length);
   };
-
 }
 
 module.exports = Metadata;
