@@ -38,8 +38,7 @@ describe('Metadata', () => {
     const res = meta.get('key1');
 
     // Assert
-    expect(res.length).to.be.equal(1);
-    expect(res[0]).to.be.equal('hello');
+    expect(res).to.have.ordered.members(['hello']);
   });
 
   it('should return multiple data that if set', () => {
@@ -52,9 +51,7 @@ describe('Metadata', () => {
     const res = meta.get('key1');
 
     // Assert
-    expect(res.length).to.be.equal(2);
-    expect(res[0]).to.be.equal('hello1');
-    expect(res[1]).to.be.equal('hello2');
+    expect(res).to.have.ordered.members(['hello1', 'hello2']);
   });
 
   it('should return empty array if all the data have been removed', () => {
