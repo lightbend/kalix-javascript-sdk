@@ -15,7 +15,7 @@
  */
 
 const ValueEntity = require("@lightbend/akkaserverless-javascript-sdk").ValueEntity;
-const replies = require("@lightbend/akkaserverless-javascript-sdk").replies;
+const { replies } = require("@lightbend/akkaserverless-javascript-sdk");
 
 const tckModel = new ValueEntity(
   ["proto/value_entity.proto"],

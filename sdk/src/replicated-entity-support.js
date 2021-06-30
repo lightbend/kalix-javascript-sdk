@@ -23,7 +23,7 @@ const protoHelper = require('./protobuf-helper');
 const AnySupport = require('./protobuf-any');
 const replicatedData = require('./replicated-data');
 const CommandHelper = require('./command-helper');
-const Metadata = require('./metadata');
+const { Metadata } = require('./metadata');
 
 class ReplicatedEntityServices {
   constructor() {

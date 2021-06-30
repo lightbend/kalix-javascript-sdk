@@ -16,9 +16,9 @@
 
 const AnySupport = require('./protobuf-any');
 const EffectSerializer = require('./effect-serializer');
-const ContextFailure = require('./context-failure');
-const Metadata = require('./metadata');
-const Reply = require('./reply').Reply;
+const { ContextFailure } = require('./context-failure');
+const { Metadata } = require('./metadata');
+const { Reply } = require('./reply');
 
 /**
  * Creates the base for context objects.
