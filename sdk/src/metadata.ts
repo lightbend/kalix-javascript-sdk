@@ -48,7 +48,6 @@ export class Metadata {
   constructor(entries: MetadataEntry[] = []) {
     if (entries) {
       this.entries = entries;
-    } else {
     }
   }
 
