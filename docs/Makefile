@@ -2,7 +2,7 @@
 
 module   := javascript
 upstream := lightbend/akkaserverless-javascript-sdk
-branch   := docs/current
+branch   := docs/tmp/current
 sources  := src build/src/managed
 
 src_managed := build/src/managed
