@@ -10,6 +10,11 @@ managed_attachments := ${src_managed}/modules/${module}/attachments
 managed_examples := ${src_managed}/modules/${module}/examples
 managed_partials := ${src_managed}/modules/${module}/partials
 
+antora_docker_image := gcr.io/akkaserverless-public/akkaserverless-docbuilder
+antora_docker_image_tag := 0.0.3
+root_dir := $(shell git rev-parse --show-toplevel)
+base_path := $(shell git rev-parse --show-prefix)
+
 .SILENT:
 
 build: clean managed
@@ -38,6 +43,17 @@ examples:
 	rsync -a --exclude-from=.examplesignore ../samples/js-customer-registry/ "${managed_examples}/js-customer-registry/"
 	rsync -a --exclude-from=.examplesignore ../samples/js-valueentity-shopping-cart/ "${managed_examples}/js-valueentity-shopping-cart/"
 	rsync -a --exclude-from=.examplesignore ../samples/valueentity-counter/ "${managed_examples}/valueentity-counter/"
+
+dev: clean managed dev-html
+
+dev-html:
+	docker run \
+		-v ${root_dir}:/antora \
+		--rm \
+		--entrypoint /bin/sh \
+		-t ${antora_docker_image}:${antora_docker_image_tag} \
+		-c "cd /antora/${base_path} && antora --cache-dir=.cache/antora --stacktrace dev/antora.yml"
+	@echo "Generated docs at dev/build/site/javascript/index.html"
 
 deploy: clean managed
 	bin/deploy.sh --module ${module} --upstream ${upstream} --branch ${branch} ${sources}
