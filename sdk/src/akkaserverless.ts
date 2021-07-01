@@ -15,23 +15,13 @@
  */
 import * as fs from 'fs';
 import * as path from 'path';
-import pkg from '../package.json';
 import * as grpc from '@grpc/grpc-js';
 import * as settings from '../settings';
 
 import * as discovery from '../proto/akkaserverless/protocol/discovery_pb';
 import * as discovery_grpc from '../proto/akkaserverless/protocol/discovery_grpc_pb';
 import * as google_protobuf_empty_pb from 'google-protobuf/google/protobuf/empty_pb';
-
-class PackageInfo {
-  readonly name: string;
-  readonly version: string;
-
-  constructor() {
-    this.name = pkg.name || 'unknown';
-    this.version = pkg.version || '0.0.0.0';
-  }
-}
+import { PackageInfo } from './package-info';
 
 class Bindings {
   readonly address: string;
@@ -305,7 +295,6 @@ export class AkkaServerless {
     });
   }
 
-  // TODO: Remove me?
   docLinkFor(code: string) {
     return this.docLink.getLink(code);
   }
