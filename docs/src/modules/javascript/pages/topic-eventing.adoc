@@ -2,6 +2,6 @@
 
 include::ROOT:partial$include.adoc[]
 
-include::developing:partial$topic-eventing.adoc[]
+include::partial$topic-eventing.adoc[]
 
-include::developing:partial$topic-eventing-cloudevent.adoc[]
+include::partial$topic-eventing-cloudevent.adoc[]
