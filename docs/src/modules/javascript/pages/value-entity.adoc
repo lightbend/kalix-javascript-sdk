@@ -2,7 +2,7 @@
 
 include::ROOT:partial$include.adoc[]
 
-xref:reference:glossary.adoc#value_entity[Value Entities] persist their state on every change, and Akka Serverless needs to serialize their data to send it to the underlying data store. The most straight forward way to persist the state is to use `protobuf` types. Akka Serverless will automatically detect if an updated state is `protobuf`, and serialize it using `protobufjs`. See https://www.npmjs.com/package/protobufjs for more information on `protobufjs`. For other serialization options, including JSON, see xref:javascript:serialization.adoc[Serialization].
+https://developer.lightbend.com/docs/akka-serverless/reference/glossary.html#value_entity[Value Entities] persist their state on every change, and Akka Serverless needs to serialize their data to send it to the underlying data store. The most straight forward way to persist the state is to use `protobuf` types. Akka Serverless will automatically detect if an updated state is `protobuf`, and serialize it using `protobufjs`. See https://www.npmjs.com/package/protobufjs for more information on `protobufjs`. For other serialization options, including JSON, see xref:javascript:serialization.adoc[Serialization].
 
 While protocol buffers are the recommended format for persisting state, we recommend that you do not persist your service's protobuf messages. While this may introduce some overhead to convert from one type to the other, it will allow the service's public interface to evolve independent of the data storage format, which should be private.
 
@@ -52,7 +52,7 @@ include::example$valueentity-counter/proto/counter_api.proto[]
 
 The following code creates the Value Entity with the link:{attachmentsdir}/api/module-akkaserverless.ValueEntity.html[`ValueEntity`{tab-icon}, window="new"] class. It passes in:
 
-* The protobuf files, `counter_api.proto` and `counter_domain.proto`, define the service and the domain protocol. Akka Serverless uses the service protobuf file to load and read the service. It uses the definitions in `counter_domain.proto` to serialize state it receives from the xref:reference:glossary.adoc#proxy[proxy].
+* The protobuf files, `counter_api.proto` and `counter_domain.proto`, define the service and the domain protocol. Akka Serverless uses the service protobuf file to load and read the service. It uses the definitions in `counter_domain.proto` to serialize state it receives from the https://developer.lightbend.com/docs/akka-serverless/reference/glossary.html#proxy[proxy].
 
 * The fully qualified name of the service the Value Entity implements, `com.example.CounterService`. The `entityType` is used to namespace the state in the journal.
 

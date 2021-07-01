@@ -7,7 +7,7 @@ The Akka Serverless JavaScript SDK offers an idiomatic JavaScript language SDK f
 
 Your development project needs to include the Akka Serverless JavaScript SDK and logic to start the gRPC server. You define your components in gRPC descriptors and use `protoc` to compile them. Finally, you implement business logic for service components.
 
-To save the work of starting from scratch, the Java xref:java:kickstart.adoc[code generation tool] creates a project, complete with descriptors and implementations. Or, you can start from one of our xref:tutorial:index.adoc[example applications].
+To save the work of starting from scratch, the Java https://developer.lightbend.com/docs/akka-serverless/java/kickstart.html[code generation tool] creates a project, complete with descriptors and implementations. Or, you can start from one of our https://developer.lightbend.com/docs/akka-serverless/tutorial/index.html[example applications].
 
 == Prerequisites
 
@@ -129,7 +129,7 @@ ifdef::review[REVIEWERS: the following was removed from a page on replicated ent
 
 include::ROOT:partial$include.adoc[]
 
-This page documents how to implement Replicated Entities in Javascript. For information on what  Replicated Entities are, please read how to xref:designing:choose-state-model.adoc[choose a state model] and the general xref:developing:crdts.adoc[Replicated Entity] information first.
+This page documents how to implement Replicated Entities in Javascript. For information on what  Replicated Entities are, please read how to https://developer.lightbend.com/docs/akka-serverless/designing/state-model.html[choose a state model] and the general xref:developing:crdts.adoc[Replicated Entity] information first.
 
 
 
