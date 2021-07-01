@@ -53,7 +53,7 @@ describe('Replies', () => {
     );
 
     // Act
-    const forward = reply.getForward()!;
+    const forward = reply.getForward();
 
     // Assert
     expect(reply.isEmpty()).to.be.false;
@@ -62,8 +62,8 @@ describe('Replies', () => {
     expect(reply.getMetadata()).to.be.undefined;
     expect(reply.getFailure()).to.be.undefined;
     expect(reply.getEffects()).to.be.empty;
-    expect(forward.getMethod()!.name).to.be.eq('my-method');
-    expect(forward.getMessage()).to.be.eq('my-msg');
+    expect(forward?.getMethod()?.name).to.be.eq('my-method');
+    expect(forward?.getMessage()).to.be.eq('my-msg');
   });
 
   it('should create a message Reply', () => {
@@ -72,7 +72,7 @@ describe('Replies', () => {
     expect(reply.isEmpty()).to.be.false;
     expect(reply.getMethod()).to.be.undefined;
     expect(reply.getMessage()).to.be.eq('my-msg');
-    expect(reply.getMetadata()!.entries).to.be.empty;
+    expect(reply.getMetadata()?.entries).to.be.empty;
     expect(reply.getFailure()).to.be.undefined;
     expect(reply.getEffects()).to.be.empty;
     expect(reply.getForward()).to.be.undefined;
@@ -89,7 +89,7 @@ describe('Replies', () => {
       true,
       new Metadata(),
     );
-    const effect = reply.getEffects()![0];
+    const effect = reply.getEffects()[0];
 
     // Assert
     expect(effect.method.name).to.be.eq('my-method');
@@ -108,7 +108,7 @@ describe('Replies', () => {
       false,
       new Metadata(),
     );
-    const effect = reply.getEffects()![0];
+    const effect = reply.getEffects()[0];
 
     // Assert
     expect(effect.method.name).to.be.eq('my-method');
