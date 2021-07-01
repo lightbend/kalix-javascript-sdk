@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-const should = require('chai').should();
-const AkkaServerless = require('../src/akkaserverless');
-const discovery = require('../proto/akkaserverless/protocol/discovery_pb');
+import { AkkaServerless } from '../src/akkaserverless';
+import ValueEntity from '../src/value-entity';
+import discovery from '../proto/akkaserverless/protocol/discovery_pb';
+import { expect } from 'chai';
 
 describe('Akkaserverless', () => {
   it('should generate working links based on error codes', () => {
@@ -85,7 +86,12 @@ describe('Akkaserverless', () => {
     userError.setSourceLocationsList([location]);
 
     // Act
-    const errorMsg = akkasls.reportErrorLogic(userError);
+    const errorMsg = akkasls.reportErrorLogic(
+      userError.getCode(),
+      userError.getMessage(),
+      userError.getDetail(),
+      userError.getSourceLocationsList(),
+    );
 
     // Assert
     const result = `Error reported from Akka system: AS-00112 test message
@@ -114,15 +120,15 @@ At package.test.json:2:4:
     // Assert
     result.getProto().should.equal('');
     result.getComponentsList().length.should.equal(0);
-    serviceInfo.getProtocolMajorVersion().should.equal('0');
-    serviceInfo.getProtocolMinorVersion().should.equal('7');
-    serviceInfo.getServiceName().should.equal('my-service');
-    serviceInfo.getServiceVersion().should.equal('1.2.3');
-    serviceInfo.getServiceRuntime().should.contains('node v');
+    serviceInfo?.getProtocolMajorVersion().should.equal(0);
+    serviceInfo?.getProtocolMinorVersion().should.equal(7);
+    serviceInfo?.getServiceName().should.equal('my-service');
+    serviceInfo?.getServiceVersion().should.equal('1.2.3');
+    serviceInfo?.getServiceRuntime().should.contains('node v');
     serviceInfo
-      .getSupportLibraryName()
+      ?.getSupportLibraryName()
       .should.equal('@lightbend/akkaserverless-javascript-sdk');
-    serviceInfo.getSupportLibraryVersion().should.equal('0.0.0');
+    serviceInfo?.getSupportLibraryVersion().should.equal('0.0.0');
   });
 
   it('discovery service should return correct components', () => {
@@ -152,8 +158,8 @@ At package.test.json:2:4:
     const comp = result.getComponentsList()[0];
     comp.getServiceName().should.equal('my-service');
     comp.getComponentType().should.equal('my-type');
-    comp.getEntity().getEntityType().should.equal('my-entity-type');
-    should.equal(comp.getEntity().getPassivationStrategy(), undefined);
+    comp.getEntity()?.getEntityType().should.equal('my-entity-type');
+    comp.getEntity()?.getPassivationStrategy()?.should.be.undefined;
   });
 
   it('discovery service should return correct components with passivation', () => {
@@ -184,9 +190,9 @@ At package.test.json:2:4:
     const comp = result.getComponentsList()[0];
     comp
       .getEntity()
-      .getPassivationStrategy()
-      .getTimeout()
-      .getTimeout()
+      ?.getPassivationStrategy()
+      ?.getTimeout()
+      ?.getTimeout()
       .should.equal(10);
   });
 });
