@@ -8,8 +8,8 @@ const packageConfig = require("../package.json");
  * This is leveraged when this module is installed as a dependency.
  */
 
-// Codegen tool version is defined in package.json
-const { akkaslsCodegenVersion } = packageConfig.config;
+// Codegen tool version is the same as this version
+const akkaslsCodegenVersion = packageConfig.version;
 const releases = {
   linux_x86_64: "akkasls-codegen-js-x86_64-unknown-linux-gnu",
   darwin_x86_64: "akkasls-codegen-js-x86_64-apple-darwin",
@@ -24,7 +24,15 @@ const filename = "akkasls-codegen-js.bin";
 
 const binDir = path.resolve(__dirname, "../bin");
 const targetFile = path.resolve(binDir, filename);
-if (releases[release]) {
+// for testing and local development:
+// if the env var AKKASLS_NPMJS_CODEGEN_BINARY is set the file is fetched from the local filesystem
+const localBinary = process.env.AKKASLS_NPMJS_CODEGEN_BINARY;
+if (localBinary) {
+  console.info(`Copying akkasls-codegen-js from ${localBinary}`);
+  fs.copyFile(localBinary, targetFile, (err) => {
+    if (err) throw err;
+  });
+} else if (releases[release]) {
   const url =
     process.platform == "win32"
       ? `https://repo.lightbend.com/raw/akkaserverless/names/${releases[release]}/versions/${akkaslsCodegenVersion}/${releases[release]}.exe`

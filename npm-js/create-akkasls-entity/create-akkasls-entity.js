@@ -35,6 +35,7 @@ const { hideBin } = require("yargs/helpers");
  * see https://create-react-app.dev/docs/custom-templates
  */
 const args = yargs(hideBin(process.argv))
+  .env('AKKASLS_NPMJS')
   .usage(
     "$0 <entity-name>",
     "Generates a new initial codebase for an Akka Serverless entity.",
@@ -50,9 +51,22 @@ const args = yargs(hideBin(process.argv))
     description: "Specify a template for the created project",
     choices: ["value-entity", "event-sourced-entity"],
     default: "value-entity",
-  }).argv;
+  })
+  .option('scriptsVersion', {
+    alias: 'scripts-version',
+    type: 'string',
+    description: 'Specify the akkasls-scripts version string',
+    default: `^${package.version}`
+  })
+  .option('sdkVersion', {
+    alias: 'sdk-version',
+    type: 'string',
+    description: 'Specify the akkaserverless-javascript-sdk version string',
+    default: `^${package.version}`
+  })
+  .argv;
 
-const libraryVersion = package.version;
+const libraryVersion = args.libraryVersion;
 
 const baseTemplatePath = path.resolve(__dirname, "template/base");
 const templatePath = path.resolve(__dirname, "template", args.template);
@@ -77,7 +91,8 @@ mustache.escape = (v) => v;
 const scaffold = new Scaffold({
   data: {
     name: args.entityName,
-    libraryVersion,
+    scriptsVersion: args.scriptsVersion,
+    sdkVersion: args.sdkVersion
   },
   render: mustache.render,
 });

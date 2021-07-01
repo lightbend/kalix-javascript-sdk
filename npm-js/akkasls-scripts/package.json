@@ -21,9 +21,6 @@
     "install": "node bin/download-codegen.js",
     "prepublishOnly": "npm version --no-git-tag-version $(../../sdk/bin/version.sh)"
   },
-  "config": {
-    "akkaslsCodegenVersion": "0.29.0"
-  },
   "devDependencies": {
     "prettier": "^2.2.1"
   },
