@@ -42,8 +42,7 @@ docker-compose -f docker-compose.yml -f docker-compose.linux.yml up
 +
 [source, command line]
 ----
-ifdef::JavaScript[npm run]
-ifdef::Java[mvn compile exec:java]
+npm start
 ----
 
 == Exercise the service
