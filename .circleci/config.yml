@@ -288,7 +288,7 @@ jobs:
           name: "install codegen"
           command: |
             cd npm-js/create-akkasls-entity
-            npm ci
+            npm ci && npm pack
       - run:
           name: "install akkasls-scripts"
           command: |
@@ -304,49 +304,50 @@ jobs:
               npm install && \
               npm run build && \
               npm run test
+
   e2e-tests:
     machine:
       image: ubuntu-2004:202104-01
     description: "e2e-tests"
     steps:
       - checkout-and-merge-to-main
+      - setup_sbt
+      - restore_deps_cache
       - run:
-          name: "install sdk"
-          working_directory: "~/project/sdk"
-          command: |
-            source /opt/circleci/.nvm/nvm.sh
-            nvm install
-            npm ci && npm pack
+          name: "compile codegen binary"
+          working_directory: "~/project/codegen"
+          command: sbt akkasls-codegen-js-cli/nativeImage
       - run:
           name: "install codegen"
           working_directory: "~/project/npm-js/create-akkasls-entity"
           command: |
             source /opt/circleci/.nvm/nvm.sh
             nvm install
-            npm ci
+            npm ci && npm pack
       - run:
           name: "install akkasls-scripts"
           working_directory: "~/project/npm-js/akkasls-scripts"
           command: |
             source /opt/circleci/.nvm/nvm.sh
             nvm install
-            npm ci && npm pack
+            npm ci && npm pack && npm install -g lightbend-create-akkasls-entity-1.0.0.tgz
       - run:
           name: "generate project"
           working_directory: "~/tmp"
           command: |
             source /opt/circleci/.nvm/nvm.sh
             nvm install v14
-            node "${HOME}/project/npm-js/create-akkasls-entity/create-akkasls-entity.js" generated-project --template event-sourced-entity
+            export AKKASLS_NPMJS_SCRIPTS_VERSION="file:${HOME}/project/sdk/lightbend-akkaserverless-javascript-sdk-0.0.0.tgz"
+            export AKKASLS_NPMJS_SDK_VERSION="file:${HOME}/project/npm-js/akkasls-scripts/lightbend-akkasls-scripts-1.0.0.tgz"
+            create-akkasls-entity.js generated-project --template event-sourced-entity
       - run:
           name: "test up to unit tests"
           working_directory: "~/tmp/generated-project"
           command: |
             source /opt/circleci/.nvm/nvm.sh
+            export AKKASLS_NPMJS_CODEGEN_BINARY="${HOME}/project/codegen/js-gen-cli/target/native-image/akkasls-codegen-js"
             nvm install v14
-            npm install "${HOME}/project/npm-js/akkasls-scripts/lightbend-akkasls-scripts-1.0.0.tgz" && \
-              npm install "${HOME}/project/sdk/lightbend-akkaserverless-javascript-sdk-0.0.0.tgz" && \
-              npm install && \
+            npm install && \
               npm run build && \
               npm run test
       - run:
