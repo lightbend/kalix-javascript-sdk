@@ -7,10 +7,10 @@
     "npm": ">=6.0.0"
   },
   "dependencies": {
-    "@lightbend/akkaserverless-javascript-sdk": "0.7.0-beta.13"
+    "@lightbend/akkaserverless-javascript-sdk": "{{sdkVersion}}"
   },
   "devDependencies": {
-    "@lightbend/akkasls-scripts": "^{{libraryVersion}}",
+    "@lightbend/akkasls-scripts": "{{scriptsVersion}}",
     "chai": "^4.3.3",
     "jsdoc": "^3.6.3",
     "mocha": "^8.3.1",
