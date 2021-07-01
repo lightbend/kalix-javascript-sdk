@@ -20,7 +20,7 @@ To subscribe to an Event Sourced Entity log, define Protobuf rpc methods for eac
 
 [source,protobuf,indent=0]
 ----
-include::java:example$java-eventing-shopping-cart/src/main/proto/product/to_product_popularity.proto[tag=subscribing]
+include::example$eventing-shopping-cart/proto/product/to_product_popularity.proto[tag=subscribing]
 ----
 <1> create rpc methods for all Protobuf types in the journal
 <2> annotate the methods with `(akkaserverless.method).eventing`

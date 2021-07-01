@@ -6,7 +6,7 @@ When listening to an event log, **all** events emitted by the Event Sourced enti
 
 [source,protobuf,indent=2]
 ----
-include::java:example$java-eventing-shopping-cart/src/main/proto/product/to_product_popularity.proto[tag=catchOthers]
+include::example$eventing-shopping-cart/proto/product/to_product_popularity.proto[tag=catchOthers]
 ----
 
 The corresponding implementation must exist in the component.

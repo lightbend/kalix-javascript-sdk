@@ -12,7 +12,7 @@ To receive messages from a Pub/Sub topic, annotate a service method in the Proto
 
 [source,protobuf,indent=0]
 ----
-include::java:example$java-eventing-shopping-cart/src/main/proto/cart/shopping_cart_analytics.proto[tag=subscribing]
+include::example$eventing-shopping-cart/proto/cart/shopping_cart_analytics.proto[tag=subscribing]
 ----
 <1> annotate the Protobuf rpc method with `(akkaserverless.method).eventing`
 <2> use `in` and `topic` to subscribe to a topic

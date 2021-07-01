@@ -1,7 +1,7 @@
 = Kickstart a Node module
 
-
 include::ROOT:partial$include.adoc[]
+include::partial$attributes.adoc[]
 
 The Akka Serverless code generation tool for JavaScript helps you to get started quickly with a project that you can build using npm or Yarn. The tool generates the recommended project structure (including `package.json`), a Value Entity, unit tests, and a `README.md` that explains what was created and how to work with the newly created service.
 
