@@ -1,0 +1,5 @@
+= Subscribing to a journal
+
+include::ROOT:partial$include.adoc[]
+include::developing:partial$entity-eventing.adoc[]
+include::developing:partial$entity-eventing-ignoring.adoc[]

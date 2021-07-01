@@ -1,0 +1,235 @@
+= Kickstart a Node module
+
+
+include::ROOT:partial$include.adoc[]
+
+The Akka Serverless code generation tool for JavaScript helps you to get started quickly with a project that you can build using npm or Yarn. The tool generates the recommended project structure (including `package.json`), a Value Entity, unit tests, and a `README.md` that explains what was created and how to work with the newly created service.
+
+You can modify the `.proto` and source files, and the tools will generate code stubs for the elements you changed or added. The generated project also contains scripts for running the service locally and for packaging into a container and deploying on Akka Serverless
+
+[NOTE]
+====
+The term "project" used in connection with code generation is a development project that contains your service implementation. This differs from an Akka Serverless project, which is where you deploy one or more packaged services.
+====
+
+
+== Prerequisites
+
+Before running the code generation tools, make sure that you have the following:
+
+* Node >= {minimum_node_version}
+* `npm` or `yarn`
+* Docker >= {minimum_docker_version} (to run locally)
+* The xref:getting-started:set-up-development-env.adoc#_akka_serverless_cli[`akkasls` CLI downloaded]
+* A configured Docker Registry
+* An xref:getting-started:lightbend-account.adoc[Akka Serverless account]
+* An xref:getting-started:projects.adoc[Akka Serverless deployment project]
+
+:sectnums:
+== Prepare the development project
+
+The code generation tools create a new development project named `my-entity`, that contains build configuration and the xref:reference:glossary.adoc#gRPC[gRPC Protobuf specifications] for a xref:reference:glossary.adoc#value_entity[Value Entity].
+
+. To create the initial codebase, from a command window enter the following:
++
+[.tabset]
+npm::
++
+--
+[source, command window, subs="attributes"]
+----
+npx @lightbend/create-akkasls-entity my-entity
+----
+--
+yarn::
++
+--
+[source, command window, subs="attributes"]
+----
+yarn create @lightbend/akkasls-entity my-entity
+----
+--
+
+. Change directories to the newly created folder:
++
+[source, command window, subs="attributes"]
+----
+cd my-entity
+----
+
+. Prepare the build unit by installing all the required dependencies and tools:
++
+[.tabset]
+npm::
++
+--
+[source, command window, subs="attributes"]
+----
+npm install
+----
+--
+yarn::
++
+--
+[source, command window, subs="attributes"]
+----
+yarn
+----
+--
+
+Take a look at the initial structure. The project contains the following directories:
+
+* `lib` - typescript files that allow IDEs to provide better highlighting and validation.
+* `proto` - files containing domain and api Protobuf definitions for a `Counter` Value Entity.
+* `test` - testkit file
+
+To understand how the Protobuf definitions relate to the implementation files, see xref:designing:working.adoc#dev-process[The development process] and xref:designing:programming-model.adoc[].
+
+== Build and generate code
+
+During the build process, the tools generates source files and unit test templates for a Value Entity. You can change or add to the `.proto` and source files. The next build will generate classes and tests for your additions if they do not exist, but will not overwrite existing classes or tests.
+
+Build the project to generate source code:
+[.tabset]
+npm::
++
+--
+[source, command window, subs="attributes"]
+----
+npm run build
+----
+--
+yarn::
++
+--
+[source, command window, subs="attributes"]
+----
+yarn build
+----
+--
+
+You should now see the following source files in your project:
+
+* `src/counter.js` - the implementation of the `counter` Value Entity.
+* `src/index.js` - a convenience file that starts the Akka Serverless proxy for running locally
+* `test/counter.test.js` - a test for the `counter` Value Entity.
+
+NOTE: The `lib/generated` directory contains files used by the tools. Any changes made to files in this folder are overwritten on the next build.
+
+== Run locally
+
+You can run your services locally and test them manually with HTTP or gRPC requests. To run locally, you need to initiate the Akka Serverless xref:reference:glossary.adoc#proxy[proxy]. The `docker-compose` file contains the configuration required to run the proxy.
+
+. To start the proxy, run the following command from the top-level project directory:
++
+[.tabset]
+MacOS, Windows::
++
+--
+[source,bash]
+----
+docker compose up
+----
+--
+Linux::
++
+--
+NOTE: On Linux this requires Docker 20.10 or later (https://github.com/moby/moby/pull/40007), or for a `USER_FUNCTION_HOST` environment variable to be set manually.
+[source,bash]
+----
+docker compose -f docker-compose.yml -f docker-compose.linux.yml up
+----
+--
+
+. Start the application locally with the following command:
++
+[.tabset]
+npm::
++
+--
+[source, command window, subs="attributes"]
+----
+npm run start
+----
+--
+yarn::
++
+--
+[source, command window, subs="attributes"]
+----
+yarn start
+----
+--
+
+TIP: For more details see xref:javascript:run-locally.adoc[Run a service locally].
+
+ifdef::todo[TODO: we need to add how to exercise the counter with gRPC or HTTP.]
+
+== Package service
+
+The project contains configuration files for packaging the service into a Docker image, which can then be deployed to Akka Serverless. The Docker image name can be changed in the `package.json` `config.dockerImage` string value. Update this configuration to publish your image to your Docker repository.
+
+The recommended version is Node {minimum_node_version} and the image is based on the official link:https://hub.docker.com/_/node[Node Docker Image]. Choose a different image in the `Dockerfile` placed in the root folder of the development project.
+
+[.tabset]
+npm::
++
+--
+[source, command window, subs="attributes"]
+----
+npm run package
+----
+--
+yarn::
++
+--
+[source, command window, subs="attributes"]
+----
+yarn package
+----
+--
+
+
+== Deploy to Akka Serverless
+
+The build tool script conveniently packages and publishes the Docker image prior to deployment.
+
+To deploy your service:
+
+. Update the `dockerImage` property in the project's `package.json` file.
++
+Refer to xref:deploying:registries.adoc[] for more information on how to make your docker image available to Akka Serverless.
+
+. In your command window, set your Akka Serverless project to be the current project:
++
+[source, command window]
+----
+akkasls config set project <project-name>
+----
+
+. Run the deployment scripts:
++
+[.tabset]
+npm::
++
+--
+[source, command window, subs="attributes"]
+----
+npm run deploy
+----
+--
+yarn::
++
+--
+[source, command window, subs="attributes"]
+----
+yarn deploy
+----
+--
+
+:!sectnums:
+== Summary
+
+The code generation tools created a project and supporting resources to kickstart your development. Modify the `.proto` and implementations or replace them with your own and take advantage of the generated resources. To learn more about the generated Counter Service, see xref:javascript:value-entity.adoc[].
+
+

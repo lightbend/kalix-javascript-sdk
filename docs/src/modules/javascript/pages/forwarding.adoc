@@ -1,0 +1,20 @@
+= Forwarding and effects in JavaScript
+
+include::ROOT:partial$include.adoc[]
+include::developing:partial$forwarding.adoc[]
+
+ifdef::todo[TODO: add more complete examples.]
+
+== Forwarding a command
+
+ifdef::todo[TODO: update to use replies.forward instead of context.forward, with examples]
+
+The link:{attachmentsdir}/api/module-akkaserverless.CommandContext.html[`CommandContext`{tab-icon}, window="new"] can call the method link:{attachmentsdir}/api/module-akkaserverless.CommandContext.html#forward[`forward`{tab-icon}, window="new"] to forward the command to another entity service call.
+
+include::developing:partial$forwarding-effects.adoc[]
+
+== Emitting an effect
+
+ifdef::todo[TODO: update to use Reply.addEffect instead of context.effect, with examples]
+
+The link:{attachmentsdir}/api/module-akkaserverless.CommandContext.html[`CommandContext`{tab-icon}, window="new"] for each entity type implements link:{attachmentsdir}/api/module-akkaserverless.EffectContext.html[`EffectContext`{tab-icon}, window="new"], which is able to emit an effect after processing the command by invoking the method link:{attachmentsdir}/api/module-akkaserverless.EffectContext.html#effect[`effect`{tab-icon}, window="new"]
