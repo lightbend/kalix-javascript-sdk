@@ -21,7 +21,7 @@ To understand Akka Serverless services, `protobuf` descriptors, and Entities, se
 ## Developing
 
 This project has a bare-bones service ready for you to adapt and
-extend. To see the range of functionality available for you to use with the Akka Serverless JavaScript SDK, see the documentation [JavaScript section](https://developer.lightbend.com/docs/akka-serverless/js-services/index.html). After you have modified any source files, build and the tools will preserve your changes as well as generate stubs for you to implement.
+extend. To see the range of functionality available for you to use with the Akka Serverless JavaScript SDK, see the documentation [JavaScript section](https://developer.lightbend.com/docs/akka-serverless/javascript/index.html). After you have modified any source files, build and the tools will preserve your changes as well as generate stubs for you to implement.
 
 ## Building
 
@@ -72,7 +72,7 @@ To start the application locally, use the following commands:
 npm run build && npm run start
 ```
 
-With both the proxy and your application running, any defined endpoints should be available at `http://localhost:9000`. In addition to the defined gRPC interface, each method has a corresponding HTTP endpoint. Unless configured otherwise (see [Transcoding HTTP](https://developer.lightbend.com/docs/akka-serverless/js-services/proto.html#_transcoding_http)), this endpoint accepts POST requests at the path `/[package].[entity name]/[method]`. For example, using `curl`:
+With both the proxy and your application running, any defined endpoints should be available at `http://localhost:9000`. In addition to the defined gRPC interface, each method has a corresponding HTTP endpoint. Unless configured otherwise (see [Transcoding HTTP](https://developer.lightbend.com/docs/akka-serverless/javascript/proto.html#_transcoding_http)), this endpoint accepts POST requests at the path `/[package].[entity name]/[method]`. For example, using `curl`:
 
 ```
 > curl -XPOST -H "Content-Type: application/json" localhost:9000/com.example.MyServiceEntity/GetValue -d '{"entityId": "foo"}'
