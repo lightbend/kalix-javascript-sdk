@@ -7,8 +7,8 @@
   "author": "Lightbend Inc",
   "license": "Copyright (c) Lightbend Inc. 2021",
   "engines": {
-    "node": ">=13.0.0",
-    "npm": ">=6.0.0"
+    "node": ">=14.0.0",
+    "npm": ">=7.0.0"
   },
   "dependencies": {
     "mustache": "^4.1.0",
@@ -17,5 +17,11 @@
   },
   "bin": {
     "create-akkasls-entity": "create-akkasls-entity.js"
+  },
+  "scripts": {
+    "prepublishOnly": "npm version --no-git-tag-version $(../../sdk/bin/version.sh)"
+  },
+  "publishConfig": {
+    "@lightbend:registry": "https://registry.npmjs.org"
   }
 }

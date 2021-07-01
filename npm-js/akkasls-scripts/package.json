@@ -7,8 +7,8 @@
   "author": "Lightbend Inc",
   "license": "Copyright (c) Lightbend Inc. 2021",
   "engines": {
-    "node": ">=13.0.0",
-    "npm": ">=6.0.0"
+    "node": ">=14.0.0",
+    "npm": ">=7.0.0"
   },
   "dependencies": {
     "cross-spawn": "^7.0.3",
@@ -18,12 +18,16 @@
     "akkasls-scripts": "./bin/akkasls-scripts.js"
   },
   "scripts": {
-    "install": "node bin/download-codegen.js"
+    "install": "node bin/download-codegen.js",
+    "prepublishOnly": "npm version --no-git-tag-version $(../../sdk/bin/version.sh)"
   },
   "config": {
     "akkaslsCodegenVersion": "0.29.0"
   },
   "devDependencies": {
     "prettier": "^2.2.1"
+  },
+  "publishConfig": {
+    "@lightbend:registry": "https://registry.npmjs.org"
   }
 }

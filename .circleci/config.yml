@@ -2,6 +2,7 @@ version: 2.1
 
 orbs:
   build-tools: circleci/build-tools@2.9.0
+  win: circleci/windows@2.2.0
 
 commands:
   checkout-and-merge-to-main:
@@ -16,7 +17,163 @@ commands:
       - build-tools/merge-with-parent:
           parent: main
 
+  install-java-11:
+    description: install openjdk-11
+    steps:
+      - run:
+          name: Install java 11
+          command: |
+            wget https://github.com/AdoptOpenJDK/openjdk11-binaries/releases/download/jdk-11.0.8%2B10/OpenJDK11U-jdk_x64_linux_hotspot_11.0.8_10.tar.gz -O /tmp/openjdk-11.tar.gz
+            sudo mkdir -p /usr/lib/jvm
+            sudo tar xfvz /tmp/openjdk-11.tar.gz --directory /usr/lib/jvm
+            rm -f /tmp/openjdk-11.tar.gz
+            sudo sh -c 'for bin in /usr/lib/jvm/jdk-11.0.8+10/bin/*; do update-alternatives --install /usr/bin/$(basename $bin) $(basename $bin) $bin 100; done'
+            sudo sh -c 'for bin in /usr/lib/jvm/jdk-11.0.8+10/bin/*; do update-alternatives --set $(basename $bin) $bin; done'
+
+  install-java-11-osx:
+    description: install openjdk-11
+    steps:
+      - run:
+          name: Install java 11
+          command: |
+            brew update
+            brew install openjdk@11
+
+  install-java-11-win:
+    description: install openjdk-11
+    steps:
+      - run:
+          name: Install java 11
+          command: |
+            choco upgrade -y --ignore-package-exit-codes --ignore-detected-reboot visualstudio2019-workload-vctools openjdk11
+
+  setup_sbt:
+    description: "Set up sbt"
+    parameters:
+      version:
+        type: string
+        default: "1.4.9"
+    steps:
+      - install-java-11
+      - run:
+          name: Install sbt
+          command: |
+            curl -L -o sbt-<< parameters.version >>.deb https://repo.scala-sbt.org/scalasbt/debian/sbt-<< parameters.version >>.deb
+            sudo dpkg -i sbt-<< parameters.version >>.deb
+            rm sbt-<< parameters.version >>.deb
+
+  setup_sbt_osx:
+    description: "Set up sbt"
+    steps:
+      - install-java-11-osx
+      - run:
+          name: Install sbt
+          environment:
+            HOMEBREW_NO_AUTO_UPDATE: 1
+          command: |
+            # Call brew update explicitly until Circle CI update their images,
+            # see https://github.com/Homebrew/brew/issues/11123
+            brew update
+            brew install sbt
+
+  setup_sbt_win:
+    description: "Set up sbt"
+    parameters:
+      version:
+        type: string
+        default: "1.4.9"
+    steps:
+      - install-java-11-win
+      - run:
+          name: Install sbt
+          command: |
+            choco install sbt --version=<< parameters.version >>
+
+  save_deps_cache:
+    description: "Save dependency cache"
+    steps:
+      - save_cache:
+          key: deps-cache-01
+          paths:
+            - "~/.ivy2/cache"
+            - "~/.sbt"
+            - "~/.cache/coursier"
+
+  restore_deps_cache:
+    description: "Restore dependency cache"
+    steps:
+      - restore_cache:
+          key: deps-cache-01
+
+  publish_to_cloudsmith:
+    parameters:
+      filePath:
+        type: string
+      fileName:
+        type: string
+      version:
+        type: string
+    steps:
+      - run: |
+          id=$(curl \
+            --upload-file <<parameters.filePath>> \
+            -u "${CLOUDSMITH_API_USERNAME}:${CLOUDSMITH_API_PASSWORD}" \
+            https://upload.cloudsmith.io/lightbend/akkaserverless/<<parameters.fileName>> | jq -r '.identifier')
+          curl -X POST -H "Content-Type: application/json" \
+            -u "${CLOUDSMITH_API_USERNAME}:${CLOUDSMITH_API_PASSWORD}" \
+            -d "{\"package_file\": \"$id\", \"version\": \"<<parameters.version>>\"}" \
+            https://api-prd.cloudsmith.io/v1/packages/lightbend/akkaserverless/upload/raw/
+
+  publish_to_cloudsmith_win:
+    parameters:
+      filePath:
+        type: string
+      fileName:
+        type: string
+      version:
+        type: string
+    steps:
+      - run:
+          shell: bash.exe
+          command: |
+            choco upgrade -y --ignore-package-exit-codes --ignore-detected-reboot curl jq
+            id=$(curl \
+              --upload-file "<<parameters.filePath>>" \
+              -u "${CLOUDSMITH_API_USERNAME}:${CLOUDSMITH_API_PASSWORD}" \
+              https://upload.cloudsmith.io/lightbend/akkaserverless/<<parameters.fileName>> | jq -r '.identifier')
+            curl -X POST -H "Content-Type: application/json" \
+              -u "${CLOUDSMITH_API_USERNAME}:${CLOUDSMITH_API_PASSWORD}" \
+              -d "{\"package_file\": \"$id\", \"version\": \"<<parameters.version>>\"}" \
+              https://api-prd.cloudsmith.io/v1/packages/lightbend/akkaserverless/upload/raw/
+
 jobs:
+
+  test-codegen:
+    docker:
+      - image: cimg/openjdk:11.0
+    description: "Test the codegen"
+    steps:
+      - checkout-and-merge-to-main
+      - setup_sbt
+      - restore_deps_cache
+      - run:
+          name: Run scalafmt checks
+          working_directory: "~/project/codegen"
+          command: |
+            sbt scalafmtCheckAll scalafmtSbtCheck || \
+              { echo "[error] Code not formatted prior to commit. Run 'sbt scalafmtAll scalafmtSbt' then commit the reformatted code."; false; }
+      - run:
+          name: Run header checks
+          working_directory: "~/project/codegen"
+          command: |
+            sbt headerCheckAll || \
+              { echo "[error] Code missing headers prior to commit. Run 'sbt headerCreateAll' then commit the updated code."; false; }
+      - run:
+          name: Run the tests
+          working_directory: "~/project/codegen"
+          command: sbt test
+      - save_deps_cache
+
   tests:
     docker:
       - image: cimg/node:14.16.1
@@ -90,6 +247,8 @@ jobs:
           command: |
             echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/.npmrc
             pushd sdk && npm ci && npm publish --access public && popd
+            pushd npm-js/create-akkasls-entity && npm publish --access public && popd
+            pushd npm-js/akkasls-scripts && npm publish --access public && popd
 
   publish-tck:
     machine: true
@@ -119,13 +278,166 @@ jobs:
             pushd sdk && nvm install && popd
             make -C docs deploy
 
+  npm-js-tests:
+    docker:
+      - image: cimg/node:14.16.1
+    description: "npm-js-tests"
+    steps:
+      - checkout-and-merge-to-main
+      - run:
+          name: "install codegen"
+          command: |
+            cd npm-js/create-akkasls-entity
+            npm ci
+      - run:
+          name: "install akkasls-scripts"
+          command: |
+            cd npm-js/akkasls-scripts
+            npm ci && npm pack
+      - run:
+          name: "test everything"
+          working_directory: "~/tmp"
+          command: |
+            node "${HOME}/project/npm-js/create-akkasls-entity/create-akkasls-entity.js" generated-project
+            cd generated-project
+            npm install "${HOME}/project/npm-js/akkasls-scripts/lightbend-akkasls-scripts-1.0.0.tgz" && \
+              npm install && \
+              npm run build && \
+              npm run test
+  e2e-tests:
+    machine:
+      image: ubuntu-2004:202104-01
+    description: "e2e-tests"
+    steps:
+      - checkout-and-merge-to-main
+      - run:
+          name: "install sdk"
+          working_directory: "~/project/sdk"
+          command: |
+            source /opt/circleci/.nvm/nvm.sh
+            nvm install
+            npm ci && npm pack
+      - run:
+          name: "install codegen"
+          working_directory: "~/project/npm-js/create-akkasls-entity"
+          command: |
+            source /opt/circleci/.nvm/nvm.sh
+            nvm install
+            npm ci
+      - run:
+          name: "install akkasls-scripts"
+          working_directory: "~/project/npm-js/akkasls-scripts"
+          command: |
+            source /opt/circleci/.nvm/nvm.sh
+            nvm install
+            npm ci && npm pack
+      - run:
+          name: "generate project"
+          working_directory: "~/tmp"
+          command: |
+            source /opt/circleci/.nvm/nvm.sh
+            nvm install v14
+            node "${HOME}/project/npm-js/create-akkasls-entity/create-akkasls-entity.js" generated-project --template event-sourced-entity
+      - run:
+          name: "test up to unit tests"
+          working_directory: "~/tmp/generated-project"
+          command: |
+            source /opt/circleci/.nvm/nvm.sh
+            nvm install v14
+            npm install "${HOME}/project/npm-js/akkasls-scripts/lightbend-akkasls-scripts-1.0.0.tgz" && \
+              npm install "${HOME}/project/sdk/lightbend-akkaserverless-javascript-sdk-0.0.0.tgz" && \
+              npm install && \
+              npm run build && \
+              npm run test
+      - run:
+          name: "test the full local dev env"
+          working_directory: "~/tmp/generated-project"
+          environment:
+            HOST: "0.0.0.0"
+            USER_FUNCTION_HOST: "172.17.0.1"
+          shell: /bin/bash
+          command: |
+            source /opt/circleci/.nvm/nvm.sh
+            nvm install v14
+            # Run proxy in background
+            docker-compose -f docker-compose.yml -f docker-compose.linux.yml up -d
+            # Run the service in background
+            npm run start &
+            # Test the event-sourced-entity
+            until curl -XPOST localhost:9000/com.example.MyServiceEntity/GetValue -H "Content-Type:application/json" -d '{"entityId":"test"}' -o response.txt; do sleep 5; done
+            echo "Validating expected error message"
+            test "$(cat response.txt)" = 'The command handler for `GetValue` is not implemented, yet'
+
+  publish_native_linux:
+    machine:
+      image: ubuntu-2004:202104-01
+    description: "Build Native image on Linux"
+    steps:
+      - checkout
+      - setup_sbt
+      - restore_deps_cache
+      - run:
+          name: Build Native Image
+          working_directory: "~/project/codegen"
+          command: |
+            sbt test akkasls-codegen-js-cli/nativeImage
+            mv "js-gen-cli/target/native-image/akkasls-codegen-js" "akkasls-codegen-js-x86_64-unknown-linux-gnu"
+      - publish_to_cloudsmith:
+          filePath: "~/project/codegen/akkasls-codegen-js-x86_64-unknown-linux-gnu"
+          fileName: "akkasls-codegen-js-x86_64-unknown-linux-gnu"
+          version: $(sdk/bin/version.sh)
+      - save_deps_cache
+
+  publish_native_osx:
+    macos:
+      xcode: 12.5.0
+    description: "Build Native image on OsX"
+    steps:
+      - checkout
+      - setup_sbt_osx
+      - run:
+          name: Build Native Image
+          working_directory: "~/project/codegen"
+          command: |
+            sbt test akkasls-codegen-js-cli/nativeImage
+            mv "js-gen-cli/target/native-image/akkasls-codegen-js" "akkasls-codegen-js-x86_64-apple-darwin"
+      - publish_to_cloudsmith:
+          filePath: "~/project/codegen/akkasls-codegen-js-x86_64-apple-darwin"
+          fileName: "akkasls-codegen-js-x86_64-apple-darwin"
+          version: $(sdk/bin/version.sh)
+
+  publish_native_win:
+    executor:
+      name: win/default
+    description: "Build Native image on Windows"
+    steps:
+      - checkout
+      - setup_sbt_win
+      - run:
+          name: Build Native Image
+          working_directory: "~/project/codegen"
+          command: |
+            # here be dragons: https://help.appveyor.com/discussions/questions/18777-how-to-use-vcvars64bat-from-powershell
+            cmd.exe /c "call `"C:\Program Files (x86)\Microsoft Visual Studio\2019\BuildTools\vc\Auxiliary\Build\vcvars64.bat`" && set > %temp%\vcvars.txt"
+            Get-Content "$env:temp\vcvars.txt" | Foreach-Object {
+              if ($_ -match "^(.*?)=(.*)$") {
+                Set-Content "env:\$($matches[1])" $matches[2]
+              }
+            }
+            sbt test akkasls-codegen-js-cli/nativeImage
+            mv.exe "js-gen-cli\target\native-image\akkasls-codegen-js.exe" "akkasls-codegen-js-x86_64-pc-windows-gnu.exe"
+      - publish_to_cloudsmith_win:
+          filePath: 'C:\\Users\\circleci\\project\\codegen\\akkasls-codegen-js-x86_64-pc-windows-gnu.exe'
+          fileName: "akkasls-codegen-js-x86_64-pc-windows-gnu.exe"
+          version: $(sdk/bin/version.sh)
+
 workflows:
   CI:
     jobs:
       - tests:
-        filters: # required since publish jobs have tag filters and dependencies
-          tags:
-            only: /.*/
+          filters: # required since publish jobs have tag filters and dependencies
+            tags:
+              only: /.*/
       - integration-tests:
           filters: # required since publish jobs have tag filters and dependencies
             tags:
@@ -135,6 +447,18 @@ workflows:
             tags:
               only: /.*/
       - validate-docs:
+          filters: # required since publish jobs have tag filters and dependencies
+            tags:
+              only: /.*/
+      - npm-js-tests:
+          filters: # required since publish jobs have tag filters and dependencies
+            tags:
+              only: /.*/
+      - e2e-tests:
+          filters: # required since publish jobs have tag filters and dependencies
+            tags:
+              only: /.*/
+      - test-codegen:
           filters: # required since publish jobs have tag filters and dependencies
             tags:
               only: /.*/
@@ -149,6 +473,9 @@ workflows:
             - integration-tests
             - tck-tests
             - validate-docs
+            - npm-js-tests
+            - e2e-tests
+            - test-codegen
       - publish-tck:
           filters: # version tags only
             tags:
@@ -160,6 +487,9 @@ workflows:
             - integration-tests
             - tck-tests
             - validate-docs
+            - npm-js-tests
+            - e2e-tests
+            - test-codegen
       - publish-docs:
           filters: # version tags only
             tags:
@@ -171,3 +501,51 @@ workflows:
             - integration-tests
             - tck-tests
             - validate-docs
+            - npm-js-tests
+            - e2e-tests
+            - test-codegen
+      - publish_native_linux:
+          context:
+            - cloudsmith
+          filters: # version tags only
+            tags:
+              only: /^v.*/
+            branches:
+              ignore: /.*/
+          requires:
+            - tests
+            - integration-tests
+            - tck-tests
+            - validate-docs
+            - npm-js-tests
+            - e2e-tests
+      - publish_native_osx:
+          context:
+            - cloudsmith
+          filters: # version tags only
+            tags:
+              only: /^v.*/
+            branches:
+              ignore: /.*/
+          requires:
+            - tests
+            - integration-tests
+            - tck-tests
+            - validate-docs
+            - npm-js-tests
+            - e2e-tests
+      - publish_native_win:
+          context:
+            - cloudsmith
+          filters: # version tags only
+            tags:
+              only: /^v.*/
+            branches:
+              ignore: /.*/
+          requires:
+            - tests
+            - integration-tests
+            - tck-tests
+            - validate-docs
+            - npm-js-tests
+            - e2e-tests
