@@ -7,7 +7,7 @@ The Akka Serverless JavaScript SDK offers an idiomatic JavaScript language SDK f
 
 Your development project needs to include the Akka Serverless JavaScript SDK and logic to start the gRPC server. You define your components in gRPC descriptors and use `protoc` to compile them. Finally, you implement business logic for service components.
 
-To save the work of starting from scratch, the Java https://developer.lightbend.com/docs/akka-serverless/java/kickstart.html[code generation tool] creates a project, complete with descriptors and implementations. Or, you can start from one of our https://developer.lightbend.com/docs/akka-serverless/tutorial/index.html[example applications].
+To save the work of starting from scratch, the JavaScript xref:kickstart.adoc[code generation tool] creates a project, complete with descriptors and implementations. Or, you can start from one of our https://developer.lightbend.com/docs/akka-serverless/tutorial/index.html[example applications].
 
 == Prerequisites
 
