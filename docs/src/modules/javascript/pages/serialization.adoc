@@ -1,0 +1,28 @@
+= Serialization options for JavaScript services
+
+include::ROOT:partial$include.adoc[]
+include::partial$serialization.adoc[]
+
+As a JavaScript developer, JSON is likely more familiar to you. When creating Event Sourced Entities, you can configure serialization for primitives or for Json, using `serializeAllowPrimitives` or `serializeFallbacktoJson`, respectively.
+
+== Setting the serialization flag
+
+
+The following example sets JSON serialization fo a snapshot:
+
+[source,javascript,indent=0]
+----
+const EventSourcedEntity = require("@lightbend/akkaserverless-javascript-sdk").EventSourcedEntity;
+
+
+const entity = new EventSourcedEntity(
+  ["shoppingcart.proto", "domain.proto"],
+  "com.example.shoppingcart.ShoppingCart",
+  {
+    persistenceId: "shopping-cart",
+    snapshotEvery: 5, // Usually you wouldn't snapshot this frequently, but this helps to demonstrate snapshotting
+    includeDirs: ["./"],
+    serializeFallbackToJson: true // Enables JSON support for persistence
+  }
+);
+----

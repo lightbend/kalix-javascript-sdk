@@ -1,0 +1,124 @@
+= Implementing Value Entities in JavaScript
+
+include::ROOT:partial$include.adoc[]
+
+https://developer.lightbend.com/docs/akka-serverless/reference/glossary.html#value_entity[Value Entities] persist their state on every change, and Akka Serverless needs to serialize their data to send it to the underlying data store. The most straight forward way to persist the state is to use `protobuf` types. Akka Serverless will automatically detect if an updated state is `protobuf`, and serialize it using `protobufjs`. See https://www.npmjs.com/package/protobufjs for more information on `protobufjs`. For other serialization options, including JSON, see xref:javascript:serialization.adoc[Serialization].
+
+While protocol buffers are the recommended format for persisting state, we recommend that you do not persist your service's protobuf messages. While this may introduce some overhead to convert from one type to the other, it will allow the service's public interface to evolve independent of the data storage format, which should be private.
+
+NOTE: For value entities, you modify the state and then trigger a save of that state. Both the JavaScript and the Java SDK have a `context.updateState(newState)` method for this purpose. If you change the state but do not call `updateState`, that state change will be lost.
+
+The steps necessary to implement a Value Entity include:
+
+. Defining the API and domain messages in `.proto` files.
+. Implementing behavior in command handlers.
+. Creating and initializing the Entity.
+
+
+The sections on this page describe a `Counter` Value Entity as an example. Follow the steps on the xref:kickstart.adoc[] page to create a `Counter` entity using the code generation tools.
+
+== Defining the `proto` files
+
+The following `counter_domain.proto` file defines a "Counter" Value Entity. The entity stores an integer value as defined in the `CounterState` message.  A typical entity stores more data than what is required for a counter.
+
+[source,proto]
+----
+include::example$valueentity-counter/proto/counter_domain.proto[]
+----
+
+<1> Any classes generated from this protobuf file will be nested in the package heirarchy of: `com.example.domain`.
+<2> Import the Akka Serverless protobuf annotations, or options.
+<3> The protobuf option `(akkaserverless.file).value_entity` is specific to code-generation as provided by the Akka Serverless plugin.
+<4> `name` denotes the base name for the Value entity, the code-generation will create initial sources `CounterImpl`, `CounterTest` and `CounterIntegrationTest`. Once these files exist, they are not overwritten, so you can freely add logic to them.
+<5> `enity_type` is a unique identifier of the "state storage". The entity name may be changed even after data has been created, the `entity_type` can't. This value shows in the `@ValueEnity` annotation of your entity implementation.
+<6> `state` points to the protobuf message representing the Value entity's state which is kept by Akka Serverless
+<7> The `CounterState` protobuf message is what Akka Serverless stores for this entity.
+
+The `counter_api.proto` file defines the commands we can send to the Counter service to manipulate or access the Counter`s state. They make up the service API:
+
+[source,proto]
+----
+include::example$valueentity-counter/proto/counter_api.proto[]
+----
+<1> Import the Akka Serverless protobuf annotations, or options.
+<2> Any classes generated from this protobuf file will be be nested in the package heirarchy: `com.example`.
+<3> Protobuf messages describe the Commands that the service handles. They may contain other messages to represent structured data.
+<4> Every Command must contain a `string` field that contains the entity ID and is marked with the `(akkaserverless.field).entity_key` option.
+<5> Messages describe the return value for the API. For methods that don't have return values, you should use `google.protobuf.Empty`.
+<6> The service descriptor shows the API of the entity. It lists the methods a client can use to issue Commands to the entity.
+<7> The protobuf option `(akkaserverless.service)` is specific to code-generation as provided by Akka Serverless and points to the protobuf definition `Counter` shown above (in `com.example.domain`).
+
+== Creating an Entity
+
+The following code creates the Value Entity with the link:{attachmentsdir}/api/module-akkaserverless.ValueEntity.html[`ValueEntity`{tab-icon}, window="new"] class. It passes in:
+
+* The protobuf files, `counter_api.proto` and `counter_domain.proto`, define the service and the domain protocol. Akka Serverless uses the service protobuf file to load and read the service. It uses the definitions in `counter_domain.proto` to serialize state it receives from the https://developer.lightbend.com/docs/akka-serverless/reference/glossary.html#proxy[proxy].
+
+* The fully qualified name of the service the Value Entity implements, `com.example.CounterService`. The `entityType` is used to namespace the state in the journal.
+
+[source,js]
+----
+include::example$valueentity-counter/src/counter.js[tag=entity-class]
+----
+
+
+== Using protobuf types
+
+When passing state to Akka Serverless  the persisted data must be serialized and accessable.  To request state types, lookup the protobuf type then use the `create` method.
+
+Use the `ValueEntity` link:{attachmentsdir}/api/module-akkaserverless.ValueEntity.html#lookupType[`lookupType`{tab-icon}, window="new"] helper to look up these types so we can use them later.
+
+[source,js]
+----
+include::example$valueentity-counter/src/counter.js[tag=lookup-type]
+----
+
+== Initial state
+
+An Entity must have an initial state when it is created and no state has been persisted for it yet. Value Entities are not explicitly created, they are implicitly created when a command arrives for them. Nothing is persisted on creation. So, if user "X" opens their counter for the first time, an entity will be created, but it will have no state stored yet, and just be in the initial state.
+
+To create the initial state, set the link:{attachmentsdir}/api/module-akkaserverless.ValueEntity.html#initial[`initial`{tab-icon}, window="new"] callback. This takes the ID of the entity being created, and returns a new empty state, in this case, an empty counter state:
+
+[source,js]
+----
+include::example$valueentity-counter/src/counter.js[tag=initial]
+----
+
+NOTE: The `CounterState.create()` method creates a protobuf message using the `CounterState` protobuf message type.
+
+== Behavior
+
+Value Entity behavior is defined in command handlers. A link:{attachmentsdir}/api/module-akkaserverless.ValueEntity.html#~commandHandler[command handler{tab-icon}, window="new"] is a function that takes a command, the current state, and a link:{attachmentsdir}/api/module-akkaserverless.ValueEntity.ValueEntityCommandContext.html[`ValueEntityCommandContext`{tab-icon}, window="new"]. The function executes a service call on the Entity gRPC interface.
+
+The command is the input message type for the gRPC service call. For example, the `GetCurrentCounter` service call has an input type of `GetCounter`, while the `Increase` service call has an input type of `IncreaseValue`. The command will be an object that matches the structure of these protobuf types.
+
+The command handler must return a message of the same type as the output type of the gRPC service call, in the case of the `GetCurrentCounter` command, this must be a `CurrentCounter` message. In this case, the message does not need to be created using a looked up protobuf message type because Akka Serverless is already aware of the output type of the gRPC service call. Use a JavaScript object that matches the structure of the protobuf type.
+
+=== Retrieving state
+
+The following example shows the implementation of a `GetCurrentCounter` command handler. This command handler is a read-only command handler, it doesn't update the state, it just returns it:
+
+[source,js]
+----
+include::example$valueentity-counter/src/counter.js[tag=get-current]
+----
+
+=== Updating state
+
+When updating the state, a command handler MUST persist that change by calling the link:{attachmentsdir}/api/module-akkaserverless.ValueEntity.ValueEntityCommandContext.html#updateState[`updateState`{tab-icon}, window="new"] method on the `ValueEntityCommandContext`. If it does not, any change to the state will be *lost* when the next command arrives.
+
+The following command handler updates the state. It also validates the command, ensuring the quantity of items added is greater than zero. Invoking link:{attachmentsdir}/api/module-akkaserverless.ValueEntity.ValueEntityCommandContext.html#fail[`fail`{tab-icon}, window="new"] fails the command. This method throws, so there's no need to explicitly throw an exception.
+
+[source,js]
+----
+include::example$valueentity-counter/src/counter.js[tag=increase]
+----
+
+== Starting the entity
+
+A helper method for listing the components declared in the current project is provided by the code generator. It also creates the relevant code for starting all of the components:
+
+[source,js]
+----
+include::example$valueentity-counter/src/index.js[tag=starting]
+----
