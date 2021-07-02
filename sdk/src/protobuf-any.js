@@ -211,7 +211,7 @@ class AnySupport {
         value: obj.constructor.encode(obj).finish(),
       });
     } else if (fallbackToJson && typeof obj === 'object') {
-      let type = obj.type;
+      let type = obj.constructor;
       if (type === undefined) {
         if (requireJsonType) {
           throw new Error(
