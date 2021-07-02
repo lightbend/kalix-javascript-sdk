@@ -1,32 +1,32 @@
 #!/usr/bin/env node
 
-const path = require("path");
-const fs = require("fs");
-const spawn = require("cross-spawn");
+const path = require('path');
+const fs = require('fs');
+const spawn = require('cross-spawn');
 
 const requiredConfig = [
-  "dockerImage",
-  "sourceDir",
-  "testSourceDir",
-  "protoSourceDir",
-  "generatedSourceDir",
-  "compileDescriptorArgs"
+  'dockerImage',
+  'sourceDir',
+  'testSourceDir',
+  'protoSourceDir',
+  'generatedSourceDir',
+  'compileDescriptorArgs',
 ];
 
-const akkaslsScriptDir = path.resolve(__dirname, "..");
+const akkaslsScriptDir = path.resolve(__dirname, '..');
 
 const dockerBuild = (dockerTag) =>
-  runOrFail("Building docker image", "docker", [
-    "build",
-    "--tag",
+  runOrFail('Building docker image', 'docker', [
+    'build',
+    '--tag',
     dockerTag,
-    ".",
+    '.',
   ]);
 
 const getProtoFiles = (directory) =>
   fs.readdirSync(directory).flatMap((file) => {
     const absolutePath = path.resolve(directory, file);
-    if (file.endsWith(".proto")) {
+    if (file.endsWith('.proto')) {
       return [absolutePath];
     } else if (fs.lstatSync(absolutePath).isDirectory()) {
       return getProtoFiles(absolutePath);
@@ -42,67 +42,67 @@ const scriptHandlers = {
     sourceDir,
     testSourceDir,
     generatedSourceDir,
-    compileDescriptorArgs
+    compileDescriptorArgs,
   }) {
     const protoFiles = getProtoFiles(protoSourceDir);
     fs.mkdirSync(generatedSourceDir, {
       recursive: true,
     });
-    const protoJs = path.resolve(generatedSourceDir, "proto.js");
-    const protoTs = path.resolve(generatedSourceDir, "proto.d.ts");
+    const protoJs = path.resolve(generatedSourceDir, 'proto.js');
+    const protoTs = path.resolve(generatedSourceDir, 'proto.d.ts');
 
     runOrFail(
-      "Compiling protobuf descriptor",
-      path.resolve("node_modules", ".bin", "compile-descriptor"),
+      'Compiling protobuf descriptor',
+      path.resolve('node_modules', '.bin', 'compile-descriptor'),
       [...protoFiles, ...compileDescriptorArgs],
-      { shell: true }
+      { shell: true },
     );
 
     runOrFail(
-      "Building static Javascript definitions from proto",
-      path.resolve("node_modules", ".bin", "pbjs"),
-      [...protoFiles, "-t", "static", "-o", protoJs],
-      { shell: true }
+      'Building static Javascript definitions from proto',
+      path.resolve('node_modules', '.bin', 'pbjs'),
+      [...protoFiles, '-t', 'static', '-o', protoJs],
+      { shell: true },
     );
 
     runOrFail(
-      "Building Typescript definitions from static JS",
-      path.resolve("node_modules", ".bin", "pbts"),
-      [protoJs, "-o", protoTs],
-      { shell: true }
+      'Building Typescript definitions from static JS',
+      path.resolve('node_modules', '.bin', 'pbts'),
+      [protoJs, '-o', protoTs],
+      { shell: true },
     );
 
     runOrFail(
-      "Invoking Akka Serverless codegen",
-      path.resolve(akkaslsScriptDir, "bin", "akkasls-codegen-js.bin"),
+      'Invoking Akka Serverless codegen',
+      path.resolve(akkaslsScriptDir, 'bin', 'akkasls-codegen-js.bin'),
       [
-        "--proto-source-dir",
+        '--proto-source-dir',
         protoSourceDir,
-        "--source-dir",
+        '--source-dir',
         sourceDir,
-        "--test-source-dir",
+        '--test-source-dir',
         testSourceDir,
-        "--generated-source-dir",
+        '--generated-source-dir',
         generatedSourceDir,
-      ]
+      ],
     );
   },
   package({ dockerTag }) {
     dockerBuild(dockerTag);
   },
   deploy({ dockerTag, serviceName }) {
-    const { status } = run("Verifying docker image exists", "docker", [
-      "image",
-      "inspect",
+    const { status } = run('Verifying docker image exists', 'docker', [
+      'image',
+      'inspect',
       dockerTag,
     ]);
     if (status === 1) {
       dockerBuild(dockerTag);
     }
-    runOrFail("Pushing docker image", "docker", ["push", dockerTag]);
-    runOrFail("Deploying Akka Serverless service", "akkasls", [
-      "services",
-      "deploy",
+    runOrFail('Pushing docker image', 'docker', ['push', dockerTag]);
+    runOrFail('Deploying Akka Serverless service', 'akkasls', [
+      'services',
+      'deploy',
       serviceName,
       dockerTag,
     ]);
@@ -113,29 +113,29 @@ const script = process.argv[2];
 const handler = scriptHandlers[script];
 if (!handler) {
   console.error(`Unknown script "${script}".`);
-  console.error("Perhaps you need to update akkasls-scripts?");
+  console.error('Perhaps you need to update akkasls-scripts?');
   process.exit(1);
 }
 
 // Extract project config from its package.json
-const packageConfig = require(path.resolve("package.json"));
+const packageConfig = require(path.resolve('package.json'));
 
 if (packageConfig.config == undefined) {
   console.error('The "config" section of your package.json is not defined.');
-  console.error("You must specify the following properties:");
-  console.error(requiredConfig.join(", "));
+  console.error('You must specify the following properties:');
+  console.error(requiredConfig.join(', '));
   process.exit(1);
 }
 
 const missingConfig = requiredConfig.filter(
-  (key) => (packageConfig.config && packageConfig.config[key]) == undefined
+  (key) => (packageConfig.config && packageConfig.config[key]) == undefined,
 );
 
 if (missingConfig.length > 0) {
   console.error(
-    `The "config" section of your package.json is missing the following required properties:`
+    `The "config" section of your package.json is missing the following required properties:`,
   );
-  console.error(missingConfig.join(", "));
+  console.error(missingConfig.join(', '));
   process.exit(1);
 }
 
@@ -158,11 +158,11 @@ handler(config);
  */
 function run(actionDescription, process, args, opts) {
   console.info(
-    `${actionDescription} with command: ${process} ${args.join(" ")}`
+    `${actionDescription} with command: ${process} ${args.join(' ')}`,
   );
 
   return spawn.sync(process, args, {
-    stdio: "inherit",
+    stdio: 'inherit',
     ...opts,
   });
 }

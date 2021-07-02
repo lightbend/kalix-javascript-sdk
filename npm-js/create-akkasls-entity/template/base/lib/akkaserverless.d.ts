@@ -1,6 +1,6 @@
-import EventSourcedEntity from "@lightbend/akkaserverless-javascript-sdk/src/event-sourced-entity";
-import ValueEntity from "@lightbend/akkaserverless-javascript-sdk/src/value-entity";
-import Metadata from "@lightbend/akkaserverless-javascript-sdk/src/metadata";
+import EventSourcedEntity from '@lightbend/akkaserverless-javascript-sdk/src/event-sourced-entity';
+import ValueEntity from '@lightbend/akkaserverless-javascript-sdk/src/value-entity';
+import Metadata from '@lightbend/akkaserverless-javascript-sdk/src/metadata';
 
 /**
  * A typed extension of the EventSourcedEntity type enforcing State, Event and Command types
@@ -10,14 +10,14 @@ import Metadata from "@lightbend/akkaserverless-javascript-sdk/src/metadata";
 interface TypedEventSourcedEntity<State, EventHandlers, CommandHandlers>
   extends EventSourcedEntity {
   setInitial: (
-    callback: (entityId: string) => State
+    callback: (entityId: string) => State,
   ) => TypedEventSourcedEntity<State, EventHandlers, CommandHandlers>;
 
   setBehavior: (
     callback: (state: State) => {
       commandHandlers: CommandHandlers;
       eventHandlers: EventHandlers;
-    }
+    },
   ) => TypedEventSourcedEntity<State, EventHandlers, CommandHandlers>;
 }
 
@@ -28,11 +28,11 @@ interface TypedEventSourcedEntity<State, EventHandlers, CommandHandlers>
  */
 interface TypedValueEntity<State, CommandHandlers> extends ValueEntity {
   setInitial: (
-    callback: (entityId: string) => State
+    callback: (entityId: string) => State,
   ) => TypedValueEntity<State, CommandHandlers>;
 
   setCommandHandlers: (
-    commandHandlers: CommandHandlers
+    commandHandlers: CommandHandlers,
   ) => TypedValueEntity<State, CommandHandlers>;
 }
 
@@ -44,7 +44,7 @@ type CommandContext = {
     method: unknown,
     message: unknown,
     synchronous: boolean,
-    metadata: Metadata
+    metadata: Metadata,
   ): void;
   fail(message: String): never;
   forward(method: unknown, message: string, metadata: Metadata);
@@ -91,8 +91,8 @@ type ActionCommandContext = CommandContext & {
  */
 type StreamedInCommandContext<RequestType> = {
   cancel: () => void;
-  on: (eventType: "data", callback: (request: RequestType) => void) => void;
-  on: (eventType: "end", callback: () => void) => void;
+  on: (eventType: 'data', callback: (request: RequestType) => void) => void;
+  on: (eventType: 'end', callback: () => void) => void;
 };
 
 /**
@@ -100,6 +100,6 @@ type StreamedInCommandContext<RequestType> = {
  */
 type StreamedOutCommandContext<ResponseType> = {
   write: (message: ResponseType, metadata: Metadata) => void;
-  on: (eventType: "cancelled", callback: () => void) => void;
+  on: (eventType: 'cancelled', callback: () => void) => void;
   end: () => void;
 };

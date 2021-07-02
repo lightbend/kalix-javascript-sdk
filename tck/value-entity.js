@@ -14,77 +14,87 @@
  * limitations under the License.
  */
 
-const ValueEntity = require("@lightbend/akkaserverless-javascript-sdk").ValueEntity;
-const { replies } = require("@lightbend/akkaserverless-javascript-sdk");
+const ValueEntity =
+  require('@lightbend/akkaserverless-javascript-sdk').ValueEntity;
+const { replies } = require('@lightbend/akkaserverless-javascript-sdk');
 
 const tckModel = new ValueEntity(
-  ["proto/value_entity.proto"],
-  "akkaserverless.tck.model.valueentity.ValueEntityTckModel",
-  "value-entity-tck-model"
+  ['proto/value_entity.proto'],
+  'akkaserverless.tck.model.valueentity.ValueEntityTckModel',
+  'value-entity-tck-model',
 );
 
-const Response = tckModel.lookupType("akkaserverless.tck.model.Response")
-const Persisted = tckModel.lookupType("akkaserverless.tck.model.Persisted")
+const Response = tckModel.lookupType('akkaserverless.tck.model.Response');
+const Persisted = tckModel.lookupType('akkaserverless.tck.model.Persisted');
 
-tckModel.initial = entityId => Persisted.create({ value: "" });
+tckModel.initial = (entityId) => Persisted.create({ value: '' });
 
 tckModel.commandHandlers = {
-  Process: process
+  Process: process,
 };
 
 function process(request, state, context) {
   let reply = undefined,
-    effects = []
-  request.actions.forEach(action => {
+    effects = [];
+  request.actions.forEach((action) => {
     if (action.update) {
       // state update is not emitted immediately, so we also update the function local state directly for responses
-      state = Persisted.create({ value: action.update.value })
-      context.updateState(state)
+      state = Persisted.create({ value: action.update.value });
+      context.updateState(state);
     } else if (action.delete) {
-      context.deleteState()
-      state = {}
+      context.deleteState();
+      state = {};
     } else if (action.forward) {
-      reply = replies.forward(two.service.methods.Call, { id: action.forward.id })
+      reply = replies.forward(two.service.methods.Call, {
+        id: action.forward.id,
+      });
     } else if (action.effect) {
-      effects.push(action.effect)
+      effects.push(action.effect);
     } else if (action.fail) {
-      reply = replies.failure(action.fail.message)
+      reply = replies.failure(action.fail.message);
     }
   });
-  if (!reply) reply = replies.message(Response.create(state.value ? { message: state.value } : {}))
-  effects.forEach(effect =>
-    reply.addEffect(two.service.methods.Call, { id: effect.id }, effect.synchronous)
-  )
+  if (!reply)
+    reply = replies.message(
+      Response.create(state.value ? { message: state.value } : {}),
+    );
+  effects.forEach((effect) =>
+    reply.addEffect(
+      two.service.methods.Call,
+      { id: effect.id },
+      effect.synchronous,
+    ),
+  );
 
   return reply;
 }
 
 const two = new ValueEntity(
-  ["proto/value_entity.proto"],
-  "akkaserverless.tck.model.valueentity.ValueEntityTwo",
-  "value-entity-tck-model-two"
+  ['proto/value_entity.proto'],
+  'akkaserverless.tck.model.valueentity.ValueEntityTwo',
+  'value-entity-tck-model-two',
 );
 
-two.initial = entityId => Persisted.create({ value: "" });
+two.initial = (entityId) => Persisted.create({ value: '' });
 two.commandHandlers = {
-  Call: request => Response.create({})
+  Call: (request) => Response.create({}),
 };
 
 const configured = new ValueEntity(
-  ["proto/value_entity.proto"],
-  "akkaserverless.tck.model.valueentity.ValueEntityConfigured",
-  "value-entity-configured",
+  ['proto/value_entity.proto'],
+  'akkaserverless.tck.model.valueentity.ValueEntityConfigured',
+  'value-entity-configured',
   {
     entityPassivationStrategy: {
-      timeout: 100 // milliseconds
-    }
-  }
+      timeout: 100, // milliseconds
+    },
+  },
 );
 
-configured.initial = entityId => Persisted.create({ value: "" });
+configured.initial = (entityId) => Persisted.create({ value: '' });
 configured.commandHandlers = {
-  Call: request => Response.create({})
-}
+  Call: (request) => Response.create({}),
+};
 
 module.exports.tckModel = tckModel;
 module.exports.two = two;
