@@ -34,9 +34,9 @@ export class IntegrationTestkit {
   constructor(options?: any) {
     if (options) {
       this.options = options;
-    }
-    if (!options.dockerImage) {
-      this.options.dockerImage = defaultDockerImage;
+      if (!options.dockerImage) {
+        this.options.dockerImage = defaultDockerImage;
+      }
     }
 
     this.clients = {};
