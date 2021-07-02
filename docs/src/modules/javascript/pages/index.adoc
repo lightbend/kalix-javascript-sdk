@@ -1,0 +1,190 @@
+= Developing with JavaScript
+
+include::ROOT:partial$include.adoc[]
+include::partial$attributes.adoc[]
+
+The Akka Serverless JavaScript SDK offers an idiomatic JavaScript language SDK for writing components. This page describes prerequisites for JavaScript development and basic requirements for a development project.
+
+Your development project needs to include the Akka Serverless JavaScript SDK and logic to start the gRPC server. You define your components in gRPC descriptors and use `protoc` to compile them. Finally, you implement business logic for service components.
+
+To save the work of starting from scratch, the JavaScript xref:kickstart.adoc[code generation tool] creates a project, complete with descriptors and implementations. Or, you can start from one of our https://developer.lightbend.com/docs/akka-serverless/tutorial/index.html[example applications].
+
+== Prerequisites
+
+The following are required to develop services in JavaScript:
+
+Node:: Akka Serverless requires at least Node {minimum_node_version}. You will find links to download Node https://nodejs.org/dist/latest-v14.x/[here {tab-icon}, window="new"].
+
+Build tool:: Akka Serverless does not require any particular build tool, you can select your own but out-of-the-box experience is provided in conjunction with NPM and YARN.
+
+Docker:: Akka Serverless requires https://docs.docker.com/get-docker/[Docker {tab-icon}, window="new"] {minimum_docker_version} for building your service images. Most popular build tools have plugins that assist in building Docker images.
+
+Since Akka Serverless is based on gRPC, you need a protoc compiler to compile gRPC protobuf descriptors. The SDK provides helper scripts to automatically download the `protoc` compiler for your platform and compile your project.
+
+== Development project requirements
+
+The following examples show how to install the SDK to build your services with NPM or YARM. The code generation tools include an Akka Serverless xref:kickstart.adoc[code generation tools] that generates the recommended project structure, including a `package.json` file with the necessary references.
+
+NOTE: The code generation tools do more than just provide a starter project, after you modify a `.proto` file, they will generate code stubs for the elements you changed or added.
+
+If you are starting from scratch, you will need to add configuration and code to:
+
+* <<_add_sdk_libraries>>
+* <<_define_grpc_descriptors_and_compile>>
+* <<_create_and_start_the_grpc_server>>
+
+== Add SDK libraries
+
+Once you have the prerequisites, you need to add the `@lightbend/akkaserverless-javascript-sdk` package to your service development project, which can be done by running:
+
+[source,sh,subs="attributes+"]
+----
+npm install akkaserverless@{akkaserverless-javascript-sdk-version} --save-exact
+----
+
+To create a basic service, you need to include the `akkaserverless` package dependencies in your project, define gRPC descriptors in `.proto` files and reference them in your project, compile the `.proto` files, and have logic to start the gRPC server in your source code.
+
+The following shows a minimal `package.json` configuration for a shopping cart service project:
+
+
+[source,json,subs="attributes+"]
+----
+{
+  "name": "shopping-cart",
+  "version": "0.1.0",
+  "dependencies": {
+    "@lightbend/akkaserverless-javascript-sdk": "{akkaserverless-javascript-sdk-version}"
+  },
+  "scripts": {
+    "prestart": "compile-descriptor shoppingcart.proto",
+    "start": "node index.js"
+  }
+}
+----
+
+=== Define gRPC descriptors and compile
+
+Descriptors for gRPC are defined in `protobuf` files. You can place `protobuf` files in your project wherever you like, for example, in the root directory, or in a directory named `protos`. In the `package.json` example, above we've placed the service descriptor in a file in the root folder called `shoppingcart.proto`. See xref:proto.adoc[] for more details.
+
+=== Precompile the protobuf descriptor set
+
+The gRPC descriptor is serialized to binary using the Protobuf https://developers.google.com/protocol-buffers/docs/techniques#self-description[`FileDescriptorSet` message type]. Akka Serverless requires that you precompile this descriptor using `protoc`. We provide a utility that does this for you. It downloads the `protoc` binary for your platform, and runs it with the necessary arguments and include paths. You can run the utility manually, or we recommend adding it as a script to the build.
+
+To run the utility manually, invoke `node_modules/@lightbend/akkaserverless-javascript-sdk/bin/compile-descriptor.js`.
+
+
+Or, add a `prestart` script to your `npm` build:
+
+[source,json]
+----
+{
+  "scripts": {
+    "prestart": "compile-descriptor my-descriptor.proto"
+  }
+}
+----
+
+=== The compile-descriptor utility
+
+Multiple protobuf files can be passed to the `compile-descriptor` utility. You can also pass any arguments accepted by `protoc`. For example, if you are importing files from other directories, you can add those directories as an include path by adding `-Ipath/to/protobuf/dir`.
+
+By default, the descriptor is written to `user-function.desc`, if you wish to change this, you can set `--descriptor_set_out=my-descriptor.desc`. Note that if you output the descriptor to a different path, you will also need to pass that custom path to the constructor of the `Akkaserverless` class when you got to instantiate it.
+
+=== Create and start the gRPC server
+
+There are two ways to create and start an Akka Serverless gRPC server. The first is to create an link:{attachmentsdir}/api/module-akkaserverless.Entity.html[`Entity`{tab-icon}, window="new"], and invoke link:{attachmentsdir}/api/module-akkaserverless.Entity.html#start[`start`{tab-icon}, window="new"] on it. This allows creating a server that serves a single entity, with the default options. We'll look at this more in the subsequent pages. Alternatively, you can use the link:{attachmentsdir}/api/module-akkaserverless.AkkaServerless.html[`AkkaServerless`{tab-icon}, window="new"] class, add one or more entities to it, and then invoke link:{attachmentsdir}/api/module-akkaserverless.AkkaServerless.html#start[`start`{tab-icon}, window="new"], like so:
+
+[source,js,indent=0]
+----
+include::example$test/gettingstarted/index.js[tag=start]
+----
+
+If you created your protobuf file descriptor set at a different location to the default of `user-function.desc`, you can configure that here:
+
+[source,js,indent=0]
+----
+include::example$test/gettingstarted/index.js[tag=custom-desc]
+----
+
+For all options available on the `AkkaServerless` class, see link:{attachmentsdir}++/api/module-akkaserverless.AkkaServerless.html#~options++[`AkkaServerless~options`{tab-icon}, window="new"].
+
+== What's next
+
+This section includes information on the following topics:
+
+* xref:javascript:proto.adoc[]
+* xref:eventsourced.adoc[Event Sourced Entities]
+* xref:javascript:value-entity.adoc[]
+* xref:javascript:views.adoc[]
+* xref:forwarding.adoc[Forwarding and effects]
+* xref:javascript:topic-eventing.adoc[]
+* xref:serialization.adoc[Serialization]
+* link:{attachmentsdir}/api/index.html[JavaScript API docs{tab-icon}, window="new"]
+
+////
+
+ifdef::review[REVIEWERS: the following was removed from a page on replicated entities for if and when we support them in the future and references to Chat were removed because it isn't working.]
+
+= Replicated entities
+
+include::ROOT:partial$include.adoc[]
+
+This page documents how to implement Replicated Entities in Javascript. For information on what  Replicated Entities are, please read how to https://developer.lightbend.com/docs/akka-serverless/designing/state-model.html[choose a state model] and the general xref:developing:crdts.adoc[Replicated Entity] information first.
+
+
+
+== Init default value of Replicated Entity
+
+We can init the state like the following code
+[source,javascript,indent=0]
+----
+entity.defaultValue = () => new crdt.ORSet();
+----
+
+
+== Handling commands
+
+By default, the name of the command that the method handles will be the name of the method with the first letter capitalized. So, a method called `getFriends` will handle a gRPC service call command named `GetFriends`.
+
+The command handler also can take the gRPC service call input type as a parameter to receive the command message. This is optional, sometimes it's not needed.
+
+The return type of the command handler must be the output type for the gRPC service call, this will be sent as the reply.
+
+The following shows the implementation of the command handlers. In the following example, the command handlers `add` and `remove` update the state in Replicated Entity:
+
+[source,javascript,indent=0]
+----
+function add(friend, ctx) {
+  ctx.state.add(friend.friend);
+  return {};
+}
+
+function remove(friend, ctx) {
+  ctx.state.delete(friend.friend);
+  return {};
+}
+
+function getFriends(user, ctx) {
+  console.log("getFriends for user: "+ user, {
+    friends: Array.from(ctx.state)
+  });
+  return {
+    friends: Array.from(ctx.state)
+  };
+}
+
+entity.commandHandlers = {
+  Add: add,
+  Remove: remove,
+  GetFriends: getFriends
+};
+----
+
+== Streamed command handlers
+
+Replicated Entities support streaming over gRPC. Streamed commands can be used to receive and publish updates to the state. The detail is in link:{attachmentsdir}/api/module-akkaserverless.replicatedentity.ReplicatedEntityCommandContext.html[`ReplicatedEntityCommandContext`{tab-icon}, window="new"].
+
+
+
+== Referral Docs
+////

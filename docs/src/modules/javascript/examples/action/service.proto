@@ -1,0 +1,77 @@
+// Copyright 2021 Lightbend Inc.
+
+syntax = "proto3";
+
+package perf.action;
+
+import "perf_domain.proto";
+import "perf_api.proto";
+import "google/protobuf/empty.proto";
+import "google/api/annotations.proto";
+import "akkaserverless/annotations.proto";
+
+message PingRequest {}
+
+message PongResponse {}
+
+service PingActionService {
+  rpc Ping(PingRequest) returns (PongResponse) {
+    option (google.api.http) = {
+      get: "/action/ping"
+    };
+  }
+}
+
+service FromValueActionService {
+  rpc Consume(domain.ValueState) returns (google.protobuf.Empty) {
+    option (akkaserverless.method).eventing.in = {
+      value_entity: "values"
+    };
+  }
+}
+
+service FromTopicActionService {
+  rpc Consume(domain.ValueState) returns (google.protobuf.Empty) {
+    option (akkaserverless.method).eventing.in = {
+      topic: "values"
+    };
+  }
+}
+
+message ToTopicRequest {
+  string id = 1;
+  int32 payload_size = 2;
+}
+
+service ToTopicActionService {
+  rpc ProduceToValues(ToTopicRequest) returns (domain.ValueState) {
+    option (akkaserverless.method).eventing.out = {
+      topic: "values"
+    };
+  }
+
+  rpc ProduceToIncrements(api.IncrementRequest) returns (api.IncrementRequest) {
+    option (akkaserverless.method).eventing.out = {
+      topic: "increments"
+    };
+  }
+}
+
+service FromValueToTopicActionService {
+  rpc Produce(domain.ValueState) returns (domain.ValueState) {
+    option (akkaserverless.method).eventing.in = {
+      value_entity: "values"
+    };
+    option (akkaserverless.method).eventing.out = {
+      topic: "values"
+    };
+  }
+}
+
+service FromTopicForwardToEntityActionService {
+  rpc Forward(api.IncrementRequest) returns (google.protobuf.Empty) {
+    option (akkaserverless.method).eventing.in = {
+      topic: "increments"
+    };
+  }
+}

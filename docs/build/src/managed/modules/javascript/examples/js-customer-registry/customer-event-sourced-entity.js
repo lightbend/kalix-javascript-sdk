@@ -15,7 +15,7 @@
  */
 
 const EventSourcedEntity = require("@lightbend/akkaserverless-javascript-sdk").EventSourcedEntity;
-const replies = require("@lightbend/akkaserverless-javascript-sdk").replies;
+const { replies } = require("@lightbend/akkaserverless-javascript-sdk");
 
 const entity = new EventSourcedEntity(
   ["customer_api.proto", "customer_domain.proto"],
