@@ -247,7 +247,9 @@ jobs:
           command: |
             echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/.npmrc
             pushd sdk && npm ci && npm publish --access public && popd
+            git reset --hard HEAD
             pushd npm-js/create-akkasls-entity && npm publish --access public && popd
+            git reset --hard HEAD
             pushd npm-js/akkasls-scripts && npm publish --access public && popd
 
   publish-tck:
