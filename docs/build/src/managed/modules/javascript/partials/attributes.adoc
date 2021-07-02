@@ -1,2 +1,2 @@
-:akkaserverless-javascript-sdk-version: 0.7.0-beta.13
+:akkaserverless-javascript-sdk-version: 0.30.0-beta.1
 :minimum_node_version: 14
