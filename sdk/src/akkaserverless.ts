@@ -70,26 +70,27 @@ class ServiceInfo {
   }
 }
 
-interface Service {
+export interface Service {
   componentType: () => string;
   register: (server: grpc.Server) => void;
 }
 
-interface EntityPassivationStrategy {
+export interface EntityPassivationStrategy {
   timeout?: number;
 }
 
-interface ComponentOptions {
+export interface ComponentOptions {
   entityType?: string;
   entityPassivationStrategy?: EntityPassivationStrategy;
   includeDirs?: Array<string>;
 }
 
-interface Component {
-  desc?: string | string[];
+export interface Component {
   serviceName?: string;
+  desc?: string | string[];
   service?: any;
   options?: ComponentOptions;
+  grpc?: grpc.GrpcObject;
   componentType?: () => string;
   register?: (components: any) => Service;
 }
@@ -236,8 +237,10 @@ export class AkkaServerless {
     }
   }
 
-  start(bindings: Bindings): Promise<number> {
-    this.bindings = bindings;
+  start(bindings?: Bindings): Promise<number> {
+    if (bindings) {
+      this.bindings = bindings;
+    }
 
     const allComponentsMap: any = {};
     this.components.forEach((component: Component) => {

@@ -13,32 +13,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import * as grpc from '@grpc/grpc-js';
+import * as settings from '../settings';
+import * as util from 'util';
 
-import { AkkaServerless, Bindings } from "./akkaserverless";
+import { AkkaServerless, Bindings, Component } from "./akkaserverless";
+import { GenericContainer, TestContainers, Wait } from 'testcontainers';
 
-const grpc = require('@grpc/grpc-js');
-const settings = require('../settings');
-const { GenericContainer, TestContainers, Wait } = require('testcontainers');
-const util = require('util');
-
-const defaultOptions = {
-  dockerImage: `gcr.io/akkaserverless-public/akkaserverless-proxy:${settings.frameworkVersion}`,
-};
+const defaultDockerImage = `gcr.io/akkaserverless-public/akkaserverless-proxy:${settings.frameworkVersion}`;
 
 /**
  * @private
  */
-class IntegrationTestkit {
-  private options: any;
+export class IntegrationTestkit {
+  private options: any = { dockerImage: defaultDockerImage };
   private clients: any;
   private akkaServerless: AkkaServerless;
   private proxyContainer: any;
 
-  constructor(options: any) {
-    this.options = {
-      ...defaultOptions,
-      ...options,
-    };
+  constructor(options?: any) {
+    if (options) {
+      this.options = options;
+    }
+    if (!options.dockerImage) {
+      this.options.dockerImage = defaultDockerImage;
+    }
 
     this.clients = {};
     this.akkaServerless = new AkkaServerless(options);
@@ -49,63 +48,60 @@ class IntegrationTestkit {
    *
    * @param component The component.
    */
-  addComponent(component: any) {
+  addComponent(component: Component) {
     this.akkaServerless.addComponent(component);
   }
 
+  // This encoding is compatible with this issue:
+  // https://github.com/mochajs/mocha/issues/2407
   start(callback: any) {
+    const result = this.asyncStart();
+    if (typeof callback === 'function') {
+      result.then(
+        () => callback(),
+        (error) => callback(error),
+      );
+    }
+    return;
+  }
+
+  async asyncStart() {
     // First start this user function
-    const bindings = new Bindings(process.env.HOST, 0);
-    const boundPortPromise = this.akkaServerless.start(bindings);
+    const bindings = new Bindings(process.env.HOST || '127.0.0.1', 0);
+    const boundPort = await this.akkaServerless.start(bindings);
 
-    const tcExposePortPromise = (boundPort: number) => {
-      TestContainers.exposeHostPorts(boundPort);
-      return boundPort;
-    };
-
-    const serverPromise = (boundPort: number) =>
-      new GenericContainer(this.options.dockerImage)
+    await TestContainers.exposeHostPorts(boundPort);
+    
+    const proxyContainer = await new GenericContainer(this.options.dockerImage)
         .withExposedPorts(9000)
         .withEnv('USER_FUNCTION_HOST', 'host.testcontainers.internal')
         .withEnv('USER_FUNCTION_PORT', boundPort.toString())
         .withEnv('HTTP_PORT', '9000')
         .withWaitStrategy(Wait.forLogMessage('Akka Serverless proxy online'))
         .start()
-        .then((proxyContainer: any) => {
-          this.proxyContainer = proxyContainer;
 
-          const proxyPort = proxyContainer.getMappedPort(9000);
+    this.proxyContainer = proxyContainer;
 
-          // Create clients
-          this.akkaServerless.getComponents().forEach((entity: any) => {
-            const parts = entity.serviceName.split('.');
-            let stub = entity.grpc;
-            parts.forEach((part: any) => {
-              stub = stub[part];
-            });
-            const client = new stub(
-              'localhost:' + proxyPort,
-              grpc.credentials.createInsecure(),
-            );
-            this.clients[parts[parts.length - 1]] =
-              this.promisifyClient(client);
-          });
+    const proxyPort = proxyContainer.getMappedPort(9000);
 
-          return this;
+    // Create clients
+    this.akkaServerless.getComponents().forEach((entity: Component) => {
+      const parts = entity.serviceName ? entity.serviceName.split('.') : [];
+      if (entity.grpc) {
+        let stub: any = entity.grpc;
+        parts.forEach((part: string) => {
+          stub = stub[part];
         });
+        const client = new stub(
+          'localhost:' + proxyPort,
+          grpc.credentials.createInsecure(),
+        );
+        this.clients[parts[parts.length - 1]] =
+          this.promisifyClient(client);
+      }
+    });
 
-    const executionPromise = boundPortPromise
-      .then(tcExposePortPromise)
-      .then(serverPromise);
-
-    if (typeof callback === 'function') {
-      executionPromise.then(
-        () => callback(),
-        (error) => callback(error),
-      );
-    } else {
-      return executionPromise;
-    }
+    return;
   }
 
   // add async versions of unary request methods, suffixed with "Async"
@@ -124,7 +120,7 @@ class IntegrationTestkit {
     return client;
   }
 
-  shutdown(callback: any) {
+  shutdown(callback: (error?: any) => void) {
     if (this.proxyContainer !== undefined) {
       this.proxyContainer.stop();
     }
@@ -140,5 +136,3 @@ class IntegrationTestkit {
     }
   }
 }
-
-module.exports = IntegrationTestkit;

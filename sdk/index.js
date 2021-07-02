@@ -29,7 +29,7 @@ module.exports.ReplicatedData =
   require('./src/replicated-entity').ReplicatedData;
 module.exports.Action = require('./src/action');
 module.exports.Metadata = require('./src/metadata');
-module.exports.IntegrationTestkit = require('./src/integration-testkit');
+module.exports.IntegrationTestkit = require('./src/integration-testkit').IntegrationTestkit;
 module.exports.View = require('./src/view');
 module.exports.replies = require('./src/reply');
 module.exports.settings = require('./settings');

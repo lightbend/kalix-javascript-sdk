@@ -87,7 +87,7 @@
     "watch-jsdoc": "npm-watch jsdoc",
     "jsdoc": "jsdoc -c jsdoc.json",
     "test": "mocha --recursive --unhandled-rejections=strict",
-    "integration-test": "mocha integration-test",
+    "integration-test": "npm run compile && mocha integration-test",
     "preintegration-test": "bin/compile-descriptor.js test/example.proto --descriptor_set_out=integration-test/user-function.desc",
     "prepare": "bin/prepare.sh",
     "postinstall": "node bin/download-protoc.js",
