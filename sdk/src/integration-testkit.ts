@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
+import { AkkaServerless, Bindings } from "./akkaserverless";
+
 const grpc = require('@grpc/grpc-js');
-const AkkaServerless = require('./akkaserverless');
 const settings = require('../settings');
 const { GenericContainer, TestContainers, Wait } = require('testcontainers');
 const util = require('util');
@@ -28,7 +29,12 @@ const defaultOptions = {
  * @private
  */
 class IntegrationTestkit {
-  constructor(options) {
+  private options: any;
+  private clients: any;
+  private akkaServerless: AkkaServerless;
+  private proxyContainer: any;
+
+  constructor(options: any) {
     this.options = {
       ...defaultOptions,
       ...options,
@@ -43,22 +49,21 @@ class IntegrationTestkit {
    *
    * @param component The component.
    */
-  addComponent(component) {
+  addComponent(component: any) {
     this.akkaServerless.addComponent(component);
   }
 
-  start(callback) {
+  start(callback: any) {
     // First start this user function
-    const boundPortPromise = this.akkaServerless.start({
-      bindPort: 0,
-    });
+    const bindings = new Bindings(process.env.HOST, 0);
+    const boundPortPromise = this.akkaServerless.start(bindings);
 
-    const tcExposePortPromise = (boundPort) => {
+    const tcExposePortPromise = (boundPort: number) => {
       TestContainers.exposeHostPorts(boundPort);
       return boundPort;
     };
 
-    const serverPromise = (boundPort) =>
+    const serverPromise = (boundPort: number) =>
       new GenericContainer(this.options.dockerImage)
         .withExposedPorts(9000)
         .withEnv('USER_FUNCTION_HOST', 'host.testcontainers.internal')
@@ -66,16 +71,16 @@ class IntegrationTestkit {
         .withEnv('HTTP_PORT', '9000')
         .withWaitStrategy(Wait.forLogMessage('Akka Serverless proxy online'))
         .start()
-        .then((proxyContainer) => {
+        .then((proxyContainer: any) => {
           this.proxyContainer = proxyContainer;
 
           const proxyPort = proxyContainer.getMappedPort(9000);
 
           // Create clients
-          this.akkaServerless.components.forEach((entity) => {
+          this.akkaServerless.getComponents().forEach((entity: any) => {
             const parts = entity.serviceName.split('.');
             let stub = entity.grpc;
-            parts.forEach((part) => {
+            parts.forEach((part: any) => {
               stub = stub[part];
             });
             const client = new stub(
@@ -104,7 +109,7 @@ class IntegrationTestkit {
   }
 
   // add async versions of unary request methods, suffixed with "Async"
-  promisifyClient(client) {
+  promisifyClient(client: any) {
     Object.keys(Object.getPrototypeOf(client)).forEach((methodName) => {
       const methodFunction = client[methodName];
       if (
@@ -119,7 +124,7 @@ class IntegrationTestkit {
     return client;
   }
 
-  shutdown(callback) {
+  shutdown(callback: any) {
     if (this.proxyContainer !== undefined) {
       this.proxyContainer.stop();
     }

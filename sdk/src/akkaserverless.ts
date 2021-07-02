@@ -23,11 +23,10 @@ import * as discovery_grpc from '../proto/akkaserverless/protocol/discovery_grpc
 import * as google_protobuf_empty_pb from 'google-protobuf/google/protobuf/empty_pb';
 import { PackageInfo } from './package-info';
 
-class Bindings {
+export class Bindings {
   readonly address: string;
   readonly port: number;
 
-  constructor();
   constructor(
     address?: string | null | undefined,
     port?: number | null | undefined,
@@ -226,6 +225,10 @@ export class AkkaServerless {
     return this;
   }
 
+  getComponents() {
+    return this.components;
+  }
+
   proxyTerminated(this: AkkaServerless) {
     this.proxyHasTerminated = true;
     if (this.waitingForProxyTermination) {
@@ -233,7 +236,9 @@ export class AkkaServerless {
     }
   }
 
-  start(this: AkkaServerless) {
+  start(bindings: Bindings): Promise<number> {
+    this.bindings = bindings;
+
     const allComponentsMap: any = {};
     this.components.forEach((component: Component) => {
       allComponentsMap[component.serviceName ?? 'undefined'] =
