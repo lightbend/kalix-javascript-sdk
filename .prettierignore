@@ -1,4 +1,6 @@
 package.json
 package-lock.json
 jsdoc.json
-tck/proto/**/*.*
+/tck/proto/**/*.*
+/sdk/dist/**/*.*
+/sdk/proto/**/*.*

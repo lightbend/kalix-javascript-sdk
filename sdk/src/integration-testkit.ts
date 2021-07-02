@@ -17,7 +17,7 @@ import * as grpc from '@grpc/grpc-js';
 import * as settings from '../settings';
 import * as util from 'util';
 
-import { AkkaServerless, Bindings, Component } from "./akkaserverless";
+import { AkkaServerless, Bindings, Component } from './akkaserverless';
 import { GenericContainer, TestContainers, Wait } from 'testcontainers';
 
 const defaultDockerImage = `gcr.io/akkaserverless-public/akkaserverless-proxy:${settings.frameworkVersion}`;
@@ -71,14 +71,14 @@ export class IntegrationTestkit {
     const boundPort = await this.akkaServerless.start(bindings);
 
     await TestContainers.exposeHostPorts(boundPort);
-    
+
     const proxyContainer = await new GenericContainer(this.options.dockerImage)
-        .withExposedPorts(9000)
-        .withEnv('USER_FUNCTION_HOST', 'host.testcontainers.internal')
-        .withEnv('USER_FUNCTION_PORT', boundPort.toString())
-        .withEnv('HTTP_PORT', '9000')
-        .withWaitStrategy(Wait.forLogMessage('Akka Serverless proxy online'))
-        .start()
+      .withExposedPorts(9000)
+      .withEnv('USER_FUNCTION_HOST', 'host.testcontainers.internal')
+      .withEnv('USER_FUNCTION_PORT', boundPort.toString())
+      .withEnv('HTTP_PORT', '9000')
+      .withWaitStrategy(Wait.forLogMessage('Akka Serverless proxy online'))
+      .start();
 
     this.proxyContainer = proxyContainer;
 
@@ -96,8 +96,7 @@ export class IntegrationTestkit {
           'localhost:' + proxyPort,
           grpc.credentials.createInsecure(),
         );
-        this.clients[parts[parts.length - 1]] =
-          this.promisifyClient(client);
+        this.clients[parts[parts.length - 1]] = this.promisifyClient(client);
       }
     });
 
