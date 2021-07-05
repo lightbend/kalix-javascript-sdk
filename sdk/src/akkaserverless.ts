@@ -23,26 +23,6 @@ import * as discovery_grpc from '../proto/akkaserverless/protocol/discovery_grpc
 import * as google_protobuf_empty_pb from 'google-protobuf/google/protobuf/empty_pb';
 import { PackageInfo } from './package-info';
 
-export class Bindings {
-  readonly address: string;
-  readonly port: number;
-
-  constructor(
-    address?: string | null | undefined,
-    port?: number | null | undefined,
-  ) {
-    const portNumber = () => {
-      if (process.env.PORT) {
-        return parseInt(process.env.PORT);
-      } else {
-        return undefined;
-      }
-    };
-    this.address = address || process.env.HOST || '127.0.0.1';
-    this.port = port || portNumber() || 8080;
-  }
-}
-
 function loadJson(filename: string) {
   return JSON.parse(fs.readFileSync(filename).toString());
 }
@@ -180,10 +160,11 @@ class SourceFormatter {
 }
 
 export class AkkaServerless {
+  private address: string = process.env.HOST || '127.0.0.1';
+  private port: number = (process.env.PORT ? parseInt(process.env.PORT) : undefined ) || 8080;
   private descriptorSetPath: string = 'user-function.desc';
   private service: ServiceInfo;
   private packageInfo: PackageInfo = new PackageInfo();
-  private bindings: Bindings = new Bindings();
   private components: Array<Component> = [];
   private proto: Buffer;
   private server: grpc.Server;
@@ -205,6 +186,7 @@ export class AkkaServerless {
     if (options?.descriptorSetPath) {
       this.descriptorSetPath = options.descriptorSetPath;
     }
+
     this.service = new ServiceInfo(
       options?.serviceName,
       options?.serviceVersion,
@@ -237,9 +219,33 @@ export class AkkaServerless {
     }
   }
 
-  start(bindings?: Bindings): Promise<number> {
+  afterStart(port: number) {
+    console.log(
+      'gRPC server started on ' + this.address + ':' + port,
+    );
+
+    process.on('SIGTERM', () => {
+      if (!this.proxySeen || this.proxyHasTerminated || this.devMode) {
+        console.debug('Got SIGTERM. Shutting down');
+        this.terminate();
+      } else {
+        console.debug(
+          'Got SIGTERM. But did not yet see proxy terminating, deferring shutdown until proxy stops',
+        );
+        // no timeout because process will be SIGKILLed anyway if it does not get the proxy termination in time
+        this.waitingForProxyTermination = true;
+      }
+    });
+  }
+
+  start(bindings?: { address: string, port: number } ): Promise<number> {
     if (bindings) {
-      this.bindings = bindings;
+      if (bindings.address) {
+        this.address = bindings.address;
+      }
+      if (bindings.port) {
+        this.port = bindings.port;
+      }
     }
 
     const allComponentsMap: any = {};
@@ -264,29 +270,9 @@ export class AkkaServerless {
 
     this.server.addService(discovery_grpc.DiscoveryService, discoveryServer);
 
-    const that = this;
-    const afterStart = (port: number) => {
-      console.log(
-        'gRPC server started on ' + this.bindings.address + ':' + port,
-      );
-
-      process.on('SIGTERM', function onSigterm() {
-        if (!that.proxySeen || that.proxyHasTerminated || that.devMode) {
-          console.debug('Got SIGTERM. Shutting down');
-          that.terminate();
-        } else {
-          console.debug(
-            'Got SIGTERM. But did not yet see proxy terminating, deferring shutdown until proxy stops',
-          );
-          // no timeout because process will be SIGKILLed anyway if it does not get the proxy termination in time
-          that.waitingForProxyTermination = true;
-        }
-      });
-    };
-
     return new Promise((resolve, reject) => {
       this.server.bindAsync(
-        `${this.bindings.address}:${this.bindings.port}`,
+        `${this.address}:${this.port}`,
         grpc.ServerCredentials.createInsecure(),
         (err, port) => {
           if (err) {
@@ -295,7 +281,7 @@ export class AkkaServerless {
           } else {
             console.log(`Server bound on port: ${port}`);
             this.server.start();
-            afterStart(port);
+            this.afterStart(port);
             resolve(port);
           }
         },
