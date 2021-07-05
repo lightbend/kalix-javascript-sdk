@@ -237,7 +237,7 @@ export class AkkaServerless {
     });
   }
 
-  start(bindings?: { address: string; port: number }): Promise<number> {
+  start(bindings?: { address?: string; port?: number }): Promise<number> {
     if (bindings) {
       if (bindings.address) {
         this.address = bindings.address;

@@ -17,7 +17,7 @@ import * as grpc from '@grpc/grpc-js';
 import * as settings from '../settings';
 import * as util from 'util';
 
-import { AkkaServerless, Bindings, Component } from './akkaserverless';
+import { AkkaServerless, Component } from './akkaserverless';
 import { GenericContainer, TestContainers, Wait } from 'testcontainers';
 
 const defaultDockerImage = `gcr.io/akkaserverless-public/akkaserverless-proxy:${settings.frameworkVersion}`;
@@ -67,8 +67,7 @@ export class IntegrationTestkit {
 
   async asyncStart() {
     // First start this user function
-    const bindings = new Bindings(process.env.HOST || '127.0.0.1', 0);
-    const boundPort = await this.akkaServerless.start(bindings);
+    const boundPort = await this.akkaServerless.start({ port: 0 });
 
     await TestContainers.exposeHostPorts(boundPort);
 
