@@ -161,7 +161,8 @@ class SourceFormatter {
 
 export class AkkaServerless {
   private address: string = process.env.HOST || '127.0.0.1';
-  private port: number = (process.env.PORT ? parseInt(process.env.PORT) : undefined ) || 8080;
+  private port: number =
+    (process.env.PORT ? parseInt(process.env.PORT) : undefined) || 8080;
   private descriptorSetPath: string = 'user-function.desc';
   private service: ServiceInfo;
   private packageInfo: PackageInfo = new PackageInfo();
@@ -220,9 +221,7 @@ export class AkkaServerless {
   }
 
   afterStart(port: number) {
-    console.log(
-      'gRPC server started on ' + this.address + ':' + port,
-    );
+    console.log('gRPC server started on ' + this.address + ':' + port);
 
     process.on('SIGTERM', () => {
       if (!this.proxySeen || this.proxyHasTerminated || this.devMode) {
@@ -238,7 +237,7 @@ export class AkkaServerless {
     });
   }
 
-  start(bindings?: { address: string, port: number } ): Promise<number> {
+  start(bindings?: { address: string; port: number }): Promise<number> {
     if (bindings) {
       if (bindings.address) {
         this.address = bindings.address;
