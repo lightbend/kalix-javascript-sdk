@@ -21,9 +21,6 @@
     "install": "node bin/download-codegen.js",
     "prepublishOnly": "npm version --no-git-tag-version $(../../sdk/bin/version.sh)"
   },
-  "devDependencies": {
-    "prettier": "^2.2.1"
-  },
   "publishConfig": {
     "@lightbend:registry": "https://registry.npmjs.org"
   }

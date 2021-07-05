@@ -14,29 +14,33 @@
  * limitations under the License.
  */
 
-const Action = require("@lightbend/akkaserverless-javascript-sdk").Action;
-const EventSourcedEntity = require("@lightbend/akkaserverless-javascript-sdk").EventSourcedEntity;
-const ValueEntity = require("@lightbend/akkaserverless-javascript-sdk").ValueEntity;
+const Action = require('@lightbend/akkaserverless-javascript-sdk').Action;
+const EventSourcedEntity =
+  require('@lightbend/akkaserverless-javascript-sdk').EventSourcedEntity;
+const ValueEntity =
+  require('@lightbend/akkaserverless-javascript-sdk').ValueEntity;
 
 const eventSourcedEntityOne = new EventSourcedEntity(
-  ["proto/local_persistence_eventing.proto"],
-  "akkaserverless.tck.model.eventing.EventSourcedEntityOne",
-  "eventlogeventing-one"
+  ['proto/local_persistence_eventing.proto'],
+  'akkaserverless.tck.model.eventing.EventSourcedEntityOne',
+  'eventlogeventing-one',
 );
 
-const Empty = eventSourcedEntityOne.lookupType("google.protobuf.Empty").create();
+const Empty = eventSourcedEntityOne
+  .lookupType('google.protobuf.Empty')
+  .create();
 
-eventSourcedEntityOne.initial = entityId => Empty;
+eventSourcedEntityOne.initial = (entityId) => Empty;
 
-eventSourcedEntityOne.behavior = state => {
+eventSourcedEntityOne.behavior = (state) => {
   return {
     commandHandlers: {
-      EmitEvent: emitEvent
+      EmitEvent: emitEvent,
     },
     eventHandlers: {
       EventOne: () => Empty,
-      EventTwo: () => Empty
-    }
+      EventTwo: () => Empty,
+    },
   };
 };
 
@@ -46,45 +50,45 @@ function emitEvent(request, state, context) {
 }
 
 const eventSourcedEntityTwo = new EventSourcedEntity(
-  ["proto/local_persistence_eventing.proto"],
-  "akkaserverless.tck.model.eventing.EventSourcedEntityTwo",
-  "eventlogeventing-two",
+  ['proto/local_persistence_eventing.proto'],
+  'akkaserverless.tck.model.eventing.EventSourcedEntityTwo',
+  'eventlogeventing-two',
   {
-    serializeFallbackToJson: true
-  }
+    serializeFallbackToJson: true,
+  },
 );
 
-eventSourcedEntityTwo.initial = entityId => Empty;
+eventSourcedEntityTwo.initial = (entityId) => Empty;
 
-eventSourcedEntityTwo.behavior = state => {
+eventSourcedEntityTwo.behavior = (state) => {
   return {
     commandHandlers: {
-      EmitJsonEvent: emitJsonEvent
+      EmitJsonEvent: emitJsonEvent,
     },
     eventHandlers: {
-      JsonMessage: () => Empty
-    }
+      JsonMessage: () => Empty,
+    },
   };
 };
 
 function emitJsonEvent(event, state, context) {
   context.emit({
-    type: "JsonMessage",
-    message: event.message
+    type: 'JsonMessage',
+    message: event.message,
   });
   return Empty;
 }
 
 const valueEntityOne = new ValueEntity(
-    ["proto/local_persistence_eventing.proto"],
-    "akkaserverless.tck.model.eventing.ValueEntityOne",
-    "valuechangeseventing-one"
+  ['proto/local_persistence_eventing.proto'],
+  'akkaserverless.tck.model.eventing.ValueEntityOne',
+  'valuechangeseventing-one',
 );
 
-valueEntityOne.initial = entityId => Empty;
+valueEntityOne.initial = (entityId) => Empty;
 
 valueEntityOne.commandHandlers = {
-  UpdateValue: updateValue
+  UpdateValue: updateValue,
 };
 
 function updateValue(request, state, context) {
@@ -93,34 +97,36 @@ function updateValue(request, state, context) {
 }
 
 const valueEntityTwo = new ValueEntity(
-    ["proto/local_persistence_eventing.proto"],
-    "akkaserverless.tck.model.eventing.ValueEntityTwo",
-    "valuechangeseventing-two",
-    {
-      serializeFallbackToJson: true
-    }
+  ['proto/local_persistence_eventing.proto'],
+  'akkaserverless.tck.model.eventing.ValueEntityTwo',
+  'valuechangeseventing-two',
+  {
+    serializeFallbackToJson: true,
+  },
 );
 
-valueEntityTwo.initial = entityId => Empty;
+valueEntityTwo.initial = (entityId) => Empty;
 
 valueEntityTwo.commandHandlers = {
-  UpdateJsonValue: updateJsonValue
+  UpdateJsonValue: updateJsonValue,
 };
 
 function updateJsonValue(request, state, context) {
   context.updateState({
-    type: "JsonMessage",
-    message: request.message
+    type: 'JsonMessage',
+    message: request.message,
   });
   return Empty;
 }
 
 const localPersistenceSubscriber = new Action(
-    ["proto/local_persistence_eventing.proto"],
-    "akkaserverless.tck.model.eventing.LocalPersistenceSubscriberModel",
+  ['proto/local_persistence_eventing.proto'],
+  'akkaserverless.tck.model.eventing.LocalPersistenceSubscriberModel',
 );
 
-const Response = localPersistenceSubscriber.lookupType("akkaserverless.tck.model.eventing.Response");
+const Response = localPersistenceSubscriber.lookupType(
+  'akkaserverless.tck.model.eventing.Response',
+);
 
 localPersistenceSubscriber.commandHandlers = {
   ProcessEventOne: processEventOne,
@@ -129,7 +135,7 @@ localPersistenceSubscriber.commandHandlers = {
   ProcessValueOne: processValueOne,
   ProcessValueTwo: processValueTwo,
   ProcessAnyValue: processAnyValue,
-  Effect: effect
+  Effect: effect,
 };
 
 function processEventOne(event, context) {
@@ -137,11 +143,14 @@ function processEventOne(event, context) {
 }
 
 function processEventTwo(event, context) {
-  event.step.forEach(step => process(step, context));
+  event.step.forEach((step) => process(step, context));
 }
 
 function processAnyEvent(event, context) {
-  return Response.create({ id: context.metadata.getSubject(), message: event.message });
+  return Response.create({
+    id: context.metadata.getSubject(),
+    message: event.message,
+  });
 }
 
 function processValueOne(value, context) {
@@ -149,11 +158,14 @@ function processValueOne(value, context) {
 }
 
 function processValueTwo(value, context) {
-  value.step.forEach(step => process(step, context));
+  value.step.forEach((step) => process(step, context));
 }
 
 function processAnyValue(value, context) {
-  return Response.create({ id: context.metadata.getSubject(), message: value.message });
+  return Response.create({
+    id: context.metadata.getSubject(),
+    message: value.message,
+  });
 }
 
 function effect(request, context) {
@@ -165,7 +177,10 @@ function process(step, context) {
   if (step.reply)
     context.write(Response.create({ id: id, message: step.reply.message }));
   else if (step.forward)
-    context.forward(localPersistenceSubscriber.service.methods.Effect, { id: id, message: step.forward.message });
+    context.forward(localPersistenceSubscriber.service.methods.Effect, {
+      id: id,
+      message: step.forward.message,
+    });
 }
 
 module.exports.eventSourcedEntityOne = eventSourcedEntityOne;

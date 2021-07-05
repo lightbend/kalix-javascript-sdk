@@ -14,30 +14,30 @@
  * limitations under the License.
  */
 
-const sdk = require("@lightbend/akkaserverless-javascript-sdk");
-const { GenericContainer, TestContainers, Wait } = require("testcontainers");
+const sdk = require('@lightbend/akkaserverless-javascript-sdk');
+const { GenericContainer, TestContainers, Wait } = require('testcontainers');
 
 (async () => {
-  const tckImplementation = require("./index");
+  const tckImplementation = require('./index');
 
   TestContainers.exposeHostPorts(8080);
 
   const tckImage = `gcr.io/akkaserverless-public/akkaserverless-tck:${sdk.settings.frameworkVersion}`;
 
   const container = await new GenericContainer(tckImage)
-    .withEnv("TCK_SERVICE_HOST", "host.testcontainers.internal")
+    .withEnv('TCK_SERVICE_HOST', 'host.testcontainers.internal')
     .start();
 
-  const resultRegex = /Tests: succeeded (\d+), failed (\d+)/
+  const resultRegex = /Tests: succeeded (\d+), failed (\d+)/;
 
   const result = await new Promise((resolve) =>
-    container.logs({}).then(logs => {
-      let succeeded = 0
-      let failed = 0
-      logs.on("data", (data) => {
+    container.logs({}).then((logs) => {
+      let succeeded = 0;
+      let failed = 0;
+      logs.on('data', (data) => {
         // Note: strip the docker API log message header (first 8 bytes/chars) from each line in log data stream
         // TODO: is there a better way to process these logs using testcontainers? Why isn't this handled already?
-        data.split(/\r?\n/).forEach(lineWithHeader => {
+        data.split(/\r?\n/).forEach((lineWithHeader) => {
           const line = lineWithHeader.substring(8);
           const resultLine = resultRegex.exec(line);
           if (resultLine) {
@@ -47,8 +47,8 @@ const { GenericContainer, TestContainers, Wait } = require("testcontainers");
           if (line) console.log(line);
         });
       });
-      logs.on("end", () => resolve({ succeeded: succeeded, failed: failed }));
-    })
+      logs.on('end', () => resolve({ succeeded: succeeded, failed: failed }));
+    }),
   );
 
   tckImplementation.server.tryShutdown(() => {

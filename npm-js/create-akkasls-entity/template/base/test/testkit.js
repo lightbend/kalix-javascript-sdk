@@ -16,7 +16,7 @@ export class MockEventSourcedEntity {
     this.entityId = entityId;
     this.state = entity.initial(entityId);
     this.grpcService = entity.serviceName
-      .split(".")
+      .split('.')
       .reduce((obj, part) => obj[part], entity.grpc).service;
   }
 
@@ -31,14 +31,14 @@ export class MockEventSourcedEntity {
   handleCommand(
     commandName,
     command,
-    ctx = new MockEventSourcedCommandContext()
+    ctx = new MockEventSourcedCommandContext(),
   ) {
     const behaviors = this.entity.behavior(this.state);
     const handler = behaviors.commandHandlers[commandName];
     const grpcMethod = this.grpcService[commandName];
 
     const request = grpcMethod.requestDeserialize(
-      grpcMethod.requestSerialize(command)
+      grpcMethod.requestSerialize(command),
     );
 
     const result = handler(request, this.state, ctx);
@@ -79,7 +79,7 @@ export class MockValueEntity {
     this.entityId = entityId;
     this.state = entity.initial(entityId);
     this.grpcService = entity.serviceName
-      .split(".")
+      .split('.')
       .reduce((obj, part) => obj[part], entity.grpc).service;
   }
 
@@ -94,13 +94,13 @@ export class MockValueEntity {
   handleCommand(
     commandName,
     command,
-    ctx = new MockValueEntityCommandContext()
+    ctx = new MockValueEntityCommandContext(),
   ) {
     const handler = this.entity.commandHandlers[commandName];
     const grpcMethod = this.grpcService[commandName];
 
     const request = grpcMethod.requestDeserialize(
-      grpcMethod.requestSerialize(command)
+      grpcMethod.requestSerialize(command),
     );
 
     const result = handler(request, this.state, ctx);

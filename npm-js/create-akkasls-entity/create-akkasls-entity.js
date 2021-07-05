@@ -15,14 +15,14 @@
  * limitations under the License.
  */
 
-const Scaffold = require("scaffold-generator");
-const mustache = require("mustache");
-const process = require("process");
-const path = require("path");
-const fs = require("fs");
-const package = require("./package.json");
-const yargs = require("yargs/yargs");
-const { hideBin } = require("yargs/helpers");
+const Scaffold = require('scaffold-generator');
+const mustache = require('mustache');
+const process = require('process');
+const path = require('path');
+const fs = require('fs');
+const package = require('./package.json');
+const yargs = require('yargs/yargs');
+const { hideBin } = require('yargs/helpers');
 
 /**
  * Generates a new initial codebase for an Akka Serverless entity.
@@ -37,49 +37,48 @@ const { hideBin } = require("yargs/helpers");
 const args = yargs(hideBin(process.argv))
   .env('AKKASLS_NPMJS')
   .usage(
-    "$0 <entity-name>",
-    "Generates a new initial codebase for an Akka Serverless entity.",
+    '$0 <entity-name>',
+    'Generates a new initial codebase for an Akka Serverless entity.',
     (yargs) => {
-      yargs.positional("entity-name", {
+      yargs.positional('entity-name', {
         describe:
-          "The name of the entity to generate. This is also used for the project directory.",
-        type: "string",
+          'The name of the entity to generate. This is also used for the project directory.',
+        type: 'string',
       });
-    }
+    },
   )
-  .option("template", {
-    description: "Specify a template for the created project",
-    choices: ["value-entity", "event-sourced-entity"],
-    default: "value-entity",
+  .option('template', {
+    description: 'Specify a template for the created project',
+    choices: ['value-entity', 'event-sourced-entity'],
+    default: 'value-entity',
   })
   .option('scriptsVersion', {
     alias: 'scripts-version',
     type: 'string',
     description: 'Specify the akkasls-scripts version string',
-    default: `^${package.version}`
+    default: `^${package.version}`,
   })
   .option('sdkVersion', {
     alias: 'sdk-version',
     type: 'string',
     description: 'Specify the akkaserverless-javascript-sdk version string',
-    default: `^${package.version}`
-  })
-  .argv;
+    default: `^${package.version}`,
+  }).argv;
 
-const baseTemplatePath = path.resolve(__dirname, "template/base");
-const templatePath = path.resolve(__dirname, "template", args.template);
+const baseTemplatePath = path.resolve(__dirname, 'template/base');
+const templatePath = path.resolve(__dirname, 'template', args.template);
 const targetPath = path.resolve(args.entityName);
 
 if (fs.existsSync(targetPath)) {
   const existing = fs.lstatSync(targetPath);
-  const type = existing.isDirectory() ? "directory" : "file";
+  const type = existing.isDirectory() ? 'directory' : 'file';
   console.error(
-    "A " + type + " with the name '" + args.entityName + "' already exists."
+    'A ' + type + " with the name '" + args.entityName + "' already exists.",
   );
   console.error(
-    "Either try with a new entity name, remove the existing " +
+    'Either try with a new entity name, remove the existing ' +
       type +
-      ", or create the entity in a different directory."
+      ', or create the entity in a different directory.',
   );
   process.exit(1);
 }
@@ -90,7 +89,7 @@ const scaffold = new Scaffold({
   data: {
     name: args.entityName,
     scriptsVersion: args.scriptsVersion,
-    sdkVersion: args.sdkVersion
+    sdkVersion: args.sdkVersion,
   },
   render: mustache.render,
 });
@@ -101,8 +100,8 @@ scaffold
   .copy(baseTemplatePath, targetPath)
   .then(() => scaffold.copy(templatePath, targetPath))
   .then(() => {
-    console.info("Entity codebase generated successfully. To get started:");
+    console.info('Entity codebase generated successfully. To get started:');
     console.info(`  cd ${args.entityName}`);
-    console.info("  npm install");
-    console.info("  npm run build");
+    console.info('  npm install');
+    console.info('  npm run build');
   });
