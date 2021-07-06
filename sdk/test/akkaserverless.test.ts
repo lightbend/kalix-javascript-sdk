@@ -56,7 +56,7 @@ describe('Akkaserverless', () => {
       serviceName: 'my-service',
       options: {
         includeDirs: ['./test'],
-        entityType: 'my-entity-type'
+        entityType: 'my-entity-type',
       },
       componentType: () => {
         return 'my-type';
@@ -90,7 +90,7 @@ describe('Akkaserverless', () => {
       serviceName: 'my-service',
       options: {
         includeDirs: ['./test'],
-        entityType: 'my-entity-type'
+        entityType: 'my-entity-type',
       },
       componentType: () => {
         return 'my-type';
@@ -213,5 +213,5 @@ At package.test.json:2:4:
       ?.getTimeout()
       ?.getTimeout()
       .should.equal(10);
- });
+  });
 });
