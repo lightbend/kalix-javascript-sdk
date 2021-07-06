@@ -8,9 +8,9 @@
   },
   "dependencies": {
     "@grpc/proto-loader": "^0.1.0",
+    "@lightbend/akkaserverless-javascript-sdk": "file:../sdk/lightbend-akkaserverless-javascript-sdk-0.0.0.tgz",
     "google-protobuf": "^3.11.4",
-    "grpc": "^1.24.9",
-    "@lightbend/akkaserverless-javascript-sdk": "file:../sdk"
+    "grpc": "^1.24.9"
   },
   "devDependencies": {
     "testcontainers": "7.10.0"

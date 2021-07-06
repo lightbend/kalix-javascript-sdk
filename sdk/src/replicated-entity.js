@@ -199,23 +199,6 @@ class ReplicatedEntity {
     return replicatedEntityServices;
   }
 
-  start(options) {
-    if (this.server !== undefined) {
-      throw new Error('Server already started!');
-    }
-    this.server = new AkkaServerless();
-    this.server.addComponent(this);
-
-    return this.server.start(options);
-  }
-
-  shutdown() {
-    if (this.server === undefined) {
-      throw new Error('Server not started!');
-    }
-    this.server.shutdown();
-    delete this.server;
-  }
 }
 
 /**
