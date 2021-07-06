@@ -155,7 +155,6 @@ class ValueEntity {
     valueEntityServices.addService(this, allComponents);
     return valueEntityServices;
   }
-
 }
 
 module.exports = ValueEntity;

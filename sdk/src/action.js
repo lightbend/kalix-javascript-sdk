@@ -137,7 +137,6 @@ class Action {
     actionServices.addService(this, allComponents);
     return actionServices;
   }
-
 }
 
 module.exports = Action;

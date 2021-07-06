@@ -198,7 +198,6 @@ class ReplicatedEntity {
     replicatedEntityServices.addService(this, allComponents);
     return replicatedEntityServices;
   }
-
 }
 
 /**

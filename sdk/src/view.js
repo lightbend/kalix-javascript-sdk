@@ -121,7 +121,6 @@ class View {
     viewServices.addService(this, allComponents);
     return viewServices;
   }
-
 }
 
 module.exports = View;

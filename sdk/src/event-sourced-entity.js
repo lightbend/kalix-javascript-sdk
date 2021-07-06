@@ -193,7 +193,6 @@ class EventSourcedEntity {
     eventSourcedEntityServices.addService(this, allComponents);
     return eventSourcedEntityServices;
   }
-
 }
 
 module.exports = EventSourcedEntity;
