@@ -60,18 +60,18 @@ export interface EntityPassivationStrategy {
 }
 
 export interface ComponentOptions {
-  entityType?: string;
+  entityType: string;
   entityPassivationStrategy?: EntityPassivationStrategy;
   includeDirs?: Array<string>;
 }
 
 export interface Component {
-  serviceName?: string;
+  serviceName: string;
   desc?: string | string[];
   service?: any;
-  options?: ComponentOptions;
+  options: ComponentOptions;
   grpc?: grpc.GrpcObject;
-  componentType?: () => string;
+  componentType: () => string;
   register?: (components: any) => Service;
 }
 

@@ -15,7 +15,6 @@
  */
 
 import { AkkaServerless } from '../src/akkaserverless';
-import ValueEntity from '../src/value-entity';
 import discovery from '../proto/akkaserverless/protocol/discovery_pb';
 import { expect } from 'chai';
 
@@ -53,7 +52,17 @@ describe('Akkaserverless', () => {
     location.setEndLine(2);
     location.setEndCol(5);
     location.setProtoPathList([]);
-    akkasls.addComponent({ options: { includeDirs: ['./test'] } });
+    const component = {
+      serviceName: 'my-service',
+      options: {
+        includeDirs: ['./test'],
+        entityType: 'my-entity-type'
+      },
+      componentType: () => {
+        return 'my-type';
+      },
+    };
+    akkasls.addComponent(component);
 
     // Act
     const errorMsg = akkasls.formatSource(location);
@@ -77,7 +86,17 @@ describe('Akkaserverless', () => {
     location.setEndLine(2);
     location.setEndCol(5);
     location.setProtoPathList([]);
-    akkasls.addComponent({ options: { includeDirs: ['./test'] } });
+    const component = {
+      serviceName: 'my-service',
+      options: {
+        includeDirs: ['./test'],
+        entityType: 'my-entity-type'
+      },
+      componentType: () => {
+        return 'my-type';
+      },
+    };
+    akkasls.addComponent(component);
 
     const userError = new discovery.UserFunctionError();
     userError.setCode('AS-00112');
@@ -194,5 +213,5 @@ At package.test.json:2:4:
       ?.getTimeout()
       ?.getTimeout()
       .should.equal(10);
-  });
+ });
 });
