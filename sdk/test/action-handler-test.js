@@ -39,6 +39,7 @@ const ExampleServiceName = 'com.example.ExampleService';
 const ExampleService = root.lookupService(ExampleServiceName);
 
 const replies = require('../src/reply');
+const { ProtobufjsSerializationSupport } = require('../src/serialization-support');
 
 class MockUnaryCall {
   constructor(request) {
@@ -81,20 +82,22 @@ class MockUnaryCall {
 
 function createAction(handler) {
   const actionSupport = new ActionSupport();
+  const serializationSupport = new ProtobufjsSerializationSupport('example.proto', ExampleServiceName, ['.', './test']);
+
   const allComponents = {};
   allComponents[ExampleServiceName] = ExampleService;
+
+  serializationSupport.setComponents(allComponents);
+  serializationSupport.validate();
+
   actionSupport.addService(
     {
-      root: root,
       serviceName: ExampleServiceName,
       service: ExampleService,
       commandHandlers: {
         DoSomething: handler,
       },
-      desc: 'example.proto',
-      options: {
-        includeDirs: ['.', './test'],
-      },
+      serializationSupport: serializationSupport
     },
     allComponents,
   );

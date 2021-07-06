@@ -15,6 +15,7 @@
  */
 
 const ActionSupport = require('./action-support');
+const { ProtobufjsSerializationSupport } = require('./serialization-support');
 
 const actionServices = new ActionSupport();
 
@@ -85,16 +86,14 @@ class Action {
       ...options,
     };
 
-    this.desc = desc;
-    this.serviceName = serviceName;
     if (!this.options.includeDirs) {
       this.options.includeDirs = ['.'];
     }
 
     this.serializationSupport = new ProtobufjsSerializationSupport(
-      component.desc,
-      component.serviceName,
-      component.options.includeDirs);
+      desc,
+      serviceName,
+      this.options.includeDirs);
 
     /**
      * The command handlers.
@@ -122,9 +121,9 @@ class Action {
   }
 
   register(allComponents) {
-    actionServices.addService(this, allComponents);
     this.serializationSupport.setComponents(allComponents);
     this.serializationSupport.validate();
+    actionServices.addService(this);
     return actionServices;
   }
 }

@@ -600,20 +600,11 @@ module.exports = class ActionServices {
     this.services = {};
   }
 
-  addService(component, allComponents) {
-
-    const serializationSupport = new ProtobufjsSerializationSupport(
-      component.desc,
-      component.serviceName,
-      component.options.includeDirs);
-
-    serializationSupport.setComponents(allComponents);
-    serializationSupport.validate();
-
+  addService(component) {
     this.services[component.serviceName] = new ActionSupport(
       component.service,
       component.commandHandlers,
-      serializationSupport
+      component.serializationSupport
     );
   }
 
