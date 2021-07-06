@@ -34,12 +34,8 @@ $PROTOC \
     ${PWD}/proto/akkaserverless/component/*/*.proto
 
 # Compile test protos
-rm -rf test/proto
-cp -r proto test/
-
 OUT_DIR="${PWD}/test/proto"
-TS_OUT_DIR="${PWD}/test/proto"
-IN_DIR="${PWD}/test/proto"
+TS_OUT_DIR="${PWD}/test"
 
 $PROTOC \
     --proto_path="${PWD}/proto/" \
