@@ -223,7 +223,7 @@ jobs:
           command: |
             source /opt/circleci/.nvm/nvm.sh
             pushd sdk && nvm install && npm ci && npm pack && popd
-            pushd tck && nvm install && npm install ../sdk/lightbend-akkaserverless-javascript-sdk-0.0.0.tgz && npm ci && npm run tck && popd
+            pushd tck && nvm install && npm install && npm ci && npm run tck && popd
 
   validate-docs:
     machine: true

@@ -7,10 +7,7 @@
     "node": "~14"
   },
   "dependencies": {
-    "@grpc/proto-loader": "^0.1.0",
-    "google-protobuf": "^3.11.4",
-    "grpc": "^1.24.9",
-    "@lightbend/akkaserverless-javascript-sdk": "file:../sdk"
+    "@lightbend/akkaserverless-javascript-sdk": "file:../sdk/lightbend-akkaserverless-javascript-sdk-0.0.0.tgz"
   },
   "devDependencies": {
     "testcontainers": "7.10.0"
@@ -19,7 +16,7 @@
     "build": "bin/prepare.sh && compile-descriptor ./proto/*.proto",
     "postinstall": "npm run build",
     "start": "node index.js",
-    "tck": "node run.js",
+    "tck": "(cd ../sdk && npm pack) && npm install ../sdk/lightbend-akkaserverless-javascript-sdk-0.0.0.tgz && node run.js",
     "docker-build": "docker build -f Dockerfile -t gcr.io/akkaserverless-public/akkaserverless-tck-javascript-sdk:$(../sdk/bin/version.sh) ..",
     "docker-push": "docker push gcr.io/akkaserverless-public/akkaserverless-tck-javascript-sdk:$(../sdk/bin/version.sh)"
   }
