@@ -22,7 +22,6 @@ const debug = require('debug')('akkaserverless-action');
 debug.log = console.log.bind(console);
 const { Metadata } = require('./metadata');
 const { Reply } = require('./reply');
-const { ProtobufjsSerializationSupport } = require('./serialization-support');
 
 class ActionSupport {
   constructor(service, commandHandlers, serializationSupport) {
