@@ -14,12 +14,7 @@
  * limitations under the License.
  */
 
-const fs = require('fs');
-const protobufHelper = require('./protobuf-helper');
-const grpc = require('@grpc/grpc-js');
-const protoLoader = require('@grpc/proto-loader');
 const ActionSupport = require('./action-support');
-const AkkaServerless = require('./akkaserverless');
 
 const actionServices = new ActionSupport();
 
@@ -87,26 +82,8 @@ class Action {
    */
   constructor(desc, serviceName, options) {
     this.options = {
-      ...{
-        includeDirs: ['.'],
-      },
       ...options,
     };
-
-    const allIncludeDirs = protobufHelper.moduleIncludeDirs.concat(
-      this.options.includeDirs,
-    );
-
-    this.root = protobufHelper.loadSync(desc, allIncludeDirs);
-
-    this.serviceName = serviceName;
-    // Eagerly lookup the service to fail early
-    this.service = this.root.lookupService(serviceName);
-
-    const packageDefinition = protoLoader.loadSync(desc, {
-      includeDirs: allIncludeDirs,
-    });
-    this.grpc = grpc.loadPackageDefinition(packageDefinition);
 
     /**
      * The command handlers.
@@ -135,6 +112,8 @@ class Action {
 
   register(allComponents) {
     actionServices.addService(this, allComponents);
+    this.serializationSupport.setComponents(allComponents);
+    this.serializationSupport.validate();
     return actionServices;
   }
 }

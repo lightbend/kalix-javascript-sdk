@@ -169,6 +169,14 @@ class AnySupport {
     }
   }
 
+  serialize(
+    obj,
+    allowPrimitives,
+    fallbackToJson,
+    requireJsonType = false,
+  ) {
+    return AnySupport.serialize(obj, allowPrimitives, fallbackToJson, requireJsonType);
+  }
   /**
    * Serialize a protobuf object to a google.protobuf.Any.
    *

@@ -20,18 +20,15 @@ const protoLoader = require('@grpc/proto-loader');
 const debug = require('debug')('akkaserverless-action');
 // Bind to stdout
 debug.log = console.log.bind(console);
-const AnySupport = require('./protobuf-any');
-const EffectSerializer = require('./effect-serializer');
 const { Metadata } = require('./metadata');
 const { Reply } = require('./reply');
+const { ProtobufjsSerializationSupport } = require('./serialization-support');
 
 class ActionSupport {
-  constructor(root, service, commandHandlers, allComponents) {
-    this.root = root;
+  constructor(service, commandHandlers, serializationSupport) {
     this.service = service;
     this.commandHandlers = commandHandlers;
-    this.anySupport = new AnySupport(this.root);
-    this.effectSerializer = new EffectSerializer(allComponents);
+    this.serializationSupport = serializationSupport;
   }
 }
 
@@ -47,6 +44,8 @@ class ActionHandler {
     grpcCallback,
     metadata,
   ) {
+    console.log("DEBUG");
+    console.dir(support);
     this.support = support;
     this.grpcMethod = grpcMethod;
     this.commandHandler = commandHandler;
@@ -321,7 +320,7 @@ class ActionHandler {
       if (message != null) {
         const messageProto =
           this.grpcMethod.resolvedResponseType.create(message);
-        const replyPayload = AnySupport.serialize(messageProto, false, false);
+        const replyPayload = this.support.anySupport.serialize(messageProto, false, false);
         let replyMetadata = null;
         if (metadata && metadata.entries) {
           replyMetadata = {
@@ -453,7 +452,7 @@ class ActionHandler {
       if (message != null) {
         const messageProto =
           this.grpcMethod.resolvedResponseType.create(message);
-        const replyPayload = AnySupport.serialize(messageProto, false, false);
+        const replyPayload = this.support.anySupport.serialize(messageProto, false, false);
         let replyMetadata = null;
         if (metadata && metadata.entries) {
           replyMetadata = {
@@ -604,11 +603,19 @@ module.exports = class ActionServices {
   }
 
   addService(component, allComponents) {
+
+    const serializationSupport = new ProtobufjsSerializationSupport(
+      component.desc,
+      component.serviceName,
+      component.options.includeDirs);
+
+    serializationSupport.setComponents(allComponents);
+    serializationSupport.validate();
+
     this.services[component.serviceName] = new ActionSupport(
-      component.root,
       component.service,
       component.commandHandlers,
-      allComponents,
+      this.serializationSupport
     );
   }
 
