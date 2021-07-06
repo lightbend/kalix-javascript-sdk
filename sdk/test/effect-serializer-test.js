@@ -132,11 +132,12 @@ describe('Effect Serializer', () => {
     const msg = In.create({ field: 'foo' });
 
     // Act
-    const res = () => es.serializeEffect(
-      exampleServiceGenerated.ExampleServiceTwoService.doSomethingOne,
-      msg,
-      {},
-    );
+    const res = () =>
+      es.serializeEffect(
+        exampleServiceGenerated.ExampleServiceTwoService.doSomethingOne,
+        msg,
+        {},
+      );
 
     // Assert
     should.throw(() => res(), Error);
