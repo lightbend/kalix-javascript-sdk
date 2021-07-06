@@ -48,6 +48,10 @@ module.exports = class EffectSerializer {
     if (service !== undefined) {
       const command = service.methods[commandName];
       if (command !== undefined) {
+        if (!command.resolvedRequestType) {
+          command.resolve();
+        }
+
         const payload = AnySupport.serialize(
           command.resolvedRequestType.create(message),
           false,
