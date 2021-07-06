@@ -93,7 +93,8 @@ class Action {
     this.serializationSupport = new ProtobufjsSerializationSupport(
       desc,
       serviceName,
-      this.options.includeDirs);
+      this.options.includeDirs,
+    );
 
     /**
      * The command handlers.

@@ -21,14 +21,13 @@ import AnySupport from './protobuf-any';
 import EffectSerializer from './effect-serializer';
 
 export class ProtobufjsSerializationSupport {
-
   constructor(desc, serviceName, includeDirs) {
-    this.desc = desc
-    this.serviceName = serviceName
+    this.desc = desc;
+    this.serviceName = serviceName;
     if (includeDirs) {
-      this.includeDirs = includeDirs
+      this.includeDirs = includeDirs;
     } else {
-      this.includeDirs = ['.']
+      this.includeDirs = ['.'];
     }
   }
 
@@ -64,7 +63,7 @@ export class ProtobufjsSerializationSupport {
     const packageDefinition = protoLoader.loadSync(this.desc, {
       includeDirs: allIncludeDirs,
     });
-    
+
     grpc.loadPackageDefinition(packageDefinition);
   }
 }

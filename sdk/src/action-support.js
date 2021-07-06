@@ -197,9 +197,9 @@ class ActionHandler {
    */
   handleUnary() {
     this.setupUnaryOutContext();
-    const deserializedCommand = this.support.serializationSupport.getAnySupport().deserialize(
-      this.call.request.payload,
-    );
+    const deserializedCommand = this.support.serializationSupport
+      .getAnySupport()
+      .deserialize(this.call.request.payload);
     const userReturn = this.invokeUserCallback(
       'command',
       this.commandHandler,
@@ -249,9 +249,9 @@ class ActionHandler {
    */
   handleStreamedOut() {
     this.setupStreamedOutContext();
-    const deserializedCommand = this.support.serializationSupport.getAnySupport().deserialize(
-      this.call.request.payload,
-    );
+    const deserializedCommand = this.support.serializationSupport
+      .getAnySupport()
+      .deserialize(this.call.request.payload);
     this.invokeUserCallback(
       'command',
       this.commandHandler,
@@ -300,11 +300,9 @@ class ActionHandler {
         console.warn(
           "WARNING: Action context 'forward' is deprecated. Please use 'ReplyFactory.forward' instead.",
         );
-      const forward = this.support.serializationSupport.getEffectSerializer().serializeEffect(
-        method,
-        message,
-        metadata,
-      );
+      const forward = this.support.serializationSupport
+        .getEffectSerializer()
+        .serializeEffect(method, message, metadata);
       this.grpcCallback(null, {
         forward: forward,
         sideEffects: effects,
@@ -318,7 +316,9 @@ class ActionHandler {
       if (message != null) {
         const messageProto =
           this.grpcMethod.resolvedResponseType.create(message);
-        const replyPayload = this.support.serializationSupport.getAnySupport().serialize(messageProto, false, false);
+        const replyPayload = this.support.serializationSupport
+          .getAnySupport()
+          .serialize(messageProto, false, false);
         let replyMetadata = null;
         if (metadata && metadata.entries) {
           replyMetadata = {
@@ -354,12 +354,9 @@ class ActionHandler {
         );
       this.streamDebug('Emitting effect to %s', method);
       effects.push(
-        this.support.serializationSupport.getEffectSerializer().serializeSideEffect(
-          method,
-          message,
-          synchronous,
-          metadata,
-        ),
+        this.support.serializationSupport
+          .getEffectSerializer()
+          .serializeSideEffect(method, message, synchronous, metadata),
       );
     };
 
@@ -432,11 +429,9 @@ class ActionHandler {
     this.ctx.forward = (method, message, metadata) => {
       this.ensureNotCancelled();
       this.streamDebug('Forwarding to %s', method);
-      const forward = this.support.serializationSupport.getEffectSerializer().serializeEffect(
-        method,
-        message,
-        metadata,
-      );
+      const forward = this.support.serializationSupport
+        .getEffectSerializer()
+        .serializeEffect(method, message, metadata);
       this.call.write({
         forward: forward,
         sideEffects: effects,
@@ -450,7 +445,9 @@ class ActionHandler {
       if (message != null) {
         const messageProto =
           this.grpcMethod.resolvedResponseType.create(message);
-        const replyPayload = this.support.serializationSupport.getAnySupport().serialize(messageProto, false, false);
+        const replyPayload = this.support.serializationSupport
+          .getAnySupport()
+          .serialize(messageProto, false, false);
         let replyMetadata = null;
         if (metadata && metadata.entries) {
           replyMetadata = {
@@ -487,12 +484,9 @@ class ActionHandler {
         );
       this.streamDebug('Emitting effect to %s', method);
       effects.push(
-        this.support.serializationSupport.getEffectSerializer().serializeSideEffect(
-          method,
-          message,
-          synchronous,
-          metadata,
-        ),
+        this.support.serializationSupport
+          .getEffectSerializer()
+          .serializeSideEffect(method, message, synchronous, metadata),
       );
     };
 
@@ -539,9 +533,9 @@ class ActionHandler {
 
     this.call.on('data', (data) => {
       this.streamDebug('Received data in');
-      const deserializedCommand = this.support.serializationSupport.getAnySupport().deserialize(
-        data.payload,
-      );
+      const deserializedCommand = this.support.serializationSupport
+        .getAnySupport()
+        .deserialize(data.payload);
       this.invokeCallback('data', deserializedCommand, this.ctx);
     });
 
@@ -604,7 +598,7 @@ module.exports = class ActionServices {
     this.services[component.serviceName] = new ActionSupport(
       component.service,
       component.commandHandlers,
-      component.serializationSupport
+      component.serializationSupport,
     );
   }
 
