@@ -85,6 +85,17 @@ class Action {
       ...options,
     };
 
+    this.desc = desc;
+    this.serviceName = serviceName;
+    if (!this.options.includeDirs) {
+      this.options.includeDirs = ['.'];
+    }
+
+    this.serializationSupport = new ProtobufjsSerializationSupport(
+      component.desc,
+      component.serviceName,
+      component.options.includeDirs);
+
     /**
      * The command handlers.
      *

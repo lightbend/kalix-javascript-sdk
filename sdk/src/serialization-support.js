@@ -37,16 +37,15 @@ export class ProtobufjsSerializationSupport {
   }
 
   getAnySupport() {
-    if (this.root) {
-      throw new Error('Initialize this class by calling the `validate()` method');
-    } else {
-      return new AnySupport(this.root);
+    if (!this.root) {
+      this.validate();
     }
+    return new AnySupport(this.root);
   }
 
   getEffectSerializer() {
-    if (this.allComponents) {
-      throw new Error('Initialize this class by calling the `validate()` method');
+    if (!this.allComponents) {
+      throw new Error('Please run `setComponents` first');
     } else {
       return new EffectSerializer(this.allComponents);
     }

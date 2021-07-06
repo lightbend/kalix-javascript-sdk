@@ -91,6 +91,10 @@ function createAction(handler) {
       commandHandlers: {
         DoSomething: handler,
       },
+      desc: 'example.proto',
+      options: {
+        includeDirs: ['.', './test'],
+      },
     },
     allComponents,
   );
