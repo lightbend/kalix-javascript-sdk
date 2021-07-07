@@ -40,8 +40,8 @@ function createReplicatedData(name) {
       return new ReplicatedData.ReplicatedCounter();
     case 'ReplicatedSet':
       return new ReplicatedData.ReplicatedSet();
-    case 'LWWRegister':
-      return new ReplicatedData.LWWRegister('');
+    case 'ReplicatedRegister':
+      return new ReplicatedData.ReplicatedRegister('');
     case 'Flag':
       return new ReplicatedData.Flag();
     case 'ORMap':
@@ -134,30 +134,30 @@ function applyUpdate(update, state) {
     if (update.replicatedSet.add) state.add(update.replicatedSet.add);
     else if (update.replicatedSet.remove) state.delete(update.replicatedSet.remove);
     else if (update.replicatedSet.clear) state.clear();
-  } else if (update.lwwregister) {
-    if (update.lwwregister.clock.clockType === ReplicatedData.Clocks.REVERSE)
+  } else if (update.register) {
+    if (update.register.clock.clockType === ReplicatedData.Clocks.REVERSE)
       state.setWithClock(
-        update.lwwregister.value,
+        update.register.value,
         ReplicatedData.Clocks.REVERSE,
       );
     else if (
-      update.lwwregister.clock.clockType === ReplicatedData.Clocks.CUSTOM
+      update.register.clock.clockType === ReplicatedData.Clocks.CUSTOM
     )
       state.setWithClock(
-        update.lwwregister.value,
+        update.register.value,
         ReplicatedData.Clocks.CUSTOM,
-        update.lwwregister.clock.customClockValue,
+        update.register.clock.customClockValue,
       );
     else if (
-      update.lwwregister.clock.clockType ===
+      update.register.clock.clockType ===
       ReplicatedData.Clocks.CUSTOM_AUTO_INCREMENT
     )
       state.setWithClock(
-        update.lwwregister.value,
+        update.register.value,
         ReplicatedData.Clocks.CUSTOM_AUTO_INCREMENT,
-        update.lwwregister.clock.customClockValue,
+        update.register.clock.customClockValue,
       );
-    else state.value = update.lwwregister.value;
+    else state.value = update.register.value;
   } else if (update.flag) {
     state.enable();
   } else if (update.ormap) {
@@ -186,8 +186,8 @@ function replicatedDataState(state) {
     return { counter: state.value ? { value: state.value } : {} };
   else if (state instanceof ReplicatedData.ReplicatedSet)
     return { replicatedSet: state.size ? { elements: sortedElements(state) } : {} };
-  else if (state instanceof ReplicatedData.LWWRegister)
-    return { lwwregister: state.value ? { value: state.value } : {} };
+  else if (state instanceof ReplicatedData.ReplicatedRegister)
+    return { register: state.value ? { value: state.value } : {} };
   else if (state instanceof ReplicatedData.Flag)
     return { flag: state.value ? { value: state.value } : {} };
   else if (state instanceof ReplicatedData.ORMap)

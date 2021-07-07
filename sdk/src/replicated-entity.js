@@ -198,7 +198,7 @@ class ReplicatedEntity {
  * ReplicatedData: {
  *   ReplicatedCounter: function(): void,
  *   ReplicatedSet: function(): void,
- *   LWWRegister: function(module:akkaserverless.Serializable, module:akkaserverless.replicatedentity.Clock=, number=): void,
+ *   ReplicatedRegister: function(module:akkaserverless.Serializable, module:akkaserverless.replicatedentity.Clock=, number=): void,
  *   Flag: function(): void, Clocks: unknown[],
  *   ORMap: function(): void,
  *   Vote: function(): void,
@@ -213,7 +213,7 @@ module.exports = {
   ReplicatedData: {
     ReplicatedCounter: replicatedData.ReplicatedCounter,
     ReplicatedSet: replicatedData.ReplicatedSet,
-    LWWRegister: replicatedData.LWWRegister,
+    ReplicatedRegister: replicatedData.ReplicatedRegister,
     Flag: replicatedData.Flag,
     ORMap: replicatedData.ORMap,
     Vote: replicatedData.Vote,

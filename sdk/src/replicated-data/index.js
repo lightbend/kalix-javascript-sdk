@@ -19,7 +19,7 @@ const protobufHelper = require('../protobuf-helper');
 
 const ReplicatedCounter = require('./counter');
 const ReplicatedSet = require('./set');
-const LWWRegister = require('./lwwregister');
+const ReplicatedRegister = require('./register');
 const Flag = require('./flag');
 const ORMap = require('./ormap');
 const Vote = require('./vote');
@@ -39,13 +39,13 @@ const Empty = protobufHelper.moduleRoot.google.protobuf.Empty;
  */
 
 /**
- * A clock that may be used by {@link module:akkaserverless.replicatedentity.LWWRegister}.
+ * A clock that may be used by {@link module:akkaserverless.replicatedentity.ReplicatedRegister}.
  *
  * @typedef module:akkaserverless.replicatedentity.Clock
  */
 
 /**
- * An enum of all clocks that can be used by {@link module:akkaserverless.replicatedentity.LWWRegister}.
+ * An enum of all clocks that can be used by {@link module:akkaserverless.replicatedentity.ReplicatedRegister}.
  *
  * @name module:akkaserverless.replicatedentity.Clocks
  * @enum {module:akkaserverless.replicatedentity.Clock}
@@ -105,9 +105,9 @@ function createForDelta(delta) {
     return new ReplicatedCounter();
   } else if (delta.replicatedSet) {
     return new ReplicatedSet();
-  } else if (delta.lwwregister) {
+  } else if (delta.register) {
     // It needs to be initialised with a value
-    return new LWWRegister(Empty.create({}));
+    return new ReplicatedRegister(Empty.create({}));
   } else if (delta.flag) {
     return new Flag();
   } else if (delta.ormap) {
@@ -123,7 +123,7 @@ module.exports = {
   createForDelta: createForDelta,
   ReplicatedCounter: ReplicatedCounter,
   ReplicatedSet: ReplicatedSet,
-  LWWRegister: LWWRegister,
+  ReplicatedRegister: ReplicatedRegister,
   Flag: Flag,
   ORMap: ORMap,
   Vote: Vote,
