@@ -68,7 +68,7 @@ describe('Effect Serializer', () => {
     res.payload.type_url.should.eq('type.googleapis.com/com.example.In');
   });
 
-  it('should serialize succesfully', () => {
+  it('should serialize successfully', () => {
     // Arrange
     const es = new EffectSerializer({
       'com.example.ExampleService': exampleService,
