@@ -42,8 +42,6 @@ function createReplicatedData(name) {
       return new ReplicatedData.ReplicatedSet();
     case 'ReplicatedRegister':
       return new ReplicatedData.ReplicatedRegister('');
-    case 'Flag':
-      return new ReplicatedData.Flag();
     case 'ORMap':
       const map = new ReplicatedData.ORMap();
       map.defaultValue = (key) => createReplicatedData(key);
@@ -158,8 +156,6 @@ function applyUpdate(update, state) {
         update.register.clock.customClockValue,
       );
     else state.value = update.register.value;
-  } else if (update.flag) {
-    state.enable();
   } else if (update.ormap) {
     if (update.ormap.add && !state.has(update.ormap.add))
       state.set(update.ormap.add, createReplicatedData(update.ormap.add));
@@ -188,8 +184,6 @@ function replicatedDataState(state) {
     return { replicatedSet: state.size ? { elements: sortedElements(state) } : {} };
   else if (state instanceof ReplicatedData.ReplicatedRegister)
     return { register: state.value ? { value: state.value } : {} };
-  else if (state instanceof ReplicatedData.Flag)
-    return { flag: state.value ? { value: state.value } : {} };
   else if (state instanceof ReplicatedData.ORMap)
     return {
       ormap: state.size

@@ -20,7 +20,6 @@ const protobufHelper = require('../protobuf-helper');
 const ReplicatedCounter = require('./counter');
 const ReplicatedSet = require('./set');
 const ReplicatedRegister = require('./register');
-const Flag = require('./flag');
 const ORMap = require('./ormap');
 const Vote = require('./vote');
 
@@ -108,8 +107,6 @@ function createForDelta(delta) {
   } else if (delta.register) {
     // It needs to be initialised with a value
     return new ReplicatedRegister(Empty.create({}));
-  } else if (delta.flag) {
-    return new Flag();
   } else if (delta.ormap) {
     return new ORMap();
   } else if (delta.vote) {
@@ -124,7 +121,6 @@ module.exports = {
   ReplicatedCounter: ReplicatedCounter,
   ReplicatedSet: ReplicatedSet,
   ReplicatedRegister: ReplicatedRegister,
-  Flag: Flag,
   ORMap: ORMap,
   Vote: Vote,
   Clocks: Clocks,
