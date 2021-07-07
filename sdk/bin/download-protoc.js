@@ -42,7 +42,7 @@ function determineDownloadFile() {
         case 'x64':
           return makeDownloadFile('osx-x86_64');
         case "arm64":
-          return makeDownloadFile("osx-x86_64"); // to support M1 https://github.com/protocolbuffers/protobuf/pull/8557
+          return makeDownloadFile("osx-x86_64"); // ref https://github.com/protocolbuffers/protobuf/pull/8557
       }
       break;
   }
