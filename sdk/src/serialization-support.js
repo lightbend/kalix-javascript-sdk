@@ -50,6 +50,13 @@ export class ProtobufjsSerializationSupport {
     }
   }
 
+  getGrpc() {
+    if (!this.grpc) {
+      this.validate();
+    }
+    return this.grpc;
+  }
+
   validate() {
     const allIncludeDirs = protobufHelper.moduleIncludeDirs.concat(
       this.includeDirs,
@@ -64,6 +71,6 @@ export class ProtobufjsSerializationSupport {
       includeDirs: allIncludeDirs,
     });
 
-    grpc.loadPackageDefinition(packageDefinition);
+    this.grpc = grpc.loadPackageDefinition(packageDefinition);
   }
 }

@@ -86,6 +86,8 @@ class Action {
       ...options,
     };
 
+    this.serviceName = serviceName;
+
     if (!this.options.includeDirs) {
       this.options.includeDirs = ['.'];
     }

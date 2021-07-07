@@ -84,10 +84,13 @@ export class IntegrationTestkit {
     const proxyPort = proxyContainer.getMappedPort(9000);
 
     // Create clients
-    this.akkaServerless.getComponents().forEach((entity: Component) => {
+    this.akkaServerless.getComponents().forEach((entity: any) => {
       const parts = entity.serviceName ? entity.serviceName.split('.') : [];
-      if (entity.grpc) {
+      if (entity.grpc || entity.serializationSupport) {
         let stub: any = entity.grpc;
+        if (!entity.grpc) {
+          stub = entity.serializationSupport.getGrpc();
+        }
         parts.forEach((part: string) => {
           stub = stub[part];
         });
