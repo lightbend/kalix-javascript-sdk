@@ -32,3 +32,17 @@ $PROTOC \
     ${PWD}/proto/akkaserverless/protocol/*.proto \
     ${PWD}/proto/akkaserverless/component/*.proto \
     ${PWD}/proto/akkaserverless/component/*/*.proto
+
+# Compile test protos
+OUT_DIR="${PWD}/test/proto"
+TS_OUT_DIR="${PWD}/test"
+
+$PROTOC \
+    --proto_path="${PWD}/proto/" \
+    --proto_path="${PWD}/test/" \
+    --plugin=protoc-gen-ts=$PROTOC_GEN_TS_PATH \
+    --plugin=protoc-gen-grpc=${PROTOC_GEN_GRPC_PATH} \
+    --js_out=import_style=commonjs:$OUT_DIR \
+    --grpc_out=grpc_js:$OUT_DIR \
+    --ts_out=grpc_js:$TS_OUT_DIR \
+    ${PWD}/test/example.proto
