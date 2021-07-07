@@ -2,7 +2,7 @@
 name-template: 'Akka Serverless Javascript/Typescript SDK $NEXT_PATCH_VERSION'
 tag-template: 'v$NEXT_PATCH_VERSION'
 categories:
-  - title: '🚀 Productboard Features'
+  - title: '🚀 Features'
     labels:
       - 'Feature'
   - title: 'Documentation'
@@ -15,7 +15,7 @@ categories:
 
 change-template: '- $TITLE #$NUMBER by @$AUTHOR'
 template: |
-  # :mega: Akka Serverless Java SDK $NEXT_PATCH_VERSION
+  # :mega: Akka Serverless Javascript/Typescript SDK $NEXT_PATCH_VERSION
 
   ## Changes
 
@@ -27,10 +27,10 @@ template: |
 autolabeler:
   - label: 'Documentation'
     files:
-      - 'docs/*'
+      - 'docs/**'
   - label: 'Samples'
     files:
-      - 'samples/*'
+      - 'samples/**'
   - label: 'tck'
     files:
-      - 'tck/*'
+      - 'tck/**'
