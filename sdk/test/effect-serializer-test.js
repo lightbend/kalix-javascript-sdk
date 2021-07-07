@@ -52,7 +52,7 @@ describe('Effect Serializer', () => {
     should.throw(() => res(), Error);
   });
 
-  it('should serialize succesfully', () => {
+  it('should serialize successfully', () => {
     // Arrange
     const es = new EffectSerializer({
       'com.example.ExampleService': exampleService,
