@@ -213,13 +213,6 @@ export class AkkaServerless {
     return this.components;
   }
 
-  proxyTerminated(this: AkkaServerless) {
-    this.proxyHasTerminated = true;
-    if (this.waitingForProxyTermination) {
-      this.terminate();
-    }
-  }
-
   afterStart(port: number) {
     console.log('gRPC server started on ' + this.address + ':' + port);
 
@@ -331,6 +324,7 @@ export class AkkaServerless {
         >,
         callback: grpc.sendUnaryData<google_protobuf_empty_pb.Empty>,
       ) {
+        that.proxyTerminatedLogic();
         callback(null, new google_protobuf_empty_pb.Empty());
       },
       healthCheck(
@@ -444,5 +438,12 @@ export class AkkaServerless {
     }
 
     return spec;
+  }
+
+  proxyTerminatedLogic() {
+    this.proxyHasTerminated = true;
+    if (this.waitingForProxyTermination) {
+      this.terminate();
+    }
   }
 }
