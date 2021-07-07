@@ -89,9 +89,9 @@ const replicatedEntityServices = new support.ReplicatedEntityServices();
  */
 
 /**
- * Callback for handling elements iterated through by {@link module:akkaserverless.replicatedentity.ORSet#forEach}.
+ * Callback for handling elements iterated through by {@link module:akkaserverless.replicatedentity.ReplicatedSet#forEach}.
  *
- * @callback module:akkaserverless.replicatedentity.ORSet~forEachCallback
+ * @callback module:akkaserverless.replicatedentity.ReplicatedSet~forEachCallback
  * @param {module:akkaserverless.Serializable} element The element.
  */
 
@@ -197,7 +197,7 @@ class ReplicatedEntity {
  * @type {{
  * ReplicatedData: {
  *   ReplicatedCounter: function(): void,
- *   ORSet: function(): void,
+ *   ReplicatedSet: function(): void,
  *   LWWRegister: function(module:akkaserverless.Serializable, module:akkaserverless.replicatedentity.Clock=, number=): void,
  *   Flag: function(): void, Clocks: unknown[],
  *   ORMap: function(): void,
@@ -212,7 +212,7 @@ module.exports = {
   ReplicatedEntity: ReplicatedEntity,
   ReplicatedData: {
     ReplicatedCounter: replicatedData.ReplicatedCounter,
-    ORSet: replicatedData.ORSet,
+    ReplicatedSet: replicatedData.ReplicatedSet,
     LWWRegister: replicatedData.LWWRegister,
     Flag: replicatedData.Flag,
     ORMap: replicatedData.ORMap,

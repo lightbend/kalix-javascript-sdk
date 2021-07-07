@@ -138,7 +138,7 @@ This page documents how to implement Replicated Entities in Javascript. For info
 We can init the state like the following code
 [source,javascript,indent=0]
 ----
-entity.defaultValue = () => new crdt.ORSet();
+entity.defaultValue = () => new replicatedData.ReplicatedSet();
 ----
 
 

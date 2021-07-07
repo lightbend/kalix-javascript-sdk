@@ -27,8 +27,8 @@ const entity = new ReplicatedEntity(
 entity.commandHandlers = {
   UpdateReplicatedCounter: updateReplicatedCounter,
   GetReplicatedCounter: getReplicatedCounter,
-  MutateORSet: mutateORSet,
-  GetORSet: getORSet,
+  MutateReplicatedSet: mutateReplicatedSet,
+  GetReplicatedSet: getReplicatedSet,
   Connect: connect,
   Monitor: monitor
 };
@@ -56,9 +56,9 @@ function getReplicatedCounter(get, ctx) {
   };
 }
 
-function mutateORSet(update, ctx) {
+function mutateReplicatedSet(update, ctx) {
   if (ctx.state === null) {
-    ctx.state = new ReplicatedData.ORSet();
+    ctx.state = new ReplicatedData.ReplicatedSet();
   }
 
   if (update.clear) {
@@ -76,9 +76,9 @@ function mutateORSet(update, ctx) {
   }
 }
 
-function getORSet(get, ctx) {
+function getReplicatedSet(get, ctx) {
   if (ctx.state === null) {
-    ctx.state = new ReplicatedData.ORSet();
+    ctx.state = new ReplicatedData.ReplicatedSet();
   }
 
   return {

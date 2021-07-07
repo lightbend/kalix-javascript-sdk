@@ -38,8 +38,8 @@ function createReplicatedData(name) {
   switch (dataType) {
     case 'ReplicatedCounter':
       return new ReplicatedData.ReplicatedCounter();
-    case 'ORSet':
-      return new ReplicatedData.ORSet();
+    case 'ReplicatedSet':
+      return new ReplicatedData.ReplicatedSet();
     case 'LWWRegister':
       return new ReplicatedData.LWWRegister('');
     case 'Flag':
@@ -130,10 +130,10 @@ function endStateReached(state, endState) {
 function applyUpdate(update, state) {
   if (update.counter) {
     state.increment(update.counter.change);
-  } else if (update.orset) {
-    if (update.orset.add) state.add(update.orset.add);
-    else if (update.orset.remove) state.delete(update.orset.remove);
-    else if (update.orset.clear) state.clear();
+  } else if (update.replicatedSet) {
+    if (update.replicatedSet.add) state.add(update.replicatedSet.add);
+    else if (update.replicatedSet.remove) state.delete(update.replicatedSet.remove);
+    else if (update.replicatedSet.clear) state.clear();
   } else if (update.lwwregister) {
     if (update.lwwregister.clock.clockType === ReplicatedData.Clocks.REVERSE)
       state.setWithClock(
@@ -184,8 +184,8 @@ function responseValue(context) {
 function replicatedDataState(state) {
   if (state instanceof ReplicatedData.ReplicatedCounter)
     return { counter: state.value ? { value: state.value } : {} };
-  else if (state instanceof ReplicatedData.ORSet)
-    return { orset: state.size ? { elements: sortedElements(state) } : {} };
+  else if (state instanceof ReplicatedData.ReplicatedSet)
+    return { replicatedSet: state.size ? { elements: sortedElements(state) } : {} };
   else if (state instanceof ReplicatedData.LWWRegister)
     return { lwwregister: state.value ? { value: state.value } : {} };
   else if (state instanceof ReplicatedData.Flag)
