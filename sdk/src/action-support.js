@@ -174,7 +174,11 @@ class ActionHandler {
     if (value) {
       if (this.ctx.alreadyReplied) {
         console.warn(
-          `WARNING: Action handler for ${this.support.serializationSupport.getService().name}.${this.grpcMethod.name} both sent a reply through the context and returned a value, ignoring return value.`,
+          `WARNING: Action handler for ${
+            this.support.serializationSupport.getService().name
+          }.${
+            this.grpcMethod.name
+          } both sent a reply through the context and returned a value, ignoring return value.`,
         );
       } else if (value instanceof Reply) {
         this.passReplyThroughContext(this.ctx, value);
