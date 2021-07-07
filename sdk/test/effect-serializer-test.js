@@ -143,7 +143,7 @@ describe('Effect Serializer', () => {
     should.throw(() => res(), Error);
   });
 
-  it('should serialize succesfully methods using the generated gRPC definition', () => {
+  it('should serialize successfully methods using the generated gRPC definition', () => {
     // Arrange
     const es = new EffectSerializer({
       'com.example.ExampleService': exampleService,
