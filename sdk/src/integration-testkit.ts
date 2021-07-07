@@ -76,7 +76,7 @@ export class IntegrationTestkit {
       .withEnv('USER_FUNCTION_HOST', 'host.testcontainers.internal')
       .withEnv('USER_FUNCTION_PORT', boundPort.toString())
       .withEnv('HTTP_PORT', '9000')
-      .withWaitStrategy(Wait.forLogMessage('Akka Serverless proxy online'))
+      .withWaitStrategy(Wait.forLogMessage('gRPC proxy started'))
       .start();
 
     this.proxyContainer = proxyContainer;
