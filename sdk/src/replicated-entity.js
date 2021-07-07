@@ -203,7 +203,7 @@ class ReplicatedEntity {
 /**
  * @type {{
  * ReplicatedData: {
- *   PNCounter: function(): void,
+ *   ReplicatedCounter: function(): void,
  *   GSet: function(): void,
  *   ORSet: function(): void,
  *   LWWRegister: function(module:akkaserverless.Serializable, module:akkaserverless.replicatedentity.Clock=, number=): void,
@@ -219,7 +219,7 @@ class ReplicatedEntity {
 module.exports = {
   ReplicatedEntity: ReplicatedEntity,
   ReplicatedData: {
-    PNCounter: replicatedData.PNCounter,
+    ReplicatedCounter: replicatedData.ReplicatedCounter,
     GSet: replicatedData.GSet,
     ORSet: replicatedData.ORSet,
     LWWRegister: replicatedData.LWWRegister,

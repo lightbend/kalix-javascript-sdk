@@ -25,8 +25,8 @@ const entity = new ReplicatedEntity(
 );
 
 entity.commandHandlers = {
-  UpdatePNCounter: updatePNCounter,
-  GetPNCounter: getPNCounter,
+  UpdateReplicatedCounter: updateReplicatedCounter,
+  GetReplicatedCounter: getReplicatedCounter,
   MutateGSet: mutateGSet,
   GetGSet: getGSet,
   MutateORSet: mutateORSet,
@@ -35,9 +35,9 @@ entity.commandHandlers = {
   Monitor: monitor
 };
 
-function updatePNCounter(update, ctx) {
+function updateReplicatedCounter(update, ctx) {
   if (ctx.state === null) {
-    ctx.state = new ReplicatedData.PNCounter();
+    ctx.state = new ReplicatedData.ReplicatedCounter();
   }
 
   if (update.value !== 0) {
@@ -48,9 +48,9 @@ function updatePNCounter(update, ctx) {
   };
 }
 
-function getPNCounter(get, ctx) {
+function getReplicatedCounter(get, ctx) {
   if (ctx.state === null) {
-    ctx.state = new ReplicatedData.PNCounter();
+    ctx.state = new ReplicatedData.ReplicatedCounter();
   }
 
   return {

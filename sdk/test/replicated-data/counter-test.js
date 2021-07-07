@@ -16,7 +16,7 @@
 
 const should = require('chai').should();
 const Long = require('long');
-const PNCounter = require('../../src/replicated-data/pncounter');
+const ReplicatedCounter = require('../../src/replicated-data/counter');
 const protobufHelper = require('../../src/protobuf-helper');
 
 const ReplicatedEntityDelta =
@@ -29,18 +29,18 @@ function roundTripDelta(delta) {
   );
 }
 
-describe('PNCounter', () => {
+describe('ReplicatedCounter', () => {
   it('should have a value of zero when instantiated', () => {
-    const counter = new PNCounter();
+    const counter = new ReplicatedCounter();
     counter.value.should.equal(0);
     should.equal(counter.getAndResetDelta(), null);
   });
 
   it('should reflect a delta update', () => {
-    const counter = new PNCounter();
+    const counter = new ReplicatedCounter();
     counter.applyDelta(
       roundTripDelta({
-        pncounter: {
+        counter: {
           change: 10,
         },
       }),
@@ -49,7 +49,7 @@ describe('PNCounter', () => {
     // Try incrementing it again
     counter.applyDelta(
       roundTripDelta({
-        pncounter: {
+        counter: {
           change: -3,
         },
       }),
@@ -58,11 +58,11 @@ describe('PNCounter', () => {
   });
 
   it('should generate deltas', () => {
-    const counter = new PNCounter();
+    const counter = new ReplicatedCounter();
     counter.increment(10);
     counter.value.should.equal(10);
     roundTripDelta(counter.getAndResetDelta())
-      .pncounter.change.toNumber()
+      .counter.change.toNumber()
       .should.equal(10);
     should.equal(counter.getAndResetDelta(), null);
     counter.decrement(3);
@@ -70,38 +70,38 @@ describe('PNCounter', () => {
     counter.decrement(4);
     counter.value.should.equal(3);
     roundTripDelta(counter.getAndResetDelta())
-      .pncounter.change.toNumber()
+      .counter.change.toNumber()
       .should.equal(-7);
     should.equal(counter.getAndResetDelta(), null);
   });
 
   it('should support long values', () => {
     const impossibleDouble = Long.ZERO.add(Number.MAX_SAFE_INTEGER).add(1);
-    const counter = new PNCounter();
+    const counter = new ReplicatedCounter();
     counter.increment(Number.MAX_SAFE_INTEGER);
     counter.increment(1);
     counter.longValue.should.eql(impossibleDouble);
-    roundTripDelta(counter.getAndResetDelta()).pncounter.change.should.eql(
+    roundTripDelta(counter.getAndResetDelta()).counter.change.should.eql(
       impossibleDouble,
     );
   });
 
   it('should support incrementing by long values', () => {
     const impossibleDouble = Long.ZERO.add(Number.MAX_SAFE_INTEGER).add(1);
-    const counter = new PNCounter();
+    const counter = new ReplicatedCounter();
     counter.increment(impossibleDouble);
     counter.longValue.should.eql(impossibleDouble);
-    roundTripDelta(counter.getAndResetDelta()).pncounter.change.should.eql(
+    roundTripDelta(counter.getAndResetDelta()).counter.change.should.eql(
       impossibleDouble,
     );
   });
 
   it('should support empty initial deltas (for ORMap added)', () => {
-    const counter = new PNCounter();
+    const counter = new ReplicatedCounter();
     counter.value.should.equal(0);
     should.equal(counter.getAndResetDelta(), null);
     roundTripDelta(counter.getAndResetDelta(/* initial = */ true))
-      .pncounter.change.toNumber()
+      .counter.change.toNumber()
       .should.equal(0);
   });
 });

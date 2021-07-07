@@ -36,8 +36,8 @@ tckModel.commandHandlers = {
 function createReplicatedData(name) {
   const dataType = name.split('-')[0];
   switch (dataType) {
-    case 'PNCounter':
-      return new ReplicatedData.PNCounter();
+    case 'ReplicatedCounter':
+      return new ReplicatedData.ReplicatedCounter();
     case 'GSet':
       return new ReplicatedData.GSet();
     case 'ORSet':
@@ -121,17 +121,17 @@ function processStreamed(request, context) {
   if (!request.empty) return responseValue(context);
 }
 
-// TCK only uses PNCounter for end state tests
+// TCK only uses ReplicatedCounter for end state tests
 function endStateReached(state, endState) {
-  if (state instanceof ReplicatedData.PNCounter && endState.pncounter) {
-    return state.value === endState.pncounter.value.toNumber();
+  if (state instanceof ReplicatedData.ReplicatedCounter && endState.counter) {
+    return state.value === endState.counter.value.toNumber();
   }
   return false;
 }
 
 function applyUpdate(update, state) {
-  if (update.pncounter) {
-    state.increment(update.pncounter.change);
+  if (update.counter) {
+    state.increment(update.counter.change);
   } else if (update.gset) {
     state.add(update.gset.add);
   } else if (update.orset) {
@@ -186,8 +186,8 @@ function responseValue(context) {
 }
 
 function replicatedDataState(state) {
-  if (state instanceof ReplicatedData.PNCounter)
-    return { pncounter: state.value ? { value: state.value } : {} };
+  if (state instanceof ReplicatedData.ReplicatedCounter)
+    return { counter: state.value ? { value: state.value } : {} };
   else if (state instanceof ReplicatedData.GSet)
     return { gset: state.size ? { elements: sortedElements(state) } : {} };
   else if (state instanceof ReplicatedData.ORSet)
