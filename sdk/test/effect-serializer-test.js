@@ -88,7 +88,7 @@ describe('Effect Serializer', () => {
     res.payload.type_url.should.eq('type.googleapis.com/com.example.In');
   });
 
-  it('should serialize succesfully unresolved methods', () => {
+  it('should serialize successfully unresolved methods', () => {
     // Arrange
     const es = new EffectSerializer({
       'com.example.ExampleService': exampleService,
