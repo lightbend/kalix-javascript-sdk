@@ -166,7 +166,9 @@ function ReplicatedSet() {
 
   this.applyDelta = function (delta, anySupport) {
     if (!delta.replicatedSet) {
-      throw new Error(util.format('Cannot apply delta %o to ReplicatedSet', delta));
+      throw new Error(
+        util.format('Cannot apply delta %o to ReplicatedSet', delta),
+      );
     }
     if (delta.replicatedSet.cleared) {
       currentValue.clear();

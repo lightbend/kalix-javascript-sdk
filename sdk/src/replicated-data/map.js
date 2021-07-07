@@ -196,7 +196,9 @@ function ReplicatedMap() {
       },
       has: (target, key) => this.has(key),
       defineProperty: () => {
-        throw new Error('ReplicatedMap.asObject does not support defining properties');
+        throw new Error(
+          'ReplicatedMap.asObject does not support defining properties',
+        );
       },
       getOwnPropertyDescriptor: (target, key) => {
         const value = this.get(key);
@@ -355,7 +357,9 @@ function ReplicatedMap() {
 
   this.applyDelta = function (delta, anySupport, createForDelta) {
     if (!delta.replicatedMap) {
-      throw new Error(util.format('Cannot apply delta %o to ReplicatedMap', delta));
+      throw new Error(
+        util.format('Cannot apply delta %o to ReplicatedMap', delta),
+      );
     }
     if (delta.replicatedMap.cleared) {
       currentValue.clear();

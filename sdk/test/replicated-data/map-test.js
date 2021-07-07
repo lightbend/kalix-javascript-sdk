@@ -85,7 +85,10 @@ describe('ReplicatedMap', () => {
   });
 
   it('should generate an add delta', () => {
-    const map = new ReplicatedMap().set('one', new replicatedData.ReplicatedCounter());
+    const map = new ReplicatedMap().set(
+      'one',
+      new replicatedData.ReplicatedCounter(),
+    );
     map.has('one').should.be.true;
     map.size.should.equal(1);
     const delta1 = roundTripDelta(map.getAndResetDelta());
@@ -125,12 +128,18 @@ describe('ReplicatedMap', () => {
     map.has('two').should.be.false;
     const delta = roundTripDelta(map.getAndResetDelta());
     delta.replicatedMap.removed.should.have.lengthOf(2);
-    fromAnys(delta.replicatedMap.removed).should.include.members(['one', 'two']);
+    fromAnys(delta.replicatedMap.removed).should.include.members([
+      'one',
+      'two',
+    ]);
     should.equal(map.getAndResetDelta(), null);
   });
 
   it('should generate an update delta', () => {
-    const map = new ReplicatedMap().set('one', new replicatedData.ReplicatedCounter());
+    const map = new ReplicatedMap().set(
+      'one',
+      new replicatedData.ReplicatedCounter(),
+    );
     map.getAndResetDelta();
     map.get('one').increment(5);
     const delta = roundTripDelta(map.getAndResetDelta());
@@ -164,7 +173,10 @@ describe('ReplicatedMap', () => {
   });
 
   it('should not generate a delta when an added element is removed', () => {
-    const map = new ReplicatedMap().set('one', new replicatedData.ReplicatedCounter());
+    const map = new ReplicatedMap().set(
+      'one',
+      new replicatedData.ReplicatedCounter(),
+    );
     map.getAndResetDelta();
     map
       .set('two', new replicatedData.ReplicatedCounter())
@@ -189,7 +201,10 @@ describe('ReplicatedMap', () => {
   });
 
   it('should generate a delta when an already existing element is set', () => {
-    const map = new ReplicatedMap().set('one', new replicatedData.ReplicatedCounter());
+    const map = new ReplicatedMap().set(
+      'one',
+      new replicatedData.ReplicatedCounter(),
+    );
     map.getAndResetDelta();
     map.set('one', new replicatedData.ReplicatedCounter()).size.should.equal(1);
     const delta = roundTripDelta(map.getAndResetDelta());
@@ -199,14 +214,20 @@ describe('ReplicatedMap', () => {
   });
 
   it('should not generate a delta when a non existing element is removed', () => {
-    const map = new ReplicatedMap().set('one', new replicatedData.ReplicatedCounter());
+    const map = new ReplicatedMap().set(
+      'one',
+      new replicatedData.ReplicatedCounter(),
+    );
     map.getAndResetDelta();
     map.delete('two').size.should.equal(1);
     should.equal(map.getAndResetDelta(), null);
   });
 
   it('should generate a delta when an already existing element is set', () => {
-    const map = new ReplicatedMap().set('one', new replicatedData.ReplicatedCounter());
+    const map = new ReplicatedMap().set(
+      'one',
+      new replicatedData.ReplicatedCounter(),
+    );
     map.getAndResetDelta();
     map.set('one', new replicatedData.ReplicatedCounter()).size.should.equal(1);
     const delta = roundTripDelta(map.getAndResetDelta());
@@ -221,7 +242,10 @@ describe('ReplicatedMap', () => {
       .set('two', new replicatedData.ReplicatedCounter());
     map.getAndResetDelta();
     map.asObject.two.increment(10);
-    map.set('one', new replicatedData.ReplicatedCounter()).clear().size.should.equal(0);
+    map
+      .set('one', new replicatedData.ReplicatedCounter())
+      .clear()
+      .size.should.equal(0);
     const delta = roundTripDelta(map.getAndResetDelta());
     delta.replicatedMap.cleared.should.be.true;
     delta.replicatedMap.added.should.have.lengthOf(0);
@@ -230,7 +254,10 @@ describe('ReplicatedMap', () => {
   });
 
   it('should reflect a delta add', () => {
-    const map = new ReplicatedMap().set('one', new replicatedData.ReplicatedCounter());
+    const map = new ReplicatedMap().set(
+      'one',
+      new replicatedData.ReplicatedCounter(),
+    );
     map.getAndResetDelta();
     map.applyDelta(
       roundTripDelta({
@@ -291,8 +318,14 @@ describe('ReplicatedMap', () => {
 
   it('should work with protobuf keys', () => {
     const map = new ReplicatedMap()
-      .set(Example.create({ field1: 'one' }), new replicatedData.ReplicatedCounter())
-      .set(Example.create({ field1: 'two' }), new replicatedData.ReplicatedCounter());
+      .set(
+        Example.create({ field1: 'one' }),
+        new replicatedData.ReplicatedCounter(),
+      )
+      .set(
+        Example.create({ field1: 'two' }),
+        new replicatedData.ReplicatedCounter(),
+      );
     map.getAndResetDelta();
     map.delete(Example.create({ field1: 'one' }));
     map.size.should.equal(1);

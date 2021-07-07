@@ -130,17 +130,13 @@ function applyUpdate(update, state) {
     state.increment(update.counter.change);
   } else if (update.replicatedSet) {
     if (update.replicatedSet.add) state.add(update.replicatedSet.add);
-    else if (update.replicatedSet.remove) state.delete(update.replicatedSet.remove);
+    else if (update.replicatedSet.remove)
+      state.delete(update.replicatedSet.remove);
     else if (update.replicatedSet.clear) state.clear();
   } else if (update.register) {
     if (update.register.clock.clockType === ReplicatedData.Clocks.REVERSE)
-      state.setWithClock(
-        update.register.value,
-        ReplicatedData.Clocks.REVERSE,
-      );
-    else if (
-      update.register.clock.clockType === ReplicatedData.Clocks.CUSTOM
-    )
+      state.setWithClock(update.register.value, ReplicatedData.Clocks.REVERSE);
+    else if (update.register.clock.clockType === ReplicatedData.Clocks.CUSTOM)
       state.setWithClock(
         update.register.value,
         ReplicatedData.Clocks.CUSTOM,
@@ -158,13 +154,17 @@ function applyUpdate(update, state) {
     else state.value = update.register.value;
   } else if (update.replicatedMap) {
     if (update.replicatedMap.add && !state.has(update.replicatedMap.add))
-      state.set(update.replicatedMap.add, createReplicatedData(update.replicatedMap.add));
+      state.set(
+        update.replicatedMap.add,
+        createReplicatedData(update.replicatedMap.add),
+      );
     else if (update.replicatedMap.update)
       applyUpdate(
         update.replicatedMap.update.update,
         state.get(update.replicatedMap.update.key),
       );
-    else if (update.replicatedMap.remove) state.delete(update.replicatedMap.remove);
+    else if (update.replicatedMap.remove)
+      state.delete(update.replicatedMap.remove);
     else if (update.replicatedMap.clear) state.clear();
   } else if (update.vote) {
     state.vote = update.vote.selfVote;
@@ -181,7 +181,9 @@ function replicatedDataState(state) {
   if (state instanceof ReplicatedData.ReplicatedCounter)
     return { counter: state.value ? { value: state.value } : {} };
   else if (state instanceof ReplicatedData.ReplicatedSet)
-    return { replicatedSet: state.size ? { elements: sortedElements(state) } : {} };
+    return {
+      replicatedSet: state.size ? { elements: sortedElements(state) } : {},
+    };
   else if (state instanceof ReplicatedData.ReplicatedRegister)
     return { register: state.value ? { value: state.value } : {} };
   else if (state instanceof ReplicatedData.ReplicatedMap)

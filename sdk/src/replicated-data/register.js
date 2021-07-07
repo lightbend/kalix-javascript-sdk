@@ -36,9 +36,15 @@ const Clocks =
  * @param {module:akkaserverless.replicatedentity.Clock} [clock=Clocks.DEFAULT] The clock to use.
  * @param {number} [customClockValue=0] The custom clock value, if using a custom clock.
  */
-function ReplicatedRegister(value, clock = Clocks.DEFAULT, customClockValue = 0) {
+function ReplicatedRegister(
+  value,
+  clock = Clocks.DEFAULT,
+  customClockValue = 0,
+) {
   if (value === null || value === undefined) {
-    throw new Error('ReplicatedRegister must be instantiated with an initial value.');
+    throw new Error(
+      'ReplicatedRegister must be instantiated with an initial value.',
+    );
   }
   // Make sure the value can be serialized.
   let serializedValue = AnySupport.serialize(value, true, true);

@@ -101,7 +101,9 @@ function ReplicatedCounter() {
 
   this.applyDelta = function (delta) {
     if (!delta.counter) {
-      throw new Error(util.format('Cannot apply delta %o to ReplicatedCounter', delta));
+      throw new Error(
+        util.format('Cannot apply delta %o to ReplicatedCounter', delta),
+      );
     }
     currentValue = currentValue.add(delta.counter.change);
   };

@@ -81,7 +81,10 @@ describe('ReplicatedSet', () => {
     set.size.should.equal(3);
     const delta2 = roundTripDelta(set.getAndResetDelta());
     delta2.replicatedSet.added.should.have.lengthOf(2);
-    fromAnys(delta2.replicatedSet.added).should.include.members(['two', 'three']);
+    fromAnys(delta2.replicatedSet.added).should.include.members([
+      'two',
+      'three',
+    ]);
     should.equal(set.getAndResetDelta(), null);
   });
 
@@ -99,7 +102,10 @@ describe('ReplicatedSet', () => {
     set.has('two').should.be.false;
     const delta = roundTripDelta(set.getAndResetDelta());
     delta.replicatedSet.removed.should.have.lengthOf(2);
-    fromAnys(delta.replicatedSet.removed).should.include.members(['one', 'two']);
+    fromAnys(delta.replicatedSet.removed).should.include.members([
+      'one',
+      'two',
+    ]);
     should.equal(set.getAndResetDelta(), null);
   });
 
