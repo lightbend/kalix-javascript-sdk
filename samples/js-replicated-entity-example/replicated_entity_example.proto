@@ -63,8 +63,6 @@ message OnlineStatus {
 service ReplicatedEntityExample {
   rpc UpdateReplicatedCounter(UpdateCounter) returns (CounterValue);
   rpc GetReplicatedCounter(Get) returns (CounterValue);
-  rpc MutateGSet(MutateSet) returns (SetSize);
-  rpc GetGSet(Get) returns (SetValue);
   rpc MutateORSet(MutateSet) returns (SetSize);
   rpc GetORSet(Get) returns (SetValue);
   // Connect the given user. They will stay connected as long as the stream stays open.

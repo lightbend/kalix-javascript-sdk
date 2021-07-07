@@ -27,8 +27,6 @@ const entity = new ReplicatedEntity(
 entity.commandHandlers = {
   UpdateReplicatedCounter: updateReplicatedCounter,
   GetReplicatedCounter: getReplicatedCounter,
-  MutateGSet: mutateGSet,
-  GetGSet: getGSet,
   MutateORSet: mutateORSet,
   GetORSet: getORSet,
   Connect: connect,
@@ -55,30 +53,6 @@ function getReplicatedCounter(get, ctx) {
 
   return {
     value: ctx.state.value
-  };
-}
-
-function mutateGSet(update, ctx) {
-  if (ctx.state === null) {
-    ctx.state = new ReplicatedData.GSet();
-  }
-
-  update.add.forEach(value => {
-    ctx.state.add(value)
-  });
-
-  return {
-    size: ctx.state.size
-  }
-}
-
-function getGSet(get, ctx) {
-  if (ctx.state === null) {
-    ctx.state = new ReplicatedData.GSet();
-  }
-
-  return {
-    items: Array.from(ctx.state)
   };
 }
 

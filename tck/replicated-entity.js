@@ -38,8 +38,6 @@ function createReplicatedData(name) {
   switch (dataType) {
     case 'ReplicatedCounter':
       return new ReplicatedData.ReplicatedCounter();
-    case 'GSet':
-      return new ReplicatedData.GSet();
     case 'ORSet':
       return new ReplicatedData.ORSet();
     case 'LWWRegister':
@@ -132,8 +130,6 @@ function endStateReached(state, endState) {
 function applyUpdate(update, state) {
   if (update.counter) {
     state.increment(update.counter.change);
-  } else if (update.gset) {
-    state.add(update.gset.add);
   } else if (update.orset) {
     if (update.orset.add) state.add(update.orset.add);
     else if (update.orset.remove) state.delete(update.orset.remove);
@@ -188,8 +184,6 @@ function responseValue(context) {
 function replicatedDataState(state) {
   if (state instanceof ReplicatedData.ReplicatedCounter)
     return { counter: state.value ? { value: state.value } : {} };
-  else if (state instanceof ReplicatedData.GSet)
-    return { gset: state.size ? { elements: sortedElements(state) } : {} };
   else if (state instanceof ReplicatedData.ORSet)
     return { orset: state.size ? { elements: sortedElements(state) } : {} };
   else if (state instanceof ReplicatedData.LWWRegister)

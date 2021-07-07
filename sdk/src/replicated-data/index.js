@@ -18,7 +18,6 @@ const util = require('util');
 const protobufHelper = require('../protobuf-helper');
 
 const ReplicatedCounter = require('./counter');
-const GSet = require('./gset');
 const ORSet = require('./orset');
 const LWWRegister = require('./lwwregister');
 const Flag = require('./flag');
@@ -104,8 +103,6 @@ const WriteConsistencies = (function () {
 function createForDelta(delta) {
   if (delta.counter) {
     return new ReplicatedCounter();
-  } else if (delta.gset) {
-    return new GSet();
   } else if (delta.orset) {
     return new ORSet();
   } else if (delta.lwwregister) {
@@ -125,7 +122,6 @@ function createForDelta(delta) {
 module.exports = {
   createForDelta: createForDelta,
   ReplicatedCounter: ReplicatedCounter,
-  GSet: GSet,
   ORSet: ORSet,
   LWWRegister: LWWRegister,
   Flag: Flag,

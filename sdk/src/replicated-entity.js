@@ -64,13 +64,6 @@ const replicatedEntityServices = new support.ReplicatedEntityServices();
 // Callback definitions for akkaserverless.replicatedentity.*
 
 /**
- * Callback for handling elements iterated through by {@link module:akkaserverless.replicatedentity.GSet#forEach}.
- *
- * @callback module:akkaserverless.replicatedentity.GSet~forEachCallback
- * @param {module:akkaserverless.Serializable} element The element.
- */
-
-/**
  * Generator for default values.
  *
  * This is invoked by get when the current map has no Replicated Data defined for the key.
@@ -204,7 +197,6 @@ class ReplicatedEntity {
  * @type {{
  * ReplicatedData: {
  *   ReplicatedCounter: function(): void,
- *   GSet: function(): void,
  *   ORSet: function(): void,
  *   LWWRegister: function(module:akkaserverless.Serializable, module:akkaserverless.replicatedentity.Clock=, number=): void,
  *   Flag: function(): void, Clocks: unknown[],
@@ -220,7 +212,6 @@ module.exports = {
   ReplicatedEntity: ReplicatedEntity,
   ReplicatedData: {
     ReplicatedCounter: replicatedData.ReplicatedCounter,
-    GSet: replicatedData.GSet,
     ORSet: replicatedData.ORSet,
     LWWRegister: replicatedData.LWWRegister,
     Flag: replicatedData.Flag,
