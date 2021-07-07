@@ -24,11 +24,13 @@ lazy val `akkasls-codegen-core` =
     .settings(commonSettings)
     .settings(
       libraryDependencies ++= Seq(
-        library.akkaserverless,
+        library.akkaserverless % "protobuf-src",
+        library.scalapbRuntime % "protobuf",
         library.protobufJava,
         library.munit           % Test,
         library.munitScalaCheck % Test
-      )
+      ),
+      Compile / PB.targets := Seq(PB.gens.java -> (Compile / sourceManaged).value)
     )
 
 lazy val `akkasls-codegen-js` =
@@ -116,6 +118,7 @@ lazy val `akkasls-codegen-js-cli` =
 lazy val library =
   new {
     object Version {
+      val akkaserverless = "0.7.0-beta.9"
       val commonsIo      = "2.8.0"
       val kiama          = "2.4.0"
       val logback        = "1.2.3"
@@ -125,7 +128,6 @@ lazy val library =
       val scopt          = "4.0.0"
       val testcontainers = "1.15.3"
       val typesafeConfig = "1.4.1"
-      val akkaserverless = "0.7.0-beta.9"
     }
     val commonsIo       = "commons-io"                     % "commons-io"       % Version.commonsIo
     val kiama           = "org.bitbucket.inkytonik.kiama" %% "kiama"            % Version.kiama
@@ -138,7 +140,9 @@ lazy val library =
     val testcontainers  = "org.testcontainers"             % "testcontainers"   % Version.testcontainers
     val typesafeConfig  = "com.typesafe"                   % "config"           % Version.typesafeConfig
     val akkaserverless =
-      "com.akkaserverless" % "akkaserverless-java-sdk" % Version.akkaserverless
+      "com.akkaserverless" % "akkaserverless-sdk-protocol" % Version.akkaserverless
+    val scalapbRuntime =
+      "com.thesamet.scalapb" %% "scalapb-runtime" % scalapb.compiler.Version.scalapbVersion
   }
 
 // *****************************************************************************
