@@ -61,7 +61,7 @@ class ActionHandler {
       '%s [%s.%s] - ' + msg,
       ...[
         this.streamId,
-        this.support.service.name,
+        this.support.serializationSupport.getService().name,
         this.grpcMethod.name,
       ].concat(args),
     );
@@ -174,7 +174,7 @@ class ActionHandler {
     if (value) {
       if (this.ctx.alreadyReplied) {
         console.warn(
-          `WARNING: Action handler for ${this.support.service.name}.${this.grpcMethod.name} both sent a reply through the context and returned a value, ignoring return value.`,
+          `WARNING: Action handler for ${this.support.serializationSupport.getService().name}.${this.grpcMethod.name} both sent a reply through the context and returned a value, ignoring return value.`,
         );
       } else if (value instanceof Reply) {
         this.passReplyThroughContext(this.ctx, value);
@@ -227,7 +227,7 @@ class ActionHandler {
       if (this.call.cancelled) {
         this.streamDebug(
           'Streamed command handler for command %s.%s both sent a reply through the context and returned a value, ignoring return value.',
-          this.support.service.name,
+          this.support.serializationSupport.getService().name,
           this.grpcMethod.name,
         );
       } else {
@@ -633,11 +633,13 @@ module.exports = class ActionServices {
 
   createHandler(call, callback, data) {
     const service = this.services[data.serviceName];
-    if (service && service.service.methods.hasOwnProperty(data.name)) {
+    const methods = service.serializationSupport.getService().methods;
+
+    if (service && methods.hasOwnProperty(data.name)) {
       if (service.commandHandlers.hasOwnProperty(data.name)) {
         return new ActionHandler(
           service,
-          service.service.methods[data.name],
+          methods[data.name],
           service.commandHandlers[data.name],
           call,
           callback,

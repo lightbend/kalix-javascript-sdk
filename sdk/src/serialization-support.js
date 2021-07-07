@@ -57,6 +57,13 @@ export class ProtobufjsSerializationSupport {
     return this.grpc;
   }
 
+  getService() {
+    if (!this.service) {
+      this.validate();
+    }
+    return this.service;
+  }
+
   validate() {
     const allIncludeDirs = protobufHelper.moduleIncludeDirs.concat(
       this.includeDirs,
@@ -65,7 +72,7 @@ export class ProtobufjsSerializationSupport {
     this.root = protobufHelper.loadSync(this.desc, allIncludeDirs);
 
     // Eagerly lookup the service to fail early
-    this.root.lookupService(this.serviceName);
+    this.service = this.root.lookupService(this.serviceName);
 
     const packageDefinition = protoLoader.loadSync(this.desc, {
       includeDirs: allIncludeDirs,
