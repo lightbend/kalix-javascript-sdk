@@ -25,48 +25,17 @@ const entity = new ReplicatedEntity(
 );
 
 entity.commandHandlers = {
-  IncrementGCounter: incrementGCounter,
-  GetGCounter: getGCounter,
-  UpdatePNCounter: updatePNCounter,
-  GetPNCounter: getPNCounter,
-  MutateGSet: mutateGSet,
-  GetGSet: getGSet,
-  MutateORSet: mutateORSet,
-  GetORSet: getORSet,
+  UpdateReplicatedCounter: updateReplicatedCounter,
+  GetReplicatedCounter: getReplicatedCounter,
+  MutateReplicatedSet: mutateReplicatedSet,
+  GetReplicatedSet: getReplicatedSet,
   Connect: connect,
   Monitor: monitor
 };
 
-function incrementGCounter(update, ctx) {
-  if (update.value < 0) {
-    ctx.fail("Cannot decrement gcounter");
-  }
-
+function updateReplicatedCounter(update, ctx) {
   if (ctx.state === null) {
-    ctx.state = new ReplicatedData.GCounter();
-  }
-
-  if (update.value > 0) {
-    ctx.state.increment(update.value);
-  }
-  return {
-    value: ctx.state.value
-  };
-}
-
-function getGCounter(get, ctx) {
-  if (ctx.state === null) {
-    ctx.state = new ReplicatedData.GCounter();
-  }
-
-  return {
-    value: ctx.state.value
-  };
-}
-
-function updatePNCounter(update, ctx) {
-  if (ctx.state === null) {
-    ctx.state = new ReplicatedData.PNCounter();
+    ctx.state = new ReplicatedData.ReplicatedCounter();
   }
 
   if (update.value !== 0) {
@@ -77,9 +46,9 @@ function updatePNCounter(update, ctx) {
   };
 }
 
-function getPNCounter(get, ctx) {
+function getReplicatedCounter(get, ctx) {
   if (ctx.state === null) {
-    ctx.state = new ReplicatedData.PNCounter();
+    ctx.state = new ReplicatedData.ReplicatedCounter();
   }
 
   return {
@@ -87,33 +56,9 @@ function getPNCounter(get, ctx) {
   };
 }
 
-function mutateGSet(update, ctx) {
+function mutateReplicatedSet(update, ctx) {
   if (ctx.state === null) {
-    ctx.state = new ReplicatedData.GSet();
-  }
-
-  update.add.forEach(value => {
-    ctx.state.add(value)
-  });
-
-  return {
-    size: ctx.state.size
-  }
-}
-
-function getGSet(get, ctx) {
-  if (ctx.state === null) {
-    ctx.state = new ReplicatedData.GSet();
-  }
-
-  return {
-    items: Array.from(ctx.state)
-  };
-}
-
-function mutateORSet(update, ctx) {
-  if (ctx.state === null) {
-    ctx.state = new ReplicatedData.ORSet();
+    ctx.state = new ReplicatedData.ReplicatedSet();
   }
 
   if (update.clear) {
@@ -131,9 +76,9 @@ function mutateORSet(update, ctx) {
   }
 }
 
-function getORSet(get, ctx) {
+function getReplicatedSet(get, ctx) {
   if (ctx.state === null) {
-    ctx.state = new ReplicatedData.ORSet();
+    ctx.state = new ReplicatedData.ReplicatedSet();
   }
 
   return {

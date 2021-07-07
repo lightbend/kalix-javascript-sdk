@@ -333,6 +333,15 @@ export class AkkaServerless {
       ) {
         callback(null, new google_protobuf_empty_pb.Empty());
       },
+      healthCheck(
+        call: grpc.ServerUnaryCall<
+          google_protobuf_empty_pb.Empty,
+          google_protobuf_empty_pb.Empty
+        >,
+        callback: grpc.sendUnaryData<google_protobuf_empty_pb.Empty>,
+      ) {
+        callback(null, new google_protobuf_empty_pb.Empty());
+      },
     };
 
     return discoveryServer;

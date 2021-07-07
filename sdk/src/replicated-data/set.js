@@ -19,14 +19,14 @@ const util = require('util');
 const AnySupport = require('../protobuf-any');
 
 /**
- * @classdesc An Observed-Removed Set Replicated Data type.
+ * @classdesc A Replicated Set data type.
  *
- * Observed-Removed-Set's are a set of {@link module:akkaserverless.Serializable} values. Elements can be added and removed.
+ * A ReplicatedSet is a set of {@link module:akkaserverless.Serializable} values. Elements can be added and removed.
  *
- * @constructor module:akkaserverless.replicatedentity.ORSet
+ * @constructor module:akkaserverless.replicatedentity.ReplicatedSet
  * @implements module:akkaserverless.replicatedentity.ReplicatedData
  */
-function ORSet() {
+function ReplicatedSet() {
   // Map of a comparable form (that compares correctly using ===) of the elements to the elements
   let currentValue = new Map();
   let delta = {
@@ -38,7 +38,7 @@ function ORSet() {
   /**
    * Does this set contain the given element?
    *
-   * @function module:akkaserverless.replicatedentity.ORSet#has
+   * @function module:akkaserverless.replicatedentity.ReplicatedSet#has
    * @param {module:akkaserverless.Serializable} element The element to check.
    * @returns {boolean} True if the set contains the element.
    */
@@ -49,7 +49,7 @@ function ORSet() {
   /**
    * The number of elements in this set.
    *
-   * @name module:akkaserverless.replicatedentity.ORSet#size
+   * @name module:akkaserverless.replicatedentity.ReplicatedSet#size
    * @type {number}
    * @readonly
    */
@@ -62,8 +62,8 @@ function ORSet() {
   /**
    * Execute the given callback for each element.
    *
-   * @function module:akkaserverless.replicatedentity.ORSet#forEach
-   * @param {module:akkaserverless.replicatedentity.ORSet~forEachCallback} callback The callback to handle each element.
+   * @function module:akkaserverless.replicatedentity.ReplicatedSet#forEach
+   * @param {module:akkaserverless.replicatedentity.ReplicatedSet~forEachCallback} callback The callback to handle each element.
    */
   this.forEach = function (callback) {
     return currentValue.forEach((value, key) => callback(value));
@@ -72,7 +72,7 @@ function ORSet() {
   /**
    * Create an iterator for this set.
    *
-   * @function module:akkaserverless.replicatedentity.ORSet#iterator
+   * @function module:akkaserverless.replicatedentity.ReplicatedSet#iterator
    * @returns {Iterator<module:akkaserverless.Serializable>}
    */
   this[Symbol.iterator] = function () {
@@ -82,9 +82,9 @@ function ORSet() {
   /**
    * Add an element to this set.
    *
-   * @function module:akkaserverless.replicatedentity.ORSet#add
+   * @function module:akkaserverless.replicatedentity.ReplicatedSet#add
    * @param {module:akkaserverless.Serializable} element The element to add.
-   * @return {module:akkaserverless.replicatedentity.ORSet} This set.
+   * @return {module:akkaserverless.replicatedentity.ReplicatedSet} This set.
    */
   this.add = function (element) {
     const comparable = AnySupport.toComparable(element);
@@ -103,9 +103,9 @@ function ORSet() {
   /**
    * Remove an element from this set.
    *
-   * @function module:akkaserverless.replicatedentity.ORSet#delete
+   * @function module:akkaserverless.replicatedentity.ReplicatedSet#delete
    * @param {module:akkaserverless.Serializable} element The element to delete.
-   * @return {module:akkaserverless.replicatedentity.ORSet} This set.
+   * @return {module:akkaserverless.replicatedentity.ReplicatedSet} This set.
    */
   this.delete = function (element) {
     const comparable = AnySupport.toComparable(element);
@@ -128,8 +128,8 @@ function ORSet() {
   /**
    * Remove all elements from this set.
    *
-   * @function module:akkaserverless.replicatedentity.ORSet#clear
-   * @return {module:akkaserverless.replicatedentity.ORSet} This set.
+   * @function module:akkaserverless.replicatedentity.ReplicatedSet#clear
+   * @return {module:akkaserverless.replicatedentity.ReplicatedSet} This set.
    */
   this.clear = function () {
     if (currentValue.size > 0) {
@@ -149,7 +149,7 @@ function ORSet() {
       initial
     ) {
       const currentDelta = {
-        orset: {
+        replicatedSet: {
           cleared: delta.cleared,
           removed: Array.from(delta.removed.values()),
           added: Array.from(delta.added.values()),
@@ -165,33 +165,35 @@ function ORSet() {
   };
 
   this.applyDelta = function (delta, anySupport) {
-    if (!delta.orset) {
-      throw new Error(util.format('Cannot apply delta %o to ORSet', delta));
+    if (!delta.replicatedSet) {
+      throw new Error(
+        util.format('Cannot apply delta %o to ReplicatedSet', delta),
+      );
     }
-    if (delta.orset.cleared) {
+    if (delta.replicatedSet.cleared) {
       currentValue.clear();
     }
-    if (delta.orset.removed !== undefined) {
-      delta.orset.removed.forEach((element) => {
+    if (delta.replicatedSet.removed !== undefined) {
+      delta.replicatedSet.removed.forEach((element) => {
         const value = anySupport.deserialize(element);
         const comparable = AnySupport.toComparable(value);
         if (currentValue.has(comparable)) {
           currentValue.delete(comparable);
         } else {
           debug(
-            "Delta instructed to delete element [%o], but it wasn't in the ORSet.",
+            "Delta instructed to delete element [%o], but it wasn't in the ReplicatedSet.",
             comparable,
           );
         }
       });
     }
-    if (delta.orset.added !== undefined) {
-      delta.orset.added.forEach((element) => {
+    if (delta.replicatedSet.added !== undefined) {
+      delta.replicatedSet.added.forEach((element) => {
         const value = anySupport.deserialize(element);
         const comparable = AnySupport.toComparable(value);
         if (currentValue.has(comparable)) {
           debug(
-            "Delta instructed to add value [%o], but it's already present in the ORSet",
+            "Delta instructed to add value [%o], but it's already present in the ReplicatedSet",
             comparable,
           );
         } else {
@@ -202,8 +204,8 @@ function ORSet() {
   };
 
   this.toString = function () {
-    return 'ORSet(' + Array.from(currentValue).join(',') + ')';
+    return 'ReplicatedSet(' + Array.from(currentValue).join(',') + ')';
   };
 }
 
-module.exports = ORSet;
+module.exports = ReplicatedSet;

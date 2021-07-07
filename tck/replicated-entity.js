@@ -36,20 +36,14 @@ tckModel.commandHandlers = {
 function createReplicatedData(name) {
   const dataType = name.split('-')[0];
   switch (dataType) {
-    case 'GCounter':
-      return new ReplicatedData.GCounter();
-    case 'PNCounter':
-      return new ReplicatedData.PNCounter();
-    case 'GSet':
-      return new ReplicatedData.GSet();
-    case 'ORSet':
-      return new ReplicatedData.ORSet();
-    case 'LWWRegister':
-      return new ReplicatedData.LWWRegister('');
-    case 'Flag':
-      return new ReplicatedData.Flag();
-    case 'ORMap':
-      const map = new ReplicatedData.ORMap();
+    case 'ReplicatedCounter':
+      return new ReplicatedData.ReplicatedCounter();
+    case 'ReplicatedSet':
+      return new ReplicatedData.ReplicatedSet();
+    case 'ReplicatedRegister':
+      return new ReplicatedData.ReplicatedRegister('');
+    case 'ReplicatedMap':
+      const map = new ReplicatedData.ReplicatedMap();
       map.defaultValue = (key) => createReplicatedData(key);
       return map;
     case 'Vote':
@@ -123,61 +117,55 @@ function processStreamed(request, context) {
   if (!request.empty) return responseValue(context);
 }
 
-// TCK only uses GCounter for end state tests
+// TCK only uses ReplicatedCounter for end state tests
 function endStateReached(state, endState) {
-  if (state instanceof ReplicatedData.GCounter && endState.gcounter) {
-    return state.value === endState.gcounter.value.toNumber();
+  if (state instanceof ReplicatedData.ReplicatedCounter && endState.counter) {
+    return state.value === endState.counter.value.toNumber();
   }
   return false;
 }
 
 function applyUpdate(update, state) {
-  if (update.gcounter) {
-    state.increment(update.gcounter.increment);
-  } else if (update.pncounter) {
-    state.increment(update.pncounter.change);
-  } else if (update.gset) {
-    state.add(update.gset.add);
-  } else if (update.orset) {
-    if (update.orset.add) state.add(update.orset.add);
-    else if (update.orset.remove) state.delete(update.orset.remove);
-    else if (update.orset.clear) state.clear();
-  } else if (update.lwwregister) {
-    if (update.lwwregister.clock.clockType === ReplicatedData.Clocks.REVERSE)
+  if (update.counter) {
+    state.increment(update.counter.change);
+  } else if (update.replicatedSet) {
+    if (update.replicatedSet.add) state.add(update.replicatedSet.add);
+    else if (update.replicatedSet.remove)
+      state.delete(update.replicatedSet.remove);
+    else if (update.replicatedSet.clear) state.clear();
+  } else if (update.register) {
+    if (update.register.clock.clockType === ReplicatedData.Clocks.REVERSE)
+      state.setWithClock(update.register.value, ReplicatedData.Clocks.REVERSE);
+    else if (update.register.clock.clockType === ReplicatedData.Clocks.CUSTOM)
       state.setWithClock(
-        update.lwwregister.value,
-        ReplicatedData.Clocks.REVERSE,
-      );
-    else if (
-      update.lwwregister.clock.clockType === ReplicatedData.Clocks.CUSTOM
-    )
-      state.setWithClock(
-        update.lwwregister.value,
+        update.register.value,
         ReplicatedData.Clocks.CUSTOM,
-        update.lwwregister.clock.customClockValue,
+        update.register.clock.customClockValue,
       );
     else if (
-      update.lwwregister.clock.clockType ===
+      update.register.clock.clockType ===
       ReplicatedData.Clocks.CUSTOM_AUTO_INCREMENT
     )
       state.setWithClock(
-        update.lwwregister.value,
+        update.register.value,
         ReplicatedData.Clocks.CUSTOM_AUTO_INCREMENT,
-        update.lwwregister.clock.customClockValue,
+        update.register.clock.customClockValue,
       );
-    else state.value = update.lwwregister.value;
-  } else if (update.flag) {
-    state.enable();
-  } else if (update.ormap) {
-    if (update.ormap.add && !state.has(update.ormap.add))
-      state.set(update.ormap.add, createReplicatedData(update.ormap.add));
-    else if (update.ormap.update)
+    else state.value = update.register.value;
+  } else if (update.replicatedMap) {
+    if (update.replicatedMap.add && !state.has(update.replicatedMap.add))
+      state.set(
+        update.replicatedMap.add,
+        createReplicatedData(update.replicatedMap.add),
+      );
+    else if (update.replicatedMap.update)
       applyUpdate(
-        update.ormap.update.update,
-        state.get(update.ormap.update.key),
+        update.replicatedMap.update.update,
+        state.get(update.replicatedMap.update.key),
       );
-    else if (update.ormap.remove) state.delete(update.ormap.remove);
-    else if (update.ormap.clear) state.clear();
+    else if (update.replicatedMap.remove)
+      state.delete(update.replicatedMap.remove);
+    else if (update.replicatedMap.clear) state.clear();
   } else if (update.vote) {
     state.vote = update.vote.selfVote;
   }
@@ -190,21 +178,17 @@ function responseValue(context) {
 }
 
 function replicatedDataState(state) {
-  if (state instanceof ReplicatedData.GCounter)
-    return { gcounter: state.value ? { value: state.value } : {} };
-  else if (state instanceof ReplicatedData.PNCounter)
-    return { pncounter: state.value ? { value: state.value } : {} };
-  else if (state instanceof ReplicatedData.GSet)
-    return { gset: state.size ? { elements: sortedElements(state) } : {} };
-  else if (state instanceof ReplicatedData.ORSet)
-    return { orset: state.size ? { elements: sortedElements(state) } : {} };
-  else if (state instanceof ReplicatedData.LWWRegister)
-    return { lwwregister: state.value ? { value: state.value } : {} };
-  else if (state instanceof ReplicatedData.Flag)
-    return { flag: state.value ? { value: state.value } : {} };
-  else if (state instanceof ReplicatedData.ORMap)
+  if (state instanceof ReplicatedData.ReplicatedCounter)
+    return { counter: state.value ? { value: state.value } : {} };
+  else if (state instanceof ReplicatedData.ReplicatedSet)
     return {
-      ormap: state.size
+      replicatedSet: state.size ? { elements: sortedElements(state) } : {},
+    };
+  else if (state instanceof ReplicatedData.ReplicatedRegister)
+    return { register: state.value ? { value: state.value } : {} };
+  else if (state instanceof ReplicatedData.ReplicatedMap)
+    return {
+      replicatedMap: state.size
         ? { entries: sortedEntries(state.entries(), replicatedDataState) }
         : {},
     };

@@ -131,7 +131,7 @@ describe('Vote', () => {
     vote.all.should.equal(true);
   });
 
-  it('should support empty initial deltas (for ORMap added)', () => {
+  it('should support empty initial deltas (for ReplicatedMap added)', () => {
     const vote = new Vote();
     vote.votesFor.should.equal(0);
     vote.totalVoters.should.equal(1);

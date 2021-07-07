@@ -61,14 +61,10 @@ message OnlineStatus {
 }
 
 service ReplicatedEntityExample {
-  rpc IncrementGCounter(UpdateCounter) returns (CounterValue);
-  rpc GetGCounter(Get) returns (CounterValue);
-  rpc UpdatePNCounter(UpdateCounter) returns (CounterValue);
-  rpc GetPNCounter(Get) returns (CounterValue);
-  rpc MutateGSet(MutateSet) returns (SetSize);
-  rpc GetGSet(Get) returns (SetValue);
-  rpc MutateORSet(MutateSet) returns (SetSize);
-  rpc GetORSet(Get) returns (SetValue);
+  rpc UpdateReplicatedCounter(UpdateCounter) returns (CounterValue);
+  rpc GetReplicatedCounter(Get) returns (CounterValue);
+  rpc MutateReplicatedSet(MutateSet) returns (SetSize);
+  rpc GetReplicatedSet(Get) returns (SetValue);
   // Connect the given user. They will stay connected as long as the stream stays open.
   rpc Connect(User) returns (stream google.protobuf.Empty);
   // Monitor the online status of the given user.

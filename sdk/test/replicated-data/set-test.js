@@ -17,7 +17,7 @@
 const should = require('chai').should();
 const protobuf = require('protobufjs');
 const path = require('path');
-const ORSet = require('../../src/replicated-data/orset');
+const ReplicatedSet = require('../../src/replicated-data/set');
 const protobufHelper = require('../../src/protobuf-helper');
 const AnySupport = require('../../src/protobuf-any');
 
@@ -45,19 +45,19 @@ function fromAnys(values) {
   return values.map((any) => anySupport.deserialize(any));
 }
 
-describe('ORSet', () => {
+describe('ReplicatedSet', () => {
   it('should have no elements when instantiated', () => {
-    const set = new ORSet();
+    const set = new ReplicatedSet();
     set.size.should.equal(0);
     should.equal(set.getAndResetDelta(), null);
   });
 
   it('should reflect an initial delta', () => {
-    const set = new ORSet();
+    const set = new ReplicatedSet();
     should.equal(set.getAndResetDelta(), null);
     set.applyDelta(
       roundTripDelta({
-        orset: {
+        replicatedSet: {
           added: [toAny('one'), toAny('two')],
         },
       }),
@@ -69,24 +69,27 @@ describe('ORSet', () => {
   });
 
   it('should generate an add delta', () => {
-    const set = new ORSet().add('one');
+    const set = new ReplicatedSet().add('one');
     set.has('one').should.be.true;
     set.size.should.equal(1);
     const delta1 = roundTripDelta(set.getAndResetDelta());
-    delta1.orset.added.should.have.lengthOf(1);
-    fromAnys(delta1.orset.added).should.include('one');
+    delta1.replicatedSet.added.should.have.lengthOf(1);
+    fromAnys(delta1.replicatedSet.added).should.include('one');
     should.equal(set.getAndResetDelta(), null);
 
     set.add('two').add('three');
     set.size.should.equal(3);
     const delta2 = roundTripDelta(set.getAndResetDelta());
-    delta2.orset.added.should.have.lengthOf(2);
-    fromAnys(delta2.orset.added).should.include.members(['two', 'three']);
+    delta2.replicatedSet.added.should.have.lengthOf(2);
+    fromAnys(delta2.replicatedSet.added).should.include.members([
+      'two',
+      'three',
+    ]);
     should.equal(set.getAndResetDelta(), null);
   });
 
   it('should generate a remove delta', () => {
-    const set = new ORSet().add('one').add('two').add('three');
+    const set = new ReplicatedSet().add('one').add('two').add('three');
     set.getAndResetDelta();
     set.has('one').should.be.true;
     set.has('two').should.be.true;
@@ -98,75 +101,78 @@ describe('ORSet', () => {
     set.has('one').should.be.false;
     set.has('two').should.be.false;
     const delta = roundTripDelta(set.getAndResetDelta());
-    delta.orset.removed.should.have.lengthOf(2);
-    fromAnys(delta.orset.removed).should.include.members(['one', 'two']);
+    delta.replicatedSet.removed.should.have.lengthOf(2);
+    fromAnys(delta.replicatedSet.removed).should.include.members([
+      'one',
+      'two',
+    ]);
     should.equal(set.getAndResetDelta(), null);
   });
 
   it('should generate a clear delta', () => {
-    const set = new ORSet().add('one').add('two');
+    const set = new ReplicatedSet().add('one').add('two');
     set.getAndResetDelta();
     set.clear().size.should.equal(0);
     const delta = roundTripDelta(set.getAndResetDelta());
-    delta.orset.cleared.should.be.true;
+    delta.replicatedSet.cleared.should.be.true;
     should.equal(set.getAndResetDelta(), null);
   });
 
   it('should generate a clear delta when everything is removed', () => {
-    const set = new ORSet().add('one').add('two');
+    const set = new ReplicatedSet().add('one').add('two');
     set.getAndResetDelta();
     set.delete('one').delete('two').size.should.equal(0);
     const delta = roundTripDelta(set.getAndResetDelta());
-    delta.orset.cleared.should.be.true;
+    delta.replicatedSet.cleared.should.be.true;
     should.equal(set.getAndResetDelta(), null);
   });
 
   it('should not generate a delta when an added element is removed', () => {
-    const set = new ORSet().add('one');
+    const set = new ReplicatedSet().add('one');
     set.getAndResetDelta();
     set.add('two').delete('two').size.should.equal(1);
     should.equal(set.getAndResetDelta(), null);
   });
 
   it('should not generate a delta when a removed element is added', () => {
-    const set = new ORSet().add('one').add('two');
+    const set = new ReplicatedSet().add('one').add('two');
     set.getAndResetDelta();
     set.delete('two').add('two').size.should.equal(2);
     should.equal(set.getAndResetDelta(), null);
   });
 
   it('should not generate a delta when an already existing element is added', () => {
-    const set = new ORSet().add('one');
+    const set = new ReplicatedSet().add('one');
     set.getAndResetDelta();
     set.add('one').size.should.equal(1);
     should.equal(set.getAndResetDelta(), null);
   });
 
   it('should not generate a delta when a non existing element is removed', () => {
-    const set = new ORSet().add('one');
+    const set = new ReplicatedSet().add('one');
     set.getAndResetDelta();
     set.delete('two').size.should.equal(1);
     should.equal(set.getAndResetDelta(), null);
   });
 
   it('clear all other deltas when the set is cleared', () => {
-    const set = new ORSet().add('one');
+    const set = new ReplicatedSet().add('one');
     set.getAndResetDelta();
     set.add('two').delete('one').clear().size.should.equal(0);
     const delta = roundTripDelta(set.getAndResetDelta());
-    delta.orset.cleared.should.be.true;
-    delta.orset.added.should.have.lengthOf(0);
-    delta.orset.removed.should.have.lengthOf(0);
+    delta.replicatedSet.cleared.should.be.true;
+    delta.replicatedSet.added.should.have.lengthOf(0);
+    delta.replicatedSet.removed.should.have.lengthOf(0);
   });
 
   it('should reflect a delta add', () => {
-    const set = new ORSet().add('one');
+    const set = new ReplicatedSet().add('one');
     const delta1 = roundTripDelta(set.getAndResetDelta());
-    delta1.orset.added.should.have.lengthOf(1);
-    fromAnys(delta1.orset.added).should.include('one');
+    delta1.replicatedSet.added.should.have.lengthOf(1);
+    fromAnys(delta1.replicatedSet.added).should.include('one');
     set.applyDelta(
       roundTripDelta({
-        orset: {
+        replicatedSet: {
           added: [toAny('two')],
         },
       }),
@@ -178,13 +184,13 @@ describe('ORSet', () => {
   });
 
   it('should reflect a delta remove', () => {
-    const set = new ORSet().add('one').add('two');
+    const set = new ReplicatedSet().add('one').add('two');
     const delta1 = roundTripDelta(set.getAndResetDelta());
-    delta1.orset.added.should.have.lengthOf(2);
-    fromAnys(delta1.orset.added).should.include('one', 'two');
+    delta1.replicatedSet.added.should.have.lengthOf(2);
+    fromAnys(delta1.replicatedSet.added).should.include('one', 'two');
     set.applyDelta(
       roundTripDelta({
-        orset: {
+        replicatedSet: {
           removed: [toAny('two')],
         },
       }),
@@ -196,13 +202,13 @@ describe('ORSet', () => {
   });
 
   it('should reflect a delta clear', () => {
-    const set = new ORSet().add('one').add('two');
+    const set = new ReplicatedSet().add('one').add('two');
     const delta1 = roundTripDelta(set.getAndResetDelta());
-    delta1.orset.added.should.have.lengthOf(2);
-    fromAnys(delta1.orset.added).should.include('one', 'two');
+    delta1.replicatedSet.added.should.have.lengthOf(2);
+    fromAnys(delta1.replicatedSet.added).should.include('one', 'two');
     set.applyDelta(
       roundTripDelta({
-        orset: {
+        replicatedSet: {
           cleared: true,
         },
       }),
@@ -213,33 +219,33 @@ describe('ORSet', () => {
   });
 
   it('should work with protobuf types', () => {
-    const set = new ORSet()
+    const set = new ReplicatedSet()
       .add(Example.create({ field1: 'one' }))
       .add(Example.create({ field1: 'two' }));
     set.getAndResetDelta();
     set.delete(Example.create({ field1: 'one' }));
     set.size.should.equal(1);
     const delta = roundTripDelta(set.getAndResetDelta());
-    delta.orset.removed.should.have.lengthOf(1);
-    fromAnys(delta.orset.removed)[0].field1.should.equal('one');
+    delta.replicatedSet.removed.should.have.lengthOf(1);
+    fromAnys(delta.replicatedSet.removed)[0].field1.should.equal('one');
   });
 
   it('should work with json types', () => {
-    const set = new ORSet().add({ foo: 'bar' }).add({ foo: 'baz' });
+    const set = new ReplicatedSet().add({ foo: 'bar' }).add({ foo: 'baz' });
     set.getAndResetDelta();
     set.delete({ foo: 'bar' });
     set.size.should.equal(1);
     const delta = roundTripDelta(set.getAndResetDelta());
-    delta.orset.removed.should.have.lengthOf(1);
-    fromAnys(delta.orset.removed)[0].foo.should.equal('bar');
+    delta.replicatedSet.removed.should.have.lengthOf(1);
+    fromAnys(delta.replicatedSet.removed)[0].foo.should.equal('bar');
   });
 
-  it('should support empty initial deltas (for ORMap added)', () => {
-    const set = new ORSet();
+  it('should support empty initial deltas (for ReplicatedMap added)', () => {
+    const set = new ReplicatedSet();
     set.size.should.equal(0);
     should.equal(set.getAndResetDelta(), null);
     roundTripDelta(
       set.getAndResetDelta(/* initial = */ true),
-    ).orset.added.should.have.lengthOf(0);
+    ).replicatedSet.added.should.have.lengthOf(0);
   });
 });

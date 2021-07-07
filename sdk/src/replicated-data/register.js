@@ -23,21 +23,28 @@ const Clocks =
     .ReplicatedEntityClock;
 
 /**
- * @classdesc A Last-Write-Wins Register Replicated Data type.
+ * @classdesc A Replicated Register data type.
  *
- * A last write wins register uses a clock to determine which of two concurrent updates should win. The clock is
- * represented as a number. The default clock uses the proxies system time, custom clocks can supply a custom number
- * to be used. If two clock values are equal, the write from the node with the lowest address wins.
+ * A ReplicatedRegister uses a clock to determine which of two concurrent updates should win. The
+ * last write wins. The clock is represented as a number. The default clock uses the proxies system
+ * time, custom clocks can supply a custom number to be used. If two clock values are equal, the
+ * write from the node with the lowest address wins.
  *
- * @constructor module:akkaserverless.replicatedentity.LWWRegister
+ * @constructor module:akkaserverless.replicatedentity.ReplicatedRegister
  * @implements module:akkaserverless.replicatedentity.ReplicatedData
  * @param {module:akkaserverless.Serializable} value A value to hold in the register.
  * @param {module:akkaserverless.replicatedentity.Clock} [clock=Clocks.DEFAULT] The clock to use.
  * @param {number} [customClockValue=0] The custom clock value, if using a custom clock.
  */
-function LWWRegister(value, clock = Clocks.DEFAULT, customClockValue = 0) {
+function ReplicatedRegister(
+  value,
+  clock = Clocks.DEFAULT,
+  customClockValue = 0,
+) {
   if (value === null || value === undefined) {
-    throw new Error('LWWRegister must be instantiated with an initial value.');
+    throw new Error(
+      'ReplicatedRegister must be instantiated with an initial value.',
+    );
   }
   // Make sure the value can be serialized.
   let serializedValue = AnySupport.serialize(value, true, true);
@@ -54,7 +61,7 @@ function LWWRegister(value, clock = Clocks.DEFAULT, customClockValue = 0) {
    *
    * Setting it will cause it to be set with the default clock.
    *
-   * @name module:akkaserverless.replicatedentity.LWWRegister#value
+   * @name module:akkaserverless.replicatedentity.ReplicatedRegister#value
    * @type {module:akkaserverless.Serializable}
    */
   Object.defineProperty(this, 'value', {
@@ -69,7 +76,7 @@ function LWWRegister(value, clock = Clocks.DEFAULT, customClockValue = 0) {
   /**
    * Set the the value using a custom clock.
    *
-   * @function module:akkaserverless.replicatedentity.LWWRegister#setWithClock
+   * @function module:akkaserverless.replicatedentity.ReplicatedRegister#setWithClock
    * @param {module:akkaserverless.Serializable} value The value to set.
    * @param {module:akkaserverless.replicatedentity.Clock} [clock=Clocks.DEFAULT] The clock.
    * @param {number} [customClockValue=0] Ignored if a custom clock isn't specified.
@@ -101,7 +108,7 @@ function LWWRegister(value, clock = Clocks.DEFAULT, customClockValue = 0) {
       const toReturn = delta;
       this.resetDelta();
       return {
-        lwwregister: toReturn,
+        register: toReturn,
       };
     } else {
       return null;
@@ -109,18 +116,18 @@ function LWWRegister(value, clock = Clocks.DEFAULT, customClockValue = 0) {
   };
 
   this.applyDelta = function (delta, anySupport) {
-    if (!delta.lwwregister) {
+    if (!delta.register) {
       throw new Error(
-        util.format('Cannot apply delta %o to LWWRegister', delta),
+        util.format('Cannot apply delta %o to ReplicatedRegister', delta),
       );
     }
     this.resetDelta();
-    currentValue = anySupport.deserialize(delta.lwwregister.value);
+    currentValue = anySupport.deserialize(delta.register.value);
   };
 
   this.toString = function () {
-    return 'LWWRegister(' + currentValue + ')';
+    return 'ReplicatedRegister(' + currentValue + ')';
   };
 }
 
-module.exports = LWWRegister;
+module.exports = ReplicatedRegister;

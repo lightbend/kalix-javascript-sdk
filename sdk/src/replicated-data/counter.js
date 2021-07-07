@@ -18,23 +18,23 @@ const util = require('util');
 const Long = require('long');
 
 /**
- * @classdesc A Positive-Negative Counter Replicated Data type.
+ * @classdesc A Replicated Counter data type.
  *
  * A counter that can be incremented and decremented.
  *
  * The value is stored as a 64-bit signed long, hence values over `2^63 - 1` and less than `2^63` can't be represented.
  *
- * @constructor module:akkaserverless.replicatedentity.PNCounter
+ * @constructor module:akkaserverless.replicatedentity.ReplicatedCounter
  * @implements module:akkaserverless.replicatedentity.ReplicatedData
  */
-function PNCounter() {
+function ReplicatedCounter() {
   let currentValue = Long.ZERO;
   let delta = Long.ZERO;
 
   /**
    * The value as a long.
    *
-   * @name module:akkaserverless.replicatedentity.PNCounter#longValue
+   * @name module:akkaserverless.replicatedentity.ReplicatedCounter#longValue
    * @type {Long}
    * @readonly
    */
@@ -46,10 +46,10 @@ function PNCounter() {
 
   /**
    * The value as a number. Note that once the value exceeds `2^53`, this will not be an accurate
-   * representation of the value. If you expect it to exceed `2^53`, {@link module:akkaserverless.replicatedentity.PNCounter#longValue}
+   * representation of the value. If you expect it to exceed `2^53`, {@link module:akkaserverless.replicatedentity.ReplicatedCounter#longValue}
    * should be used instead.
    *
-   * @name module:akkaserverless.replicatedentity.PNCounter#value
+   * @name module:akkaserverless.replicatedentity.ReplicatedCounter#value
    * @type {number}
    * @readonly
    */
@@ -62,9 +62,9 @@ function PNCounter() {
   /**
    * Increment the counter by the given number.
    *
-   * @function module:akkaserverless.replicatedentity.PNCounter#increment
+   * @function module:akkaserverless.replicatedentity.ReplicatedCounter#increment
    * @param {Long|number} increment The amount to increment the counter by. If negative, it will be decremented instead.
-   * @returns {module:akkaserverless.replicatedentity.PNCounter} This counter.
+   * @returns {module:akkaserverless.replicatedentity.ReplicatedCounter} This counter.
    */
   this.increment = function (increment) {
     currentValue = currentValue.add(increment);
@@ -75,9 +75,9 @@ function PNCounter() {
   /**
    * Decrement the counter by the given number.
    *
-   * @function module:akkaserverless.replicatedentity.PNCounter#decrement
+   * @function module:akkaserverless.replicatedentity.ReplicatedCounter#decrement
    * @param {Long|number} decrement The amount to decrement the counter by. If negative, it will be incremented instead.
-   * @returns {module:akkaserverless.replicatedentity.PNCounter} This counter.
+   * @returns {module:akkaserverless.replicatedentity.ReplicatedCounter} This counter.
    */
   this.decrement = function (decrement) {
     currentValue = currentValue.subtract(decrement);
@@ -88,7 +88,7 @@ function PNCounter() {
   this.getAndResetDelta = function (initial) {
     if (!delta.isZero() || initial) {
       const currentDelta = {
-        pncounter: {
+        counter: {
           change: delta,
         },
       };
@@ -100,15 +100,17 @@ function PNCounter() {
   };
 
   this.applyDelta = function (delta) {
-    if (!delta.pncounter) {
-      throw new Error(util.format('Cannot apply delta %o to PNCounter', delta));
+    if (!delta.counter) {
+      throw new Error(
+        util.format('Cannot apply delta %o to ReplicatedCounter', delta),
+      );
     }
-    currentValue = currentValue.add(delta.pncounter.change);
+    currentValue = currentValue.add(delta.counter.change);
   };
 
   this.toString = function () {
-    return 'PNCounter(' + currentValue + ')';
+    return 'ReplicatedCounter(' + currentValue + ')';
   };
 }
 
-module.exports = PNCounter;
+module.exports = ReplicatedCounter;
