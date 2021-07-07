@@ -42,8 +42,8 @@ function createReplicatedData(name) {
       return new ReplicatedData.ReplicatedSet();
     case 'ReplicatedRegister':
       return new ReplicatedData.ReplicatedRegister('');
-    case 'ORMap':
-      const map = new ReplicatedData.ORMap();
+    case 'ReplicatedMap':
+      const map = new ReplicatedData.ReplicatedMap();
       map.defaultValue = (key) => createReplicatedData(key);
       return map;
     case 'Vote':
@@ -156,16 +156,16 @@ function applyUpdate(update, state) {
         update.register.clock.customClockValue,
       );
     else state.value = update.register.value;
-  } else if (update.ormap) {
-    if (update.ormap.add && !state.has(update.ormap.add))
-      state.set(update.ormap.add, createReplicatedData(update.ormap.add));
-    else if (update.ormap.update)
+  } else if (update.replicatedMap) {
+    if (update.replicatedMap.add && !state.has(update.replicatedMap.add))
+      state.set(update.replicatedMap.add, createReplicatedData(update.replicatedMap.add));
+    else if (update.replicatedMap.update)
       applyUpdate(
-        update.ormap.update.update,
-        state.get(update.ormap.update.key),
+        update.replicatedMap.update.update,
+        state.get(update.replicatedMap.update.key),
       );
-    else if (update.ormap.remove) state.delete(update.ormap.remove);
-    else if (update.ormap.clear) state.clear();
+    else if (update.replicatedMap.remove) state.delete(update.replicatedMap.remove);
+    else if (update.replicatedMap.clear) state.clear();
   } else if (update.vote) {
     state.vote = update.vote.selfVote;
   }
@@ -184,9 +184,9 @@ function replicatedDataState(state) {
     return { replicatedSet: state.size ? { elements: sortedElements(state) } : {} };
   else if (state instanceof ReplicatedData.ReplicatedRegister)
     return { register: state.value ? { value: state.value } : {} };
-  else if (state instanceof ReplicatedData.ORMap)
+  else if (state instanceof ReplicatedData.ReplicatedMap)
     return {
-      ormap: state.size
+      replicatedMap: state.size
         ? { entries: sortedEntries(state.entries(), replicatedDataState) }
         : {},
     };

@@ -20,7 +20,7 @@ const protobufHelper = require('../protobuf-helper');
 const ReplicatedCounter = require('./counter');
 const ReplicatedSet = require('./set');
 const ReplicatedRegister = require('./register');
-const ORMap = require('./ormap');
+const ReplicatedMap = require('./map');
 const Vote = require('./vote');
 
 const Empty = protobufHelper.moduleRoot.google.protobuf.Empty;
@@ -107,8 +107,8 @@ function createForDelta(delta) {
   } else if (delta.register) {
     // It needs to be initialised with a value
     return new ReplicatedRegister(Empty.create({}));
-  } else if (delta.ormap) {
-    return new ORMap();
+  } else if (delta.replicatedMap) {
+    return new ReplicatedMap();
   } else if (delta.vote) {
     return new Vote();
   } else {
@@ -121,7 +121,7 @@ module.exports = {
   ReplicatedCounter: ReplicatedCounter,
   ReplicatedSet: ReplicatedSet,
   ReplicatedRegister: ReplicatedRegister,
-  ORMap: ORMap,
+  ReplicatedMap: ReplicatedMap,
   Vote: Vote,
   Clocks: Clocks,
   WriteConsistencies: WriteConsistencies,

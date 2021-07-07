@@ -39,9 +39,9 @@ function mapIterator(iter, f) {
 }
 
 /**
- * @classdesc An Observed-Removed Map Replicated Data type.
+ * @classdesc A Replicated Map data type.
  *
- * Observed-Removed-Map's are a mapping of keys (which can be any {@link module:akkaserverless.Serializable}) to
+ * ReplicatedMaps are a mapping of keys (which can be any {@link module:akkaserverless.Serializable}) to
  * Replicated Data types. Values of the map are merged together. Elements can be added and removed, however, when an
  * element is removed and then added again, it's possible that the old value will be merged with the new, depending on
  * whether the remove was replicated to all nodes before the add was.
@@ -50,10 +50,10 @@ function mapIterator(iter, f) {
  * its type, and doing so will likely result in the Replicated Data entering a non mergable state, from which it can't
  * recover.
  *
- * @constructor module:akkaserverless.replicatedentity.ORMap
+ * @constructor module:akkaserverless.replicatedentity.ReplicatedMap
  * @implements module:akkaserverless.replicatedentity.ReplicatedData
  */
-function ORMap() {
+function ReplicatedMap() {
   // Map of a comparable form (that compares correctly using ===) to an object that holds the
   // actual key and the value.
   let currentValue = new Map();
@@ -74,15 +74,15 @@ function ORMap() {
    * using default values, the get method should not be used in queries where an empty value for the Replicated Data
    * means the value is not present.
    *
-   * @name module:akkaserverless.replicatedentity.ORMap#defaultValue
-   * @type {module:akkaserverless.replicatedentity.ORMap~defaultValueCallback}
+   * @name module:akkaserverless.replicatedentity.ReplicatedMap#defaultValue
+   * @type {module:akkaserverless.replicatedentity.ReplicatedMap~defaultValueCallback}
    */
   this.defaultValue = (key) => undefined;
 
   /**
    * Check whether this map contains a value of the given key.
    *
-   * @function module:akkaserverless.replicatedentity.ORMap#has
+   * @function module:akkaserverless.replicatedentity.ReplicatedMap#has
    * @param {module:akkaserverless.Serializable} key The key to check.
    * @returns {boolean} True if this map contains a value of the given key.
    */
@@ -93,7 +93,7 @@ function ORMap() {
   /**
    * The number of elements in this map.
    *
-   * @name module:akkaserverless.replicatedentity.ORMap#size
+   * @name module:akkaserverless.replicatedentity.ReplicatedMap#size
    * @type {number}
    * @readonly
    */
@@ -106,8 +106,8 @@ function ORMap() {
   /**
    * Execute the given callback for each element.
    *
-   * @function module:akkaserverless.replicatedentity.ORMap#forEach
-   * @param {module:akkaserverless.replicatedentity.ORMap~forEachCallback} callback The callback to handle each element.
+   * @function module:akkaserverless.replicatedentity.ReplicatedMap#forEach
+   * @param {module:akkaserverless.replicatedentity.ReplicatedMap~forEachCallback} callback The callback to handle each element.
    */
   this.forEach = function (callback) {
     return currentValue.forEach((value, key) =>
@@ -118,7 +118,7 @@ function ORMap() {
   /**
    * Return an iterator of the entries of this map.
    *
-   * @function module:akkaserverless.replicatedentity.ORMap#entries
+   * @function module:akkaserverless.replicatedentity.ReplicatedMap#entries
    * @returns {Iterator<Array>}
    */
   this.entries = function () {
@@ -132,7 +132,7 @@ function ORMap() {
   /**
    * Return an iterator of the entries of this map.
    *
-   * @function module:akkaserverless.replicatedentity.ORMap#iterator
+   * @function module:akkaserverless.replicatedentity.ReplicatedMap#iterator
    * @returns {Iterator<Array>}
    */
   this[Symbol.iterator] = function () {
@@ -142,7 +142,7 @@ function ORMap() {
   /**
    * Return an iterator of the values of this map.
    *
-   * @function module:akkaserverless.replicatedentity.ORMap#values
+   * @function module:akkaserverless.replicatedentity.ReplicatedMap#values
    * @returns {Iterator<module:akkaserverless.replicatedentity.ReplicatedData>}
    */
   this.values = function () {
@@ -152,7 +152,7 @@ function ORMap() {
   /**
    * Return an iterator of the keys of this map.
    *
-   * @function module:akkaserverless.replicatedentity.ORMap#keys
+   * @function module:akkaserverless.replicatedentity.ReplicatedMap#keys
    * @returns {Iterator<module:akkaserverless.Serializable>}
    */
   this.keys = function () {
@@ -162,7 +162,7 @@ function ORMap() {
   /**
    * Get the value at the given key.
    *
-   * @function module:akkaserverless.replicatedentity.ORMap#get
+   * @function module:akkaserverless.replicatedentity.ReplicatedMap#get
    * @param {module:akkaserverless.Serializable} key The key to get.
    * @returns {undefined|module:akkaserverless.replicatedentity.ReplicatedData} The Replicated Data value, or undefined if no value is defined at that key.
    */
@@ -196,7 +196,7 @@ function ORMap() {
       },
       has: (target, key) => this.has(key),
       defineProperty: () => {
-        throw new Error('ORMap.asObject does not support defining properties');
+        throw new Error('ReplicatedMap.asObject does not support defining properties');
       },
       getOwnPropertyDescriptor: (target, key) => {
         const value = this.get(key);
@@ -218,7 +218,7 @@ function ORMap() {
    * All entries whose keys are strings will be properties of this object, and setting any property of the object will
    * insert that property as a key into the map.
    *
-   * @name module:akkaserverless.replicatedentity.ORMap#asObject
+   * @name module:akkaserverless.replicatedentity.ReplicatedMap#asObject
    * @type {Object<String, module:akkaserverless.replicatedentity.ReplicatedData>}
    */
   Object.defineProperty(this, 'asObject', {
@@ -228,16 +228,16 @@ function ORMap() {
   /**
    * Set the given value for the given key.
    *
-   * @function module:akkaserverless.replicatedentity.ORMap#set
+   * @function module:akkaserverless.replicatedentity.ReplicatedMap#set
    * @param {module:akkaserverless.Serializable} key The key to set.
    * @param {module:akkaserverless.replicatedentity.ReplicatedData} value The value to set.
-   * @return {module:akkaserverless.replicatedentity.ORMap} This map.
+   * @return {module:akkaserverless.replicatedentity.ReplicatedMap} This map.
    */
   this.set = function (key, value) {
     if (!value.hasOwnProperty('getAndResetDelta')) {
       throw new Error(
         util.format(
-          'Cannot add %o with value %o to ORMap, only Replicated Data types may be added as values.',
+          'Cannot add %o with value %o to ReplicatedMap, only Replicated Data types may be added as values.',
           key,
           value,
         ),
@@ -271,9 +271,9 @@ function ORMap() {
   /**
    * Delete the value at the given key.
    *
-   * @function module:akkaserverless.replicatedentity.ORMap#delete
+   * @function module:akkaserverless.replicatedentity.ReplicatedMap#delete
    * @param {module:akkaserverless.Serializable} key The key to delete.
-   * @return {module:akkaserverless.replicatedentity.ORMap} This map.
+   * @return {module:akkaserverless.replicatedentity.ReplicatedMap} This map.
    */
   this.delete = function (key) {
     const comparable = AnySupport.toComparable(key);
@@ -296,8 +296,8 @@ function ORMap() {
   /**
    * Clear all entries from this map.
    *
-   * @function module:akkaserverless.replicatedentity.ORMap#clear
-   * @return {module:akkaserverless.replicatedentity.ORMap} This map.
+   * @function module:akkaserverless.replicatedentity.ReplicatedMap#clear
+   * @return {module:akkaserverless.replicatedentity.ReplicatedMap} This map.
    */
   this.clear = function () {
     if (currentValue.size > 0) {
@@ -337,7 +337,7 @@ function ORMap() {
       initial
     ) {
       const currentDelta = {
-        ormap: {
+        replicatedMap: {
           cleared: delta.cleared,
           removed: Array.from(delta.removed.values()),
           added: addedDeltas,
@@ -354,35 +354,35 @@ function ORMap() {
   };
 
   this.applyDelta = function (delta, anySupport, createForDelta) {
-    if (!delta.ormap) {
-      throw new Error(util.format('Cannot apply delta %o to ORMap', delta));
+    if (!delta.replicatedMap) {
+      throw new Error(util.format('Cannot apply delta %o to ReplicatedMap', delta));
     }
-    if (delta.ormap.cleared) {
+    if (delta.replicatedMap.cleared) {
       currentValue.clear();
     }
-    if (delta.ormap.removed !== undefined) {
-      delta.ormap.removed.forEach((key) => {
+    if (delta.replicatedMap.removed !== undefined) {
+      delta.replicatedMap.removed.forEach((key) => {
         const deserializedKey = anySupport.deserialize(key);
         const comparable = AnySupport.toComparable(deserializedKey);
         if (currentValue.has(comparable)) {
           currentValue.delete(comparable);
         } else {
           debug(
-            "Delta instructed to delete key [%o], but it wasn't in the ORMap.",
+            "Delta instructed to delete key [%o], but it wasn't in the ReplicatedMap.",
             deserializedKey,
           );
         }
       });
     }
-    if (delta.ormap.added !== undefined) {
-      delta.ormap.added.forEach((entry) => {
+    if (delta.replicatedMap.added !== undefined) {
+      delta.replicatedMap.added.forEach((entry) => {
         const value = createForDelta(entry.delta);
         value.applyDelta(entry.delta, anySupport, createForDelta);
         const key = anySupport.deserialize(entry.key);
         const comparable = AnySupport.toComparable(key);
         if (currentValue.has(comparable)) {
           debug(
-            "Delta instructed to add key [%o], but it's already present in the ORMap. Updating with delta instead.",
+            "Delta instructed to add key [%o], but it's already present in the ReplicatedMap. Updating with delta instead.",
             key,
           );
           currentValue
@@ -396,8 +396,8 @@ function ORMap() {
         }
       });
     }
-    if (delta.ormap.updated !== undefined) {
-      delta.ormap.updated.forEach((entry) => {
+    if (delta.replicatedMap.updated !== undefined) {
+      delta.replicatedMap.updated.forEach((entry) => {
         const key = anySupport.deserialize(entry.key);
         const comparable = AnySupport.toComparable(key);
         if (currentValue.has(comparable)) {
@@ -406,7 +406,7 @@ function ORMap() {
             .value.applyDelta(entry.delta, anySupport, createForDelta);
         } else {
           debug(
-            "Delta instructed to update key [%o], but it's not present in the ORMap.",
+            "Delta instructed to update key [%o], but it's not present in the ReplicatedMap.",
             key,
           );
         }
@@ -416,7 +416,7 @@ function ORMap() {
 
   this.toString = function () {
     return (
-      'ORMap(' +
+      'ReplicatedMap(' +
       Array.from(currentValue.values())
         .map((entry) => entry.key + ' -> ' + entry.value.toString())
         .join(',') +
@@ -425,4 +425,4 @@ function ORMap() {
   };
 }
 
-module.exports = ORMap;
+module.exports = ReplicatedMap;

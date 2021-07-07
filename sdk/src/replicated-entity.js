@@ -74,18 +74,18 @@ const replicatedEntityServices = new support.ReplicatedEntityServices();
  * using default values, the get method should not be used in queries where an empty value for the Replicated Data
  * means the value is not present.
  *
- * @callback module:akkaserverless.replicatedentity.ORMap~defaultValueCallback
+ * @callback module:akkaserverless.replicatedentity.ReplicatedMap~defaultValueCallback
  * @param {module:akkaserverless.Serializable} key The key the default value is being generated for.
  * @returns {undefined|module:akkaserverless.replicatedentity.ReplicatedData} The default value, or undefined if no default value should be returned.
  */
 
 /**
- * Callback for handling elements iterated through by {@link module:akkaserverless.replicatedentity.ORMap#forEach}.
+ * Callback for handling elements iterated through by {@link module:akkaserverless.replicatedentity.ReplicatedMap#forEach}.
  *
- * @callback module:akkaserverless.replicatedentity.ORMap~forEachCallback
+ * @callback module:akkaserverless.replicatedentity.ReplicatedMap~forEachCallback
  * @param {module:akkaserverless.replicatedentity.ReplicatedData} value The Replicated Data value.
  * @param {module:akkaserverless.Serializable} key The key.
- * @param {module:akkaserverless.ORMap} This map.
+ * @param {module:akkaserverless.ReplicatedMap} This map.
  */
 
 /**
@@ -199,7 +199,7 @@ class ReplicatedEntity {
  *   ReplicatedCounter: function(): void,
  *   ReplicatedSet: function(): void,
  *   ReplicatedRegister: function(module:akkaserverless.Serializable, module:akkaserverless.replicatedentity.Clock=, number=): void,
- *   ORMap: function(): void,
+ *   ReplicatedMap: function(): void,
  *   Vote: function(): void,
  *   Clocks: unknown[],
  *   WriteConsistencies: unknown[]
@@ -213,7 +213,7 @@ module.exports = {
     ReplicatedCounter: replicatedData.ReplicatedCounter,
     ReplicatedSet: replicatedData.ReplicatedSet,
     ReplicatedRegister: replicatedData.ReplicatedRegister,
-    ORMap: replicatedData.ORMap,
+    ReplicatedMap: replicatedData.ReplicatedMap,
     Vote: replicatedData.Vote,
     Clocks: replicatedData.Clocks,
     WriteConsistencies: replicatedData.WriteConsistencies,

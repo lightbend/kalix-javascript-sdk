@@ -96,7 +96,7 @@ describe('ReplicatedCounter', () => {
     );
   });
 
-  it('should support empty initial deltas (for ORMap added)', () => {
+  it('should support empty initial deltas (for ReplicatedMap added)', () => {
     const counter = new ReplicatedCounter();
     counter.value.should.equal(0);
     should.equal(counter.getAndResetDelta(), null);

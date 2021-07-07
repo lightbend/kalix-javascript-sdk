@@ -234,7 +234,7 @@ describe('ReplicatedSet', () => {
     fromAnys(delta.replicatedSet.removed)[0].foo.should.equal('bar');
   });
 
-  it('should support empty initial deltas (for ORMap added)', () => {
+  it('should support empty initial deltas (for ReplicatedMap added)', () => {
     const set = new ReplicatedSet();
     set.size.should.equal(0);
     should.equal(set.getAndResetDelta(), null);
