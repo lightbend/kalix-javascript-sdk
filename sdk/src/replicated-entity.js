@@ -202,20 +202,23 @@ class ReplicatedEntity {
 
 /**
  * @type {{
- * ReplicatedData: {PNCounter: function():
- * void, ORSet: function(): void,
- * Vote: function(): void, GCounter: function(): void,
- * ORMap: function(): void, WriteConsistencies: unknown[],
- * GSet: function(): void,
- * LWWRegister: function(module:akkaserverless.Serializable, module:akkaserverless.replicatedentity.Clock=, number=): void,
- * Flag: function(): void, Clocks: unknown[]},
+ * ReplicatedData: {
+ *   PNCounter: function(): void,
+ *   GSet: function(): void,
+ *   ORSet: function(): void,
+ *   LWWRegister: function(module:akkaserverless.Serializable, module:akkaserverless.replicatedentity.Clock=, number=): void,
+ *   Flag: function(): void, Clocks: unknown[],
+ *   ORMap: function(): void,
+ *   Vote: function(): void,
+ *   Clocks: unknown[],
+ *   WriteConsistencies: unknown[]
+ * },
  * ReplicatedEntity: module:akkaserverless.replicatedentity.ReplicatedEntity
  * }}
  */
 module.exports = {
   ReplicatedEntity: ReplicatedEntity,
   ReplicatedData: {
-    GCounter: replicatedData.GCounter,
     PNCounter: replicatedData.PNCounter,
     GSet: replicatedData.GSet,
     ORSet: replicatedData.ORSet,

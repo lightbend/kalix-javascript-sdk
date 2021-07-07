@@ -17,7 +17,6 @@
 const util = require('util');
 const protobufHelper = require('../protobuf-helper');
 
-const GCounter = require('./gcounter');
 const PNCounter = require('./pncounter');
 const GSet = require('./gset');
 const ORSet = require('./orset');
@@ -103,9 +102,7 @@ const WriteConsistencies = (function () {
 })();
 
 function createForDelta(delta) {
-  if (delta.gcounter) {
-    return new GCounter();
-  } else if (delta.pncounter) {
+  if (delta.pncounter) {
     return new PNCounter();
   } else if (delta.gset) {
     return new GSet();
@@ -127,7 +124,6 @@ function createForDelta(delta) {
 
 module.exports = {
   createForDelta: createForDelta,
-  GCounter: GCounter,
   PNCounter: PNCounter,
   GSet: GSet,
   ORSet: ORSet,

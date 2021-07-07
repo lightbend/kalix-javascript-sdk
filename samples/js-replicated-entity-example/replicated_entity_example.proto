@@ -61,8 +61,6 @@ message OnlineStatus {
 }
 
 service ReplicatedEntityExample {
-  rpc IncrementGCounter(UpdateCounter) returns (CounterValue);
-  rpc GetGCounter(Get) returns (CounterValue);
   rpc UpdatePNCounter(UpdateCounter) returns (CounterValue);
   rpc GetPNCounter(Get) returns (CounterValue);
   rpc MutateGSet(MutateSet) returns (SetSize);

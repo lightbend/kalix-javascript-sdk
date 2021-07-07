@@ -25,8 +25,6 @@ const entity = new ReplicatedEntity(
 );
 
 entity.commandHandlers = {
-  IncrementGCounter: incrementGCounter,
-  GetGCounter: getGCounter,
   UpdatePNCounter: updatePNCounter,
   GetPNCounter: getPNCounter,
   MutateGSet: mutateGSet,
@@ -36,33 +34,6 @@ entity.commandHandlers = {
   Connect: connect,
   Monitor: monitor
 };
-
-function incrementGCounter(update, ctx) {
-  if (update.value < 0) {
-    ctx.fail("Cannot decrement gcounter");
-  }
-
-  if (ctx.state === null) {
-    ctx.state = new ReplicatedData.GCounter();
-  }
-
-  if (update.value > 0) {
-    ctx.state.increment(update.value);
-  }
-  return {
-    value: ctx.state.value
-  };
-}
-
-function getGCounter(get, ctx) {
-  if (ctx.state === null) {
-    ctx.state = new ReplicatedData.GCounter();
-  }
-
-  return {
-    value: ctx.state.value
-  };
-}
 
 function updatePNCounter(update, ctx) {
   if (ctx.state === null) {

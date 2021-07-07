@@ -216,8 +216,8 @@ describe('ReplicatedEntityHandler', () => {
         return outMsg;
       },
       {
-        gcounter: {
-          increment: 5,
+        pncounter: {
+          change: 5,
         },
       },
     );
@@ -227,7 +227,7 @@ describe('ReplicatedEntityHandler', () => {
 
   it('should create state when a new state is set', async () => {
     const handler = createHandler((cmd, ctx) => {
-      ctx.state = new replicatedData.GCounter();
+      ctx.state = new replicatedData.PNCounter();
       return outMsg;
     });
 
@@ -245,13 +245,13 @@ describe('ReplicatedEntityHandler', () => {
         return outMsg;
       },
       {
-        gcounter: {
-          increment: 5,
+        pncounter: {
+          change: 5,
         },
       },
     );
     const reply = await handleCommand(handler, inMsg);
-    reply.stateAction.update.gcounter.increment.toNumber().should.equal(3);
+    reply.stateAction.update.pncounter.increment.toNumber().should.equal(3);
   });
 
   it('should set the state when it receives an initial delta', async () => {
@@ -261,8 +261,8 @@ describe('ReplicatedEntityHandler', () => {
     });
     send(handler, {
       delta: {
-        gcounter: {
-          increment: 5,
+        pncounter: {
+          change: 5,
         },
       },
     });
@@ -276,15 +276,15 @@ describe('ReplicatedEntityHandler', () => {
         return outMsg;
       },
       {
-        gcounter: {
-          increment: 2,
+        pncounter: {
+          change: 2,
         },
       },
     );
     send(handler, {
       delta: {
-        gcounter: {
-          increment: 5,
+        pncounter: {
+          change: 5,
         },
       },
     });
@@ -298,8 +298,8 @@ describe('ReplicatedEntityHandler', () => {
         return outMsg;
       },
       {
-        gcounter: {
-          increment: 2,
+        pncounter: {
+          change: 2,
         },
       },
     );
@@ -330,8 +330,8 @@ describe('ReplicatedEntityHandler', () => {
         },
       },
       {
-        gcounter: {
-          increment: 2,
+        pncounter: {
+          change: 2,
         },
       },
     );
@@ -346,8 +346,8 @@ describe('ReplicatedEntityHandler', () => {
     reply.streamed.should.be.true;
     await send(handler, {
       delta: {
-        gcounter: {
-          increment: 3,
+        pncounter: {
+          change: 3,
         },
       },
     });
@@ -411,7 +411,7 @@ describe('ReplicatedEntityHandler', () => {
         },
       },
       {
-        gcounter: {
+        pncounter: {
           value: 2,
         },
       },
@@ -420,8 +420,8 @@ describe('ReplicatedEntityHandler', () => {
     await handleCommand(handler, inMsg, 'StreamSomething', 5, true);
     await send(handler, {
       delta: {
-        gcounter: {
-          increment: 3,
+        pncounter: {
+          change: 3,
         },
       },
     });
@@ -430,8 +430,8 @@ describe('ReplicatedEntityHandler', () => {
     streamed.endStream.should.be.true;
     await send(handler, {
       delta: {
-        gcounter: {
-          increment: 3,
+        pncounter: {
+          change: 3,
         },
       },
     });
@@ -452,8 +452,8 @@ describe('ReplicatedEntityHandler', () => {
         },
       },
       {
-        gcounter: {
-          increment: 2,
+        pncounter: {
+          change: 2,
         },
       },
     );
@@ -466,7 +466,7 @@ describe('ReplicatedEntityHandler', () => {
     });
     const response = call.get();
     response.streamCancelledResponse.commandId.toNumber().should.equal(5);
-    response.streamCancelledResponse.stateAction.update.gcounter.increment
+    response.streamCancelledResponse.stateAction.update.pncounter.increment
       .toNumber()
       .should.equal(3);
   });
