@@ -61,14 +61,14 @@ export interface EntityPassivationStrategy {
 
 export interface ComponentOptions {
   includeDirs?: Array<string>;
-  forwardHeaders: Array<string>;
+  forwardHeaders?: Array<string>;
 }
 
 export interface EntityOptions {
   entityType: string;
   includeDirs?: Array<string>;
   entityPassivationStrategy?: EntityPassivationStrategy;
-  forwardHeaders: Array<string>;
+  forwardHeaders?: Array<string>;
 }
 
 export interface Component {
@@ -415,15 +415,12 @@ export class AkkaServerless {
       const components = this.components.map((component) => {
         const res = new discovery.Component();
 
-        if (component.serviceName) {
-          res.setServiceName(component.serviceName);
-        }
-        if (component.componentType) {
-          res.setComponentType(component.componentType());
-        }
+        res.setServiceName(component.serviceName);
+        res.setComponentType(component.componentType());
 
-        const entityOptions = component.options as EntityOptions;
-        if (entityOptions) {
+        if (res.getComponentType().indexOf('Entities') > -1) {
+          // entities has EntityOptions / EntitySettings
+          const entityOptions = component.options as EntityOptions;
           const entitySettings = new discovery.EntitySettings();
           if (entityOptions.entityType) {
             entitySettings.setEntityType(entityOptions.entityType);
@@ -435,23 +432,22 @@ export class AkkaServerless {
               ),
             );
             entitySettings.setPassivationStrategy(ps);
+          }
+          if (entityOptions.forwardHeaders) {
             entitySettings.setForwardHeadersList(entityOptions.forwardHeaders);
           }
 
           res.setEntity(entitySettings);
         } else {
+          // other components has ComponentOptions / GenericComponentSettings
           const componentOptions = component.options as ComponentOptions;
-          if (componentOptions) {
-            const componentSettings = new discovery.GenericComponentSettings();
+          const componentSettings = new discovery.GenericComponentSettings();
+          if (componentOptions.forwardHeaders) {
             componentSettings.setForwardHeadersList(
               componentOptions.forwardHeaders,
             );
-            res.setComponent(componentSettings);
-          } else {
-            throw new Error(
-              'Unknown type of options for ' + component.serviceName,
-            );
           }
+          res.setComponent(componentSettings);
         }
 
         return res;

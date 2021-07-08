@@ -14,9 +14,14 @@
  * limitations under the License.
  */
 
-import { AkkaServerless } from '../src/akkaserverless';
+import {
+  AkkaServerless,
+  ComponentOptions,
+  EntityOptions,
+} from '../src/akkaserverless';
 import discovery from '../proto/akkaserverless/protocol/discovery_pb';
-import { expect } from 'chai';
+import { should } from 'chai';
+should();
 
 describe('Akkaserverless', () => {
   it('should generate working links based on error codes', () => {
@@ -191,6 +196,7 @@ At package.test.json:2:4:
     entityResult
       .getComponentType()
       .should.equal('akkaserverless.component.valueentity.ValueEntities');
+    entityResult.getEntity()?.should.not.be.undefined;
     entityResult.getEntity()?.getEntityType().should.equal('my-entity-type');
     entityResult.getEntity()?.getPassivationStrategy()?.should.be.undefined;
     entityResult
@@ -202,7 +208,11 @@ At package.test.json:2:4:
     actionResult
       .getComponentType()
       .should.equal('akkaserverless.component.action.Actions');
-    actionResult.getEntity();
+    entityResult.getComponent()?.should.not.be.undefined;
+    entityResult
+      .getComponent()
+      ?.getForwardHeadersList()
+      .should.have.same.members(['x-my-header']);
   });
 
   it('discovery service should return correct components with passivation', () => {
@@ -216,11 +226,11 @@ At package.test.json:2:4:
       serviceName: 'my-service',
       options: {
         includeDirs: ['./test'],
-        entityType: 'my-entity-type',
+        entityType: 'my-entity-type-2',
         entityPassivationStrategy: { timeout: 10 },
       },
       componentType: () => {
-        return 'my-type';
+        return 'akkaserverless.component.valueentity.ValueEntities';
       },
     };
 
