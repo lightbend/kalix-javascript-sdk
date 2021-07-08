@@ -157,7 +157,7 @@ At package.test.json:2:4:
     });
     const proxyInfo = new discovery.ProxyInfo();
     proxyInfo.setProtocolMajorVersion(1);
-    const component = {
+    const entity = {
       serviceName: 'my-service',
       options: {
         includeDirs: ['./test'],
@@ -165,24 +165,44 @@ At package.test.json:2:4:
         forwardHeaders: ['x-my-header'],
       },
       componentType: () => {
-        return 'my-type';
+        return 'akkaserverless.component.valueentity.ValueEntities';
+      },
+    };
+    const action = {
+      serviceName: 'my-action',
+      options: {
+        includeDirs: ['./test'],
+        forwardHeaders: ['x-my-header'],
+      },
+      componentType: () => {
+        return 'akkaserverless.component.action.Actions';
       },
     };
 
     // Act
-    akkasls.addComponent(component);
+    akkasls.addComponent(entity);
+    akkasls.addComponent(action);
     const result = akkasls.discoveryLogic(proxyInfo);
 
     // Assert
-    result.getComponentsList().length.should.equal(1);
-    const comp = result.getComponentsList()[0];
-    comp.getServiceName().should.equal('my-service');
-    comp.getComponentType().should.equal('my-type');
-    comp.getEntity()?.getEntityType().should.equal('my-entity-type');
-    comp.getEntity()?.getPassivationStrategy()?.should.be.undefined;
-    comp.getEntity()?.getForwardHeadersList().should.have.same.members([
-      'x-my-header',
-    ]);
+    result.getComponentsList().length.should.equal(2);
+    const entityResult = result.getComponentsList()[0];
+    entityResult.getServiceName().should.equal('my-service');
+    entityResult
+      .getComponentType()
+      .should.equal('akkaserverless.component.valueentity.ValueEntities');
+    entityResult.getEntity()?.getEntityType().should.equal('my-entity-type');
+    entityResult.getEntity()?.getPassivationStrategy()?.should.be.undefined;
+    entityResult
+      .getEntity()
+      ?.getForwardHeadersList()
+      .should.have.same.members(['x-my-header']);
+    const actionResult = result.getComponentsList()[1];
+    actionResult.getServiceName().should.equal('my-action');
+    actionResult
+      .getComponentType()
+      .should.equal('akkaserverless.component.action.Actions');
+    actionResult.getEntity();
   });
 
   it('discovery service should return correct components with passivation', () => {
