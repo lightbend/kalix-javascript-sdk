@@ -1,0 +1,20 @@
+= Value entities and stateful services: Video 1-2-3
+
+The following videos will give you a quick overview of building a start service with value entities.
+
+First, a review of what Akka Serverless provides for your developers.
+
+link:https://www.youtube.com/watch?v=D9_JM2sRh98[Akka Serverless - the best of serverless and state without any hassle, role=yt-widget]
+
+Now, just view the three following videos. In less than five minutes you will cover the basics.
+
+link:https://www.youtube.com/watch?v=qXtYpzTHJgs[Step 1 - Creating an API description, role=yt-widget]
+
+link:https://www.youtube.com/watch?v=G7aaIlBvMzg[Step 2 - Choosing a state model, role=yt-widget]
+
+link:https://www.youtube.com/watch?v=h9oc8YwYbOM[Step 3 - Writing your business logic, role=yt-widget]
+
+
+
+
+
