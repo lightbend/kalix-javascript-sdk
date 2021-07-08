@@ -139,7 +139,7 @@ You can run your services locally and test them manually with HTTP or gRPC reque
 . To start the proxy, run the following command from the top-level project directory:
 +
 [.tabset]
-MacOS, Windows::
+macOS, Windows::
 +
 --
 [source,bash]

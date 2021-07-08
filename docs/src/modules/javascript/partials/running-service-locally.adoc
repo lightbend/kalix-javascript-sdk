@@ -19,7 +19,7 @@ To start the proxy, run the following command from the directory with the `docke
 . Start the proxy
 +
 [.tabset]
-Mac and Windows::
+macOS and Windows::
 +
 --
 [source, command line]
