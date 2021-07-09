@@ -28,6 +28,7 @@ const actionServices = new ActionSupport();
  *
  * @typedef module:akkaserverless.Action~options
  * @property {array<string>} [includeDirs=["."]] The directories to include when looking up imported protobuf files.
+ * @property {array<string>} forwardHeaders request headers to be forwarded as metadata to the action
  */
 
 /**

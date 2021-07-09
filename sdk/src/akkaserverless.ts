@@ -60,16 +60,22 @@ export interface EntityPassivationStrategy {
 }
 
 export interface ComponentOptions {
-  entityType: string;
-  entityPassivationStrategy?: EntityPassivationStrategy;
   includeDirs?: Array<string>;
+  forwardHeaders?: Array<string>;
+}
+
+export interface EntityOptions {
+  entityType: string;
+  includeDirs?: Array<string>;
+  entityPassivationStrategy?: EntityPassivationStrategy;
+  forwardHeaders?: Array<string>;
 }
 
 export interface Component {
   serviceName: string;
   desc?: string | string[];
   service?: any;
-  options: ComponentOptions;
+  options: ComponentOptions | EntityOptions;
   grpc?: grpc.GrpcObject;
   componentType: () => string;
   register?: (components: any) => Service;
@@ -409,27 +415,40 @@ export class AkkaServerless {
       const components = this.components.map((component) => {
         const res = new discovery.Component();
 
-        if (component.serviceName) {
-          res.setServiceName(component.serviceName);
-        }
-        if (component.componentType) {
-          res.setComponentType(component.componentType());
-        }
+        res.setServiceName(component.serviceName);
+        res.setComponentType(component.componentType());
 
-        const entitySettings = new discovery.EntitySettings();
-        if (component.options?.entityType) {
-          entitySettings.setEntityType(component.options.entityType);
-        }
-        if (component.options?.entityPassivationStrategy?.timeout) {
-          const ps = new discovery.PassivationStrategy().setTimeout(
-            new discovery.TimeoutPassivationStrategy().setTimeout(
-              component.options.entityPassivationStrategy.timeout,
-            ),
-          );
-          entitySettings.setPassivationStrategy(ps);
-        }
+        if (res.getComponentType().indexOf('Entities') > -1) {
+          // entities has EntityOptions / EntitySettings
+          const entityOptions = component.options as EntityOptions;
+          const entitySettings = new discovery.EntitySettings();
+          if (entityOptions.entityType) {
+            entitySettings.setEntityType(entityOptions.entityType);
+          }
+          if (entityOptions.entityPassivationStrategy?.timeout) {
+            const ps = new discovery.PassivationStrategy().setTimeout(
+              new discovery.TimeoutPassivationStrategy().setTimeout(
+                entityOptions.entityPassivationStrategy.timeout,
+              ),
+            );
+            entitySettings.setPassivationStrategy(ps);
+          }
+          if (entityOptions.forwardHeaders) {
+            entitySettings.setForwardHeadersList(entityOptions.forwardHeaders);
+          }
 
-        res.setEntity(entitySettings);
+          res.setEntity(entitySettings);
+        } else {
+          // other components has ComponentOptions / GenericComponentSettings
+          const componentOptions = component.options as ComponentOptions;
+          const componentSettings = new discovery.GenericComponentSettings();
+          if (componentOptions.forwardHeaders) {
+            componentSettings.setForwardHeadersList(
+              componentOptions.forwardHeaders,
+            );
+          }
+          res.setComponent(componentSettings);
+        }
 
         return res;
       });

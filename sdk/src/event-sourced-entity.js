@@ -89,6 +89,7 @@ const eventSourcedEntityServices = new EventSourcedEntityServices();
  * serializing events and snapshots.
  * @property {boolean} [serializeFallbackToJson=false] Whether serialization should fallback to using JSON if an event
  * or snapshot can't be serialized as a protobuf.
+ * @property {array<string>} forwardHeaders request headers to be forwarded as metadata to the event sourced entity
  */
 
 /**
