@@ -4,6 +4,7 @@
 *** xref:javascript:proto.adoc[]
 *** xref:javascript:eventsourced.adoc[Implementing Event Sourced Entities]
 *** xref:javascript:value-entity.adoc[Implementing Value Entities]
+**** xref:javascript:value-entity-videos.adoc[]
 *** xref:javascript:actions.adoc[Implementing Actions]
 *** xref:javascript:forwarding.adoc[Forwarding and effects]
 *** xref:javascript:entity-eventing.adoc[Subscribing to a Journal]
