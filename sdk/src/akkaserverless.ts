@@ -367,7 +367,7 @@ export class AkkaServerless {
     detail: string | undefined,
     locations: Array<discovery.UserFunctionError.SourceLocation> | undefined,
   ) {
-    let msg = `Error reported from Akka system: ${code} ${message}`;
+    let msg = `Error reported from Akka Serverless system: ${code} ${message}`;
     if (detail) {
       msg += `\n\n${detail}`;
     }

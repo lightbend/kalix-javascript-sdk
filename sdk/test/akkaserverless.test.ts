@@ -118,7 +118,7 @@ describe('Akkaserverless', () => {
     );
 
     // Assert
-    const result = `Error reported from Akka system: AS-00112 test message
+    const result = `Error reported from Akka Serverless system: AS-00112 test message
 
 test details
 See documentation: https://developer.lightbend.com/docs/akka-serverless/javascript/views.html#changing
