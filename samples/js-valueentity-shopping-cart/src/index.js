@@ -14,8 +14,13 @@
  * limitations under the License.
  */
 
+import { AkkaServerless } from "@lightbend/akkaserverless-javascript-sdk";
 import generatedComponents from "../lib/generated/index.js";
 
+const server = new AkkaServerless();
+
 generatedComponents.forEach((component) => {
-  component.start();
+  server.addComponent(component);
 });
+
+server.start();

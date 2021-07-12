@@ -7,9 +7,10 @@
     "npm": ">=6.0.0"
   },
   "dependencies": {
-    "@lightbend/akkaserverless-javascript-sdk": "0.0.0"
+    "@lightbend/akkaserverless-javascript-sdk": "0.30.0"
   },
   "devDependencies": {
+    "@lightbend/akkasls-scripts": "0.30.0",
     "chai": "^4.3.3",
     "jsdoc": "^3.6.3",
     "mocha": "^8.3.1",
@@ -20,12 +21,15 @@
     "sourceDir": "./src",
     "testSourceDir": "./test",
     "protoSourceDir": "./proto",
-    "generatedSourceDir": "./lib/generated"
+    "generatedSourceDir": "./lib/generated",
+    "compileDescriptorArgs": []
   },
   "scripts": {
     "start": "node src/index.js",
     "test": "mocha ./test",
     "integration-test": "mocha ./integration-test",
-    "build": "compile-descriptor proto/counter_api.proto proto/counter_domain.proto"
+    "build": "akkasls-scripts build",
+    "package": "akkasls-scripts package",
+    "deploy": "akkasls-scripts deploy"
   }
 }

@@ -145,12 +145,6 @@ entity.behavior = cart => {
 // end::multiple-behaviors[]
 
 describe("The Eventsourced class", () => {
-    it("should allow starting the entity", () => {
-        // tag::start[]
-        entity.start();
-        // end::start[]
-        entity.shutdown();
-    });
     it("should allow adding the entity to the gRPC server", () => {
         // tag::add-entity[]
         const AkkaServerless = require("@lightbend/akkaserverless-javascript-sdk").AkkaServerless;

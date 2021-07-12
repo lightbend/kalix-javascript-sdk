@@ -14,4 +14,10 @@
  * limitations under the License.
  */
 
-require("./replicated-entity-example").start();
+const AkkaServerless = require("@lightbend/akkaserverless-javascript-sdk").AkkaServerless;
+
+const server = new AkkaServerless();
+
+server.addComponent(require("./replicated-entity-example"));
+
+server.start();
