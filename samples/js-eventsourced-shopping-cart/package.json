@@ -7,14 +7,10 @@
     "npm": ">=6.0.0"
   },
   "dependencies": {
-    "@grpc/grpc-js": "^1.3.0",
-    "@grpc/proto-loader": "^0.1.0",
-    "@lightbend/akkaserverless-javascript-sdk": "0.7.0-beta.9",
-    "google-protobuf": "^3.0.0",
-    "protobufjs": "^6.11.2"
+    "@lightbend/akkaserverless-javascript-sdk": "0.30.0"
   },
   "devDependencies": {
-    "@lightbend/akkasls-scripts": "^0.26.0",
+    "@lightbend/akkasls-scripts": "0.30.0",
     "chai": "^4.3.3",
     "jsdoc": "^3.6.3",
     "mocha": "^8.3.1",
