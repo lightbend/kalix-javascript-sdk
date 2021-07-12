@@ -1,13 +1,14 @@
 FROM node:14-buster-slim AS builder
-WORKDIR /home/node
 RUN apt-get update && apt-get install -y curl unzip
-COPY sdk sdk
-RUN cd sdk && npm ci && npm run prepare
-RUN cd sdk && npm prune --production
-COPY tck/package*.json tck/
-RUN cd tck && npm ci
-COPY tck tck
-RUN cd tck && npm run build
+WORKDIR /home/node
+USER node
+COPY --chown=node sdk sdk
+RUN cd sdk && npm ci
+RUN cd sdk && npm pack
+COPY --chown=node tck/package.json tck/
+COPY --chown=node tck/bin tck/bin
+RUN cd tck && npm install
+COPY --chown=node tck tck
 RUN cd tck && npm prune --production
 
 FROM node:14-buster-slim
