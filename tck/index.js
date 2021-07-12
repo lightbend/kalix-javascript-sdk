@@ -40,6 +40,7 @@ server.addComponent(localPersistenceEventing.valueEntityTwo);
 server.addComponent(localPersistenceEventing.localPersistenceSubscriber);
 const view = require('./view.js');
 server.addComponent(view.tckModel);
+server.addComponent(view.viewSource);
 server.start();
 
 module.exports = server;

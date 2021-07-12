@@ -15,6 +15,8 @@
  */
 
 const View = require('@lightbend/akkaserverless-javascript-sdk').View;
+const ValueEntity =
+  require('@lightbend/akkaserverless-javascript-sdk').ValueEntity;
 
 const tckModel = new View(
   'proto/view.proto',
@@ -47,4 +49,11 @@ function processUpdateUnary(userEvent, previousViewState, ctx) {
   }
 }
 
+const viewSource = new ValueEntity(
+  ['proto/view.proto'],
+  'akkaserverless.tck.model.view.ViewTckSource',
+  'view-source',
+);
+
 module.exports.tckModel = tckModel;
+module.exports.viewSource = viewSource;
