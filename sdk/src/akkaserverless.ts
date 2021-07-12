@@ -86,6 +86,9 @@ class DocLink {
     ['AS-00112', 'javascript/views.html#changing'],
     ['AS-00402', 'javascript/topic-eventing.html'],
     ['AS-00406', 'javascript/topic-eventing.html'],
+    ['AS-00414', 'javascript/entity-eventing.html'],
+    // TODO: docs for value entity eventing (https://github.com/lightbend/akkaserverless-javascript-sdk/issues/103)
+    // ['AS-00415', 'javascript/entity-eventing.html'],
   ]);
   private codeCategories: Map<string, string> = new Map([
     ['AS-001', 'javascript/views.html'],
@@ -372,7 +375,7 @@ export class AkkaServerless {
     if (code) {
       const docLink = this.docLink.getLink(code);
       if (docLink.length > 0)
-        msg += ` See documentation: ${this.docLink.getLink(code)}`;
+        msg += `\nSee documentation: ${this.docLink.getLink(code)}`;
       for (const location of locations || []) {
         msg += `\n\n${this.formatSource(location)}`;
       }

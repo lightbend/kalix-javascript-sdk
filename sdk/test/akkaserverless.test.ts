@@ -120,7 +120,8 @@ describe('Akkaserverless', () => {
     // Assert
     const result = `Error reported from Akka system: AS-00112 test message
 
-test details See documentation: https://developer.lightbend.com/docs/akka-serverless/javascript/views.html#changing
+test details
+See documentation: https://developer.lightbend.com/docs/akka-serverless/javascript/views.html#changing
 
 At package.test.json:2:4:
   "name": "some-name",
