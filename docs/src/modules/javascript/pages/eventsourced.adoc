@@ -113,6 +113,8 @@ An event handler must be declared for each type of event that gets emitted. The 
 
 Event handlers take the event they are handling, and the state, and must return the new state. The handler may update the existing state passed in, but it still has to return that state as its return value.
 
+When an event is triggered, the event handler is invoked immediately. The state is updated when the emit call returns. Immediately after, the emit the state is updated to the new value and can be used to create the reply. The event hasn’t been stored yet though. Only one command is processed at a time. The next command is not processed until an event from the previous command has been successfully been stored.
+
 Here's an example event handler for the `ItemAdded` event:
 
 [source,js,indent=0]
