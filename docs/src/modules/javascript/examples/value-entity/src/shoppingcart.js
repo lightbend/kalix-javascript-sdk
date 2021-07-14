@@ -88,12 +88,6 @@ module.exports = entity;
 
 
 describe("The ValueEntity class", () => {
-  it("should allow starting the entity", () => {
-    // tag::start[]
-    entity.start();
-    // end::start[]
-    entity.shutdown();
-  });
   it("should allow adding the entity to the AkkaServerless server", () => {
     // tag::add-component[]
     const AkkaServerless = require("@lightbend/akkaserverless-javascript-sdk").AkkaServerless;

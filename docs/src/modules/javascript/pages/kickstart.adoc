@@ -116,6 +116,22 @@ You should now see the following source files in your project:
 
 NOTE: The `lib/generated` directory contains files used by the tools. Any changes made to files in this folder are overwritten on the next build.
 
+=== Unit and integration tests
+
+Akka Serverless codegen creates a unit test stub for each class within `counter.test.js`. Use these stubs as a starting point to test the logic in your implementation. You can use any of the common Node.js testing tools, such as Mocha or Jest.
+
+[source,javascript]
+----
+include::example$valueentity-counter/test/counter.test.js[]
+----
+
+The entity used by `counter.test.js` is contained within `testkit.js`.
+
+[source,javascript]
+----
+include::example$valueentity-counter/test/testkit.js[]
+----
+
 == Run locally
 
 You can run your services locally and test them manually with HTTP or gRPC requests. To run locally, you need to initiate the Akka Serverless https://developer.lightbend.com/docs/akka-serverless/reference/glossary.html#proxy[proxy]. The `docker-compose` file contains the configuration required to run the proxy.
@@ -123,7 +139,7 @@ You can run your services locally and test them manually with HTTP or gRPC reque
 . To start the proxy, run the following command from the top-level project directory:
 +
 [.tabset]
-MacOS, Windows::
+macOS, Windows::
 +
 --
 [source,bash]
