@@ -202,8 +202,7 @@ class ReplicatedEntity {
  *   ReplicatedMap: function(): void,
  *   Vote: function(): void,
  *   Clocks: unknown[],
- *   WriteConsistencies: unknown[]
- * },
+ * }
  * ReplicatedEntity: module:akkaserverless.replicatedentity.ReplicatedEntity
  * }}
  */
@@ -216,6 +215,5 @@ module.exports = {
     ReplicatedMap: replicatedData.ReplicatedMap,
     Vote: replicatedData.Vote,
     Clocks: replicatedData.Clocks,
-    WriteConsistencies: replicatedData.WriteConsistencies,
   },
 };

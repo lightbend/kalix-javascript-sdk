@@ -59,6 +59,23 @@ export interface EntityPassivationStrategy {
   timeout?: number;
 }
 
+export enum ReplicatedWriteConsistency {
+  /**
+   * Updates will only be written to the local replica immediately, and then asynchronously
+   * distributed to other replicas in the background.
+   */
+  LOCAL,
+  /**
+   * Updates will be written immediately to a majority of replicas, and then asynchronously
+   * distributed to remaining replicas in the background.
+   */
+  MAJORITY,
+  /**
+   * Updates will be written immediately to all replicas.
+   */
+  ALL,
+}
+
 export interface ComponentOptions {
   includeDirs?: Array<string>;
   forwardHeaders?: Array<string>;
@@ -69,6 +86,7 @@ export interface EntityOptions {
   includeDirs?: Array<string>;
   entityPassivationStrategy?: EntityPassivationStrategy;
   forwardHeaders?: Array<string>;
+  replicatedWriteConsistency?: ReplicatedWriteConsistency;
 }
 
 export interface Component {
@@ -438,6 +456,28 @@ export class AkkaServerless {
           }
           if (entityOptions.forwardHeaders) {
             entitySettings.setForwardHeadersList(entityOptions.forwardHeaders);
+          }
+          if (entityOptions.replicatedWriteConsistency) {
+            let writeConsistency =
+              discovery.ReplicatedWriteConsistency
+                .REPLICATED_WRITE_CONSISTENCY_LOCAL_UNSPECIFIED;
+            switch (entityOptions.replicatedWriteConsistency) {
+              case ReplicatedWriteConsistency.ALL:
+                writeConsistency =
+                  discovery.ReplicatedWriteConsistency
+                    .REPLICATED_WRITE_CONSISTENCY_ALL;
+                break;
+              case ReplicatedWriteConsistency.MAJORITY:
+                writeConsistency =
+                  discovery.ReplicatedWriteConsistency
+                    .REPLICATED_WRITE_CONSISTENCY_MAJORITY;
+                break;
+              default:
+                writeConsistency =
+                  discovery.ReplicatedWriteConsistency
+                    .REPLICATED_WRITE_CONSISTENCY_LOCAL_UNSPECIFIED;
+            }
+            entitySettings.setReplicatedWriteConsistency(writeConsistency);
           }
 
           res.setEntity(entitySettings);
