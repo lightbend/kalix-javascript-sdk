@@ -30,7 +30,7 @@ commands:
             sudo sh -c 'for bin in /usr/lib/jvm/jdk-11.0.8+10/bin/*; do update-alternatives --install /usr/bin/$(basename $bin) $(basename $bin) $bin 100; done'
             sudo sh -c 'for bin in /usr/lib/jvm/jdk-11.0.8+10/bin/*; do update-alternatives --set $(basename $bin) $bin; done'
 
-  install-java-11-osx:
+  install-java-11-macos:
     description: install openjdk-11
     steps:
       - run:
@@ -38,6 +38,8 @@ commands:
           command: |
             brew update
             brew install openjdk@11
+            # brew-installed sbt uses openjdk for default java home
+            ln -sfn /usr/local/opt/openjdk@11 /usr/local/opt/openjdk
 
   install-java-11-win:
     description: install openjdk-11
@@ -62,10 +64,10 @@ commands:
             sudo dpkg -i sbt-<< parameters.version >>.deb
             rm sbt-<< parameters.version >>.deb
 
-  setup_sbt_osx:
+  setup_sbt_macos:
     description: "Set up sbt"
     steps:
-      - install-java-11-osx
+      - install-java-11-macos
       - run:
           name: Install sbt
           environment:
@@ -74,7 +76,8 @@ commands:
             # Call brew update explicitly until Circle CI update their images,
             # see https://github.com/Homebrew/brew/issues/11123
             brew update
-            brew install sbt
+            # don't install openjdk dependency (currently @16)
+            brew install sbt --ignore-dependencies
 
   setup_sbt_win:
     description: "Set up sbt"
@@ -412,13 +415,13 @@ jobs:
           version: $(sdk/bin/version.sh)
       - save_deps_cache
 
-  publish_native_osx:
+  publish_native_macos:
     macos:
       xcode: 12.5.0
-    description: "Build Native image on OsX"
+    description: "Build Native image on macOS"
     steps:
       - checkout
-      - setup_sbt_osx
+      - setup_sbt_macos
       - run:
           name: Build Native Image
           working_directory: "~/project/codegen"
@@ -545,7 +548,7 @@ workflows:
             - validate-docs
             - npm-js-tests
             - e2e-tests
-      - publish_native_osx:
+      - publish_native_macos:
           context:
             - cloudsmith
           filters: # version tags only
