@@ -107,7 +107,7 @@ An link:{attachmentsdir}/api/module-akkaserverless.EventSourcedEntity.html#~even
 * When restoring Entities from the journal, before any commands are handled
 * Each time a new event is emitted
 
-An event handler's responsibility is to update the state of the entity according to the event. Event handlers are the only place where its safe to mutate the state of the Entity at all.
+An event handler's responsibility is to update the state of the entity according to the event. Event handlers are the only place where its safe to mutate the state of an Entity.
 
 An event handler must be declared for each type of event that gets emitted. The type is defined by the protobuf message type in the case of `protobuf` events, or the `type` property on a JSON object in the case of JSON events. The mapping for these type names to functions will be discussed later, for now we'll just look at the functions.
 
