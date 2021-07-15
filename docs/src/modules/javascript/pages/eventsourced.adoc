@@ -111,9 +111,7 @@ An event handler's responsibility is to update the state of the entity according
 
 An event handler must be declared for each type of event that gets emitted. The type is defined by the protobuf message type in the case of `protobuf` events, or the `type` property on a JSON object in the case of JSON events. The mapping for these type names to functions will be discussed later, for now we'll just look at the functions.
 
-Event handlers take the event they are handling, and the state, and must return the new state. The handler may update the existing state passed in, but it still has to return that state as its return value.
-
-When an event is triggered, the current state is passed to each command handler. The command handler accumulates the emitted events and applies the events to the managed state after command processing.
+Event handlers take the event they are handling, and the state, and must return the new state. The handler may update the existing state passed in, but it still has to return that state as its return value. The command handler accumulates the emitted events and applies the events to the managed state after command processing.
 
 The Java and JavaScript SDKs are different in their handling of events and state. The JavaScript doesn't apply emitted events immediately, while the Java SDK does. The JavaScript SDK fully manages the state, passing the current state in to each command handler. It accumulates the emitted events and applies them to the managed state after command processing.
 
