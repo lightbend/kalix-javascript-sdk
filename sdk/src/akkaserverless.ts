@@ -458,6 +458,7 @@ export class AkkaServerless {
             entitySettings.setForwardHeadersList(entityOptions.forwardHeaders);
           }
           if (entityOptions.replicatedWriteConsistency) {
+            const replicatedEntitySettings = new discovery.ReplicatedEntitySettings();
             let writeConsistency =
               discovery.ReplicatedWriteConsistency
                 .REPLICATED_WRITE_CONSISTENCY_LOCAL_UNSPECIFIED;
@@ -477,7 +478,9 @@ export class AkkaServerless {
                   discovery.ReplicatedWriteConsistency
                     .REPLICATED_WRITE_CONSISTENCY_LOCAL_UNSPECIFIED;
             }
-            entitySettings.setReplicatedWriteConsistency(writeConsistency);
+            replicatedEntitySettings.setWriteConsistency(writeConsistency);
+            entitySettings.setReplicatedEntity(replicatedEntitySettings);
+            console.log("ENTITY SETTINGS", entitySettings);
           }
 
           res.setEntity(entitySettings);
