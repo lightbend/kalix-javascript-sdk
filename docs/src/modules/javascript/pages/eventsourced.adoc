@@ -115,8 +115,6 @@ Event handlers take the event they are handling, and the state, and must return 
 
 When an event is triggered, the current state is passed to each command handler. The command handler accumulates the emitted events and applies the events to the managed state after command processing.
 
-The Java and JavaScript SDKs are different in their handling of events and state. The JavaScript doesn't apply emitted events immediately, while the Java SDK does. The JavaScript SDK fully manages the state, passing the current state in to each command handler. It accumulates the emitted events and applies them to the managed state after command processing.
-
 Here's an example event handler for the `ItemAdded` event:
 
 [source,js,indent=0]
