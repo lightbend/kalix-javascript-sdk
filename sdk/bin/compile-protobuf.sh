@@ -34,11 +34,14 @@ $PROTOC \
     ${PWD}/proto/akkaserverless/component/*/*.proto
 
 # Compile test protos
+rm -rf test/proto
+cp -r proto test/
+
 OUT_DIR="${PWD}/test/proto"
-TS_OUT_DIR="${PWD}/test"
+TS_OUT_DIR="${PWD}/test/proto"
 
 $PROTOC \
-    --proto_path="${PWD}/proto/" \
+    --proto_path="${PWD}/test/proto/" \
     --proto_path="${PWD}/test/" \
     --plugin=protoc-gen-ts=$PROTOC_GEN_TS_PATH \
     --plugin=protoc-gen-grpc=${PROTOC_GEN_GRPC_PATH} \

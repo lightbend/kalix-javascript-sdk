@@ -5,5 +5,3 @@ apidocs
 user-function.desc
 index.d.ts
 *.tgz
-test/example_pb.d.ts
-test/example_grpc_pb.d.ts
