@@ -15,7 +15,7 @@
  */
 
 const settings = {
-  frameworkVersion: '0.7.0-beta.13',
+  frameworkVersion: '0.7.0-beta.14',
   protocolVersion: function () {
     const versions = this.frameworkVersion.split(/[.-]/);
     return { major: versions[0], minor: versions[1] };
