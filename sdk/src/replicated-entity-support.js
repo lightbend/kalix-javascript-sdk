@@ -300,17 +300,6 @@ class ReplicatedEntityHandler {
           get: () => ctx.streamed === true,
         });
 
-        /**
-         * Set the write consistency for replication of Replicated Entity state.
-         *
-         * @name module:akkaserverless.replicatedentity.ReplicatedEntityCommandContext#writeConsistency
-         * @type {module:akkaserverless.replicatedentity.WriteConsistency}
-         */
-        Object.defineProperty(ctx.context, 'writeConsistency', {
-          get: () => ctx.writeConsistency,
-          set: (writeConsistency) => (ctx.writeConsistency = writeConsistency),
-        });
-
         const userReply = await this.entity.commandHandlers[commandName](
           command,
           ctx.context,
@@ -340,7 +329,6 @@ class ReplicatedEntityHandler {
       ctx.commandDebug('Deleting entity');
       ctx.reply.stateAction = {
         delete: {},
-        writeConsistency: ctx.writeConsistency,
       };
       this.currentState = null;
       await this.handleStateChange();
@@ -350,7 +338,6 @@ class ReplicatedEntityHandler {
         ctx.commandDebug('Updating entity');
         ctx.reply.stateAction = {
           update: delta,
-          writeConsistency: ctx.writeConsistency,
         };
         await this.handleStateChange();
       }

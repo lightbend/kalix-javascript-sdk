@@ -68,37 +68,6 @@ const Clocks = (function () {
   return Object.freeze(values);
 })();
 
-/**
- * A write consistency setting for replication of state updates.
- *
- * @typedef module:akkaserverless.replicatedentity.WriteConsistency
- */
-
-/**
- * An enum of write consistency settings, for replication of state updates.
- *
- * @name module:akkaserverless.replicatedentity.WriteConsistencies
- * @enum {module:akkaserverless.replicatedentity.WriteConsistency}
- * @property LOCAL Updates will only be written to the local replica immediately, and then asynchronously
- *                 distributed to other replicas in the background.
- * @property MAJORITY Updates will be written immediately to a majority of replicas, and then asynchronously
- *                    distributed to remaining replicas in the background.
- * @property ALL Updates will be written immediately to all replicas.
- */
-const WriteConsistencies = (function () {
-  const ReplicatedEntityWriteConsistency =
-    protobufHelper.moduleRoot.akkaserverless.component.replicatedentity
-      .ReplicatedEntityWriteConsistency;
-  const values = {
-    LOCAL:
-      ReplicatedEntityWriteConsistency.REPLICATED_ENTITY_WRITE_CONSISTENCY_LOCAL_UNSPECIFIED,
-    MAJORITY:
-      ReplicatedEntityWriteConsistency.REPLICATED_ENTITY_WRITE_CONSISTENCY_MAJORITY,
-    ALL: ReplicatedEntityWriteConsistency.REPLICATED_ENTITY_WRITE_CONSISTENCY_ALL,
-  };
-  return Object.freeze(values);
-})();
-
 function createForDelta(delta) {
   if (delta.counter) {
     return new ReplicatedCounter();
@@ -124,5 +93,4 @@ module.exports = {
   ReplicatedMap: ReplicatedMap,
   Vote: Vote,
   Clocks: Clocks,
-  WriteConsistencies: WriteConsistencies,
 };
