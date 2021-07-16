@@ -86,7 +86,7 @@
     "print-version": "echo $npm_package_version",
     "watch-jsdoc": "npm-watch jsdoc",
     "jsdoc": "jsdoc -c jsdoc.json",
-    "test": "mocha ./test/*.test.* ./test/**/*.* --recursive --unhandled-rejections=strict",
+    "test": "mocha --exclude '**/proto/**/*' --recursive --unhandled-rejections=strict",
     "integration-test": "npm run compile && mocha integration-test",
     "preintegration-test": "bin/compile-descriptor.js test/example.proto --descriptor_set_out=integration-test/user-function.desc",
     "prepare": "bin/prepare.sh",
