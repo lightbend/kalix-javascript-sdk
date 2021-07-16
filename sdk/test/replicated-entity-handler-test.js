@@ -125,14 +125,8 @@ function roundTripReplicatedEntityStreamIn(msg) {
   );
 }
 
-async function handleCommand(
-  handler,
-  command,
-  name = 'DoSomething',
-  id = 10,
-  streamed = false,
-) {
-  const response = await doHandleCommand(handler, command, name, id, streamed);
+async function handleCommand(handler, command, name = 'DoSomething', id = 10) {
+  const response = await doHandleCommand(handler, command, name, id);
   if (response.failure !== null) {
     throw new Error(response.failure.description);
   }
@@ -146,7 +140,6 @@ async function doHandleCommand(
   command,
   name = 'DoSomething',
   id = 10,
-  streamed = false,
 ) {
   await send(handler, {
     command: {
@@ -154,7 +147,6 @@ async function doHandleCommand(
       id: id,
       name: name,
       payload: AnySupport.serialize(In.create(command)),
-      streamed: streamed,
     },
   });
   return call.get();
@@ -165,9 +157,8 @@ async function handleFailedCommand(
   command,
   name = 'DoSomething',
   id = 10,
-  streamed = false,
 ) {
-  const response = await doHandleCommand(handler, command, name, id, streamed);
+  const response = await doHandleCommand(handler, command, name, id);
   if (response.failure !== null) {
     return response.failure;
   } else {
@@ -313,161 +304,5 @@ describe('ReplicatedEntityHandler', () => {
       return outMsg;
     });
     await handleFailedCommand(handler, inMsg);
-  });
-
-  it('should allow streaming', async () => {
-    const handler = create(
-      {
-        commandHandlers: {
-          StreamSomething: (cmd, ctx) => {
-            ctx.streamed.should.equal(true);
-            ctx.onStateChange = (state, ctx) => {
-              ctx.state.value.should.equal(5);
-              return { field: 'pushed' };
-            };
-            return outMsg;
-          },
-        },
-      },
-      {
-        counter: {
-          change: 2,
-        },
-      },
-    );
-
-    const reply = await handleCommand(
-      handler,
-      inMsg,
-      'StreamSomething',
-      5,
-      true,
-    );
-    reply.streamed.should.be.true;
-    await send(handler, {
-      delta: {
-        counter: {
-          change: 3,
-        },
-      },
-    });
-    const streamed = call.get().streamedMessage;
-    streamed.commandId.toNumber().should.equal(5);
-    anySupport
-      .deserialize(streamed.clientAction.reply.payload)
-      .field.should.equal('pushed');
-  });
-
-  it('should not allow subscribing a non streamed command', async () => {
-    const handler = create({
-      commandHandlers: {
-        StreamSomething: (cmd, ctx) => {
-          ctx.streamed.should.equal(false);
-          ctx.onStateChange = () => undefined;
-          return outMsg;
-        },
-      },
-    });
-
-    await handleFailedCommand(handler, inMsg, 'StreamSomething', 5, false);
-  });
-
-  it('should not allow not subscribing to a streamed command', async () => {
-    const handler = create({
-      commandHandlers: {
-        StreamSomething: (cmd, ctx) => {
-          ctx.streamed.should.equal(true);
-          return outMsg;
-        },
-      },
-    });
-
-    const reply = await handleCommand(
-      handler,
-      inMsg,
-      'StreamSomething',
-      5,
-      true,
-    );
-    reply.streamed.should.be.false;
-  });
-
-  it('should allow closing a stream', async () => {
-    let ended = false;
-
-    const handler = create(
-      {
-        commandHandlers: {
-          StreamSomething: (cmd, ctx) => {
-            ctx.onStateChange = (state, ctx) => {
-              if (!ended) {
-                ctx.end();
-              } else {
-                throw new Error('Invoked!');
-              }
-            };
-            return outMsg;
-          },
-        },
-      },
-      {
-        counter: {
-          value: 2,
-        },
-      },
-    );
-
-    await handleCommand(handler, inMsg, 'StreamSomething', 5, true);
-    await send(handler, {
-      delta: {
-        counter: {
-          change: 3,
-        },
-      },
-    });
-
-    const streamed = call.get().streamedMessage;
-    streamed.endStream.should.be.true;
-    await send(handler, {
-      delta: {
-        counter: {
-          change: 3,
-        },
-      },
-    });
-    call.expectNoWrites();
-  });
-
-  it('should handle stream cancelled events', async () => {
-    const handler = create(
-      {
-        commandHandlers: {
-          StreamSomething: (cmd, ctx) => {
-            ctx.onStreamCancel = (state, ctx) => {
-              state.value.should.equal(2);
-              state.increment(3);
-            };
-            return outMsg;
-          },
-        },
-      },
-      {
-        counter: {
-          change: 2,
-        },
-      },
-    );
-
-    await handleCommand(handler, inMsg, 'StreamSomething', 5, true);
-    await send(handler, {
-      streamCancelled: {
-        id: 5,
-      },
-    });
-    const response = call.get();
-    response.streamCancelledResponse.commandId.toNumber().should.equal(5);
-    response.streamCancelledResponse.stateAction.update.counter.change
-      .toNumber()
-      .should.equal(3);
   });
 });
