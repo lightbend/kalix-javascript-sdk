@@ -61,7 +61,7 @@ const valueEntityServices = new ValueEntityServices();
  * serializing the state.
  * @property {boolean} [serializeFallbackToJson=false] Whether serialization should fallback to using JSON if the state
  * can't be serialized as a protobuf.
- * @property {array<string>} forwardHeaders request headers to be forwarded as metadata to the value entity
+ * @property {array<string>} [forwardHeaders=[]] request headers to be forwarded as metadata to the value entity
  */
 
 /**
