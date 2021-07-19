@@ -37,7 +37,7 @@ Actions are stateless functions that can be triggered by gRPC or HTTP calls. The
 
 === Entities
 
-Stateful services ecapsulate business logic in in Value Entities or Event Sourced Entities. At runtime, command messages invoke operations on Entities. A command may only act on one Entity at a time. 
+Stateful services encapsulate business logic in in Value Entities or Event Sourced Entities. At runtime, command messages invoke operations on Entities. A command may only act on one Entity at a time. 
 
 TIP: To learn more about Akka Serverless entities see xref:javascript:value-entity.adoc[Implement a Value Entity] and xref:javascript:eventsourced.adoc[Implement an Event Sourced Entity].
 
@@ -62,7 +62,7 @@ It is good practice to write unit tests as you implement your services. The Java
 [#_package_service]
 == Package service
 
-Use Docker to package your service and any of its dependencies. See the following pages for more information:
+Use a Docker image to package your service and any of its dependencies. See the following pages for more information:
 
 * https://developer.lightbend.com/docs/akka-serverless/getting-started/set-up-development-env.html#_docker[Installing Docker]
 * https://developer.lightbend.com/docs/akka-serverless/deploying/docker.html[Packaging with Docker]
