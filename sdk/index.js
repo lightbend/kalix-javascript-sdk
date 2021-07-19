@@ -27,6 +27,8 @@ module.exports.ReplicatedEntity =
   require('./src/replicated-entity').ReplicatedEntity;
 module.exports.ReplicatedData =
   require('./src/replicated-entity').ReplicatedData;
+module.exports.ReplicatedWriteConsistency =
+  require('./src/akkaserverless').ReplicatedWriteConsistency;
 module.exports.Action = require('./src/action');
 module.exports.Metadata = require('./src/metadata');
 module.exports.IntegrationTestkit =

@@ -17,6 +17,7 @@
 const sdk = require('@lightbend/akkaserverless-javascript-sdk');
 const ReplicatedEntity = sdk.ReplicatedEntity;
 const ReplicatedData = sdk.ReplicatedData;
+const ReplicatedWriteConsistency = sdk.ReplicatedWriteConsistency;
 
 const tckModel = new ReplicatedEntity(
   'proto/replicated_entity.proto',
@@ -30,7 +31,6 @@ const Response = tckModel.lookupType(
 
 tckModel.commandHandlers = {
   Process: process,
-  ProcessStreamed: processStreamed,
 };
 
 function createReplicatedData(name) {
@@ -58,20 +58,6 @@ function process(request, context) {
     context.state = createReplicatedData(context.entityId);
   request.actions.forEach((action) => {
     if (action.update) {
-      if (
-        action.update.writeConsistency ===
-        ReplicatedData.WriteConsistencies.LOCAL
-      )
-        context.writeConsistency = ReplicatedData.WriteConsistencies.LOCAL;
-      else if (
-        action.update.writeConsistency ===
-        ReplicatedData.WriteConsistencies.MAJORITY
-      )
-        context.writeConsistency = ReplicatedData.WriteConsistencies.MAJORITY;
-      else if (
-        action.update.writeConsistency === ReplicatedData.WriteConsistencies.ALL
-      )
-        context.writeConsistency = ReplicatedData.WriteConsistencies.ALL;
       applyUpdate(action.update, context.state);
     } else if (action.delete) {
       context.delete();
@@ -88,33 +74,6 @@ function process(request, context) {
     }
   });
   return responseValue(context);
-}
-
-function processStreamed(request, context) {
-  if (context.state === null)
-    context.state = createReplicatedData(context.entityId);
-  if (context.streamed) {
-    context.onStateChange = (state, changedContext) => {
-      request.effects.forEach((effect) => {
-        changedContext.effect(
-          two.service.methods.Call,
-          { id: effect.id },
-          effect.synchronous,
-        );
-      });
-      if (
-        request.endState &&
-        endStateReached(changedContext.state, request.endState)
-      )
-        changedContext.end();
-      if (!request.empty) return responseValue(changedContext);
-    };
-    if (request.cancelUpdate)
-      context.onStreamCancel = (state) =>
-        applyUpdate(request.cancelUpdate, state);
-  }
-  if (request.initialUpdate) applyUpdate(request.initialUpdate, context.state);
-  if (!request.empty) return responseValue(context);
 }
 
 // TCK only uses ReplicatedCounter for end state tests
@@ -242,6 +201,7 @@ const configured = new ReplicatedEntity(
     entityPassivationStrategy: {
       timeout: 100, // milliseconds
     },
+    replicatedWriteConsistency: ReplicatedWriteConsistency.ALL,
   },
 );
 
