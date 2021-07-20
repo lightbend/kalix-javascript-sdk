@@ -281,16 +281,12 @@ function ReplicatedMap() {
   this.delete = function (key) {
     const comparable = AnySupport.toComparable(key);
     if (currentValue.has(comparable)) {
-      if (currentValue.size === 1) {
-        this.clear();
+      currentValue.delete(comparable);
+      if (delta.added.has(comparable)) {
+        delta.added.delete(comparable);
       } else {
-        currentValue.delete(comparable);
-        if (delta.added.has(comparable)) {
-          delta.added.delete(comparable);
-        } else {
-          const serializedKey = AnySupport.serialize(key, true, true);
-          delta.removed.set(comparable, serializedKey);
-        }
+        const serializedKey = AnySupport.serialize(key, true, true);
+        delta.removed.set(comparable, serializedKey);
       }
     }
     return this;

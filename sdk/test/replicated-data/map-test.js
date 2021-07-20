@@ -161,17 +161,6 @@ describe('ReplicatedMap', () => {
     should.equal(map.getAndResetDelta(), null);
   });
 
-  it('should generate a clear delta when everything is removed', () => {
-    const map = new ReplicatedMap()
-      .set('one', new replicatedData.ReplicatedCounter())
-      .set('two', new replicatedData.ReplicatedCounter());
-    map.getAndResetDelta();
-    map.delete('one').delete('two').size.should.equal(0);
-    const delta = roundTripDelta(map.getAndResetDelta());
-    delta.replicatedMap.cleared.should.be.true;
-    should.equal(map.getAndResetDelta(), null);
-  });
-
   it('should not generate a delta when an added element is removed', () => {
     const map = new ReplicatedMap().set(
       'one',

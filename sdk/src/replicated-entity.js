@@ -219,6 +219,8 @@ module.exports = {
   ReplicatedSet: replicatedData.ReplicatedSet,
   ReplicatedRegister: replicatedData.ReplicatedRegister,
   ReplicatedMap: replicatedData.ReplicatedMap,
+  ReplicatedCounterMap: replicatedData.ReplicatedCounterMap,
+  ReplicatedRegisterMap: replicatedData.ReplicatedRegisterMap,
   Vote: replicatedData.Vote,
   Clocks: replicatedData.Clocks,
 };

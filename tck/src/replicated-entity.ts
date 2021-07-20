@@ -53,10 +53,32 @@ function createReplicatedData(name: string) {
       const map = new replicatedentity.ReplicatedMap();
       map.defaultValue = (key) => createReplicatedData(key);
       return map;
+    case 'ReplicatedCounterMap':
+      return new replicatedentity.ReplicatedCounterMap();
+    case 'ReplicatedRegisterMap':
+      return new replicatedentity.ReplicatedRegisterMap();
     case 'Vote':
       return new replicatedentity.Vote();
     default:
       throw 'Unknown Replicated Data type: ' + dataType;
+  }
+}
+
+// specialised maps may have already been created as generic replicated maps
+function replicatedData(
+  name: string,
+  state: replicatedentity.ReplicatedData,
+): replicatedentity.ReplicatedData {
+  const dataType = name.split('-')[0];
+  switch (dataType) {
+    case 'ReplicatedCounterMap':
+      if (state instanceof replicatedentity.ReplicatedMap)
+        return new replicatedentity.ReplicatedCounterMap(state);
+    case 'ReplicatedRegisterMap':
+      if (state instanceof replicatedentity.ReplicatedMap)
+        return new replicatedentity.ReplicatedRegisterMap(state);
+    default:
+      return state;
   }
 }
 
@@ -66,9 +88,10 @@ function process(
 ) {
   if (context.state === null)
     context.state = createReplicatedData(context.entityId);
+  const state = replicatedData(context.entityId, context.state);
   request.actions.forEach((action) => {
     if (action.update) {
-      applyUpdate(action.update, context.state);
+      applyUpdate(action.update, state);
     } else if (action.delete) {
       context.delete();
     } else if (action.forward) {
@@ -83,7 +106,7 @@ function process(
       context.fail(action.fail.message);
     }
   });
-  return responseValue(context);
+  return responseValue(state);
 }
 
 function applyUpdate(
@@ -144,6 +167,30 @@ function applyUpdate(
       else if (update.replicatedMap.remove)
         map.delete(update.replicatedMap.remove);
       else if (update.replicatedMap.clear) map.clear();
+    } else if (update.replicatedCounterMap) {
+      const counterMap = state as replicatedentity.ReplicatedCounterMap;
+      if (update.replicatedCounterMap.add)
+        counterMap.increment(update.replicatedCounterMap.add, 0);
+      else if (update.replicatedCounterMap.update)
+        counterMap.increment(
+          update.replicatedCounterMap.update.key,
+          update.replicatedCounterMap.update.change || 0,
+        );
+      else if (update.replicatedCounterMap.remove)
+        counterMap.delete(update.replicatedCounterMap.remove);
+      else if (update.replicatedCounterMap.clear) counterMap.clear();
+    } else if (update.replicatedRegisterMap) {
+      const registerMap = state as replicatedentity.ReplicatedRegisterMap;
+      if (update.replicatedRegisterMap.add)
+        registerMap.set(update.replicatedRegisterMap.add, '');
+      else if (update.replicatedRegisterMap.update)
+        registerMap.set(
+          update.replicatedRegisterMap.update.key,
+          update.replicatedRegisterMap.update.value,
+        );
+      else if (update.replicatedRegisterMap.remove)
+        registerMap.delete(update.replicatedRegisterMap.remove);
+      else if (update.replicatedRegisterMap.clear) registerMap.clear();
     } else if (update.vote) {
       const vote = state as replicatedentity.Vote;
       vote.vote = update.vote.selfVote || false;
@@ -151,12 +198,8 @@ function applyUpdate(
   }
 }
 
-function responseValue(
-  context: replicatedentity.ReplicatedEntityCommandContext,
-) {
-  return Response.create(
-    context.state ? { state: replicatedDataState(context.state) } : {},
-  );
+function responseValue(state: replicatedentity.ReplicatedData) {
+  return Response.create(state ? { state: replicatedDataState(state) } : {});
 }
 
 function replicatedDataState(state: replicatedentity.ReplicatedData): IState {
@@ -172,6 +215,18 @@ function replicatedDataState(state: replicatedentity.ReplicatedData): IState {
     return {
       replicatedMap: state.size
         ? { entries: sortedEntries(state, replicatedDataState) }
+        : {},
+    };
+  else if (state instanceof replicatedentity.ReplicatedCounterMap)
+    return {
+      replicatedCounterMap: state.size
+        ? { entries: sortedEntriesFromKeys(state.keys(), state.get) }
+        : {},
+    };
+  else if (state instanceof replicatedentity.ReplicatedRegisterMap)
+    return {
+      replicatedRegisterMap: state.size
+        ? { entries: sortedEntriesFromKeys(state.keys(), state.get) }
         : {},
     };
   else if (state instanceof replicatedentity.Vote)
@@ -198,6 +253,17 @@ function sortedEntries(
     value: convert(value),
   }));
   return converted.sort((a, b) => a.key.localeCompare(b.key));
+}
+
+function sortedEntriesFromKeys(
+  keys: Iterable<Serializable>,
+  get: (key: Serializable) => Serializable,
+) {
+  const entries = Array.from(keys, (key) => {
+    const value = get(key);
+    return value ? { key: key, value: value } : { key: key };
+  });
+  return entries.sort((a, b) => a.key.localeCompare(b.key));
 }
 
 export const two = new replicatedentity.ReplicatedEntity(

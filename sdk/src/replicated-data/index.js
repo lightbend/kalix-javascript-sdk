@@ -21,6 +21,8 @@ const ReplicatedCounter = require('./counter');
 const ReplicatedSet = require('./set');
 const ReplicatedRegister = require('./register');
 const ReplicatedMap = require('./map');
+const ReplicatedCounterMap = require('./counter-map');
+const ReplicatedRegisterMap = require('./register-map');
 const Vote = require('./vote');
 
 const Empty = protobufHelper.moduleRoot.google.protobuf.Empty;
@@ -93,6 +95,8 @@ module.exports = {
   ReplicatedSet: ReplicatedSet,
   ReplicatedRegister: ReplicatedRegister,
   ReplicatedMap: ReplicatedMap,
+  ReplicatedCounterMap: ReplicatedCounterMap,
+  ReplicatedRegisterMap: ReplicatedRegisterMap,
   Vote: Vote,
   Clocks: Clocks,
 };
