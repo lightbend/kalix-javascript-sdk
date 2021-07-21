@@ -65,8 +65,4 @@ service ReplicatedEntityExample {
   rpc GetReplicatedCounter(Get) returns (CounterValue);
   rpc MutateReplicatedSet(MutateSet) returns (SetSize);
   rpc GetReplicatedSet(Get) returns (SetValue);
-  // Connect the given user. They will stay connected as long as the stream stays open.
-  rpc Connect(User) returns (stream google.protobuf.Empty);
-  // Monitor the online status of the given user.
-  rpc Monitor(User) returns (stream OnlineStatus);
 }
