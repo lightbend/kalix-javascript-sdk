@@ -22,6 +22,8 @@ In this file, the `Cart` message represents the state snapshot, while `ItemAdded
 
 Create an Event Sourced Entity with the link:{attachmentsdir}/api/module-akkaserverless.EventSourcedEntity.html[EventSourcedEntity{tab-icon}, window="new"] class.
 
+ifdef::todo[TODO: update with new SDK names.]
+
 [source,js,indent=0]
 ----
 include::example$test/eventsourced/shoppingcart.js[tag=entity-class]

@@ -13,14 +13,7 @@ Event Sourced Entity::
 --
 [source, proto]
 ----
-// Describes how this domain relates to an event sourced entity
-option (akkaserverless.file).event_sourced_entity = {
-  name: "ShoppingCart"
-  entity_type: "eventsourced-shopping-cart"
-  state: "Cart"
-  events: "ItemAdded"
-  events: "ItemRemoved"
-};
+include::example$js-eventsourced-shopping-cart/proto/shoppingcart_domain.proto[tag=proto_state]
 ----
 --
 Value Entity::
@@ -28,12 +21,7 @@ Value Entity::
 --
 [source, proto]
 ----
-// Describes how this domain relates to a value entity
-option (akkaserverless.file).value_entity = {
-  name: "ShoppingCart"
-  entity_type: "shopping-cart"
-  state: "Cart"
-};
+include::example$js-valueentity-shopping-cart/proto/shoppingcart_domain.proto[tag=proto_state]
 ----
 --
 
