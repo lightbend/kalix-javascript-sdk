@@ -17,26 +17,7 @@
 const debug = require('debug')('akkaserverless-replicated-entity');
 const util = require('util');
 const AnySupport = require('../protobuf-any');
-
-function mapIterator(iter, f) {
-  const mapped = {
-    [Symbol.iterator]: () => mapped,
-    next: () => {
-      const next = iter.next();
-      if (next.done) {
-        return {
-          done: true,
-        };
-      } else {
-        return {
-          value: f(next.value),
-          done: false,
-        };
-      }
-    },
-  };
-  return mapped;
-}
+const iterators = require('./iterators');
 
 /**
  * @classdesc A Replicated Map data type.
@@ -124,7 +105,7 @@ function ReplicatedMap() {
    */
   this.entries = function () {
     // For some reason, these arrays are key, value, even though callbacks are passed value, key
-    return mapIterator(currentValue.values(), (value) => [
+    return iterators.map(currentValue.values(), (value) => [
       value.key,
       value.value,
     ]);
@@ -147,7 +128,7 @@ function ReplicatedMap() {
    * @returns {Iterator<module:akkaserverless.replicatedentity.ReplicatedData>}
    */
   this.values = function () {
-    return mapIterator(currentValue.values(), (value) => value.value);
+    return iterators.map(currentValue.values(), (value) => value.value);
   };
 
   /**
@@ -157,7 +138,7 @@ function ReplicatedMap() {
    * @returns {Iterator<module:akkaserverless.Serializable>}
    */
   this.keys = function () {
-    return mapIterator(currentValue.values(), (value) => value.key);
+    return iterators.map(currentValue.values(), (value) => value.key);
   };
 
   /**

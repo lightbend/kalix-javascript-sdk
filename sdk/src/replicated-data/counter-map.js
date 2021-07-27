@@ -14,19 +14,22 @@
  * limitations under the License.
  */
 
-const ReplicatedMap = require('./map');
+const debug = require('debug')('akkaserverless-replicated-entity');
 const ReplicatedCounter = require('./counter');
+const AnySupport = require('../protobuf-any');
+const iterators = require('./iterators');
+const util = require('util');
 
 /**
  * @classdesc A replicated map of counters.
  *
  * @constructor module:akkaserverless.replicatedentity.ReplicatedCounterMap
  * @implements module:akkaserverless.replicatedentity.ReplicatedData
- *
- * @param {module:akkaserverless.replicatedentity.ReplicatedMap} [initialMap] An already initialised replicated map underlying this counter map.
  */
-function ReplicatedCounterMap(initialMap) {
-  const map = initialMap !== undefined ? initialMap : new ReplicatedMap();
+function ReplicatedCounterMap() {
+  const counters = new Map();
+  const removed = new Map();
+  let cleared = false;
 
   /**
    * Get the value at the given key.
@@ -36,8 +39,8 @@ function ReplicatedCounterMap(initialMap) {
    * @returns {number|undefined} The counter value, or undefined if no value is defined at that key.
    */
   this.get = (key) => {
-    const counter = map.get(key);
-    return counter !== undefined ? counter.value : undefined;
+    const entry = counters.get(AnySupport.toComparable(key));
+    return entry !== undefined ? entry.counter.value : undefined;
   };
 
   /**
@@ -48,8 +51,8 @@ function ReplicatedCounterMap(initialMap) {
    * @returns {Long|undefined} The counter value as a long, or undefined if no value is defined at that key.
    */
   this.getLong = (key) => {
-    const counter = map.get(key);
-    return counter !== undefined ? counter.longValue : undefined;
+    const entry = counters.get(AnySupport.toComparable(key));
+    return entry !== undefined ? entry.counter.longValue : undefined;
   };
 
   /**
@@ -61,12 +64,7 @@ function ReplicatedCounterMap(initialMap) {
    * @returns {module:akkaserverless.replicatedentity.ReplicatedCounterMap} This counter map.
    */
   this.increment = function (key, increment) {
-    let counter = map.get(key);
-    if (counter === undefined) {
-      counter = new ReplicatedCounter();
-      map.set(key, counter);
-    }
-    counter.increment(increment);
+    this.getOrCreateCounter(key).increment(increment);
     return this;
   };
 
@@ -75,16 +73,11 @@ function ReplicatedCounterMap(initialMap) {
    *
    * @function module:akkaserverless.replicatedentity.ReplicatedCounterMap#decrement
    * @param {module:akkaserverless.Serializable} key The key for the counter to decrement.
-   * @param {Long|number} decrement The amount to decrement the counter by. If negative, it will be decremented instead.
+   * @param {Long|number} decrement The amount to decrement the counter by. If negative, it will be incremented instead.
    * @returns {module:akkaserverless.replicatedentity.ReplicatedCounterMap} This counter map.
    */
   this.decrement = function (key, decrement) {
-    let counter = map.get(key);
-    if (counter === undefined) {
-      counter = new ReplicatedCounter();
-      map.set(key, counter);
-    }
-    counter.decrement(decrement);
+    this.getOrCreateCounter(key).decrement(decrement);
     return this;
   };
 
@@ -96,7 +89,7 @@ function ReplicatedCounterMap(initialMap) {
    * @returns {boolean} True if this counter map contains a value for the given key.
    */
   this.has = function (key) {
-    return map.has(key);
+    return counters.has(AnySupport.toComparable(key));
   };
 
   /**
@@ -108,7 +101,7 @@ function ReplicatedCounterMap(initialMap) {
    */
   Object.defineProperty(this, 'size', {
     get: function () {
-      return map.size;
+      return counters.size;
     },
   });
 
@@ -119,7 +112,7 @@ function ReplicatedCounterMap(initialMap) {
    * @returns {IterableIterator<module:akkaserverless.Serializable>}
    */
   this.keys = function () {
-    return map.keys();
+    return iterators.map(counters.values(), (entry) => entry.key);
   };
 
   /**
@@ -130,7 +123,11 @@ function ReplicatedCounterMap(initialMap) {
    * @return {module:akkaserverless.replicatedentity.ReplicatedCounterMap} This counter map.
    */
   this.delete = function (key) {
-    map.delete(key);
+    const comparableKey = AnySupport.toComparable(key);
+    if (counters.has(comparableKey)) {
+      counters.delete(comparableKey);
+      removed.set(comparableKey, key);
+    }
     return this;
   };
 
@@ -141,23 +138,88 @@ function ReplicatedCounterMap(initialMap) {
    * @return {module:akkaserverless.replicatedentity.ReplicatedCounterMap} This counter map.
    */
   this.clear = function () {
-    map.clear();
+    if (counters.size > 0) {
+      cleared = true;
+      counters.clear();
+      removed.clear();
+    }
     return this;
   };
 
-  this.getAndResetDelta = function (initial) {
-    return map.getAndResetDelta(initial);
+  this.getOrCreateCounter = function (key) {
+    const comparableKey = AnySupport.toComparable(key);
+    const entry = counters.get(comparableKey);
+    if (entry) {
+      return entry.counter;
+    } else {
+      const counter = new ReplicatedCounter();
+      counters.set(comparableKey, { key: key, counter: counter });
+      return counter;
+    }
   };
 
-  this.applyDelta = function (delta, anySupport, createForDelta) {
-    map.applyDelta(delta, anySupport, createForDelta);
+  this.getAndResetDelta = function (initial) {
+    const updated = [];
+    counters.forEach(({ key: key, counter: counter }, comparableKey) => {
+      const delta = counter.getAndResetDelta();
+      if (delta !== null) {
+        updated.push({
+          key: AnySupport.serialize(key, true, true),
+          delta: delta.counter,
+        });
+      }
+    });
+    if (cleared || removed.size > 0 || updated.length > 0 || initial) {
+      const delta = {
+        replicatedCounterMap: {
+          cleared: cleared,
+          removed: Array.from(removed.values()).map((key) =>
+            AnySupport.serialize(key, true, true),
+          ),
+          updated: updated,
+        },
+      };
+      cleared = false;
+      removed.clear();
+      return delta;
+    } else {
+      return null;
+    }
+  };
+
+  this.applyDelta = function (delta, anySupport) {
+    if (!delta.replicatedCounterMap) {
+      throw new Error(
+        util.format('Cannot apply delta %o to ReplicatedCounterMap', delta),
+      );
+    }
+    if (delta.replicatedCounterMap.cleared) {
+      counters.clear();
+    }
+    if (delta.replicatedCounterMap.removed) {
+      delta.replicatedCounterMap.removed.forEach((serializedKey) => {
+        const key = anySupport.deserialize(serializedKey);
+        const comparableKey = AnySupport.toComparable(key);
+        if (counters.has(comparableKey)) {
+          counters.delete(comparableKey);
+        } else {
+          debug('Key to delete [%o] is not in ReplicatedCounterMap', key);
+        }
+      });
+    }
+    if (delta.replicatedCounterMap.updated) {
+      delta.replicatedCounterMap.updated.forEach((entry) => {
+        const key = anySupport.deserialize(entry.key);
+        this.getOrCreateCounter(key).applyDelta({ counter: entry.delta });
+      });
+    }
   };
 
   this.toString = function () {
     return (
       'ReplicatedCounterMap(' +
-      Array.from(map.entries())
-        .map(([key, counter]) => key + ' -> ' + counter.value)
+      Array.from(counters.values())
+        .map((entry) => entry.key + ' -> ' + entry.counter.value)
         .join(', ') +
       ')'
     );

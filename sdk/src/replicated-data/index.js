@@ -82,6 +82,10 @@ function createForDelta(delta) {
     return new ReplicatedRegister(Empty.create({}));
   } else if (delta.replicatedMap) {
     return new ReplicatedMap();
+  } else if (delta.replicatedCounterMap) {
+    return new ReplicatedCounterMap();
+  } else if (delta.replicatedRegisterMap) {
+    return new ReplicatedRegisterMap();
   } else if (delta.vote) {
     return new Vote();
   } else {

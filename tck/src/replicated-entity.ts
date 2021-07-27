@@ -64,34 +64,15 @@ function createReplicatedData(name: string) {
   }
 }
 
-// specialised maps may have already been created as generic replicated maps
-function replicatedData(
-  name: string,
-  state: replicatedentity.ReplicatedData,
-): replicatedentity.ReplicatedData {
-  const dataType = name.split('-')[0];
-  switch (dataType) {
-    case 'ReplicatedCounterMap':
-      if (state instanceof replicatedentity.ReplicatedMap)
-        return new replicatedentity.ReplicatedCounterMap(state);
-    case 'ReplicatedRegisterMap':
-      if (state instanceof replicatedentity.ReplicatedMap)
-        return new replicatedentity.ReplicatedRegisterMap(state);
-    default:
-      return state;
-  }
-}
-
 function process(
   request: Request,
   context: replicatedentity.ReplicatedEntityCommandContext,
 ) {
   if (context.state === null)
     context.state = createReplicatedData(context.entityId);
-  const state = replicatedData(context.entityId, context.state);
   request.actions.forEach((action) => {
     if (action.update) {
-      applyUpdate(action.update, state);
+      applyUpdate(action.update, context.state);
     } else if (action.delete) {
       context.delete();
     } else if (action.forward) {
@@ -106,7 +87,7 @@ function process(
       context.fail(action.fail.message);
     }
   });
-  return responseValue(state);
+  return responseValue(context.state);
 }
 
 function applyUpdate(
@@ -183,12 +164,41 @@ function applyUpdate(
       const registerMap = state as replicatedentity.ReplicatedRegisterMap;
       if (update.replicatedRegisterMap.add)
         registerMap.set(update.replicatedRegisterMap.add, '');
-      else if (update.replicatedRegisterMap.update)
+      else if (update.replicatedRegisterMap.update) {
+        const key = update.replicatedRegisterMap.update.key;
+        const value = update.replicatedRegisterMap.update.value;
+        const clock = update.replicatedRegisterMap.update.clock;
+        if (
+          clock?.clockType ===
+          ReplicatedRegisterClockType.REPLICATED_REGISTER_CLOCK_TYPE_REVERSE
+        )
+          registerMap.set(key, value, replicatedentity.Clocks.REVERSE);
+        else if (
+          clock?.clockType ===
+          ReplicatedRegisterClockType.REPLICATED_REGISTER_CLOCK_TYPE_CUSTOM
+        )
+          registerMap.set(
+            key,
+            value,
+            replicatedentity.Clocks.CUSTOM,
+            clock?.customClockValue as number, // FIXME
+          );
+        else if (
+          clock?.clockType ===
+          ReplicatedRegisterClockType.REPLICATED_REGISTER_CLOCK_TYPE_CUSTOM_AUTO_INCREMENT
+        )
+          registerMap.set(
+            key,
+            value,
+            replicatedentity.Clocks.CUSTOM_AUTO_INCREMENT,
+            clock?.customClockValue as number, // FIXME
+          );
+        else registerMap.set(key, value);
         registerMap.set(
           update.replicatedRegisterMap.update.key,
           update.replicatedRegisterMap.update.value,
         );
-      else if (update.replicatedRegisterMap.remove)
+      } else if (update.replicatedRegisterMap.remove)
         registerMap.delete(update.replicatedRegisterMap.remove);
       else if (update.replicatedRegisterMap.clear) registerMap.clear();
     } else if (update.vote) {

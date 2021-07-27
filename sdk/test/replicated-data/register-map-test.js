@@ -16,8 +16,8 @@
 
 const should = require('chai').should();
 const ReplicatedData = require('../../src/replicated-data');
-const ReplicatedRegisterMap = require('../../src/replicated-data/register-map');
-const ReplicatedMap = require('../../src/replicated-data/map');
+const ReplicatedRegisterMap = ReplicatedData.ReplicatedRegisterMap;
+const Clocks = ReplicatedData.Clocks;
 const path = require('path');
 const protobuf = require('protobufjs');
 const protobufHelper = require('../../src/protobuf-helper');
@@ -51,13 +51,24 @@ function deltaEntries(entries) {
   return entries.map((entry) => {
     return {
       key: anySupport.deserialize(entry.key),
-      delta: anySupport.deserialize(entry.delta.register.value),
+      delta: anySupport.deserialize(entry.delta.value),
+    };
+  });
+}
+
+function deltaEntriesWithClocks(entries) {
+  return entries.map((entry) => {
+    return {
+      key: anySupport.deserialize(entry.key),
+      value: anySupport.deserialize(entry.delta.value),
+      clock: entry.delta.clock,
+      customClockValue: entry.delta.customClockValue.toNumber(),
     };
   });
 }
 
 function registerDelta(key, value) {
-  return { key: toAny(key), delta: { register: { value: toAny(value) } } };
+  return { key: toAny(key), delta: { value: toAny(value) } };
 }
 
 describe('ReplicatedRegisterMap', () => {
@@ -71,8 +82,8 @@ describe('ReplicatedRegisterMap', () => {
     const registerMap = new ReplicatedRegisterMap();
     registerMap.applyDelta(
       roundTripDelta({
-        replicatedMap: {
-          added: [
+        replicatedRegisterMap: {
+          updated: [
             registerDelta('one', 1),
             registerDelta('two', 'foo'),
             registerDelta('three', Example.create({ field1: 'bar' })),
@@ -80,31 +91,7 @@ describe('ReplicatedRegisterMap', () => {
         },
       }),
       anySupport,
-      ReplicatedData.createForDelta,
     );
-    Array.from(registerMap.keys()).should.have.members(['one', 'two', 'three']);
-    registerMap.get('one').should.equal(1);
-    registerMap.get('two').should.equal('foo');
-    registerMap.get('three').field1.should.equal('bar');
-    should.equal(registerMap.getAndResetDelta(), null);
-  });
-
-  it('should wrap an initial ReplicatedMap', () => {
-    const map = new ReplicatedMap();
-    map.applyDelta(
-      roundTripDelta({
-        replicatedMap: {
-          added: [
-            registerDelta('one', 1),
-            registerDelta('two', 'foo'),
-            registerDelta('three', Example.create({ field1: 'bar' })),
-          ],
-        },
-      }),
-      anySupport,
-      ReplicatedData.createForDelta,
-    );
-    const registerMap = new ReplicatedRegisterMap(map);
     Array.from(registerMap.keys()).should.have.members(['one', 'two', 'three']);
     registerMap.get('one').should.equal(1);
     registerMap.get('two').should.equal('foo');
@@ -119,12 +106,11 @@ describe('ReplicatedRegisterMap', () => {
     registerMap.size.should.equal(1);
 
     const delta = roundTripDelta(registerMap.getAndResetDelta());
-    deltaEntries(delta.replicatedMap.added).should.have.deep.members([
+    deltaEntries(delta.replicatedRegisterMap.updated).should.have.deep.members([
       { key: 'one', delta: 1 },
     ]);
-    delta.replicatedMap.updated.should.be.empty;
-    delta.replicatedMap.removed.should.be.empty;
-    delta.replicatedMap.cleared.should.be.false;
+    delta.replicatedRegisterMap.removed.should.be.empty;
+    delta.replicatedRegisterMap.cleared.should.be.false;
   });
 
   it('should generate a removed delta', () => {
@@ -138,10 +124,9 @@ describe('ReplicatedRegisterMap', () => {
     registerMap.has('two').should.be.true;
 
     const delta = roundTripDelta(registerMap.getAndResetDelta());
-    fromAnys(delta.replicatedMap.removed).should.have.members(['one']);
-    delta.replicatedMap.added.should.be.empty;
-    delta.replicatedMap.updated.should.be.empty;
-    delta.replicatedMap.cleared.should.be.false;
+    fromAnys(delta.replicatedRegisterMap.removed).should.have.members(['one']);
+    delta.replicatedRegisterMap.updated.should.be.empty;
+    delta.replicatedRegisterMap.cleared.should.be.false;
   });
 
   it('should generate an updated delta', () => {
@@ -151,12 +136,11 @@ describe('ReplicatedRegisterMap', () => {
     registerMap.set('one', 'forty-two');
 
     const delta = roundTripDelta(registerMap.getAndResetDelta());
-    deltaEntries(delta.replicatedMap.updated).should.have.deep.members([
+    deltaEntries(delta.replicatedRegisterMap.updated).should.have.deep.members([
       { key: 'one', delta: 'forty-two' },
     ]);
-    delta.replicatedMap.added.should.be.empty;
-    delta.replicatedMap.removed.should.be.empty;
-    delta.replicatedMap.cleared.should.be.false;
+    delta.replicatedRegisterMap.removed.should.be.empty;
+    delta.replicatedRegisterMap.cleared.should.be.false;
   });
 
   it('should generate a cleared delta', () => {
@@ -168,9 +152,26 @@ describe('ReplicatedRegisterMap', () => {
     registerMap.size.should.equal(0);
 
     const delta = roundTripDelta(registerMap.getAndResetDelta());
-    delta.replicatedMap.cleared.should.be.true;
-    delta.replicatedMap.added.should.be.empty;
-    delta.replicatedMap.updated.should.be.empty;
-    delta.replicatedMap.removed.should.be.empty;
+    delta.replicatedRegisterMap.cleared.should.be.true;
+    delta.replicatedRegisterMap.updated.should.be.empty;
+    delta.replicatedRegisterMap.removed.should.be.empty;
+  });
+
+  it('should generate a delta with clocks', () => {
+    const registerMap = new ReplicatedRegisterMap();
+    registerMap.set(1, 'foo');
+    registerMap.set(2, 'bar', Clocks.REVERSE);
+    registerMap.set(3, 'baz', Clocks.CUSTOM, 42);
+
+    const delta = roundTripDelta(registerMap.getAndResetDelta());
+    deltaEntriesWithClocks(
+      delta.replicatedRegisterMap.updated,
+    ).should.have.deep.members([
+      { key: 1, value: 'foo', clock: Clocks.DEFAULT, customClockValue: 0 },
+      { key: 2, value: 'bar', clock: Clocks.REVERSE, customClockValue: 0 },
+      { key: 3, value: 'baz', clock: Clocks.CUSTOM, customClockValue: 42 },
+    ]);
+    delta.replicatedRegisterMap.removed.should.be.empty;
+    delta.replicatedRegisterMap.cleared.should.be.false;
   });
 });

@@ -14,19 +14,27 @@
  * limitations under the License.
  */
 
-const ReplicatedMap = require('./map');
+const debug = require('debug')('akkaserverless-replicated-entity');
 const ReplicatedRegister = require('./register');
+const AnySupport = require('../protobuf-any');
+const protobufHelper = require('../protobuf-helper');
+const iterators = require('./iterators');
+const util = require('util');
+
+const Clocks =
+  protobufHelper.moduleRoot.akkaserverless.component.replicatedentity
+    .ReplicatedEntityClock;
 
 /**
  * @classdesc A replicated map of registers.
  *
  * @constructor module:akkaserverless.replicatedentity.ReplicatedRegisterMap
  * @implements module:akkaserverless.replicatedentity.ReplicatedData
- *
- * @param {module:akkaserverless.replicatedentity.ReplicatedMap} [initialMap] An already initialised replicated map underlying this register map.
  */
-function ReplicatedRegisterMap(initialMap) {
-  const map = initialMap !== undefined ? initialMap : new ReplicatedMap();
+function ReplicatedRegisterMap() {
+  const registers = new Map();
+  const removed = new Map();
+  let cleared = false;
 
   /**
    * Get the value at the given key.
@@ -36,8 +44,8 @@ function ReplicatedRegisterMap(initialMap) {
    * @returns {number|undefined} The register value, or undefined if no value is defined at that key.
    */
   this.get = (key) => {
-    const register = map.get(key);
-    return register !== undefined ? register.value : undefined;
+    const entry = registers.get(AnySupport.toComparable(key));
+    return entry !== undefined ? entry.register.value : undefined;
   };
 
   /**
@@ -46,16 +54,17 @@ function ReplicatedRegisterMap(initialMap) {
    * @function module:akkaserverless.replicatedentity.ReplicatedRegisterMap#set
    * @param {module:akkaserverless.Serializable} key The key for the register.
    * @param {module:akkaserverless.Serializable} value The new value for the register.
+   * @param {module:akkaserverless.replicatedentity.Clock} [clock=Clocks.DEFAULT] The register clock.
+   * @param {number} [customClockValue=0] Clock value when using custom clock, otherwise ignored.
    * @returns {module:akkaserverless.replicatedentity.ReplicatedRegisterMap} This register map.
    */
-  this.set = function (key, value) {
-    let register = map.get(key);
-    if (register === undefined) {
-      register = new ReplicatedRegister(value);
-      map.set(key, register);
-    } else {
-      register.value = value;
-    }
+  this.set = function (
+    key,
+    value,
+    clock = Clocks.DEFAULT,
+    customClockValue = 0,
+  ) {
+    this.getOrCreateRegister(key).setWithClock(value, clock, customClockValue);
     return this;
   };
 
@@ -67,7 +76,7 @@ function ReplicatedRegisterMap(initialMap) {
    * @returns {boolean} True if this register map contains a value for the given key.
    */
   this.has = function (key) {
-    return map.has(key);
+    return registers.has(AnySupport.toComparable(key));
   };
 
   /**
@@ -79,7 +88,7 @@ function ReplicatedRegisterMap(initialMap) {
    */
   Object.defineProperty(this, 'size', {
     get: function () {
-      return map.size;
+      return registers.size;
     },
   });
 
@@ -90,7 +99,7 @@ function ReplicatedRegisterMap(initialMap) {
    * @returns {IterableIterator<module:akkaserverless.Serializable>}
    */
   this.keys = function () {
-    return map.keys();
+    return iterators.map(registers.values(), (entry) => entry.key);
   };
 
   /**
@@ -101,7 +110,11 @@ function ReplicatedRegisterMap(initialMap) {
    * @return {module:akkaserverless.replicatedentity.ReplicatedRegisterMap} This register map.
    */
   this.delete = function (key) {
-    map.delete(key);
+    const comparableKey = AnySupport.toComparable(key);
+    if (registers.has(comparableKey)) {
+      registers.delete(comparableKey);
+      removed.set(comparableKey, key);
+    }
     return this;
   };
 
@@ -112,23 +125,91 @@ function ReplicatedRegisterMap(initialMap) {
    * @return {module:akkaserverless.replicatedentity.ReplicatedRegisterMap} This register map.
    */
   this.clear = function () {
-    map.clear();
+    if (registers.size > 0) {
+      cleared = true;
+      registers.clear();
+      removed.clear();
+    }
     return this;
   };
 
-  this.getAndResetDelta = function (initial) {
-    return map.getAndResetDelta(initial);
+  this.getOrCreateRegister = function (key) {
+    const comparableKey = AnySupport.toComparable(key);
+    const entry = registers.get(comparableKey);
+    if (entry) {
+      return entry.register;
+    } else {
+      const register = new ReplicatedRegister({});
+      registers.set(comparableKey, { key: key, register: register });
+      return register;
+    }
   };
 
-  this.applyDelta = function (delta, anySupport, createForDelta) {
-    map.applyDelta(delta, anySupport, createForDelta);
+  this.getAndResetDelta = function (initial) {
+    const updated = [];
+    registers.forEach(({ key: key, register: register }, comparableKey) => {
+      const delta = register.getAndResetDelta();
+      if (delta !== null) {
+        updated.push({
+          key: AnySupport.serialize(key, true, true),
+          delta: delta.register,
+        });
+      }
+    });
+    if (cleared || removed.size > 0 || updated.length > 0 || initial) {
+      const delta = {
+        replicatedRegisterMap: {
+          cleared: cleared,
+          removed: Array.from(removed.values()).map((key) =>
+            AnySupport.serialize(key, true, true),
+          ),
+          updated: updated,
+        },
+      };
+      cleared = false;
+      removed.clear();
+      return delta;
+    } else {
+      return null;
+    }
+  };
+
+  this.applyDelta = function (delta, anySupport) {
+    if (!delta.replicatedRegisterMap) {
+      throw new Error(
+        util.format('Cannot apply delta %o to ReplicatedRegisterMap', delta),
+      );
+    }
+    if (delta.replicatedRegisterMap.cleared) {
+      registers.clear();
+    }
+    if (delta.replicatedRegisterMap.removed) {
+      delta.replicatedRegisterMap.removed.forEach((serializedKey) => {
+        const key = anySupport.deserialize(serializedKey);
+        const comparableKey = AnySupport.toComparable(key);
+        if (registers.has(comparableKey)) {
+          registers.delete(comparableKey);
+        } else {
+          debug('Key to delete [%o] is not in ReplicatedRegisterMap', key);
+        }
+      });
+    }
+    if (delta.replicatedRegisterMap.updated) {
+      delta.replicatedRegisterMap.updated.forEach((entry) => {
+        const key = anySupport.deserialize(entry.key);
+        this.getOrCreateRegister(key).applyDelta(
+          { register: entry.delta },
+          anySupport,
+        );
+      });
+    }
   };
 
   this.toString = function () {
     return (
       'ReplicatedRegisterMap(' +
-      Array.from(map.entries())
-        .map(([key, register]) => key + ' -> ' + register.value)
+      Array.from(registers.values())
+        .map((entry) => entry.key + ' -> ' + entry.register.value)
         .join(', ') +
       ')'
     );
