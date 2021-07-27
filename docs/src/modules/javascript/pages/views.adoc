@@ -24,7 +24,7 @@ To get a view of multiple customers by their name, define the View as a `service
 
 * How to update the View
 * The source of View data
-* A `table` property that can be any name
+* A `table` property that you will use in the query.
 * The query that returns customers by name
 
 [source,proto,indent=0]
@@ -34,7 +34,7 @@ include::example$js-customer-registry/customer_view.proto[tag=service]
 
 <1> The `UpdateCustomer` method defines how Akka Serverless will update the view.
 <2> The source of the View is the `"customers"` Value Entity. This identifier is defined in the `@ValueEntity(entityType = "customers")` annotation of the Value Entity.
-<3> The `(akkaserverless.method).view.update` annotation defines that this method is used for updating the View. You must define the `table` property for the table to be used in the query. You can use any name.
+<3> The `(akkaserverless.method).view.update` annotation defines that this method is used for updating the View. You must define the `table` property to provide a name for the table to be used in the query. You can use any name.
 <4> The `GetCustomers` method defines the query to retrieve a stream of `Customer`.
 <5> The `(akkaserverless.method).view.query` annotation defines that this method is used as a query of the View.
 
@@ -65,7 +65,7 @@ In the View implementation, register the View with Akka Serverless. In addition 
 include::example$js-customer-registry/customer-value-entity-view.js[tag=register]
 ----
 
-To use the View in the client, invoke the `addComponent` function. For example:
+To use the View, invoke the `addComponent` function. For example:
 
 .index.js
 [source,js,indent=0]
