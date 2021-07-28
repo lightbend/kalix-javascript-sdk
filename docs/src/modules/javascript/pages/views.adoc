@@ -10,6 +10,12 @@ Views can be defined from any of the following:
 * xref:event-sourced-entity[Event Sourced Entity events]
 * xref:topic-view[Messages received from subscribing to topics on a broker]
 
+In addition, this page describes:
+
+* <<_how_to_transform_results>>
+* xref:changing[How to modify a View]
+* xref:query[Query reference]
+
 IMPORTANT: Be aware that Views are not updated immediately when Entity state changes. Akka Serverless does update Views as quickly as possible, but it is not instant and can take up to a few seconds for the changes to become visible in the query results. View updates might also take more time during failure scenarios than during normal operation.
 
 [#value-entity]
@@ -171,7 +177,12 @@ include::example$js-customer-registry/customer_view.proto[tag=service-topic]
 
 <1> This is the only difference from <<event-sourced-entity>>.
 
-== Transform result
+== How to transform results
+
+To obtain different results than shown in the examples above, you can transform them:
+
+* As a <<_relational_projection>>
+* As a <<_response_message_including_the_result>>
 
 === Relational projection
 
@@ -202,7 +213,7 @@ include::example$js-customer-registry/customer_view.proto[tag=wrap-repeated]
 <3> The `repeated` field is referenced in the query with `* AS results`.
 
 [#changing]
-== Changing the View
+== How to modify a View
 
 Akka Serverless creates indexes for the View based on the query. For example, the following query will result in a View with an index on the `name` column:
 
