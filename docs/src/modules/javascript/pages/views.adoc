@@ -98,7 +98,8 @@ Construct Event Sourced Entity Views from the events that the Entity emits. Buil
 . <<#ES_register>>.
 
 
-The example assumes a `customer_domain.proto` file defines events that will update the View because a name changed:
+The example assumes a `customer_domain.proto` file that defines the events that
+will update the View when  name changes:
 
 [source,proto,indent=0]
 ----
