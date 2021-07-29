@@ -19,6 +19,7 @@ package customer.view;
 
 import "customer_domain.proto";
 import "akkaserverless/annotations.proto";
+
 // end::declarations[]
 
 // tag::service[]
