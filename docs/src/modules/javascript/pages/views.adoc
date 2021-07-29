@@ -13,6 +13,7 @@ Views can be defined from any of the following:
 In addition, this page describes:
 
 * <<_how_to_transform_results>>
+* xref:testing[How to test a View]
 * xref:changing[How to modify a View]
 * xref:query[Query reference]
 
@@ -212,6 +213,37 @@ include::example$js-customer-registry/customer_view.proto[tag=wrap-repeated]
 <1> The response message contains a `repeated` field.
 <2> The return type is not `streamed`.
 <3> The `repeated` field is referenced in the query with `* AS results`.
+
+[#testing]
+== How to test a View
+
+View tests need to create gRPC clients for both the Entity and the View. For example:
+
+[source,javascript]
+----
+include::example$js-customer-registry/integration-test.js[lines=17...30]
+----
+
+Since Views do not immediately update on changes, add a retry to make sure the test doesn't fail unnecessarily. For example:
+
+[source,javascript]
+----
+include::example$js-customer-registry/integration-test.js[lines=32...46]
+----
+
+Provide some data:
+
+[source,javascript]
+----
+include::example$js-customer-registry/integration-test.js[lines=48...51]
+----
+
+Exercise the View:
+
+[source,javascript]
+----
+include::example$js-customer-registry/integration-test.js[lines=65...74]
+----
 
 [#changing]
 == How to modify a View
