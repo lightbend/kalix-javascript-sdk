@@ -99,7 +99,7 @@ Construct Event Sourced Entity Views from the events that the Entity emits. Buil
 
 
 The example assumes a `customer_domain.proto` file that defines the events that
-will update the View when  name changes:
+will update the View when a name changes:
 
 [source,proto,indent=0]
 ----
