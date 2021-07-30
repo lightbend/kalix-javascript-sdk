@@ -57,6 +57,8 @@ function createReplicatedData(name: string) {
       return new replicatedentity.ReplicatedCounterMap();
     case 'ReplicatedRegisterMap':
       return new replicatedentity.ReplicatedRegisterMap();
+    case 'ReplicatedMultiMap':
+      return new replicatedentity.ReplicatedMultiMap();
     case 'Vote':
       return new replicatedentity.Vote();
     default:
@@ -201,6 +203,17 @@ function applyUpdate(
       } else if (update.replicatedRegisterMap.remove)
         registerMap.delete(update.replicatedRegisterMap.remove);
       else if (update.replicatedRegisterMap.clear) registerMap.clear();
+    } else if (update.replicatedMultiMap) {
+      const multiMap = state as replicatedentity.ReplicatedMultiMap;
+      if (update.replicatedMultiMap.update) {
+        const key = update.replicatedMultiMap.update.key;
+        const value = update.replicatedMultiMap.update.update;
+        if (value?.add) multiMap.put(key, value.add);
+        else if (value?.remove) multiMap.delete(key, value.remove);
+        else if (value?.clear) multiMap.deleteAll(key);
+      } else if (update.replicatedMultiMap.remove)
+        multiMap.deleteAll(update.replicatedMultiMap.remove);
+      else if (update.replicatedMultiMap.clear) multiMap.clear();
     } else if (update.vote) {
       const vote = state as replicatedentity.Vote;
       vote.vote = update.vote.selfVote || false;
@@ -238,6 +251,17 @@ function replicatedDataState(state: replicatedentity.ReplicatedData): IState {
       replicatedRegisterMap: state.size
         ? { entries: sortedEntriesFromKeys(state.keys(), state.get) }
         : {},
+    };
+  else if (state instanceof replicatedentity.ReplicatedMultiMap)
+    return {
+      replicatedMultiMap:
+        state.keysSize > 0
+          ? {
+              entries: sortedEntriesFromKeys(state.keys(), (key) => ({
+                elements: sortedElements(state.get(key)),
+              })),
+            }
+          : {},
     };
   else if (state instanceof replicatedentity.Vote)
     return {

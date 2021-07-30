@@ -23,6 +23,7 @@ const ReplicatedRegister = require('./register');
 const ReplicatedMap = require('./map');
 const ReplicatedCounterMap = require('./counter-map');
 const ReplicatedRegisterMap = require('./register-map');
+const ReplicatedMultiMap = require('./multi-map');
 const Vote = require('./vote');
 
 const Empty = protobufHelper.moduleRoot.google.protobuf.Empty;
@@ -86,6 +87,8 @@ function createForDelta(delta) {
     return new ReplicatedCounterMap();
   } else if (delta.replicatedRegisterMap) {
     return new ReplicatedRegisterMap();
+  } else if (delta.replicatedMultiMap) {
+    return new ReplicatedMultiMap();
   } else if (delta.vote) {
     return new Vote();
   } else {
@@ -101,6 +104,7 @@ module.exports = {
   ReplicatedMap: ReplicatedMap,
   ReplicatedCounterMap: ReplicatedCounterMap,
   ReplicatedRegisterMap: ReplicatedRegisterMap,
+  ReplicatedMultiMap: ReplicatedMultiMap,
   Vote: Vote,
   Clocks: Clocks,
 };

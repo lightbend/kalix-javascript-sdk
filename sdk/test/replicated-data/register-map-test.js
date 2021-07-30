@@ -174,4 +174,85 @@ describe('ReplicatedRegisterMap', () => {
     delta.replicatedRegisterMap.removed.should.be.empty;
     delta.replicatedRegisterMap.cleared.should.be.false;
   });
+
+  it('should reflect a delta with added entries', () => {
+    const registerMap = new ReplicatedRegisterMap();
+    registerMap.set('one', 1);
+    registerMap.getAndResetDelta();
+    registerMap.applyDelta(
+      roundTripDelta({
+        replicatedRegisterMap: {
+          updated: [registerDelta('two', 2)],
+        },
+      }),
+      anySupport,
+    );
+    registerMap.size.should.equal(2);
+    Array.from(registerMap.keys()).should.have.members(['one', 'two']);
+    registerMap.get('two').should.equal(2);
+    should.equal(registerMap.getAndResetDelta(), null);
+  });
+
+  it('should reflect a delta with removed entries', () => {
+    const registerMap = new ReplicatedRegisterMap();
+    registerMap.set('one', 1);
+    registerMap.set('two', 2);
+    registerMap.getAndResetDelta();
+    registerMap.applyDelta(
+      roundTripDelta({
+        replicatedRegisterMap: {
+          removed: [toAny('two')],
+        },
+      }),
+      anySupport,
+    );
+    registerMap.size.should.equal(1);
+    Array.from(registerMap.keys()).should.have.members(['one']);
+    should.equal(registerMap.getAndResetDelta(), null);
+  });
+
+  it('should reflect a delta with cleared entries', () => {
+    const registerMap = new ReplicatedRegisterMap();
+    registerMap.set('one', 1);
+    registerMap.set('two', 2);
+    registerMap.getAndResetDelta();
+    registerMap.applyDelta(
+      roundTripDelta({
+        replicatedRegisterMap: {
+          cleared: true,
+        },
+      }),
+      anySupport,
+    );
+    registerMap.size.should.equal(0);
+    should.equal(registerMap.getAndResetDelta(), null);
+  });
+
+  it('should support protobuf messages for keys', () => {
+    const registerMap = new ReplicatedRegisterMap();
+    registerMap.set(Example.create({ field1: 'one' }), 1);
+    registerMap.set(Example.create({ field1: 'two' }), 2);
+    registerMap.getAndResetDelta();
+    registerMap.delete(Example.create({ field1: 'one' }));
+    registerMap.size.should.equal(1);
+    const delta = roundTripDelta(registerMap.getAndResetDelta());
+    delta.replicatedRegisterMap.removed.should.have.lengthOf(1);
+    fromAnys(delta.replicatedRegisterMap.removed)[0].field1.should.equal('one');
+    delta.replicatedRegisterMap.updated.should.be.empty;
+    delta.replicatedRegisterMap.cleared.should.be.false;
+  });
+
+  it('should support json objects for keys', () => {
+    const registerMap = new ReplicatedRegisterMap();
+    registerMap.set({ foo: 'one' }, 1);
+    registerMap.set({ foo: 'two' }, 2);
+    registerMap.getAndResetDelta();
+    registerMap.delete({ foo: 'one' });
+    registerMap.size.should.equal(1);
+    const delta = roundTripDelta(registerMap.getAndResetDelta());
+    delta.replicatedRegisterMap.removed.should.have.lengthOf(1);
+    fromAnys(delta.replicatedRegisterMap.removed)[0].foo.should.equal('one');
+    delta.replicatedRegisterMap.updated.should.be.empty;
+    delta.replicatedRegisterMap.cleared.should.be.false;
+  });
 });

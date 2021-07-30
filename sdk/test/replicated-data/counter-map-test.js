@@ -16,6 +16,7 @@
 
 const should = require('chai').should();
 const ReplicatedCounterMap = require('../../src/replicated-data/counter-map');
+const path = require('path');
 const protobuf = require('protobufjs');
 const protobufHelper = require('../../src/protobuf-helper');
 const AnySupport = require('../../src/protobuf-any');
@@ -25,6 +26,9 @@ const ReplicatedEntityDelta =
     .ReplicatedEntityDelta;
 
 const root = new protobuf.Root();
+root.loadSync(path.join(__dirname, '..', 'example.proto'));
+root.resolveAll();
+const Example = root.lookupType('com.example.Example');
 const anySupport = new AnySupport(root);
 
 function roundTripDelta(delta) {
@@ -135,5 +139,86 @@ describe('ReplicatedCounterMap', () => {
     delta.replicatedCounterMap.cleared.should.be.true;
     delta.replicatedCounterMap.updated.should.be.empty;
     delta.replicatedCounterMap.removed.should.be.empty;
+  });
+
+  it('should reflect a delta with added entries', () => {
+    const counterMap = new ReplicatedCounterMap();
+    counterMap.increment('one', 1);
+    counterMap.getAndResetDelta();
+    counterMap.applyDelta(
+      roundTripDelta({
+        replicatedCounterMap: {
+          updated: [counterDelta('two', 2)],
+        },
+      }),
+      anySupport,
+    );
+    counterMap.size.should.equal(2);
+    Array.from(counterMap.keys()).should.have.members(['one', 'two']);
+    counterMap.get('two').should.equal(2);
+    should.equal(counterMap.getAndResetDelta(), null);
+  });
+
+  it('should reflect a delta with removed entries', () => {
+    const counterMap = new ReplicatedCounterMap();
+    counterMap.increment('one', 1);
+    counterMap.increment('two', 2);
+    counterMap.getAndResetDelta();
+    counterMap.applyDelta(
+      roundTripDelta({
+        replicatedCounterMap: {
+          removed: [toAny('two')],
+        },
+      }),
+      anySupport,
+    );
+    counterMap.size.should.equal(1);
+    Array.from(counterMap.keys()).should.have.members(['one']);
+    should.equal(counterMap.getAndResetDelta(), null);
+  });
+
+  it('should reflect a delta with cleared entries', () => {
+    const counterMap = new ReplicatedCounterMap();
+    counterMap.increment('one', 1);
+    counterMap.increment('two', 2);
+    counterMap.getAndResetDelta();
+    counterMap.applyDelta(
+      roundTripDelta({
+        replicatedCounterMap: {
+          cleared: true,
+        },
+      }),
+      anySupport,
+    );
+    counterMap.size.should.equal(0);
+    should.equal(counterMap.getAndResetDelta(), null);
+  });
+
+  it('should support protobuf messages for keys', () => {
+    const counterMap = new ReplicatedCounterMap();
+    counterMap.increment(Example.create({ field1: 'one' }), 1);
+    counterMap.increment(Example.create({ field1: 'two' }), 2);
+    counterMap.getAndResetDelta();
+    counterMap.delete(Example.create({ field1: 'one' }));
+    counterMap.size.should.equal(1);
+    const delta = roundTripDelta(counterMap.getAndResetDelta());
+    delta.replicatedCounterMap.removed.should.have.lengthOf(1);
+    fromAnys(delta.replicatedCounterMap.removed)[0].field1.should.equal('one');
+    delta.replicatedCounterMap.updated.should.be.empty;
+    delta.replicatedCounterMap.cleared.should.be.false;
+  });
+
+  it('should support json objects for keys', () => {
+    const counterMap = new ReplicatedCounterMap();
+    counterMap.increment({ foo: 'one' }, 1);
+    counterMap.increment({ foo: 'two' }, 2);
+    counterMap.getAndResetDelta();
+    counterMap.delete({ foo: 'one' });
+    counterMap.size.should.equal(1);
+    const delta = roundTripDelta(counterMap.getAndResetDelta());
+    delta.replicatedCounterMap.removed.should.have.lengthOf(1);
+    fromAnys(delta.replicatedCounterMap.removed)[0].foo.should.equal('one');
+    delta.replicatedCounterMap.updated.should.be.empty;
+    delta.replicatedCounterMap.cleared.should.be.false;
   });
 });
