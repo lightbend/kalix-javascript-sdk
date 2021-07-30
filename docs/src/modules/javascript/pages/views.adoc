@@ -221,28 +221,28 @@ View tests need to create gRPC clients for both the Entity and the View. For exa
 
 [source,javascript]
 ----
-include::example$js-customer-registry/integration-test/customer-registry-test.js[lines=17..30]
+include::example$js-customer-registry/integration-test/customer-registry-test.js[tag=client]
 ----
 
 Since Views do not immediately update on changes, add a retry to make sure the test doesn't fail unnecessarily. For example:
 
 [source,javascript]
 ----
-include::example$js-customer-registry/integration-test/customer-registry-test.js[lines=32..46]
+include::example$js-customer-registry/integration-test/customer-registry-test.js[tag=view]
 ----
 
 Provide some data:
 
 [source,javascript]
 ----
-include::example$js-customer-registry/integration-test/customer-registry-test.js[lines=48..51]
+include::example$js-customer-registry/integration-test/customer-registry-test.js[tag=data]
 ----
 
 Exercise the View:
 
 [source,javascript]
 ----
-include::example$js-customer-registry/integration-test/customer-registry-test.js[lines=65..74]
+include::example$js-customer-registry/integration-test/customer-registry-test.js[tag=exercise]
 ----
 
 [#changing]
