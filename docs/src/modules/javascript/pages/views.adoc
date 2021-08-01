@@ -32,7 +32,7 @@ This example assumes the following `customer` state is defined in a `customer_do
 
 [source,proto,indent=0]
 ----
-include::example$js-customer-registry/customer_domain.proto[tag=domain]
+include::example$js-customer-registry/customer_domain.proto[tags=declarations;domain]
 ----
 
 === Define the View service descriptor
@@ -46,7 +46,7 @@ To get a view of multiple customers by their name, define the View as a `service
 
 [source,proto,indent=0]
 ----
-include::example$js-customer-registry/customer_view.proto[tag=service]
+include::example$js-customer-registry/customer_view.proto[tags=declarations;service]
 ----
 
 <1> The `UpdateCustomer` method defines how Akka Serverless will update the view.
@@ -105,7 +105,7 @@ will update the View when a name changes:
 
 [source,proto,indent=0]
 ----
-include::example$js-customer-registry/customer_domain.proto[tag=events]
+include::example$js-customer-registry/customer_domain.proto[tags=declarations;events]
 ----
 
 === Define the View descriptor
@@ -121,7 +121,7 @@ The following example `customer_view.proto` file defines a View to consume the `
 
 [source,proto,indent=0]
 ----
-include::example$js-customer-registry/customer_view.proto[tag=service-event-sourced]
+include::example$js-customer-registry/customer_view.proto[tags=declarations;service-event-sourced]
 ----
 
 <1> Define an update method for each event.
@@ -165,7 +165,7 @@ Invoke the `addComponent` function to register the view with the service. For ex
 .index.js
 [source,js,indent=0]
 ----
-include::example$js-customer-registry/index.js[tag=register-event-sourced]
+include::example$js-customer-registry/index.js[tags=register-event-sourced]
 ----
 
 [#topic-view]
@@ -175,7 +175,7 @@ The source of a View can be an eventing topic. You define it in the same way as 
 
 [source,proto,indent=0]
 ----
-include::example$js-customer-registry/customer_view.proto[tag=service-topic]
+include::example$js-customer-registry/customer_view.proto[tags=declarations;service-topic]
 ----
 
 <1> This is the only difference from <<event-sourced-entity>>.
@@ -192,7 +192,7 @@ To obtain different results than shown in the examples above, you can transform 
 Instead of using `SELECT *` you can define the columns to use in the response message:
 [source,proto,indent=0]
 ----
-include::example$js-customer-registry/customer_view.proto[tag=summary]
+include::example$js-customer-registry/customer_view.proto[tags=declarations;summary]
 ----
 
 Similarly, you can include values from the request message in the response, such as `:request_id`:
