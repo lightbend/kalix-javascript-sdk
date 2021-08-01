@@ -13,11 +13,13 @@ Views can be defined from any of the following:
 In addition, this page describes:
 
 * <<_how_to_transform_results>>
+* xref:testing[How to test a View]
 * xref:changing[How to modify a View]
 * xref:query[Query reference]
 
 IMPORTANT: Be aware that Views are not updated immediately when Entity state changes. Akka Serverless does update Views as quickly as possible, but it is not instant and can take up to a few seconds for the changes to become visible in the query results. View updates might also take more time during failure scenarios than during normal operation.
 
+https://github.com/lightbend/akkaserverless-javascript-sdk/tree/main/samples/js-customer-registry[The `akkaserverless-javascript-sdk` GitHub repository] includes an example of all views described on this page.
 [#value-entity]
 == View from a Value Entity
 
@@ -212,6 +214,39 @@ include::example$js-customer-registry/customer_view.proto[tag=wrap-repeated]
 <1> The response message contains a `repeated` field.
 <2> The return type is not `streamed`.
 <3> The `repeated` field is referenced in the query with `* AS results`.
+
+[#testing]
+== How to test a View
+
+View tests need to create gRPC clients for both the Entity and the View. For example:
+
+[source,javascript]
+----
+include::example$js-customer-registry/integration-test/customer-registry-test.js[tag=client]
+----
+
+Since Views do not immediately update on changes, add a retry to make sure the test doesn't fail unnecessarily. For example:
+
+[source,javascript]
+----
+include::example$js-customer-registry/integration-test/customer-registry-test.js[tag=view]
+----
+
+Provide some data:
+
+[source,javascript]
+----
+include::example$js-customer-registry/integration-test/customer-registry-test.js[tag=data]
+----
+
+Exercise the View:
+
+[source,javascript]
+----
+include::example$js-customer-registry/integration-test/customer-registry-test.js[tag=exercise]
+----
+
+Find the complete test example https://github.com/lightbend/akkaserverless-javascript-sdk/blob/main/samples/js-customer-registry/integration-test/customer-registry-test.js[on GitHub].
 
 [#changing]
 == How to modify a View
