@@ -7,9 +7,9 @@ Akka Serverless SDKs support `protobuf` descriptors in the https://developers.go
 
 We recommend that you define your service API and events and data associated with components separately. This allows business logic to evolve independently of the public interface. This page walks you through elements in an example `shoppingcart_api.proto` file and the associated `shoppingcart_domain.proto` file.
 
-== The service proto file
+== The service API proto file
 
-The first line of our `shoppingcart_api.proto` file defines the version of Protocol Buffer syntax:
+The first line of an example `shoppingcart_api.proto` file defines the version of Protocol Buffer syntax:
 
 .proto/shoppingcart_api.proto
 [source,proto]
@@ -45,7 +45,7 @@ Akka Serverless uses the `entity_key` to know which instance of an Entity a mess
 include::example$js-valueentity-shopping-cart/proto/shoppingcart_api.proto[tag=proto_messages]
 ----
 
-To define a multi-field key add the `entity_key` notation to each field. For example:
+To define a multi-field key, add the `entity_key` notation to each field. For example:
 
 [source,proto]
 ----
