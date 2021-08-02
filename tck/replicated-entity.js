@@ -15,8 +15,8 @@
  */
 
 const sdk = require('@lightbend/akkaserverless-javascript-sdk');
-const ReplicatedEntity = sdk.ReplicatedEntity;
-const ReplicatedData = sdk.ReplicatedData;
+const ReplicatedEntity = sdk.replicatedentity.ReplicatedEntity;
+const ReplicatedData = sdk.replicatedentity.ReplicatedData;
 const ReplicatedWriteConsistency = sdk.ReplicatedWriteConsistency;
 
 const tckModel = new ReplicatedEntity(

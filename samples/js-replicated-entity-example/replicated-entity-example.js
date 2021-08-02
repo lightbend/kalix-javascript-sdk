@@ -15,8 +15,8 @@
  */
 
 
-const ReplicatedEntity = require("@lightbend/akkaserverless-javascript-sdk").ReplicatedEntity;
-const ReplicatedData = require("@lightbend/akkaserverless-javascript-sdk").ReplicatedData;
+const ReplicatedEntity = require("@lightbend/akkaserverless-javascript-sdk").replicatedentity.ReplicatedEntity;
+const ReplicatedData = require("@lightbend/akkaserverless-javascript-sdk").replicatedentity.ReplicatedData;
 
 const entity = new ReplicatedEntity(
   "replicated_entity_example.proto",

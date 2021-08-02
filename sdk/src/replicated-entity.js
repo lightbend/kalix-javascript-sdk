@@ -29,6 +29,14 @@ const replicatedEntityServices = new support.ReplicatedEntityServices();
  *
  * @typedef module:akkaserverless.replicatedentity.ReplicatedEntity~options
  * @property {array<string>} includeDirs The directories to include when looking up imported protobuf files.
+ * @property {module:akkaserverless.replicatedentity.ReplicatedEntity~entityPassivationStrategy} [entityPassivationStrategy] Entity passivation strategy to use.
+ */
+
+/**
+ * Entity passivation strategy for a replicated entity.
+ *
+ * @typedef module:akkaserverless.replicatedentity.ReplicatedEntity~entityPassivationStrategy
+ * @property {number} [timeout] Passivation timeout (in milliseconds).
  */
 
 /**
@@ -105,12 +113,12 @@ class ReplicatedEntity {
   /**
    * Create a Replicated Entity.
    *
-   * @param desc {string|string[]} The file name of a protobuf descriptor or set of descriptors containing the
+   * @param {string|string[]} desc The file name of a protobuf descriptor or set of descriptors containing the
    *                               Replicated Entity service.
-   * @param serviceName {string} The fully qualified name of the gRPC service that this Replicated Entity implements.
+   * @param {string} serviceName The fully qualified name of the gRPC service that this Replicated Entity implements.
    * @param {string} entityType The entity type name, used to namespace entities of different Replicated Data
    *                            types in the same service.
-   * @param options {module:akkaserverless.replicatedentity.ReplicatedEntity~options=} The options.
+   * @param {module:akkaserverless.replicatedentity.ReplicatedEntity~options=} options The options for this entity.
    */
   constructor(desc, serviceName, entityType, options) {
     this.options = {
