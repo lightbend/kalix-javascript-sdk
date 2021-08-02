@@ -35,12 +35,23 @@ include::example$js-valueentity-shopping-cart/proto/shoppingcart_api.proto[tag=p
 
 === Messages
 
-You define messages that can be sent to or returned from the service. Each message for an Entity that is input to a RPC command, *must* contain an Entity key. In the example, this includes `AddLineItem`, `RemoveLineItem`, and `GetShoppingCart` where the `user_id` is the `(akkaserverless.field).entity_key`. Akka Serverless uses the `entity_key` to know which instance of an Entity a message is for. If more than one field is specified as an Entity key, the fields are concatenated together. Akka Serverless serializes Entity keys to strings.
+You define messages that can be sent to or returned from the service. Each message for an Entity that is input to a RPC command, *must* contain an Entity key. In the example, this includes `AddLineItem`, `RemoveLineItem`, and `GetShoppingCart` where the `user_id` is the `(akkaserverless.field).entity_key`.
+
+Akka Serverless uses the `entity_key` to know which instance of an Entity a message is for. If more than one field is specified as an Entity key, the fields are concatenated together. Akka Serverless serializes Entity keys to strings.
 
 .proto/shoppingcart_api.proto
 [source,proto]
 ----
 include::example$js-valueentity-shopping-cart/proto/shoppingcart_api.proto[tag=proto_messages]
+----
+
+To define a multi-field key add the `entity_key` notation to each field. For example:
+
+[source,proto]
+----
+message AddLineItem {
+    string user_id = 1 [(akkaserverless.field).entity_key = true];
+    string product_id = 2 [(akkaserverless.field).entity_key = true];
 ----
 
 === Service
