@@ -106,7 +106,7 @@ It includes the messages that define the entity state:
 include::example$js-valueentity-shopping-cart/proto/shoppingcart_domain.proto[tag=proto_messages]
 ----
 
-To use a multi-field key, add the `entity_key` notation to each field. For example, if the service API proto file `SomeMessage` element defines both `first_field` and `second_field` as part of the key, do the same for the service message:
+To use a multi-field key, add the `entity_key` notation to each field. For example, if the service API proto file `SomeMessage` element defines both `first_field` and `second_field` as part of the key, do the same for the domain message:
 
 [source,proto]
 ----
