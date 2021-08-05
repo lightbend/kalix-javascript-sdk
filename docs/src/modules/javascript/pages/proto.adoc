@@ -71,7 +71,6 @@ include::example$js-valueentity-shopping-cart/proto/shoppingcart_api.proto[tag=p
 <2> See <<_transcoding_http>> below
 <3> See <<_transcoding_http>> below
 
-
 == The domain proto file
 
 The `shoppingcart_domain.proto` file specifies the state and messages for an Event Sourced Entity. It defines the gRPC version:
@@ -105,7 +104,6 @@ It includes the messages that define the entity state:
 ----
 include::example$js-valueentity-shopping-cart/proto/shoppingcart_domain.proto[tag=proto_messages]
 ----
-
 
 [#_transcoding_http]
 == Transcoding HTTP
