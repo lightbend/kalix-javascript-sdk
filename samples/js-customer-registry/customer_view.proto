@@ -140,7 +140,7 @@ service CustomerByNameView {
 
   rpc IgnoreOtherEvents(google.protobuf.Any) returns (domain.CustomerState) {
     option (akkaserverless.method).eventing.in = {
-      event_sourced_entity: "customers"
+      event_sourced_entity: "customers" // <7>
      };
      option (akkaserverless.method).view.update = {
        table: "customers"

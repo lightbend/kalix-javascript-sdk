@@ -117,7 +117,7 @@ A view descriptor:
 * Enables transformation updates.
 * Specifies a `table` attribute used by Akka Serverless to store the View. Pick any name and use it in the Query `SELECT` statement for the View.
 
-The following example `customer_view.proto` file defines a View to consume the `CustomerCreated` and `CustomerNameChanged` events:
+The following example `customer_view.proto` file defines a View to consume the `CustomerCreated` and `CustomerNameChanged` events. It must ignore all other events.
 
 [source,proto,indent=0]
 ----
@@ -130,12 +130,13 @@ include::example$js-customer-registry/customer_view.proto[tags=declarations;serv
 <4> One method for each event.
 <5> The same `event_sourced_entity` for all update methods. Note the required `table` attribute. Use any name, which you will reference in the query `SELECT` statement.
 <6> Enable `transform_updates` for all update methods.
+<7> Ignore events not relevant to this view.
 
 See <<#query>> for more examples of valid query syntax.
 
 === Implement transformation functions
 
-Implement the View by defining the functions that transform events to View state:
+Implement the View by defining the functions that transform events to View state and ignore other events:
 
 .customer-event-sourced-view.js
 [source,js,indent=0]
