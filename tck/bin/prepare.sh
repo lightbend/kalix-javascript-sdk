@@ -18,8 +18,8 @@ readonly tck_dir="$(cd "$script_dir/.." && pwd)"
 readonly sdk_dir="$(cd "$tck_dir/../sdk" && pwd)"
 readonly proto_dir="$tck_dir/proto"
 
-# get the framework version from settings.js
-readonly framework_version=$(cd "$sdk_dir" && node --print 'require("./settings").frameworkVersion')
+# get the framework version from config.json
+readonly framework_version=$(cd "$sdk_dir" && node --print 'require("./config.json").frameworkVersion')
 
 # Delete and recreate the proto directory
 rm -rf "$proto_dir"

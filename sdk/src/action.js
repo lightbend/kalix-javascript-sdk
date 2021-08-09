@@ -76,7 +76,7 @@ const actionServices = new ActionSupport();
  * An action.
  *
  * @memberOf module:akkaserverless
- * @implements module:akkaserverless.Entity
+ * @implements module:akkaserverless.Component
  */
 class Action {
   /**

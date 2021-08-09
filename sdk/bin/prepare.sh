@@ -6,8 +6,8 @@
 rm -rf ./proto
 mkdir -p ./proto
 
-# get the framework version from settings.js
-readonly framework_version=$(node --print 'require("./settings").frameworkVersion')
+# get the framework version from config.json
+readonly framework_version=$(node --print 'require("./config.json").frameworkVersion')
 
 function download_protocol {
   local module="$1"
@@ -33,8 +33,9 @@ if [ -n "$PROXY_SNAPSHOT_DIRECTORY" ]; then
 ./bin/compile-protobuf.sh
 
 # Generate TS type definitions based on the JSDocs
+cp index.d.preamble.ts index.d.ts
 jsdoc -t ./node_modules/@lightbend/tsd-jsdoc/dist -c ./jsdoc.json -d .
-mv types.d.ts index.d.ts
+cat types.d.ts >> index.d.ts && rm types.d.ts
 # There replacements are quite dirty, but even the patched tsd-jsdoc generator can't deal with these (mostly module related) issues currently
 perl -i -pe 's/declare module \"akkaserverless\"/declare module \"\@lightbend\/akkaserverless-javascript-sdk\"/g' index.d.ts
 perl -i -pe 's/module:akkaserverless\.//g' index.d.ts
@@ -42,7 +43,3 @@ perl -i -pe 's/import\("akkaserverless\.([a-zA-Z.]*)([a-zA-Z]*)\"\).(?!default\W
 perl -i -pe 's/import\("akkaserverless\.([a-zA-Z.]*)([a-zA-Z]*)\"\)([.a-zA-Z]*)/$1$2/g' index.d.ts
 perl -i -pe 's/Promise(?!<)/Promise<any>/g' index.d.ts
 perl -i -pe 's/Component\[\]/import(\"\.\/proto\/protobuf-bundle")\.akkaserverless\.protocol\.Component\[\]/g' index.d.ts
-
-# Re-export for files that have been converted to TypeScript
-echo 'export { AkkaServerless, IntegrationTestkit, Metadata, ReplicatedWriteConsistency } from "./src/akkaserverless";' >> index.d.ts
-echo 'export * as replies from "./src/reply";' >> index.d.ts

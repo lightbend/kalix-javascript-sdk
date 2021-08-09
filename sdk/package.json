@@ -81,8 +81,9 @@
   "scripts": {
     "clean": "rm -rf ./dist",
     "copy-files": "cp -r ./proto ./dist && cp index.d.ts ./dist",
-    "compile": "tsc && npm run copy-files",
-    "prepack": "npm run compile",
+    "compile": "tsc --allowJs false --checkJs false && tsc --declaration false --composite false && npm run copy-files",
+    "verify-types": "tsc dist/*.ts dist/src/*.ts --noEmit",
+    "prepack": "npm run compile && npm run verify-types",
     "print-version": "echo $npm_package_version",
     "watch-jsdoc": "npm-watch jsdoc",
     "jsdoc": "jsdoc -c jsdoc.json",

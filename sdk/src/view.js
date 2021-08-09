@@ -53,7 +53,7 @@ const viewServices = new ViewServices();
  * A view.
  *
  * @memberOf module:akkaserverless
- * @implements module:akkaserverless.Entity
+ * @implements module:akkaserverless.Component
  */
 class View {
   /**

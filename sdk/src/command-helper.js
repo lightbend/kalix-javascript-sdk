@@ -368,6 +368,7 @@ class CommandHelper {
        * @param {object} message The message to send to that service.
        * @param {boolean} [synchronous] Whether the effect should be execute synchronously or not.
        * @param {module:akkaserverless.Metadata} [metadata] Metadata to send with the effect.
+       * @param {boolean} [internalCall] For internal calls to this deprecated function.
        */
       effect: (
         method,
@@ -413,6 +414,7 @@ class CommandHelper {
        * @param {any} method The service component method to invoke.
        * @param {object} message The message to send to that service component.
        * @param {module:akkaserverless.Metadata} [metadata] Metadata to send with the forward.
+       * @param {boolean} [internalCall] For internal calls to this deprecated function.
        */
       forward: (method, message, metadata, internalCall) => {
         accessor.ensureActive();

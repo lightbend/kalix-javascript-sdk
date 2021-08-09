@@ -178,7 +178,7 @@ function processEventTwo(
 
 function processAnyEvent(event: any, context: Action.ActionCommandContext) {
   return Response.create({
-    id: context.metadata.getSubject(),
+    id: context.metadata.getSubject()?.toString(),
     message: event.message,
   });
 }
@@ -199,7 +199,7 @@ function processValueTwo(
 
 function processAnyValue(value: any, context: Action.ActionCommandContext) {
   return Response.create({
-    id: context.metadata.getSubject(),
+    id: context.metadata.getSubject()?.toString(),
     message: value.message,
   });
 }
@@ -213,7 +213,7 @@ function process(
   context: Action.ActionCommandContext,
 ) {
   if (step) {
-    const id = context.metadata.getSubject();
+    const id = context.metadata.getSubject()?.toString();
     if (step.reply)
       context.write(Response.create({ id: id, message: step.reply.message }));
     else if (step.forward)
