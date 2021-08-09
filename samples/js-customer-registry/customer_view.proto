@@ -138,9 +138,9 @@ service CustomerByNameView {
     };
   }
 
-  rpc IgnoreOtherEvents(google.protobuf.Any) returns (domain.CustomerState) {
+  rpc IgnoreOtherEvents(google.protobuf.Any) returns (domain.CustomerState) { // <7>
     option (akkaserverless.method).eventing.in = {
-      event_sourced_entity: "customers" // <7>
+      event_sourced_entity: "customers"
      };
      option (akkaserverless.method).view.update = {
        table: "customers"
