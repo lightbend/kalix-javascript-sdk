@@ -90,6 +90,14 @@ const eventSourcedEntityServices = new EventSourcedEntityServices();
  * @property {boolean} [serializeFallbackToJson=false] Whether serialization should fallback to using JSON if an event
  * or snapshot can't be serialized as a protobuf.
  * @property {array<string>} [forwardHeaders=[]] request headers to be forwarded as metadata to the event sourced entity
+ * @property {module:akkaserverless.EventSourcedEntity~entityPassivationStrategy} [entityPassivationStrategy] Entity passivation strategy to use.
+ */
+
+/**
+ * Entity passivation strategy for an event sourced entity.
+ *
+ * @typedef module:akkaserverless.EventSourcedEntity~entityPassivationStrategy
+ * @property {number} [timeout] Passivation timeout (in milliseconds).
  */
 
 /**

@@ -62,6 +62,14 @@ const valueEntityServices = new ValueEntityServices();
  * @property {boolean} [serializeFallbackToJson=false] Whether serialization should fallback to using JSON if the state
  * can't be serialized as a protobuf.
  * @property {array<string>} [forwardHeaders=[]] request headers to be forwarded as metadata to the value entity
+ * @property {module:akkaserverless.ValueEntity~entityPassivationStrategy} [entityPassivationStrategy] Entity passivation strategy to use.
+ */
+
+/**
+ * Entity passivation strategy for a value entity.
+ *
+ * @typedef module:akkaserverless.ValueEntity~entityPassivationStrategy
+ * @property {number} [timeout] Passivation timeout (in milliseconds).
  */
 
 /**

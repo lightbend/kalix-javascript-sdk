@@ -23,10 +23,7 @@
 module.exports.AkkaServerless = require('./src/akkaserverless').AkkaServerless;
 module.exports.EventSourcedEntity = require('./src/event-sourced-entity');
 module.exports.ValueEntity = require('./src/value-entity');
-module.exports.ReplicatedEntity =
-  require('./src/replicated-entity').ReplicatedEntity;
-module.exports.ReplicatedData =
-  require('./src/replicated-entity').ReplicatedData;
+module.exports.replicatedentity = require('./src/replicated-entity');
 module.exports.ReplicatedWriteConsistency =
   require('./src/akkaserverless').ReplicatedWriteConsistency;
 module.exports.Action = require('./src/action');
