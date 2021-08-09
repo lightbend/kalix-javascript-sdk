@@ -102,7 +102,7 @@ module.exports = class ViewServices {
                  *
                  * @interface module:akkaserverless.View.UpdateHandlerContext
                  * @property {module:akkaserverless.Metadata} metadata for the event
-                 * @property {String} commandName
+                 * @property {string} commandName
                  */
                 context = {
                   viewId: service.viewId,

@@ -20,18 +20,18 @@ import { Metadata } from './metadata';
 /**
  * @memberOf module:akkaserverless.replies
  */
-class Effect {
+export class Effect {
   /**
    * @param {protobuf.Method} method The entity service method to invoke.
    * @param {object} message The message to send to that service.
-   * @param {module:akkaserverless.Metadata} [metadata] Metadata to send with the effect.
    * @param {boolean} [synchronous] Whether the effect should be execute synchronously or not, default is false
+   * @param {module:akkaserverless.Metadata} [metadata] Metadata to send with the effect.
    */
   constructor(
     readonly method: Method,
     readonly message: any,
     readonly synchronous: boolean = false,
-    readonly metadata: Metadata,
+    readonly metadata: Metadata | undefined = undefined,
   ) {}
 }
 
@@ -69,7 +69,7 @@ export class Reply {
   getMetadata() {
     return this.metadata;
   }
-  setMetadata(metadata: Metadata): Reply {
+  setMetadata(metadata: Metadata | undefined): Reply {
     this.metadata = metadata;
     return this;
   }
@@ -99,15 +99,15 @@ export class Reply {
    *
    * @param {protobuf.Method} method The entity service method to invoke.
    * @param {object} message The message to send to that service.
-   * @param {module:akkaserverless.Metadata} [metadata] Metadata to send with the effect.
    * @param {boolean} [synchronous] Whether the effect should be execute synchronously or not, default is false.
+   * @param {module:akkaserverless.Metadata} [metadata] Metadata to send with the effect.
    * @return {module:akkaserverless.replies.Reply} This reply after adding the effect.
    */
   addEffect(
     method: Method,
     message: any,
-    synchronous: boolean,
-    metadata: Metadata,
+    synchronous: boolean = false,
+    metadata: Metadata | undefined = undefined,
   ): Reply {
     this.addEffects([new Effect(method, message, synchronous, metadata)]);
     return this;
@@ -142,7 +142,10 @@ export class Reply {
  * @param {module:akkaserverless.Metadata} [metadata] Optional metadata to pass with the reply
  * @return {module:akkaserverless.replies.Reply} A message reply
  */
-export function message(message: any, metadata: Metadata): Reply {
+export function message(
+  message: any,
+  metadata: Metadata | undefined = undefined,
+): Reply {
   const reply = new Reply().setMessage(message).setMetadata(metadata);
   return reply;
 }
@@ -156,7 +159,7 @@ export function message(message: any, metadata: Metadata): Reply {
 export function forward(
   method: protobuf.Method,
   message: any,
-  metadata: Metadata,
+  metadata: Metadata | undefined = undefined,
 ): Reply {
   const forward = new Reply()
     .setMethod(method)
@@ -168,7 +171,7 @@ export function forward(
 }
 
 /**
- * @param {String} description A description of the failure
+ * @param {string} description A description of the failure
  * @return {module:akkaserverless.replies.Reply} A failure reply.
  */
 export function failure(description: string): Reply {

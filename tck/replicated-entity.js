@@ -15,11 +15,10 @@
  */
 
 const sdk = require('@lightbend/akkaserverless-javascript-sdk');
-const ReplicatedEntity = sdk.replicatedentity.ReplicatedEntity;
-const ReplicatedData = sdk.replicatedentity.ReplicatedData;
+const replicatedentity = sdk.replicatedentity;
 const ReplicatedWriteConsistency = sdk.ReplicatedWriteConsistency;
 
-const tckModel = new ReplicatedEntity(
+const tckModel = new replicatedentity.ReplicatedEntity(
   'proto/replicated_entity.proto',
   'akkaserverless.tck.model.replicatedentity.ReplicatedEntityTckModel',
   'replicated-entity-tck-one',
@@ -37,17 +36,17 @@ function createReplicatedData(name) {
   const dataType = name.split('-')[0];
   switch (dataType) {
     case 'ReplicatedCounter':
-      return new ReplicatedData.ReplicatedCounter();
+      return new replicatedentity.ReplicatedCounter();
     case 'ReplicatedSet':
-      return new ReplicatedData.ReplicatedSet();
+      return new replicatedentity.ReplicatedSet();
     case 'ReplicatedRegister':
-      return new ReplicatedData.ReplicatedRegister('');
+      return new replicatedentity.ReplicatedRegister('');
     case 'ReplicatedMap':
-      const map = new ReplicatedData.ReplicatedMap();
+      const map = new replicatedentity.ReplicatedMap();
       map.defaultValue = (key) => createReplicatedData(key);
       return map;
     case 'Vote':
-      return new ReplicatedData.Vote();
+      return new replicatedentity.Vote();
     default:
       throw 'Unknown Replicated Data type: ' + dataType;
   }
@@ -76,14 +75,6 @@ function process(request, context) {
   return responseValue(context);
 }
 
-// TCK only uses ReplicatedCounter for end state tests
-function endStateReached(state, endState) {
-  if (state instanceof ReplicatedData.ReplicatedCounter && endState.counter) {
-    return state.value === endState.counter.value.toNumber();
-  }
-  return false;
-}
-
 function applyUpdate(update, state) {
   if (update.counter) {
     state.increment(update.counter.change);
@@ -93,21 +84,24 @@ function applyUpdate(update, state) {
       state.delete(update.replicatedSet.remove);
     else if (update.replicatedSet.clear) state.clear();
   } else if (update.register) {
-    if (update.register.clock.clockType === ReplicatedData.Clocks.REVERSE)
-      state.setWithClock(update.register.value, ReplicatedData.Clocks.REVERSE);
-    else if (update.register.clock.clockType === ReplicatedData.Clocks.CUSTOM)
+    if (update.register.clock.clockType === replicatedentity.Clocks.REVERSE)
       state.setWithClock(
         update.register.value,
-        ReplicatedData.Clocks.CUSTOM,
+        replicatedentity.Clocks.REVERSE,
+      );
+    else if (update.register.clock.clockType === replicatedentity.Clocks.CUSTOM)
+      state.setWithClock(
+        update.register.value,
+        replicatedentity.Clocks.CUSTOM,
         update.register.clock.customClockValue,
       );
     else if (
       update.register.clock.clockType ===
-      ReplicatedData.Clocks.CUSTOM_AUTO_INCREMENT
+      replicatedentity.Clocks.CUSTOM_AUTO_INCREMENT
     )
       state.setWithClock(
         update.register.value,
-        ReplicatedData.Clocks.CUSTOM_AUTO_INCREMENT,
+        replicatedentity.Clocks.CUSTOM_AUTO_INCREMENT,
         update.register.clock.customClockValue,
       );
     else state.value = update.register.value;
@@ -137,21 +131,21 @@ function responseValue(context) {
 }
 
 function replicatedDataState(state) {
-  if (state instanceof ReplicatedData.ReplicatedCounter)
+  if (state instanceof replicatedentity.ReplicatedCounter)
     return { counter: state.value ? { value: state.value } : {} };
-  else if (state instanceof ReplicatedData.ReplicatedSet)
+  else if (state instanceof replicatedentity.ReplicatedSet)
     return {
       replicatedSet: state.size ? { elements: sortedElements(state) } : {},
     };
-  else if (state instanceof ReplicatedData.ReplicatedRegister)
+  else if (state instanceof replicatedentity.ReplicatedRegister)
     return { register: state.value ? { value: state.value } : {} };
-  else if (state instanceof ReplicatedData.ReplicatedMap)
+  else if (state instanceof replicatedentity.ReplicatedMap)
     return {
       replicatedMap: state.size
         ? { entries: sortedEntries(state.entries(), replicatedDataState) }
         : {},
     };
-  else if (state instanceof ReplicatedData.Vote)
+  else if (state instanceof replicatedentity.Vote)
     return {
       vote: {
         selfVote: state.vote || null,
@@ -173,7 +167,7 @@ function sortedEntries(entries, convert) {
   return converted.sort((a, b) => a.key.localeCompare(b.key));
 }
 
-const two = new ReplicatedEntity(
+const two = new replicatedentity.ReplicatedEntity(
   'proto/replicated_entity.proto',
   'akkaserverless.tck.model.replicatedentity.ReplicatedEntityTwo',
   'replicated-entity-tck-two',
@@ -193,7 +187,7 @@ function call(request, context) {
   return Response.create({});
 }
 
-const configured = new ReplicatedEntity(
+const configured = new replicatedentity.ReplicatedEntity(
   'proto/replicated_entity.proto',
   'akkaserverless.tck.model.replicatedentity.ReplicatedEntityConfigured',
   'replicated-entity-configured',

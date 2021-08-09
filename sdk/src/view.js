@@ -36,7 +36,7 @@ const viewServices = new ViewServices();
  * descriptor.
  *
  * @typedef module:akkaserverless.View~handlers
- * @type {Object<String, module:akkaserverless.View~handler>}
+ * @type {Object<string, module:akkaserverless.View~handler>}
  */
 
 /**
@@ -64,6 +64,9 @@ class View {
    * @param {module:akkaserverless.View~options=} options The options for this view
    */
   constructor(desc, serviceName, options) {
+    /**
+     * @type {module:akkaserverless.View~options}
+     */
     this.options = {
       ...{
         includeDirs: ['.'],
@@ -80,8 +83,15 @@ class View {
 
     this.root = protobufHelper.loadSync(desc, allIncludeDirs);
 
+    /**
+     * @type {string}
+     */
     this.serviceName = serviceName;
+
     // Eagerly lookup the service to fail early
+    /**
+     * @type {protobuf.Service}
+     */
     this.service = this.root.lookupService(serviceName);
 
     const packageDefinition = protoLoader.loadSync(desc, {
@@ -90,6 +100,9 @@ class View {
     this.grpc = grpc.loadPackageDefinition(packageDefinition);
   }
 
+  /**
+   * @return {string} view component type.
+   */
   componentType() {
     return viewServices.componentType();
   }
@@ -100,6 +113,7 @@ class View {
    * This is provided as a convenience to lookup protobuf message types.
    *
    * @param {string} messageType The fully qualified name of the type to lookup.
+   * @return {protobuf.Type} The protobuf message type.
    */
   lookupType(messageType) {
     return this.root.lookupType(messageType);

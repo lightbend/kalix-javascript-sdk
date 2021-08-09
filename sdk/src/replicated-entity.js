@@ -28,8 +28,9 @@ const replicatedEntityServices = new support.ReplicatedEntityServices();
  * Options for creating a Replicated Entity.
  *
  * @typedef module:akkaserverless.replicatedentity.ReplicatedEntity~options
- * @property {array<string>} includeDirs The directories to include when looking up imported protobuf files.
+ * @property {array<string>} [includeDirs=["."]] The directories to include when looking up imported protobuf files.
  * @property {module:akkaserverless.replicatedentity.ReplicatedEntity~entityPassivationStrategy} [entityPassivationStrategy] Entity passivation strategy to use.
+ * @property {module:akkaserverless.ReplicatedWriteConsistency} [replicatedWriteConsistency] Write consistency to use for this replicated entity.
  */
 
 /**
@@ -121,6 +122,9 @@ class ReplicatedEntity {
    * @param {module:akkaserverless.replicatedentity.ReplicatedEntity~options=} options The options for this entity.
    */
   constructor(desc, serviceName, entityType, options) {
+    /**
+     * @type {module:akkaserverless.replicatedentity.ReplicatedEntity~options}
+     */
     this.options = {
       ...{
         includeDirs: ['.'],
@@ -136,8 +140,15 @@ class ReplicatedEntity {
 
     this.root = protobufHelper.loadSync(desc, allIncludeDirs);
 
+    /**
+     * @type {string}
+     */
     this.serviceName = serviceName;
+
     // Eagerly lookup the service to fail early
+    /**
+     * @type {protobuf.Service}
+     */
     this.service = this.root.lookupService(serviceName);
 
     const packageDefinition = protoLoader.loadSync(desc, {
@@ -175,6 +186,9 @@ class ReplicatedEntity {
     this.defaultValue = (entityId) => null;
   }
 
+  /**
+   * @return {string} replicated entity component type.
+   */
   componentType() {
     return replicatedEntityServices.componentType();
   }
@@ -186,6 +200,7 @@ class ReplicatedEntity {
    * maps.
    *
    * @param {string} messageType The fully qualified name of the type to lookup.
+   * @return {protobuf.Type} The protobuf message type.
    */
   lookupType(messageType) {
     return this.root.lookupType(messageType);
@@ -203,25 +218,21 @@ class ReplicatedEntity {
 
 /**
  * @type {{
- * ReplicatedData: {
- *   ReplicatedCounter: function(): void,
- *   ReplicatedSet: function(): void,
- *   ReplicatedRegister: function(module:akkaserverless.Serializable, module:akkaserverless.replicatedentity.Clock=, number=): void,
- *   ReplicatedMap: function(): void,
- *   Vote: function(): void,
- *   Clocks: unknown[]
- * },
- * ReplicatedEntity: module:akkaserverless.replicatedentity.ReplicatedEntity
+ * ReplicatedEntity: module:akkaserverless.replicatedentity.ReplicatedEntity,
+ * ReplicatedCounter: function(): void,
+ * ReplicatedSet: function(): void,
+ * ReplicatedRegister: function(module:akkaserverless.Serializable, module:akkaserverless.replicatedentity.Clock=, number=): void,
+ * ReplicatedMap: function(): void,
+ * Vote: function(): void,
+ * Clocks: unknown[]
  * }}
  */
 module.exports = {
   ReplicatedEntity: ReplicatedEntity,
-  ReplicatedData: {
-    ReplicatedCounter: replicatedData.ReplicatedCounter,
-    ReplicatedSet: replicatedData.ReplicatedSet,
-    ReplicatedRegister: replicatedData.ReplicatedRegister,
-    ReplicatedMap: replicatedData.ReplicatedMap,
-    Vote: replicatedData.Vote,
-    Clocks: replicatedData.Clocks,
-  },
+  ReplicatedCounter: replicatedData.ReplicatedCounter,
+  ReplicatedSet: replicatedData.ReplicatedSet,
+  ReplicatedRegister: replicatedData.ReplicatedRegister,
+  ReplicatedMap: replicatedData.ReplicatedMap,
+  Vote: replicatedData.Vote,
+  Clocks: replicatedData.Clocks,
 };

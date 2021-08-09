@@ -1,6 +1,19 @@
 {
   "ignoreFile": "sdk/.gitignore",
-  "ignore": ["build", "codegen", "docs", "**/.*", "**/bin", "**/template", "**/Dockerfile", "**/*.md", "**/*.yml", "samples/*/lib/generated", "sdk/test/*.desc"],
+  "ignore": [
+    "build",
+    "codegen",
+    "docs",
+    "**/.*",
+    "**/bin",
+    "**/template",
+    "**/Dockerfile",
+    "**/*.md",
+    "**/*.yml",
+    "samples/*/lib/generated",
+    "sdk/test/*.desc",
+    "typescript/tck/generated"
+  ],
   "license": "build/header.txt",
   "licenseFormats": {
     "js": {

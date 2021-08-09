@@ -323,7 +323,6 @@ export class AkkaServerless {
         call: grpc.ServerUnaryCall<discovery.ProxyInfo, discovery.Spec>,
         callback: grpc.sendUnaryData<discovery.Spec>,
       ) {
-        console.debug('Received request');
         const result = that.discoveryLogic(call.request);
         callback(null, result);
       },
@@ -369,9 +368,13 @@ export class AkkaServerless {
   }
 
   shutdown(this: AkkaServerless) {
-    this.server.tryShutdown(() => {
+    this.tryShutdown(() => {
       console.log('gRPC server has shutdown.');
     });
+  }
+
+  tryShutdown(callback: (error?: Error) => void) {
+    this.server.tryShutdown(callback);
   }
 
   terminate(this: AkkaServerless) {

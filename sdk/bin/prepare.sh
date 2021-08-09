@@ -42,3 +42,7 @@ perl -i -pe 's/import\("akkaserverless\.([a-zA-Z.]*)([a-zA-Z]*)\"\).(?!default\W
 perl -i -pe 's/import\("akkaserverless\.([a-zA-Z.]*)([a-zA-Z]*)\"\)([.a-zA-Z]*)/$1$2/g' index.d.ts
 perl -i -pe 's/Promise(?!<)/Promise<any>/g' index.d.ts
 perl -i -pe 's/Component\[\]/import(\"\.\/proto\/protobuf-bundle")\.akkaserverless\.protocol\.Component\[\]/g' index.d.ts
+
+# Re-export for files that have been converted to TypeScript
+echo 'export { AkkaServerless, IntegrationTestkit, Metadata, ReplicatedWriteConsistency } from "./src/akkaserverless";' >> index.d.ts
+echo 'export * as replies from "./src/reply";' >> index.d.ts

@@ -339,9 +339,25 @@ class CommandHelper {
      * @extends module:akkaserverless.EffectContext
      */
     accessor.context = {
+      /**
+       * @name module:akkaserverless.EntityContext#entityId
+       * @type {string}
+       */
       entityId: this.entityId,
+      /**
+       * @name module:akkaserverless.EntityContext#commandId
+       * @type {Long}
+       */
       commandId: commandId,
+      /**
+       * @name module:akkaserverless.EffectContext#metadata
+       * @type {module:akkaserverless.Metadata}
+       */
       metadata: metadata,
+      /**
+       * @name module:akkaserverless.EntityContext#replyMetadata
+       * @type {module:akkaserverless.Metadata}
+       */
       replyMetadata: accessor.replyMetadata,
 
       /**
@@ -350,8 +366,8 @@ class CommandHelper {
        * @function module:akkaserverless.EffectContext#effect
        * @param method The entity service method to invoke.
        * @param {object} message The message to send to that service.
-       * @param {boolean} synchronous Whether the effect should be execute synchronously or not.
-       * @param {module:akkaserverless.Metadata} metadata Metadata to send with the effect.
+       * @param {boolean} [synchronous] Whether the effect should be execute synchronously or not.
+       * @param {module:akkaserverless.Metadata} [metadata] Metadata to send with the effect.
        */
       effect: (
         method,
@@ -396,7 +412,7 @@ class CommandHelper {
        * @function module:akkaserverless.CommandContext#forward
        * @param method The service component method to invoke.
        * @param {object} message The message to send to that service component.
-       * @param {module:akkaserverless.Metadata} metadata Metadata to send with the forward.
+       * @param {module:akkaserverless.Metadata} [metadata] Metadata to send with the forward.
        */
       forward: (method, message, metadata, internalCall) => {
         accessor.ensureActive();

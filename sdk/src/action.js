@@ -24,7 +24,7 @@ const AkkaServerless = require('./akkaserverless');
 const actionServices = new ActionSupport();
 
 /**
- * Options for a action.
+ * Options for an action.
  *
  * @typedef module:akkaserverless.Action~options
  * @property {array<string>} [includeDirs=["."]] The directories to include when looking up imported protobuf files.
@@ -87,6 +87,9 @@ class Action {
    * @param {module:akkaserverless.Action~options=} options The options for this action
    */
   constructor(desc, serviceName, options) {
+    /**
+     * @type {module:akkaserverless.Action~options}
+     */
     this.options = {
       ...{
         includeDirs: ['.'],
@@ -100,8 +103,15 @@ class Action {
 
     this.root = protobufHelper.loadSync(desc, allIncludeDirs);
 
+    /**
+     * @type {string}
+     */
     this.serviceName = serviceName;
+
     // Eagerly lookup the service to fail early
+    /**
+     * @type {protobuf.Service}
+     */
     this.service = this.root.lookupService(serviceName);
 
     const packageDefinition = protoLoader.loadSync(desc, {
@@ -119,6 +129,9 @@ class Action {
     this.commandHandlers = {};
   }
 
+  /**
+   * @return {string} action component type.
+   */
   componentType() {
     return actionServices.componentType();
   }
@@ -129,9 +142,21 @@ class Action {
    * This is provided as a convenience to lookup protobuf message types for use with events and snapshots.
    *
    * @param {string} messageType The fully qualified name of the type to lookup.
+   * @return {protobuf.Type} The protobuf message type.
    */
   lookupType(messageType) {
     return this.root.lookupType(messageType);
+  }
+
+  /**
+   * Set the command handlers for this action.
+   *
+   * @param {Object.<string, module:akkaserverless.Action.ActionCommandHandler>} handlers The command handlers.
+   * @return {module:akkaserverless.Action} This action.
+   */
+  setCommandHandlers(commandHandlers) {
+    this.commandHandlers = commandHandlers;
+    return this;
   }
 
   register(allComponents) {

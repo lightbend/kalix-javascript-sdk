@@ -12,8 +12,8 @@
   "scripts": {
     "license-check": "license-check-and-add check -f build/license.json",
     "license-add": "license-check-and-add add -f build/license.json",
-    "prettier-format": "prettier --config .prettierrc 'sdk/**/*.{js,ts}' 'tck/**/*.{js,ts}' 'npm-js/**/*.{js,ts}' --write",
-    "prettier-check": "prettier --config .prettierrc 'sdk/**/*.{js,ts}' 'tck/**/*.{js,ts}' 'npm-js/**/*.{js,ts}' --check",
+    "prettier-format": "prettier --config .prettierrc 'sdk/**/*.{js,ts}' 'tck/**/*.{js,ts}' 'npm-js/**/*.{js,ts}' 'typescript/**/*.{js,ts}' --write",
+    "prettier-check": "prettier --config .prettierrc 'sdk/**/*.{js,ts}' 'tck/**/*.{js,ts}' 'npm-js/**/*.{js,ts}' 'typescript/**/*.{js,ts}' --check",
     "lint-fix": "eslint sdk/ --ext .ts --fix",
     "lint-check": "eslint sdk/ --ext .ts"
   },

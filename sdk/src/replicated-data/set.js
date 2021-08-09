@@ -25,6 +25,7 @@ const AnySupport = require('../protobuf-any');
  *
  * @constructor module:akkaserverless.replicatedentity.ReplicatedSet
  * @implements module:akkaserverless.replicatedentity.ReplicatedData
+ * @implements Iterable<module:akkaserverless.Serializable>
  */
 function ReplicatedSet() {
   // Map of a comparable form (that compares correctly using ===) of the elements to the elements

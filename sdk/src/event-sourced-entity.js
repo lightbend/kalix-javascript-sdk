@@ -47,11 +47,11 @@ const eventSourcedEntityServices = new EventSourcedEntityServices();
  * An event sourced entity behavior.
  *
  * @typedef module:akkaserverless.EventSourcedEntity~behavior
- * @property {Object<String, module:akkaserverless.EventSourcedEntity~commandHandler>} commandHandlers The command handlers.
+ * @property {Object<string, module:akkaserverless.EventSourcedEntity~commandHandler>} commandHandlers The command handlers.
  *
  * The names of the properties must match the names of the service calls specified in the gRPC descriptor for this
  * event sourced entities service.
- * @property {Object<String, module:akkaserverless.EventSourcedEntity~eventHandler>} eventHandlers The event handlers.
+ * @property {Object<string, module:akkaserverless.EventSourcedEntity~eventHandler>} eventHandlers The event handlers.
  *
  * The names of the properties must match the short names of the events.
  */
@@ -119,6 +119,9 @@ class EventSourcedEntity {
    * @param {module:akkaserverless.EventSourcedEntity~options=} options The options for this event sourced entity
    */
   constructor(desc, serviceName, entityType, options) {
+    /**
+     * @type {module:akkaserverless.EventSourcedEntity~options}
+     */
     this.options = {
       ...{
         entityType: entityType,
@@ -137,8 +140,15 @@ class EventSourcedEntity {
 
     this.root = protobufHelper.loadSync(desc, allIncludeDirs);
 
+    /**
+     * @type {string}
+     */
     this.serviceName = serviceName;
+
     // Eagerly lookup the service to fail early
+    /**
+     * @type {protobuf.Service}
+     */
     this.service = this.root.lookupService(serviceName);
 
     const packageDefinition = protoLoader.loadSync(desc, {
@@ -147,6 +157,9 @@ class EventSourcedEntity {
     this.grpc = grpc.loadPackageDefinition(packageDefinition);
   }
 
+  /**
+   * @return {string} event sourced entity component type.
+   */
   componentType() {
     return eventSourcedEntityServices.componentType();
   }
@@ -157,6 +170,7 @@ class EventSourcedEntity {
    * This is provided as a convenience to lookup protobuf message types for use with events and snapshots.
    *
    * @param {string} messageType The fully qualified name of the type to lookup.
+   * @return {protobuf.Type} The protobuf message type.
    */
   lookupType(messageType) {
     return this.root.lookupType(messageType);
