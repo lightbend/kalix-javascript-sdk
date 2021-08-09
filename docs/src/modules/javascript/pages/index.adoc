@@ -3,9 +3,7 @@
 include::ROOT:partial$include.adoc[]
 include::partial$attributes.adoc[]
 
-The Akka Serverless JavaScript SDK offers an idiomatic JavaScript language SDK
-for writing components. This page describes prerequisites for JavaScript
-development and basic requirements for a development project.
+The Akka Serverless JavaScript SDK offers an idiomatic JavaScript language SDK for writing components. This page describes prerequisites for JavaScript development and basic requirements for a development project.
 
 NOTE: Lightbend provides Tier 1 support for the JavaScript SDK. See https://developer.lightbend.com/docs/akka-serverless/developing/sdk-support.html[an explanation of support tiers] for more information.
 
