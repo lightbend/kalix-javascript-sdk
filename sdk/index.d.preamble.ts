@@ -14,20 +14,4 @@
  * limitations under the License.
  */
 
-import { AkkaServerless } from './src/akkaserverless';
-import * as replies from './src/reply';
-import { Metadata } from './src/metadata';
-import { ReplicatedEntityServices } from './src/replicated-entity-support';
-import { ReplicatedWriteConsistency } from './src/akkaserverless';
-import { IntegrationTestkit } from './src/integration-testkit';
-import * as settings from './settings';
-
-export {
-  AkkaServerless,
-  IntegrationTestkit,
-  Metadata,
-  ReplicatedEntityServices,
-  ReplicatedWriteConsistency,
-  replies,
-  settings,
-};
+import * as protobuf from 'protobufjs';

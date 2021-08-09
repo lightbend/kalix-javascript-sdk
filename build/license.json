@@ -30,6 +30,13 @@
         "prepend": " * "
       }
     },
+    "jsdoc": {
+      "prepend": "/*",
+      "append": " */",
+      "eachLine": {
+        "prepend": " * "
+      }
+    },
     "proto": {
       "eachLine": {
         "prepend": "// "

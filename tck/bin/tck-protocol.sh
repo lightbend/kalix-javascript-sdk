@@ -60,28 +60,3 @@ else
 
   "$compile_descriptor" "$proto_dir"/*.proto
 fi
-
-
-# protoc (google-protobuf) generated proto
-# note: can't currently be used with SDK
-
-# readonly sdk_dir="$tck_dir/node_modules/@lightbend/akkaserverless-javascript-sdk"
-# readonly sdk_proto_dir="$sdk_dir/proto"
-# readonly sdk_protoc_dir="$sdk_dir/protoc"
-# readonly sdk_protoc_include_dir="$sdk_protoc_dir/include"
-# readonly generated_dir="$tck_dir/generated"
-# readonly protoc="$sdk_protoc_dir/bin/protoc"
-# readonly protoc_gen_ts="$tck_dir/node_modules/.bin/protoc-gen-ts"
-
-# mkdir -p "$generated_dir"
-
-# "$protoc" \
-#   --proto_path="$proto_dir" \
-#   --proto_path="$sdk_proto_dir" \
-#   --proto_path="$sdk_protoc_include_dir" \
-#   --plugin=protoc-gen-ts="$protoc_gen_ts" \
-#   --js_out=import_style=commonjs:"$generated_dir" \
-#   --ts_out="$generated_dir" \
-#   "$proto_dir"/*.proto
-
-# cp -r "$sdk_proto_dir"/* "$generated_dir"

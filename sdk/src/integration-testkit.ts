@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import * as grpc from '@grpc/grpc-js';
 import * as settings from '../settings';
 import * as util from 'util';
@@ -23,7 +24,7 @@ import { GenericContainer, TestContainers, Wait } from 'testcontainers';
 const defaultDockerImage = `gcr.io/akkaserverless-public/akkaserverless-proxy:${settings.frameworkVersion}`;
 
 /**
- * @private
+ * Integration Testkit.
  */
 export class IntegrationTestkit {
   private options: any = { dockerImage: defaultDockerImage };
@@ -46,15 +47,22 @@ export class IntegrationTestkit {
   /**
    * Add the given component to this testkit.
    *
-   * @param component The component.
+   * @param component - the component to add
+   * @returns this testkit
    */
-  addComponent(component: Component) {
+  addComponent(component: Component): IntegrationTestkit {
     this.akkaServerless.addComponent(component);
+    return this;
   }
 
   // This encoding is compatible with this issue:
   // https://github.com/mochajs/mocha/issues/2407
-  start(callback: any) {
+  /**
+   * Start the testkit, with the registered components.
+   *
+   * @param callback - start callback, accepting possible error
+   */
+  start(callback: any): void {
     const result = this.asyncStart();
     if (typeof callback === 'function') {
       result.then(
@@ -62,10 +70,9 @@ export class IntegrationTestkit {
         (error) => callback(error),
       );
     }
-    return;
   }
 
-  async asyncStart() {
+  private async asyncStart() {
     // First start this user function
     const boundPort = await this.akkaServerless.start({ port: 0 });
 
@@ -98,12 +105,10 @@ export class IntegrationTestkit {
         this.clients[parts[parts.length - 1]] = this.promisifyClient(client);
       }
     });
-
-    return;
   }
 
   // add async versions of unary request methods, suffixed with "Async"
-  promisifyClient(client: any) {
+  private promisifyClient(client: any) {
     Object.keys(Object.getPrototypeOf(client)).forEach((methodName) => {
       const methodFunction = client[methodName];
       if (
@@ -118,6 +123,11 @@ export class IntegrationTestkit {
     return client;
   }
 
+  /**
+   * Shut down the testkit.
+   *
+   * @param callback - shutdown callback, accepting possible error
+   */
   shutdown(callback: (error?: any) => void) {
     if (this.proxyContainer !== undefined) {
       this.proxyContainer.stop();
@@ -127,10 +137,6 @@ export class IntegrationTestkit {
       this.clients[client].close();
     });
 
-    this.akkaServerless.shutdown();
-
-    if (typeof callback === 'function') {
-      callback();
-    }
+    this.akkaServerless.tryShutdown(callback);
   }
 }

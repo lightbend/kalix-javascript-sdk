@@ -207,28 +207,13 @@ class ReplicatedEntity {
     return this.root.lookupType(messageType);
   }
 
-  /**
-   * @param {any} allComponents
-   * @return {ReplicatedEntityServices}
-   */
   register(allComponents) {
     replicatedEntityServices.addService(this, allComponents);
     return replicatedEntityServices;
   }
 }
 
-/**
- * @type {{
- * ReplicatedEntity: module:akkaserverless.replicatedentity.ReplicatedEntity,
- * ReplicatedCounter: function(): void,
- * ReplicatedSet: function(): void,
- * ReplicatedRegister: function(module:akkaserverless.Serializable, module:akkaserverless.replicatedentity.Clock=, number=): void,
- * ReplicatedMap: function(): void,
- * Vote: function(): void,
- * Clocks: unknown[]
- * }}
- */
-const replicatedEntity = {
+module.exports = {
   ReplicatedEntity: ReplicatedEntity,
   ReplicatedCounter: replicatedData.ReplicatedCounter,
   ReplicatedSet: replicatedData.ReplicatedSet,
@@ -237,5 +222,3 @@ const replicatedEntity = {
   Vote: replicatedData.Vote,
   Clocks: replicatedData.Clocks,
 };
-
-module.exports = replicatedEntity;

@@ -14,12 +14,6 @@
  * limitations under the License.
  */
 
-/**
- * A metadata value. Can either be a string or a buffer.
- *
- * @typedef module:akkaserverless.MetadataValue
- * @type {string|Buffer}
- */
 type MetadataValue = string | Buffer;
 
 // Using an interface for compatibility with legacy JS code
@@ -30,7 +24,7 @@ interface MetadataEntry {
 }
 
 /**
- * @classdesc Akka Serverless metadata.
+ * Akka Serverless metadata.
  *
  * Metadata is treated as case insensitive on lookup, and case sensitive on set. Multiple values per key are supported,
  * setting a value will add it to the current values for that key. You should delete first if you wish to replace a
@@ -39,8 +33,7 @@ interface MetadataEntry {
  * Values can either be strings or byte buffers. If a non string or byte buffer value is set, it will be converted to
  * a string using toString.
  *
- * @interface module:akkaserverless.Metadata
- * @param {array} entries The list of entries
+ * @param entries - the list of entries
  */
 export class Metadata {
   readonly entries: MetadataEntry[] = [];
@@ -51,7 +44,10 @@ export class Metadata {
     }
   }
 
-  getSubject() {
+  /**
+   * @returns CloudEvent subject value
+   */
+  getSubject(): MetadataValue | undefined {
     const subject = this.get('ce-subject');
     if (subject.length > 0) {
       return subject[0];
@@ -60,7 +56,14 @@ export class Metadata {
     }
   }
 
-  getMetadataEntry(key: string, value: any): MetadataEntry {
+  /**
+   * Create a new MetadataEntry.
+   *
+   * @param key - the key for the entry
+   * @param value - the value for the entry
+   * @returns a new MetadataEntry
+   */
+  private createMetadataEntry(key: string, value: any): MetadataEntry {
     if (typeof value === 'string') {
       return { key: key, stringValue: value, bytesValue: undefined };
     } else if (Buffer.isBuffer(value)) {
@@ -70,7 +73,13 @@ export class Metadata {
     }
   }
 
-  getValue(entry: MetadataEntry) {
+  /**
+   * Get the value from a metadata entry.
+   *
+   * @param entry - the metadata entry
+   * @returns the value for the given entry
+   */
+  private getValue(entry: MetadataEntry): MetadataValue | undefined {
     if (entry.bytesValue !== undefined) {
       return entry.bytesValue;
     } else {
@@ -83,11 +92,10 @@ export class Metadata {
    *
    * The key is case insensitive.
    *
-   * @function module:akkaserverless.Metadata#get
-   * @param {string} key The key to get.
-   * @returns {Array<module:akkaserverless.MetadataValue>} All the values, or an empty array if no values exist for the key.
+   * @param key - the key to get
+   * @returns all the values, or an empty array if no values exist for the key
    */
-  get(key: string) {
+  get(key: string): MetadataValue[] {
     const values: MetadataValue[] = [];
     this.entries.forEach((entry) => {
       if (key.toLowerCase() === entry.key.toLowerCase()) {
@@ -105,12 +113,12 @@ export class Metadata {
    *
    * This will append the key value to the metadata, it won't replace any existing values for existing keys.
    *
-   * @function module:akkaserverless.Metadata#set
-   * @param {string} key The key to set.
-   * @param {any} value The value to set.
+   * @param key - the key to set
+   * @param value - the value to set
+   * @returns this updated metadata
    */
-  set(key: string, value: any) {
-    this.entries.push(this.getMetadataEntry(key, value));
+  set(key: string, value: any): Metadata {
+    this.entries.push(this.createMetadataEntry(key, value));
     return this;
   }
 
@@ -119,8 +127,8 @@ export class Metadata {
    *
    * The key is case insensitive.
    *
-   * @function module:akkaserverless.Metadata#delete
-   * @param {string} key The key to delete.
+   * @param key - the key to delete
+   * @returns this updated metadata
    */
   delete(key: string) {
     let idx = 0;
@@ -140,10 +148,10 @@ export class Metadata {
    *
    * The key is case insensitive.
    *
-   * @function module:akkaserverless.Metadata#has
-   * @param {string} key The key to check.
+   * @param key - the key to check
+   * @returns whether values exist for the given key
    */
-  has(key: string) {
+  has(key: string): boolean {
     for (const idx in this.entries) {
       const entry = this.entries[idx];
       if (key.toLowerCase() === entry.key.toLowerCase()) {
@@ -156,7 +164,7 @@ export class Metadata {
   /**
    * Clear the metadata.
    *
-   * @function module:akkaserverless.Metadata#clear
+   * @returns this updated metadata
    */
   clear() {
     this.entries.splice(0, this.entries.length);

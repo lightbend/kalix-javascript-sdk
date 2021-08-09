@@ -37,7 +37,7 @@ const actionServices = new ActionSupport();
  * @callback module:akkaserverless.Action~unaryCommandHandler
  * @param {Object} command The command message, this will be of the type of the gRPC service call input type.
  * @param {module:akkaserverless.Action.UnaryCommandContext} context The command context.
- * @returns {undefined|Object|Promise|module:akkaserverless.replies.Reply} The message to reply with, it must match the gRPC service call output type for
+ * @returns {undefined|Object|Promise.<any>|module:akkaserverless.replies.Reply} The message to reply with, it must match the gRPC service call output type for
  *                                     this command. If replying by using context.write, undefined must be returned.
  */
 
@@ -46,7 +46,7 @@ const actionServices = new ActionSupport();
  *
  * @callback module:akkaserverless.Action~streamedInCommandHandler
  * @param {module:akkaserverless.Action.StreamedInCommandContext} context The command context.
- * @returns {undefined|Object|Promise} The message to reply with, it must match the gRPC service call output type for
+ * @returns {undefined|Object|Promise.<any>} The message to reply with, it must match the gRPC service call output type for
  *                                     this command. If replying by using context.write, undefined must be returned.
  */
 

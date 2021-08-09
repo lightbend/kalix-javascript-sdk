@@ -29,6 +29,23 @@ function loadJson(filename: string) {
 
 const userPkgJson = path.join(process.cwd(), 'package.json');
 
+export interface AkkaServerlessOptions {
+  /**
+   * The name of this service (defaults to name from package.json).
+   */
+  serviceName?: string;
+  /**
+   * The version of this service (defaults to version from package.json).
+   */
+  serviceVersion?: string;
+  /**
+   * Path to a Protobuf FileDescriptor set, as output by protoc --descriptor_set_out=somefile.desc.
+   * This file must contain all of the component services that this Akka Serverless service serves.
+   * See the `compile-descriptor` command for creating this file.
+   */
+  descriptorSetPath?: string;
+}
+
 class ServiceInfo {
   readonly name: string;
   readonly version: string;
@@ -50,7 +67,18 @@ class ServiceInfo {
   }
 }
 
-export interface Service {
+interface ServiceBinding {
+  /**
+   * The address to bind the Akka Serverless service to.
+   */
+  address?: string;
+  /**
+   * The port to bind the Akka Serverless service to.
+   */
+  port?: number;
+}
+
+export interface ComponentService {
   componentType: () => string;
   register: (server: grpc.Server) => void;
 }
@@ -96,7 +124,7 @@ export interface Component {
   options: ComponentOptions | EntityOptions;
   grpc?: grpc.GrpcObject;
   componentType: () => string;
-  register?: (components: any) => Service;
+  register?: (components: any) => ComponentService;
 }
 
 class DocLink {
@@ -186,6 +214,11 @@ class SourceFormatter {
   }
 }
 
+/**
+ * Akka Serverless service.
+ *
+ * @param options - the options for starting the service
+ */
 export class AkkaServerless {
   private address: string = process.env.HOST || '127.0.0.1';
   private port: number =
@@ -210,7 +243,7 @@ export class AkkaServerless {
   private waitingForProxyTermination: boolean = false;
   private devMode: boolean = false;
 
-  constructor(options?: any) {
+  constructor(options?: AkkaServerlessOptions) {
     if (options?.descriptorSetPath) {
       this.descriptorSetPath = options.descriptorSetPath;
     }
@@ -231,7 +264,13 @@ export class AkkaServerless {
     this.server = new grpc.Server();
   }
 
-  addComponent(...components: Array<Component>) {
+  /**
+   * Add one or more components to this AkkaServerless service.
+   *
+   * @param components - the components to add
+   * @returns this AkkaServerless service
+   */
+  addComponent(...components: Array<Component>): AkkaServerless {
     this.components = this.components.concat(components);
     return this;
   }
@@ -241,7 +280,9 @@ export class AkkaServerless {
   }
 
   afterStart(port: number) {
-    console.log('gRPC server started on ' + this.address + ':' + port);
+    console.log(
+      'Akka Serverless service started on ' + this.address + ':' + port,
+    );
 
     process.on('SIGTERM', () => {
       if (!this.proxySeen || this.proxyHasTerminated || this.devMode) {
@@ -257,13 +298,18 @@ export class AkkaServerless {
     });
   }
 
-  start(bindings?: { address?: string; port?: number }): Promise<number> {
-    if (bindings) {
-      if (bindings.address) {
-        this.address = bindings.address;
+  /**
+   * Start the Akka Serverless service.
+   * @param binding - optional address/port binding to start the service on
+   * @returns a Promise of the bound port for this service
+   */
+  start(binding?: ServiceBinding): Promise<number> {
+    if (binding) {
+      if (binding.address) {
+        this.address = binding.address;
       }
-      if (bindings.port) {
-        this.port = bindings.port;
+      if (binding.port) {
+        this.port = binding.port;
       }
     }
 
@@ -367,17 +413,25 @@ export class AkkaServerless {
     return discoveryServer;
   }
 
-  shutdown(this: AkkaServerless) {
+  /**
+   * Shut down the Akka Serverless service.
+   */
+  shutdown(): void {
     this.tryShutdown(() => {
-      console.log('gRPC server has shutdown.');
+      console.log('Akka Serverless service has shutdown.');
     });
   }
 
-  tryShutdown(callback: (error?: Error) => void) {
+  /**
+   * Shut down the Akka Serverless service.
+   *
+   * @param callback - shutdown callback, accepting possible error
+   */
+  tryShutdown(callback: (error?: Error) => void): void {
     this.server.tryShutdown(callback);
   }
 
-  terminate(this: AkkaServerless) {
+  terminate() {
     this.server.forceShutdown();
     process.exit(0);
   }

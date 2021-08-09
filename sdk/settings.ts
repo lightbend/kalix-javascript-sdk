@@ -17,12 +17,12 @@
 export const frameworkVersion: string =
   require('./config.json').frameworkVersion;
 
-export const protocolVersion = function () {
+export const protocolVersion = function (): { major: string; minor: string } {
   const versions = frameworkVersion.split(/[.-]/);
   return { major: versions[0], minor: versions[1] };
 };
 
-export const baseVersion = function () {
+export const baseVersion = function (): string {
   const version = protocolVersion();
   return `${version.major}.${version.minor}`;
 };

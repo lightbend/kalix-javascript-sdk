@@ -15,14 +15,34 @@
  */
 
 /**
- * Akka Serverless Component.
- *
- * @interface module:akkaserverless.Component
+ * @namespace module:akkaserverless.settings
  */
 
 /**
- * Akka Serverless Entity.
- *
- * @interface module:akkaserverless.Entity
- * @extends module:akkaserverless.Component
+ * @constant module:akkaserverless.settings~frameworkVersion
+ * @type {string}
+ */
+
+/**
+ * @interface module:akkaserverless.settings.ProtocolVersion
+ */
+
+/**
+ * @name module:akkaserverless.settings.ProtocolVersion#major
+ * @type {string}
+ */
+
+/**
+ * @name module:akkaserverless.settings.ProtocolVersion#minor
+ * @type {string}
+ */
+
+/**
+ * @function module:akkaserverless.settings~protocolVersion
+ * @returns {module:akkaserverless.settings.ProtocolVersion}
+ */
+
+/**
+ * @function module:akkaserverless.settings~baseVersion
+ * @returns {string}
  */
