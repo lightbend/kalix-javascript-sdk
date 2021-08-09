@@ -364,7 +364,7 @@ class CommandHelper {
        * DEPRECATED. Emit an effect after processing this command.
        *
        * @function module:akkaserverless.EffectContext#effect
-       * @param method The entity service method to invoke.
+       * @param {any} method The entity service method to invoke.
        * @param {object} message The message to send to that service.
        * @param {boolean} [synchronous] Whether the effect should be execute synchronously or not.
        * @param {module:akkaserverless.Metadata} [metadata] Metadata to send with the effect.
@@ -398,7 +398,7 @@ class CommandHelper {
        * @deprecated Since version 0.7. Will be deleted in version 0.8. Use 'forward' instead.
        *
        * @function module:akkaserverless.CommandContext#thenForward
-       * @param method The service component method to invoke.
+       * @param {any} method The service component method to invoke.
        * @param {object} message The message to send to that service component.
        * @param {module:akkaserverless.Metadata} metadata Metadata to send with the forward.
        */
@@ -410,7 +410,7 @@ class CommandHelper {
        * DEPRECATED. Forward this command to another service component call, use 'ReplyFactory.forward' instead.
        *
        * @function module:akkaserverless.CommandContext#forward
-       * @param method The service component method to invoke.
+       * @param {any} method The service component method to invoke.
        * @param {object} message The message to send to that service component.
        * @param {module:akkaserverless.Metadata} [metadata] Metadata to send with the forward.
        */
@@ -433,7 +433,7 @@ class CommandHelper {
        * An alternative to using this is to return a failed Reply created with 'ReplyFactory.failed'.
        *
        * @function module:akkaserverless.EffectContext#fail
-       * @param msg The failure message.
+       * @param {string} msg The failure message.
        * @throws An error that captures the failure message. Note that even if you catch the error thrown by this
        * method, the command will still be failed with the given message.
        */

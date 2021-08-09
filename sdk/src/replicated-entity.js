@@ -114,6 +114,7 @@ class ReplicatedEntity {
   /**
    * Create a Replicated Entity.
    *
+   * @constructs
    * @param {string|string[]} desc The file name of a protobuf descriptor or set of descriptors containing the
    *                               Replicated Entity service.
    * @param {string} serviceName The fully qualified name of the gRPC service that this Replicated Entity implements.
@@ -207,7 +208,7 @@ class ReplicatedEntity {
   }
 
   /**
-   * @param allComponents
+   * @param {any} allComponents
    * @return {ReplicatedEntityServices}
    */
   register(allComponents) {
@@ -227,7 +228,7 @@ class ReplicatedEntity {
  * Clocks: unknown[]
  * }}
  */
-module.exports = {
+const replicatedEntity = {
   ReplicatedEntity: ReplicatedEntity,
   ReplicatedCounter: replicatedData.ReplicatedCounter,
   ReplicatedSet: replicatedData.ReplicatedSet,
@@ -236,3 +237,5 @@ module.exports = {
   Vote: replicatedData.Vote,
   Clocks: replicatedData.Clocks,
 };
+
+module.exports = replicatedEntity;

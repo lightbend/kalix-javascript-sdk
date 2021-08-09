@@ -59,6 +59,7 @@ class View {
   /**
    * Create a new view.
    *
+   * @constructs
    * @param {string|string[]} desc A descriptor or list of descriptors to parse, containing the service to serve.
    * @param {string} serviceName The fully qualified name of the service that provides this interface.
    * @param {module:akkaserverless.View~options=} options The options for this view

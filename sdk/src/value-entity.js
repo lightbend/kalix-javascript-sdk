@@ -82,6 +82,7 @@ class ValueEntity {
   /**
    * Create a new value entity.
    *
+   * @constructs
    * @param {string|string[]} desc A descriptor or list of descriptors to parse, containing the service to serve.
    * @param {string} serviceName The fully qualified name of the service that provides this entities interface.
    * @param {string} entityType The entity type name for all value entities of this type. Never change it after deploying

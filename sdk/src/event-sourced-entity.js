@@ -110,6 +110,7 @@ class EventSourcedEntity {
   /**
    * Create a new event sourced entity.
    *
+   * @constructs
    * @param {string|string[]} desc A descriptor or list of descriptors to parse, containing the service to serve.
    * @param {string} serviceName The fully qualified name of the service that provides this entities interface.
    * @param {string} entityType The entity type name for all event source entities of this type. This will be prefixed
