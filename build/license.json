@@ -12,7 +12,7 @@
     "**/*.yml",
     "samples/*/lib/generated",
     "sdk/test/*.desc",
-    "typescript/tck/generated"
+    "tck/generated"
   ],
   "license": "build/header.txt",
   "licenseFormats": {

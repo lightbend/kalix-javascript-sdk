@@ -9,6 +9,7 @@ COPY --chown=node tck/package.json tck/
 COPY --chown=node tck/bin tck/bin
 RUN cd tck && npm install
 COPY --chown=node tck tck
+RUN cd tck && npm run build
 RUN cd tck && npm prune --production
 
 FROM node:14-buster-slim

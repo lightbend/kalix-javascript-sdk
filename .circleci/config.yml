@@ -225,7 +225,6 @@ jobs:
             source /opt/circleci/.nvm/nvm.sh
             pushd sdk && nvm install && npm ci && npm pack && popd
             pushd tck && npm install && npm run tck && popd
-            pushd typescript/tck && npm install && npm run tck && popd
 
   validate-docs:
     machine: true

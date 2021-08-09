@@ -5,6 +5,6 @@ jsdoc.json
 /sdk/dist/**/*.*
 /sdk/proto/**/*.*
 /sdk/test/proto/**/*.*
+/tck/dist/**/*.*
+/tck/generated/**/*.*
 /tck/proto/**/*.*
-/typescript/tck/dist/**/*.*
-/typescript/tck/generated/**/*.*
