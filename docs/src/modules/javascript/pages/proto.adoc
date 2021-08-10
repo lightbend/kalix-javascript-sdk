@@ -5,7 +5,7 @@ include::partial$attributes.adoc[]
 
 Akka Serverless SDKs support `protobuf` descriptors in the https://developers.google.com/protocol-buffers/docs/proto3[Proto3 {tab-icon}, window="new-tab"] Protocol Buffers language. You define command messages, data associated with Entities, and events in `.proto` files. From these definitions, the gRPC compiler creates client and server side code that saves work for you and enables Akka Serverless to serialize message data.
 
-Note that Value Entities and Event Sourced Entities are slightly different based upon codegen requirements. Other than the code generation annotations, the proto file are materially equivalent for the same use-case. See the following examples which show the difference.
+Note that Value Entities and Event Sourced Entities are slightly different based upon codegen requirements. Other than the code generation annotations, the proto files are materially equivalent for the same use-case. See the following examples which show the difference.
 
 [.tabset]
 Event Sourced Entity::
