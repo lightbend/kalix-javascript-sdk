@@ -15,10 +15,9 @@
  */
 
 
-const ReplicatedEntity = require("@lightbend/akkaserverless-javascript-sdk").replicatedentity.ReplicatedEntity;
-const ReplicatedData = require("@lightbend/akkaserverless-javascript-sdk").replicatedentity.ReplicatedData;
+const replicatedentity = require("@lightbend/akkaserverless-javascript-sdk").replicatedentity;
 
-const entity = new ReplicatedEntity(
+const entity = new replicatedentity.ReplicatedEntity(
   "replicated_entity_example.proto",
   "com.example.replicatedentity.ReplicatedEntityExample",
   "replicated-entity-example"
@@ -33,7 +32,7 @@ entity.commandHandlers = {
 
 function updateReplicatedCounter(update, ctx) {
   if (ctx.state === null) {
-    ctx.state = new ReplicatedData.ReplicatedCounter();
+    ctx.state = new replicatedentity.ReplicatedCounter();
   }
 
   if (update.value !== 0) {
@@ -46,7 +45,7 @@ function updateReplicatedCounter(update, ctx) {
 
 function getReplicatedCounter(get, ctx) {
   if (ctx.state === null) {
-    ctx.state = new ReplicatedData.ReplicatedCounter();
+    ctx.state = new replicatedentity.ReplicatedCounter();
   }
 
   return {
@@ -56,7 +55,7 @@ function getReplicatedCounter(get, ctx) {
 
 function mutateReplicatedSet(update, ctx) {
   if (ctx.state === null) {
-    ctx.state = new ReplicatedData.ReplicatedSet();
+    ctx.state = new replicatedentity.ReplicatedSet();
   }
 
   if (update.clear) {
@@ -76,7 +75,7 @@ function mutateReplicatedSet(update, ctx) {
 
 function getReplicatedSet(get, ctx) {
   if (ctx.state === null) {
-    ctx.state = new ReplicatedData.ReplicatedSet();
+    ctx.state = new replicatedentity.ReplicatedSet();
   }
 
   return {

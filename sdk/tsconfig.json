@@ -3,8 +3,8 @@
     "target": "es6",
     "module": "commonjs",
     "moduleResolution": "node",
-    "declaration": true,
-    "composite": true,
+    "declaration": false,
+    "composite": false,
     "strict": true,
     "allowJs": true,
     "noImplicitAny": true /* Raise error on expressions and declarations with an implied 'any' type. */,
@@ -25,6 +25,6 @@
     "outDir": "./dist",
     "lib": ["ES6"]
   },
-  "include": ["src/**/*", "./settings.js", "./package.json", "./index.js", "proto"],
+  "include": ["src/**/*", "./config.json", "./settings.ts", "./package.json", "./index.js", "proto"],
   "exclude": ["node_modules"]
 }

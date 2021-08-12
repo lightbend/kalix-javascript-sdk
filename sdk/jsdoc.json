@@ -6,6 +6,7 @@
         "include": [
             "src",
             "index.js",
+            "settings.jsdoc",
             "README.md"
         ],
         "exclude": [],

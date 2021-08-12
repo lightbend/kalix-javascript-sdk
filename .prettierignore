@@ -1,6 +1,10 @@
 package.json
 package-lock.json
 jsdoc.json
-/tck/proto/**/*.*
+/sdk/apidocs/**/*.*
 /sdk/dist/**/*.*
 /sdk/proto/**/*.*
+/sdk/test/proto/**/*.*
+/tck/dist/**/*.*
+/tck/generated/**/*.*
+/tck/proto/**/*.*

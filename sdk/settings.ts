@@ -14,16 +14,15 @@
  * limitations under the License.
  */
 
-const settings = {
-  frameworkVersion: '0.7.0-beta.14',
-  protocolVersion: function () {
-    const versions = this.frameworkVersion.split(/[.-]/);
-    return { major: versions[0], minor: versions[1] };
-  },
-  baseVersion: function () {
-    const version = this.protocolVersion();
-    return `${version.major}.${version.minor}`;
-  },
+export const frameworkVersion: string =
+  require('./config.json').frameworkVersion;
+
+export const protocolVersion = function (): { major: string; minor: string } {
+  const versions = frameworkVersion.split(/[.-]/);
+  return { major: versions[0], minor: versions[1] };
 };
 
-module.exports = settings;
+export const baseVersion = function (): string {
+  const version = protocolVersion();
+  return `${version.major}.${version.minor}`;
+};

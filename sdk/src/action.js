@@ -24,7 +24,7 @@ const AkkaServerless = require('./akkaserverless');
 const actionServices = new ActionSupport();
 
 /**
- * Options for a action.
+ * Options for an action.
  *
  * @typedef module:akkaserverless.Action~options
  * @property {array<string>} [includeDirs=["."]] The directories to include when looking up imported protobuf files.
@@ -37,7 +37,7 @@ const actionServices = new ActionSupport();
  * @callback module:akkaserverless.Action~unaryCommandHandler
  * @param {Object} command The command message, this will be of the type of the gRPC service call input type.
  * @param {module:akkaserverless.Action.UnaryCommandContext} context The command context.
- * @returns {undefined|Object|Promise|module:akkaserverless.replies.Reply} The message to reply with, it must match the gRPC service call output type for
+ * @returns {undefined|Object|Promise.<any>|module:akkaserverless.replies.Reply} The message to reply with, it must match the gRPC service call output type for
  *                                     this command. If replying by using context.write, undefined must be returned.
  */
 
@@ -46,7 +46,7 @@ const actionServices = new ActionSupport();
  *
  * @callback module:akkaserverless.Action~streamedInCommandHandler
  * @param {module:akkaserverless.Action.StreamedInCommandContext} context The command context.
- * @returns {undefined|Object|Promise} The message to reply with, it must match the gRPC service call output type for
+ * @returns {undefined|Object|Promise.<any>} The message to reply with, it must match the gRPC service call output type for
  *                                     this command. If replying by using context.write, undefined must be returned.
  */
 
@@ -76,17 +76,21 @@ const actionServices = new ActionSupport();
  * An action.
  *
  * @memberOf module:akkaserverless
- * @implements module:akkaserverless.Entity
+ * @implements module:akkaserverless.Component
  */
 class Action {
   /**
    * Create a new action.
    *
+   * @constructs
    * @param {string|string[]} desc A descriptor or list of descriptors to parse, containing the service to serve.
    * @param {string} serviceName The fully qualified name of the service that provides this interface.
    * @param {module:akkaserverless.Action~options=} options The options for this action
    */
   constructor(desc, serviceName, options) {
+    /**
+     * @type {module:akkaserverless.Action~options}
+     */
     this.options = {
       ...{
         includeDirs: ['.'],
@@ -100,8 +104,15 @@ class Action {
 
     this.root = protobufHelper.loadSync(desc, allIncludeDirs);
 
+    /**
+     * @type {string}
+     */
     this.serviceName = serviceName;
+
     // Eagerly lookup the service to fail early
+    /**
+     * @type {protobuf.Service}
+     */
     this.service = this.root.lookupService(serviceName);
 
     const packageDefinition = protoLoader.loadSync(desc, {
@@ -119,6 +130,9 @@ class Action {
     this.commandHandlers = {};
   }
 
+  /**
+   * @return {string} action component type.
+   */
   componentType() {
     return actionServices.componentType();
   }
@@ -129,9 +143,21 @@ class Action {
    * This is provided as a convenience to lookup protobuf message types for use with events and snapshots.
    *
    * @param {string} messageType The fully qualified name of the type to lookup.
+   * @return {protobuf.Type} The protobuf message type.
    */
   lookupType(messageType) {
     return this.root.lookupType(messageType);
+  }
+
+  /**
+   * Set the command handlers for this action.
+   *
+   * @param {Object.<string, module:akkaserverless.Action.ActionCommandHandler>} handlers The command handlers.
+   * @return {module:akkaserverless.Action} This action.
+   */
+  setCommandHandlers(commandHandlers) {
+    this.commandHandlers = commandHandlers;
+    return this;
   }
 
   register(allComponents) {

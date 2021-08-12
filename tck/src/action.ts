@@ -14,54 +14,51 @@
  * limitations under the License.
  */
 
-const Action = require('@lightbend/akkaserverless-javascript-sdk').Action;
-const { replies } = require('@lightbend/akkaserverless-javascript-sdk');
+import { Action } from '@lightbend/akkaserverless-javascript-sdk';
+import { replies } from '@lightbend/akkaserverless-javascript-sdk';
+import protocol from '../generated/tck';
 
-const tckModel = new Action(
+type Request = protocol.akkaserverless.tck.model.action.Request;
+type IProcessGroup = protocol.akkaserverless.tck.model.action.IProcessGroup;
+
+const { Request, Response } = protocol.akkaserverless.tck.model.action;
+
+export const tckModel = new Action(
   'proto/action.proto',
   'akkaserverless.tck.model.action.ActionTckModel',
-);
-
-const Response = tckModel.lookupType(
-  'akkaserverless.tck.model.action.Response',
-);
-
-tckModel.commandHandlers = {
+).setCommandHandlers({
   ProcessUnary: processUnary,
   ProcessStreamedIn: processStreamedIn,
   ProcessStreamedOut: processStreamedOut,
   ProcessStreamed: processStreamed,
-};
+});
 
-function processUnary(request, context) {
+function processUnary(request: Request) {
   return createReplyForGroup(request.groups[0]);
 }
 
-/**
- * @param {module:akkaserverless.Action.StreamedInContext} context
- */
-function processStreamedIn(context) {
+function processStreamedIn(context: Action.StreamedInContext) {
   let reply = replies.noReply();
   context.on('data', (request) => {
     const replyForThisRequest = createReplyForGroup(request.groups[0]);
     if (!replyForThisRequest.isEmpty()) {
       // keep the last type of reply but pass along the effects
-      if (reply.effects) replyForThisRequest.addEffects(reply.effects);
+      if (reply.getEffects())
+        replyForThisRequest.addEffects(reply.getEffects());
       reply = replyForThisRequest;
-    } else if (replyForThisRequest.effects) {
+    } else if (replyForThisRequest.getEffects()) {
       // pass along the effects from empty reply, but keep the previous non-empty reply
-      reply.addEffects(replyForThisRequest.effects);
+      reply.addEffects(replyForThisRequest.getEffects());
     }
   });
   // last callback return value is sent back for stream in, if it is a Reply
   context.on('end', () => reply);
 }
 
-/**
- * @param {object} request
- * @param {module:akkaserverless.Action.StreamedOutContext} context
- */
-function processStreamedOut(request, context) {
+function processStreamedOut(
+  request: Request,
+  context: Action.StreamedOutContext,
+) {
   createReplies(request).forEach((reply) => {
     // imperative send of Reply (since we could have 1:* for the incoming, and they can happen async?)
     context.reply(reply);
@@ -69,10 +66,7 @@ function processStreamedOut(request, context) {
   context.end();
 }
 
-/**
- * @param {module:akkaserverless.Action.StreamedCommandContext} context
- */
-function processStreamed(context) {
+function processStreamed(context: Action.StreamedCommandContext) {
   context.on('data', (request) => {
     createReplies(request).forEach((reply) =>
       // imperative send of Reply (since we could have 1:* for the incoming, and they can happen async?)
@@ -82,22 +76,13 @@ function processStreamed(context) {
   context.on('end', () => context.end());
 }
 
-// Reply API
-/**
- * @param request
- * @return {module:akkaserverless.replies.Reply[]} one reply for each request group
- */
-function createReplies(request) {
+function createReplies(request: Request): replies.Reply[] {
   return request.groups.map(createReplyForGroup);
 }
 
-/**
- * Process the steps in one group into a single reply
- * @return {module:akkaserverless.replies.Reply}
- */
-function createReplyForGroup(group) {
+function createReplyForGroup(group: IProcessGroup): replies.Reply {
   let reply = replies.noReply();
-  group.steps.forEach((step) => {
+  group.steps?.forEach((step) => {
     if (step.reply) {
       reply = replies.message(Response.create({ message: step.reply.message }));
     } else if (step.forward) {
@@ -108,23 +93,18 @@ function createReplyForGroup(group) {
       reply.addEffect(
         two.service.methods.Call,
         { id: step.effect.id },
-        step.effect.synchronous,
+        step.effect.synchronous || false,
       );
     } else if (step.fail) {
-      reply = replies.failure(step.fail.message);
+      reply = replies.failure(step.fail.message || '');
     }
   });
   return reply;
 }
 
-const two = new Action(
+export const two = new Action(
   'proto/action.proto',
   'akkaserverless.tck.model.action.ActionTwo',
-);
-
-two.commandHandlers = {
-  Call: (request) => Response.create(),
-};
-
-module.exports.tckModel = tckModel;
-module.exports.two = two;
+).setCommandHandlers({
+  Call: () => Response.create(),
+});

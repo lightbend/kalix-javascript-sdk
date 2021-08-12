@@ -85,7 +85,7 @@ class ActionHandler {
      *
      * @function module:akkaserverless.Action.ActionCommandContext#write
      * @param {Object} message The protobuf message to write.
-     * @param {module:akkaserverless.Metadata} metadata The metadata associated with the message.
+     * @param {module:akkaserverless.Metadata} [metadata] The metadata associated with the message.
      */
 
     const call = this.call;

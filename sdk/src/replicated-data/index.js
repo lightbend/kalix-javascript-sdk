@@ -41,11 +41,13 @@ const Empty = protobufHelper.moduleRoot.google.protobuf.Empty;
  * A clock that may be used by {@link module:akkaserverless.replicatedentity.ReplicatedRegister}.
  *
  * @typedef module:akkaserverless.replicatedentity.Clock
+ * @type {number}
  */
 
 /**
  * An enum of all clocks that can be used by {@link module:akkaserverless.replicatedentity.ReplicatedRegister}.
  *
+ * @readonly
  * @name module:akkaserverless.replicatedentity.Clocks
  * @enum {module:akkaserverless.replicatedentity.Clock}
  * @property DEFAULT The default clock, uses the machines system time.

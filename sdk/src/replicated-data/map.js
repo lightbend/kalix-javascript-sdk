@@ -52,6 +52,7 @@ function mapIterator(iter, f) {
  *
  * @constructor module:akkaserverless.replicatedentity.ReplicatedMap
  * @implements module:akkaserverless.replicatedentity.ReplicatedData
+ * @implements Iterable<Array<any>>
  */
 function ReplicatedMap() {
   // Map of a comparable form (that compares correctly using ===) to an object that holds the
@@ -136,7 +137,7 @@ function ReplicatedMap() {
    * @returns {Iterator<Array>}
    */
   this[Symbol.iterator] = function () {
-    return entries();
+    return this.entries();
   };
 
   /**
@@ -221,7 +222,7 @@ function ReplicatedMap() {
    * insert that property as a key into the map.
    *
    * @name module:akkaserverless.replicatedentity.ReplicatedMap#asObject
-   * @type {Object<String, module:akkaserverless.replicatedentity.ReplicatedData>}
+   * @type {Object<string, module:akkaserverless.replicatedentity.ReplicatedData>}
    */
   Object.defineProperty(this, 'asObject', {
     get: () => asObject,

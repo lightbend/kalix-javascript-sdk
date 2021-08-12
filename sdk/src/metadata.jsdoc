@@ -1,0 +1,115 @@
+/*
+ * Copyright 2021 Lightbend Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/**
+ * A metadata value. Can either be a string or a buffer.
+ *
+ * @typedef module:akkaserverless.MetadataValue
+ * @type {string|Buffer}
+ */
+
+/**
+ * @interface module:akkaserverless.MetadataEntry
+ * @property {string} key The key for this metadata entry.
+ * @property {Buffer|undefined} bytesValue The entry value as bytes.
+ * @property {string|undefined} stringValue The entry value as a string.
+ */
+
+/**
+ * @classdesc Akka Serverless metadata.
+ *
+ * Metadata is treated as case insensitive on lookup, and case sensitive on set. Multiple values per key are supported,
+ * setting a value will add it to the current values for that key. You should delete first if you wish to replace a
+ * value.
+ *
+ * Values can either be strings or byte buffers. If a non string or byte buffer value is set, it will be converted to
+ * a string using toString.
+ *
+ * @class module:akkaserverless.Metadata
+ * @param {module:akkaserverless.MetadataEntry[]} entries The list of entries
+ */
+
+/**
+ * @function module:akkaserverless.Metadata#getSubject
+ * @returns {module:akkaserverless.MetadataValue|undefined} CloudEvent subject value.
+ */
+
+/**
+ * Create a new MetadataEntry.
+ *
+ * @private
+ * @function module:akkaserverless.Metadata#createMetadataEntry
+ * @param {string} key The key for the entry.
+ * @param {any} value The value for the entry.
+ * @returns {module:akkaserverless.MetadataEntry} a new MetadataEntry
+ */
+
+/**
+ * Get the value from a metadata entry.
+ *
+ * @private
+ * @function module:akkaserverless.Metadata#getValue
+ * @param {module:akkaserverless.MetadataEntry} entry The metadata entry.
+ * @returns {module:akkaserverless.MetadataValue|undefined} the value for the given entry.
+ */
+
+/**
+ * Get all the values for the given key.
+ *
+ * The key is case insensitive.
+ *
+ * @function module:akkaserverless.Metadata#get
+ * @param {string} key The key to get.
+ * @returns {module:akkaserverless.MetadataValue[]} All the values, or an empty array if no values exist for the key.
+ */
+
+/**
+ * Set a given key value.
+ *
+ * This will append the key value to the metadata, it won't replace any existing values for existing keys.
+ *
+ * @function module:akkaserverless.Metadata#set
+ * @param {string} key The key to set.
+ * @param {any} value The value to set.
+ * @returns {module:akkaserverless.Metadata} This updated metadata.
+ */
+
+/**
+ * Delete all values with the given key.
+ *
+ * The key is case insensitive.
+ *
+ * @function module:akkaserverless.Metadata#delete
+ * @param {string} key The key to delete.
+ * @returns {module:akkaserverless.Metadata} This updated metadata.
+ */
+
+/**
+ * Whether there exists a metadata value for the given key.
+ *
+ * The key is case insensitive.
+ *
+ * @function module:akkaserverless.Metadata#has
+ * @param {string} key The key to check.
+ * @returns {boolean} Whether values exist for the given key.
+ */
+
+/**
+ * Clear the metadata.
+ *
+ * @function module:akkaserverless.Metadata#clear
+ * @returns {module:akkaserverless.Metadata} This updated metadata.
+ */

@@ -1,0 +1,170 @@
+/*
+ * Copyright 2021 Lightbend Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/**
+ * Creating replies.
+ *
+ * @namespace module:akkaserverless.replies
+ */
+
+/**
+ * Side effect for a reply.
+ * 
+ * @class module:akkaserverless.replies.Effect
+ * @param {protobuf.Method} method The entity service method to invoke.
+ * @param {object} message The message to send to that service.
+ * @param {boolean} [synchronous=false] Whether the effect should be execute synchronously or not, default is false
+ * @param {module:akkaserverless.Metadata} [metadata] Metadata to send with the effect.
+ */
+
+/**
+ * A return type to allow returning forwards or failures, and attaching effects to messages.
+ * 
+ * @class module:akkaserverless.replies.Reply
+ */
+
+/**
+ * @function module:akkaserverless.replies.Reply#getMethod
+ * @returns {protobuf.Method|undefined} The protobuf method for a forwarding reply.
+ */
+
+/**
+ * Set the protobuf method for a forwarding reply.
+ *
+ * @function module:akkaserverless.replies.Reply#setMethod
+ * @param {protobuf.Method} method The protobuf method.
+ * @returns {module:akkaserverless.replies.Reply} The updated reply.
+ */
+
+/**
+ * @function module:akkaserverless.replies.Reply#getMessage
+ * @returns {any} the reply message
+ */
+
+/**
+ * Set the message for this reply.
+ *
+ * @function module:akkaserverless.replies.Reply#setMessage
+ * @param {any} message The reply message.
+ * @returns {module:akkaserverless.replies.Reply} The updated reply.
+ */
+
+/**
+ * @function module:akkaserverless.replies.Reply#getMetadata
+ * @returns {module:akkaserverless.Metadata} The metadata attached to the reply.
+ */
+
+/**
+ * Attach metadata to this reply.
+ *
+ * @function module:akkaserverless.replies.Reply#setMetadata
+ * @param {module:akkaserverless.Metadata|undefined} metadata Metadata to send with the reply.
+ * @returns {module:akkaserverless.replies.Reply} The updated reply.
+ */
+
+
+/**
+ * @function module:akkaserverless.replies.Reply#getForward
+ * @returns {module:akkaserverless.replies.Reply|undefined} The forwarding reply.
+ */
+
+/**
+ * Make this a forwarding reply.
+ *
+ * @function module:akkaserverless.replies.Reply#setForward
+ * @param {module:akkaserverless.replies.Reply} forward The forward reply.
+ * @returns {module:akkaserverless.replies.Reply} The updated reply.
+ */
+
+/**
+ * @function module:akkaserverless.replies.Reply#getFailure
+ * @returns {string|undefined} The failure description.
+ */
+
+/**
+ * Make this a failure reply.
+ *
+ * @function module:akkaserverless.replies.Reply#setFailure
+ * @param {string} failure The failure description.
+ * @returns {module:akkaserverless.replies.Reply} The updated reply.
+ */
+
+/**
+ * @function module:akkaserverless.replies.Reply#getEffects
+ * @returns {module:akkaserverless.replies.Effect[]} The side effects for this reply.
+ */
+
+/**
+ * Attach the given effect to this reply.
+ *
+ * @function module:akkaserverless.replies.Reply#addEffect
+ * @param {protobuf.Method} method The entity service method to invoke.
+ * @param {object} message The message to send to that service.
+ * @param {boolean} [synchronous=false] Whether the effect should be execute synchronously or not, default is false.
+ * @param {module:akkaserverless.Metadata} [metadata] Metadata to send with the effect.
+ * @return {module:akkaserverless.replies.Reply} This reply after adding the effect.
+ */
+
+/**
+ * Attach the given effects to this reply.
+ *
+ * @function module:akkaserverless.replies.Reply#addEffects
+ * @param {Effect[]} effects One or more service calls to execute as side effects.
+ * @return {module:akkaserverless.replies.Reply} This reply after adding the effects.
+ */
+
+/**
+ * Whether this reply is empty: does not have a message, forward, or failure.
+ *
+ * @function module:akkaserverless.replies.Reply#isEmpty
+ * @return {boolean} Whether the reply is empty.
+ */
+
+/**
+ * Create a message reply.
+ *
+ * @function module:akkaserverless.replies~message
+ * @param {any} message The message to reply with.
+ * @param {module:akkaserverless.Metadata} [metadata] Optional metadata to pass with the reply.
+ * @return {module:akkaserverless.replies.Reply} A message reply.
+ */
+
+/**
+ * Create a forward reply.
+ *
+ * @function module:akkaserverless.replies~forward
+ * @param {protobuf.Method} method The service call representing the forward.
+ * @param {any} message The message to forward.
+ * @param {module:akkaserverless.Metadata} [metadata] Optional metadata to pass with the forwarded message.
+ * @return {module:akkaserverless.replies.Reply} A forward reply.
+ */
+
+/**
+ * Create a failure reply.
+ *
+ * @function module:akkaserverless.replies~failure
+ * @param {string} description A description of the failure.
+ * @return {module:akkaserverless.replies.Reply} A failure reply.
+ */
+
+/**
+ * Create a reply that contains neither a message nor a forward nor a failure.
+ *
+ * This may be useful for emitting effects without sending a message.
+ *
+ * @function module:akkaserverless.replies~noReply
+ * @return {module:akkaserverless.replies.Reply} An empty reply.
+ */

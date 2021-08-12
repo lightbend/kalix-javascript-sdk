@@ -28,7 +28,7 @@ const valueEntityServices = new ValueEntityServices();
  * The names of the properties must match the names of the service calls specified in the gRPC descriptor for this value entities service.
  *
  * @typedef module:akkaserverless.ValueEntity~commandHandlers
- * @type {Object<String, module:akkaserverless.ValueEntity~commandHandler>}
+ * @type {Object<string, module:akkaserverless.ValueEntity~commandHandler>}
  */
 
 /**
@@ -82,6 +82,7 @@ class ValueEntity {
   /**
    * Create a new value entity.
    *
+   * @constructs
    * @param {string|string[]} desc A descriptor or list of descriptors to parse, containing the service to serve.
    * @param {string} serviceName The fully qualified name of the service that provides this entities interface.
    * @param {string} entityType The entity type name for all value entities of this type. Never change it after deploying
@@ -89,6 +90,9 @@ class ValueEntity {
    * @param {module:akkaserverless.ValueEntity~options=} options The options for this entity
    */
   constructor(desc, serviceName, entityType, options) {
+    /**
+     * @type {module:akkaserverless.ValueEntity~options}
+     */
     this.options = {
       ...{
         entityType: entityType,
@@ -106,8 +110,15 @@ class ValueEntity {
 
     this.root = protobufHelper.loadSync(desc, allIncludeDirs);
 
+    /**
+     * @type {string}
+     */
     this.serviceName = serviceName;
+
     // Eagerly lookup the service to fail early
+    /**
+     * @type {protobuf.Service}
+     */
     this.service = this.root.lookupService(serviceName);
 
     const packageDefinition = protoLoader.loadSync(desc, {
@@ -116,6 +127,9 @@ class ValueEntity {
     this.grpc = grpc.loadPackageDefinition(packageDefinition);
   }
 
+  /**
+   * @return {string} value entity component type.
+   */
   componentType() {
     return valueEntityServices.componentType();
   }
@@ -126,6 +140,7 @@ class ValueEntity {
    * This is provided as a convenience to lookup protobuf message types for use with state.
    *
    * @param {string} messageType The fully qualified name of the type to lookup.
+   * @return {protobuf.Type} The protobuf message type.
    */
   lookupType(messageType) {
     return this.root.lookupType(messageType);
@@ -148,6 +163,13 @@ class ValueEntity {
     this.initial = callback;
     return this;
   }
+
+  /**
+   * The command handlers.
+   *
+   * @member module:akkaserverless.ValueEntity#commandHandlers
+   * @type module:akkaserverless.ValueEntity~commandHandlers
+   */
 
   /**
    * Set the command handlers of the entity.

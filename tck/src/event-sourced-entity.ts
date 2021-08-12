@@ -14,13 +14,16 @@
  * limitations under the License.
  */
 
-const EventSourcedEntity =
-  require('@lightbend/akkaserverless-javascript-sdk').EventSourcedEntity;
-const { replies } = require('@lightbend/akkaserverless-javascript-sdk');
+import { EventSourcedEntity } from '@lightbend/akkaserverless-javascript-sdk';
+import { replies } from '@lightbend/akkaserverless-javascript-sdk';
+import protocol from '../generated/tck';
 
-replies.message;
+type Request = protocol.akkaserverless.tck.model.eventsourcedentity.Request;
 
-const tckModel = new EventSourcedEntity(
+const { Request, Response } =
+  protocol.akkaserverless.tck.model.eventsourcedentity;
+
+export const tckModel = new EventSourcedEntity(
   ['proto/event_sourced_entity.proto'],
   'akkaserverless.tck.model.eventsourcedentity.EventSourcedTckModel',
   'event-sourced-tck-model',
@@ -29,29 +32,32 @@ const tckModel = new EventSourcedEntity(
   },
 );
 
-const Response = tckModel.lookupType(
-  'akkaserverless.tck.model.eventsourcedentity.Response',
-);
+// We need to use the reflective types for state
+type IPersisted =
+  protocol.akkaserverless.tck.model.eventsourcedentity.IPersisted;
+type Persisted = protobuf.Message & IPersisted;
 const Persisted = tckModel.lookupType(
   'akkaserverless.tck.model.eventsourcedentity.Persisted',
 );
 
-tckModel.initial = (entityId) => Persisted.create({ value: '' });
+tckModel.initial = () => Persisted.create();
 
-tckModel.behavior = (state) => {
-  return {
-    commandHandlers: {
-      Process: process,
-    },
-    eventHandlers: {
-      Persisted: persisted,
-    },
-  };
-};
+tckModel.behavior = () => ({
+  commandHandlers: {
+    Process: process,
+  },
+  eventHandlers: {
+    Persisted: persisted,
+  },
+});
 
-function process(request, state, context) {
-  let reply = null,
-    effects = [];
+function process(
+  request: Request,
+  state: Persisted,
+  context: EventSourcedEntity.EventSourcedEntityCommandContext,
+) {
+  let reply: replies.Reply | undefined,
+    effects: replies.Effect[] = [];
   request.actions.forEach((action) => {
     if (action.emit) {
       const event = Persisted.create({ value: action.emit.value });
@@ -63,9 +69,15 @@ function process(request, state, context) {
         id: action.forward.id,
       });
     } else if (action.effect) {
-      effects.push(action.effect);
+      effects.push(
+        new replies.Effect(
+          two.service.methods.Call,
+          { id: action.effect.id },
+          action.effect.synchronous || false,
+        ),
+      );
     } else if (action.fail) {
-      reply = replies.failure(action.fail.message);
+      reply = replies.failure(action.fail.message || '');
     }
   });
   // if we don't already have a reply from the actions
@@ -73,40 +85,29 @@ function process(request, state, context) {
     reply = replies.message(
       Response.create(state.value ? { message: state.value } : {}),
     );
-  if (effects)
-    effects.forEach((effect) =>
-      reply.addEffect(
-        two.service.methods.Call,
-        { id: effect.id },
-        effect.synchronous,
-      ),
-    );
-
+  reply.addEffects(effects);
   return reply;
 }
 
-function persisted(event, state) {
-  state.value += event.value;
+function persisted(event: Persisted, state: Persisted) {
+  if (event.value) state.value += event.value;
   return state;
 }
 
-const two = new EventSourcedEntity(
+export const two = new EventSourcedEntity(
   ['proto/event_sourced_entity.proto'],
   'akkaserverless.tck.model.eventsourcedentity.EventSourcedTwo',
   'event-sourced-tck-model-2',
-);
-
-two.initial = (entityId) => Persisted.create({ value: '' });
-
-two.behavior = (state) => {
-  return {
+)
+  .setInitial(() => Persisted.create())
+  .setBehavior(() => ({
     commandHandlers: {
-      Call: (request) => replies.message(Response.create()),
+      Call: () => replies.message(Response.create()),
     },
-  };
-};
+    eventHandlers: {},
+  }));
 
-const configured = new EventSourcedEntity(
+export const configured = new EventSourcedEntity(
   ['proto/event_sourced_entity.proto'],
   'akkaserverless.tck.model.eventsourcedentity.EventSourcedConfigured',
   'event-sourced-configured',
@@ -115,18 +116,11 @@ const configured = new EventSourcedEntity(
       timeout: 100, // milliseconds
     },
   },
-);
-
-configured.initial = (entityId) => Persisted.create({ value: '' });
-
-configured.behavior = (state) => {
-  return {
+)
+  .setInitial(() => Persisted.create())
+  .setBehavior(() => ({
     commandHandlers: {
-      Call: (request) => replies.message(Response.create()),
+      Call: () => replies.message(Response.create()),
     },
-  };
-};
-
-module.exports.tckModel = tckModel;
-module.exports.two = two;
-module.exports.configured = configured;
+    eventHandlers: {},
+  }));

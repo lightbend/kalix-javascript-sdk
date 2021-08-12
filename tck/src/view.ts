@@ -14,25 +14,28 @@
  * limitations under the License.
  */
 
-const View = require('@lightbend/akkaserverless-javascript-sdk').View;
-const ValueEntity =
-  require('@lightbend/akkaserverless-javascript-sdk').ValueEntity;
+import { ValueEntity, View } from '@lightbend/akkaserverless-javascript-sdk';
+import protocol from '../generated/tck';
 
-const tckModel = new View(
+type Event = protocol.akkaserverless.tck.model.view.Event;
+type ViewState = protocol.akkaserverless.tck.model.view.ViewState;
+
+export const tckModel = new View(
   'proto/view.proto',
   'akkaserverless.tck.model.view.ViewTckModel',
-);
-
-tckModel.setUpdateHandlers({
+).setUpdateHandlers({
   ProcessUpdateUnary: processUpdateUnary,
 });
 
-function processUpdateUnary(userEvent, previousViewState, ctx) {
-  if (userEvent.returnAsIs) {
+function processUpdateUnary(
+  userEvent: Event,
+  previousViewState: ViewState,
+): ViewState {
+  if (userEvent.returnAsIs?.data) {
     return {
       data: userEvent.returnAsIs.data,
     };
-  } else if (userEvent.uppercaseThis) {
+  } else if (userEvent.uppercaseThis?.data) {
     return {
       data: userEvent.uppercaseThis.data.toUpperCase(),
     };
@@ -43,17 +46,14 @@ function processUpdateUnary(userEvent, previousViewState, ctx) {
   } else if (userEvent.fail) {
     throw Error('requested failure');
   } else if (userEvent.ignore) {
-    return null; // or whatever falsy
+    return previousViewState;
   } else {
     throw Error('Unexpected event type: ' + JSON.stringify(userEvent));
   }
 }
 
-const viewSource = new ValueEntity(
+export const viewSource = new ValueEntity(
   ['proto/view.proto'],
   'akkaserverless.tck.model.view.ViewTckSource',
   'view-source',
 );
-
-module.exports.tckModel = tckModel;
-module.exports.viewSource = viewSource;
