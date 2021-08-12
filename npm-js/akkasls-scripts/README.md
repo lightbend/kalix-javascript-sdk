@@ -21,7 +21,7 @@ Configuration is pulled from the `config` section of your project's `package.jso
 
 ## Install
 
-On install, this downloads the latest version of the JavaScript [codegen CLI](https://github.com/lightbend/akkaserverless-codegen)
+On install, this downloads the latest version of the JavaScript [codegen CLI](../../codegen)
 
 ## Scripts
 
