@@ -1,6 +1,6 @@
 # akkasls-scripts
 
-This package includes scripts and configuration used by the [`create-akkasls-entity` tool](https://github.com/lightbend/create-akksls-entity).
+This package includes scripts and configuration used by the [`create-akkasls-entity` tool](https://github.com/lightbend/create-akkasls-entity).
 
 Configuration is pulled from the `config` section of your project's `package.json`, and the command will fail if any required configuration is not present. For example:
 
