@@ -1,6 +1,6 @@
 # akkasls-scripts
 
-This package includes scripts and configuration used by the [`create-akkasls-entity` tool](https://github.com/lightbend/create-akksls-entity).
+This package includes scripts and configuration used by the [`create-akkasls-entity` tool](../create-akkasls-entity).
 
 Configuration is pulled from the `config` section of your project's `package.json`, and the command will fail if any required configuration is not present. For example:
 
@@ -21,7 +21,7 @@ Configuration is pulled from the `config` section of your project's `package.jso
 
 ## Install
 
-On install, this downloads the latest version of the JavaScript [codegen CLI](https://github.com/lightbend/akkaserverless-codegen)
+On install, this downloads the latest version of the JavaScript [codegen CLI](../../codegen)
 
 ## Scripts
 
