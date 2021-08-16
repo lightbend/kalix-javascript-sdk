@@ -26,9 +26,9 @@ const entity = new EventSourcedEntity(
 const domainPkg = "customer.domain.";
 const domain = {
   CustomerState: entity.lookupType(domainPkg + "CustomerState"),
-  Address: entity.lookupType(domainPkg + "Address"),
   CustomerCreated: entity.lookupType(domainPkg + "CustomerCreated"),
-  CustomerNameChanged: entity.lookupType(domainPkg + "CustomerNameChanged")
+  CustomerNameChanged: entity.lookupType(domainPkg + "CustomerNameChanged"),
+  CustomerAddressChanged: entity.lookupType(domainPkg + "CustomerAddressChanged")
 }
 const apiPkg = "customer.api."
 const api = {
@@ -42,11 +42,13 @@ entity.setBehavior(state => {
     commandHandlers: {
       Create: create,
       ChangeName: changeName,
+      ChangeAddress: changeAddress,
       GetCustomer: getCustomer
     },
     eventHandlers: {
       CustomerCreated: customerCreated,
-      CustomerNameChanged: nameChanged
+      CustomerNameChanged: nameChanged,
+      CustomerAddressChanged: addressChanged
     }
   };
 });
@@ -67,6 +69,15 @@ function changeName(changeNameRequest, customerState, ctx) {
   }
 }
 
+function changeAddress(changeAddressRequest, customerState, ctx) {
+  if (!customerState.address) {
+    return replies.failure("Customer must be created before address can be changed.")
+  } else {
+    ctx.emit(domain.CustomerAddressChanged.create({ newAddress: changeAddressRequest.newAddress }))
+    return replies.noReply()
+  }
+}
+
 function getCustomer(request, state, ctx) {
   let apiCustomer = customerStateToApiCustomer(state)
   return replies.message(apiCustomer)
@@ -81,6 +92,10 @@ function nameChanged(event, customer) {
   return customer
 }
 
+function addressChanged(event, customer) {
+  customer.address = event.newAddress
+  return customer
+}
 
 function apiCustomerToCustomerState(apiCustomer) {
   // right now these two have the same fields so conversion is easy

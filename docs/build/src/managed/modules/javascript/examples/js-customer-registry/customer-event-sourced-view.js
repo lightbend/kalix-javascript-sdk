@@ -27,20 +27,28 @@ const view = new View(
 // end::register[]
 
 // tag::process-events[]
+const CustomerState = view.lookupType("customer.domain.CustomerState")
+
 view.setUpdateHandlers({ // <1>
   ProcessCustomerCreated: customerCreated,
-  ProcessCustomerNameChanged: customerNameChanged
+  ProcessCustomerNameChanged: customerNameChanged,
+  IgnoreOtherEvents: ignoreOtherEvents
 });
 
-function customerCreated(event, state, ctx) {
-  if (state.id)
+function customerCreated(event, state) {
+  if (state)
     return state // already created
   else
-    return event.customer
+    return CustomerState.create(event.customer)
 }
 
-function customerNameChanged(event, state, ctx) {
+function customerNameChanged(event, state) {
   state.name = event.newName
+  return state
+}
+
+function ignoreOtherEvents(_event, state) {
+  return state
 }
 // end::process-events[]
 

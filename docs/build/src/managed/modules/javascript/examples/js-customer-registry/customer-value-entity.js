@@ -38,6 +38,7 @@ entity.setInitial(customerId => domain.CustomerState.create({ customerId: custom
 entity.setCommandHandlers({
   Create: create,
   ChangeName: changeName,
+  ChangeAddress: changeAddress,
   GetCustomer: getCustomer
 })
 
@@ -52,6 +53,16 @@ function changeName(changeNameRequest, customerState, ctx) {
     return replies.failure("Customer must be created before name can be changed.")
   } else {
     customerState.name = changeNameRequest.newName
+    ctx.updateState(customerState)
+    return replies.noReply()
+  }
+}
+
+function changeAddress(changeAddressRequest, customerState, ctx) {
+  if (!customerState.name) {
+    return replies.failure("Customer must be created before address can be changed.")
+  } else {
+    customerState.address = changeAddressRequest.newAddress
     ctx.updateState(customerState)
     return replies.noReply()
   }
