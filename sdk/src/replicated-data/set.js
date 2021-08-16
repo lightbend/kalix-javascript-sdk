@@ -81,6 +81,16 @@ function ReplicatedSet() {
   };
 
   /**
+   * Get a copy of the current elements as a Set.
+   *
+   * @function module:akkaserverless.replicatedentity.ReplicatedSet#elements
+   * @return {Set<module:akkaserverless.Serializable>}
+   */
+  this.elements = function () {
+    return new Set(currentValue.values());
+  };
+
+  /**
    * Add an element to this set.
    *
    * @function module:akkaserverless.replicatedentity.ReplicatedSet#add
@@ -97,6 +107,20 @@ function ReplicatedSet() {
         delta.added.set(comparable, serializedElement);
       }
       currentValue.set(comparable, element);
+    }
+    return this;
+  };
+
+  /**
+   * Add multiple elements to this set.
+   *
+   * @function module:akkaserverless.replicatedentity.ReplicatedSet#addAll
+   * @param {Iterator<module:akkaserverless.Serializable>} elements The elements to add.
+   * @return {module:akkaserverless.replicatedentity.ReplicatedSet} This set.
+   */
+  this.addAll = function (elements) {
+    for (const element of elements) {
+      this.add(element);
     }
     return this;
   };

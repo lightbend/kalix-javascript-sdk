@@ -74,7 +74,7 @@ function ReplicatedRegister(
   });
 
   /**
-   * Set the the value using a custom clock.
+   * Set the value using a custom clock.
    *
    * @function module:akkaserverless.replicatedentity.ReplicatedRegister#setWithClock
    * @param {module:akkaserverless.Serializable} value The value to set.

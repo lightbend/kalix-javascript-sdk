@@ -53,6 +53,12 @@ function createReplicatedData(name: string) {
       const map = new replicatedentity.ReplicatedMap();
       map.defaultValue = (key) => createReplicatedData(key);
       return map;
+    case 'ReplicatedCounterMap':
+      return new replicatedentity.ReplicatedCounterMap();
+    case 'ReplicatedRegisterMap':
+      return new replicatedentity.ReplicatedRegisterMap();
+    case 'ReplicatedMultiMap':
+      return new replicatedentity.ReplicatedMultiMap();
     case 'Vote':
       return new replicatedentity.Vote();
     default:
@@ -83,7 +89,7 @@ function process(
       context.fail(action.fail.message);
     }
   });
-  return responseValue(context);
+  return responseValue(context.state);
 }
 
 function applyUpdate(
@@ -144,6 +150,70 @@ function applyUpdate(
       else if (update.replicatedMap.remove)
         map.delete(update.replicatedMap.remove);
       else if (update.replicatedMap.clear) map.clear();
+    } else if (update.replicatedCounterMap) {
+      const counterMap = state as replicatedentity.ReplicatedCounterMap;
+      if (update.replicatedCounterMap.add)
+        counterMap.increment(update.replicatedCounterMap.add, 0);
+      else if (update.replicatedCounterMap.update)
+        counterMap.increment(
+          update.replicatedCounterMap.update.key,
+          update.replicatedCounterMap.update.change || 0,
+        );
+      else if (update.replicatedCounterMap.remove)
+        counterMap.delete(update.replicatedCounterMap.remove);
+      else if (update.replicatedCounterMap.clear) counterMap.clear();
+    } else if (update.replicatedRegisterMap) {
+      const registerMap = state as replicatedentity.ReplicatedRegisterMap;
+      if (update.replicatedRegisterMap.add)
+        registerMap.set(update.replicatedRegisterMap.add, '');
+      else if (update.replicatedRegisterMap.update) {
+        const key = update.replicatedRegisterMap.update.key;
+        const value = update.replicatedRegisterMap.update.value;
+        const clock = update.replicatedRegisterMap.update.clock;
+        if (
+          clock?.clockType ===
+          ReplicatedRegisterClockType.REPLICATED_REGISTER_CLOCK_TYPE_REVERSE
+        )
+          registerMap.set(key, value, replicatedentity.Clocks.REVERSE);
+        else if (
+          clock?.clockType ===
+          ReplicatedRegisterClockType.REPLICATED_REGISTER_CLOCK_TYPE_CUSTOM
+        )
+          registerMap.set(
+            key,
+            value,
+            replicatedentity.Clocks.CUSTOM,
+            clock?.customClockValue as number, // FIXME
+          );
+        else if (
+          clock?.clockType ===
+          ReplicatedRegisterClockType.REPLICATED_REGISTER_CLOCK_TYPE_CUSTOM_AUTO_INCREMENT
+        )
+          registerMap.set(
+            key,
+            value,
+            replicatedentity.Clocks.CUSTOM_AUTO_INCREMENT,
+            clock?.customClockValue as number, // FIXME
+          );
+        else registerMap.set(key, value);
+        registerMap.set(
+          update.replicatedRegisterMap.update.key,
+          update.replicatedRegisterMap.update.value,
+        );
+      } else if (update.replicatedRegisterMap.remove)
+        registerMap.delete(update.replicatedRegisterMap.remove);
+      else if (update.replicatedRegisterMap.clear) registerMap.clear();
+    } else if (update.replicatedMultiMap) {
+      const multiMap = state as replicatedentity.ReplicatedMultiMap;
+      if (update.replicatedMultiMap.update) {
+        const key = update.replicatedMultiMap.update.key;
+        const value = update.replicatedMultiMap.update.update;
+        if (value?.add) multiMap.put(key, value.add);
+        else if (value?.remove) multiMap.delete(key, value.remove);
+        else if (value?.clear) multiMap.deleteAll(key);
+      } else if (update.replicatedMultiMap.remove)
+        multiMap.deleteAll(update.replicatedMultiMap.remove);
+      else if (update.replicatedMultiMap.clear) multiMap.clear();
     } else if (update.vote) {
       const vote = state as replicatedentity.Vote;
       vote.vote = update.vote.selfVote || false;
@@ -151,12 +221,8 @@ function applyUpdate(
   }
 }
 
-function responseValue(
-  context: replicatedentity.ReplicatedEntityCommandContext,
-) {
-  return Response.create(
-    context.state ? { state: replicatedDataState(context.state) } : {},
-  );
+function responseValue(state: replicatedentity.ReplicatedData) {
+  return Response.create(state ? { state: replicatedDataState(state) } : {});
 }
 
 function replicatedDataState(state: replicatedentity.ReplicatedData): IState {
@@ -173,6 +239,29 @@ function replicatedDataState(state: replicatedentity.ReplicatedData): IState {
       replicatedMap: state.size
         ? { entries: sortedEntries(state, replicatedDataState) }
         : {},
+    };
+  else if (state instanceof replicatedentity.ReplicatedCounterMap)
+    return {
+      replicatedCounterMap: state.size
+        ? { entries: sortedEntriesFromKeys(state.keys(), state.get) }
+        : {},
+    };
+  else if (state instanceof replicatedentity.ReplicatedRegisterMap)
+    return {
+      replicatedRegisterMap: state.size
+        ? { entries: sortedEntriesFromKeys(state.keys(), state.get) }
+        : {},
+    };
+  else if (state instanceof replicatedentity.ReplicatedMultiMap)
+    return {
+      replicatedMultiMap:
+        state.keysSize > 0
+          ? {
+              entries: sortedEntriesFromKeys(state.keys(), (key) => ({
+                elements: sortedElements(state.get(key)),
+              })),
+            }
+          : {},
     };
   else if (state instanceof replicatedentity.Vote)
     return {
@@ -198,6 +287,17 @@ function sortedEntries(
     value: convert(value),
   }));
   return converted.sort((a, b) => a.key.localeCompare(b.key));
+}
+
+function sortedEntriesFromKeys(
+  keys: Iterable<Serializable>,
+  get: (key: Serializable) => Serializable,
+) {
+  const entries = Array.from(keys, (key) => {
+    const value = get(key);
+    return value ? { key: key, value: value } : { key: key };
+  });
+  return entries.sort((a, b) => a.key.localeCompare(b.key));
 }
 
 export const two = new replicatedentity.ReplicatedEntity(
