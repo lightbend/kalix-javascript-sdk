@@ -96,6 +96,7 @@ Send a `RemoveCart` command:
 
 ```shell
 grpcurl --plaintext -d '{"cart_id": "cart1"}' localhost:9000 com.example.shoppingcart.ShoppingCartService/RemoveCart
+```
 
 ## Deploying
 
