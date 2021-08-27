@@ -141,6 +141,8 @@ class DocLink {
     ['AS-002', 'javascript/value-entity.html'],
     ['AS-003', 'javascript/eventsourced.html'],
     ['AS-004', 'javascript/'], // no single page for eventing
+    ['AS-005', 'javascript/'], // no docs yet for replicated entities
+    ['AS-006', 'javascript/proto.html#_transcoding_http'], // all HTTP API errors
   ]);
 
   constructor(
