@@ -91,7 +91,7 @@ function addItem(addItem: AddLineItem, cart: State, ctx: Context): replies.Reply
   // Validation:
   // Make sure that it is not possible to add negative quantities
   if (addItem.quantity < 1) {
-    ctx.fail("Cannot add negative quantity to item " + addItem.productId);
+    return replies.failure("Cannot add negative quantity to item " + addItem.productId);
   } else {
     // If there is an existing item with that product id, we need to increment its quantity.
     const existing = cart.items.find(item => {
