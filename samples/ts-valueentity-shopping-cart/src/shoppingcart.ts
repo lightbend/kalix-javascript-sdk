@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { ValueEntity } from "@lightbend/akkaserverless-javascript-sdk";
+import { ValueEntity, replies } from "@lightbend/akkaserverless-javascript-sdk";
 import * as proto from "../lib/generated/proto";
 
 type Context            = ValueEntity.ValueEntityCommandContext;
@@ -87,7 +87,7 @@ entity.setCommandHandlers({
 /**
  * Handler for add item commands.
  */
-function addItem(addItem: AddLineItem, cart: State, ctx: Context) {
+function addItem(addItem: AddLineItem, cart: State, ctx: Context): replies.Reply {
   // Validation:
   // Make sure that it is not possible to add negative quantities
   if (addItem.quantity < 1) {
@@ -106,13 +106,13 @@ function addItem(addItem: AddLineItem, cart: State, ctx: Context) {
     }
     ctx.updateState(cart);
   }
-  return {};
+  return replies.noReply();
 }
 
 /**
  * Handler for remove item commands.
  */
-function removeItem(removeItem: RemoveLineItem, cart: State, ctx: Context) {
+function removeItem(removeItem: RemoveLineItem, cart: State, ctx: Context): replies.Reply {
   // Validation:
   // Check that the item that we're removing actually exists.
   const existing = cart.items.find(item => {
@@ -121,7 +121,7 @@ function removeItem(removeItem: RemoveLineItem, cart: State, ctx: Context) {
 
   // If not, fail the command.
   if (!existing) {
-    ctx.fail("Item " + removeItem.productId + " not in cart");
+    return replies.failure("Item " + removeItem.productId + " not in cart");
   } else {
     // Otherwise, remove the item.
     // Filter the removed item from the items by product id.
@@ -131,23 +131,23 @@ function removeItem(removeItem: RemoveLineItem, cart: State, ctx: Context) {
 
     ctx.updateState(cart);
   }
-  return {};
+  return replies.noReply();
 }
 
 /**
  * Handler for get cart commands.
  */
-function getCart(request: GetShoppingCart, cart: State) {
+function getCart(request: GetShoppingCart, cart: State): replies.Reply {
   // Simply return the shopping cart as is.
-  return cart;
+  return replies.message(cart);
 }
 
 /**
  * Handler for remove cart commands.
  */
-function removeCart(request: RemoveShoppingCart, cart: State, ctx: Context) {
+function removeCart(request: RemoveShoppingCart, cart: State, ctx: Context): replies.Reply {
   ctx.deleteState();
-  return {};
+  return replies.noReply();
 }
 
 export default entity;
