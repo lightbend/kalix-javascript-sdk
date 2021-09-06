@@ -17,13 +17,16 @@
 import { MockValueEntity } from "./testkit";
 import { expect } from "chai";
 import shoppingcart from "../src/shoppingcart";
+import * as proto from "../lib/generated/proto";
+
+type State = proto.com.example.shoppingcart.domain.Cart;
 
 describe("ShoppingCartService", () => {
   const entityId = "entityId";
 
   describe("AddItem", () => {
     it("should respond to addItem commands", () => {
-      const entity = new MockValueEntity(shoppingcart, entityId);
+      const entity = new MockValueEntity<State>(shoppingcart, entityId);
 
       entity.handleCommand(
         "AddItem", { cartId: "cart1", productId: "a", name: "Apple", quantity: 1 });
@@ -45,7 +48,7 @@ describe("ShoppingCartService", () => {
 
   describe("RemoveItem", () => {
     it("should remove items from a cart", () => {
-      const entity = new MockValueEntity(shoppingcart, entityId);
+      const entity = new MockValueEntity<State>(shoppingcart, entityId);
 
       entity.handleCommand(
         "AddItem", { cartId: "cart1", productId: "a", name: "Apple", quantity: 1 });
@@ -73,7 +76,7 @@ describe("ShoppingCartService", () => {
 
   describe("GetCart", () => {
     it("should default to an empty cart", async () => {
-      const entity = new MockValueEntity(shoppingcart, entityId);
+      const entity = new MockValueEntity<State>(shoppingcart, entityId);
       const result = entity.handleCommand("GetCart", { entityId });
       expect(result).to.deep.equal({});
       expect(entity.error).to.be.undefined;
@@ -84,7 +87,7 @@ describe("ShoppingCartService", () => {
   describe("RemoveCart", () => {
     it("should remove a cart", () => {
 
-      const entity = new MockValueEntity(shoppingcart, entityId);
+      const entity = new MockValueEntity<State>(shoppingcart, entityId);
 
       entity.handleCommand(
         "AddItem", { cartId: "cart1", productId: "a", name: "Apple", quantity: 1 });

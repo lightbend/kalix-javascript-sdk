@@ -16,11 +16,18 @@
 
 import { IntegrationTestkit } from "@lightbend/akkaserverless-javascript-sdk";
 import { expect } from "chai"
+import * as proto from "../lib/generated/proto";
 import shoppingcartEnity from '../src/shoppingcart'
+
+type ShoppingCartService = proto.com.example.shoppingcart.ShoppingCartService
+
+type AsyncShoppingCartService = {
+  [K in keyof ShoppingCartService as `${K}Async`]: ShoppingCartService[K]
+}
 
 const testkit = new IntegrationTestkit().addComponent(shoppingcartEnity);
 
-function client() {
+function client(): AsyncShoppingCartService {
   // @ts-ignore
   return testkit.clients.ShoppingCartService;
 }

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {ValueEntity} from "@lightbend/akkaserverless-javascript-sdk";
+import { ValueEntity } from "@lightbend/akkaserverless-javascript-sdk";
 import * as proto from "../lib/generated/proto";
 
 type Context            = ValueEntity.ValueEntityCommandContext;

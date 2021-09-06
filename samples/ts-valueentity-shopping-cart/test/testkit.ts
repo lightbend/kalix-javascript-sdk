@@ -14,71 +14,7 @@
  * limitations under the License.
  */
 
-/**
- * Mocks the behaviour of a single Akka Serverless EventSourcedEntity.
- *
- * Handles any commands and events, internally tracking the state and maintaining an event log.
- *
- * NOTE: Entity IDs are not handled, so all commands are assumed to refer to a single entity.
- */
-export class MockEventSourcedEntity {
-  events: Array<any> = [];
-  state: any;
-  error: any;
-  grpcService: any;
-  entity: any;
-  entityId: any;
-
-  constructor(entity: any, entityId: any) {
-    this.entity = entity;
-    this.entityId = entityId;
-    this.state = entity.initial(entityId);
-    this.grpcService = entity.serviceName
-      .split(".")
-      .reduce((obj: any, part: any) => obj[part], entity.grpc).service;
-  }
-
-  /**
-   * Handle the provided command, and return the result. Any emitted events are also handled.
-   *
-   * @param {string} commandName the command method name (as per the entity proto definition)
-   * @param {object} command the request body
-   * @param {MockEventSourcedCommandContext} ctx override the context object for this handler for advanced behaviour
-   * @returns the result of the command
-   */
-  handleCommand(
-    commandName: any,
-    command: any,
-    ctx = new MockEventSourcedCommandContext()
-  ) {
-    const behaviors = this.entity.behavior(this.state);
-    const handler = behaviors.commandHandlers[commandName];
-    const grpcMethod = this.grpcService[commandName];
-
-    const request = grpcMethod.requestDeserialize(
-      grpcMethod.requestSerialize(command)
-    );
-
-    const result = handler(request, this.state, ctx);
-    ctx.events.forEach((event) => this.handleEvent(event));
-    this.error = ctx.error;
-
-    return grpcMethod.responseDeserialize(grpcMethod.responseSerialize(result));
-  }
-
-  /**
-   * Handle the provied event, and add it to the event log.
-   * @param {object} event the event payload
-   */
-  handleEvent(event: any) {
-    const behaviors = this.entity.behavior(this.state);
-    const handler =
-      behaviors.eventHandlers[event.type || event.constructor.name];
-
-    this.state = handler(event, this.state);
-    this.events.push(event);
-  }
-}
+import { Metadata, ValueEntity } from "@lightbend/akkaserverless-javascript-sdk";
 
 /**
  * Mocks the behaviour of a single Akka Serverless Value entity.
@@ -87,19 +23,20 @@ export class MockEventSourcedEntity {
  *
  * NOTE: Entity IDs are not handled, so all commands are assumed to refer to a single entity.
  */
-export class MockValueEntity {
-  state: any;
+export class MockValueEntity<S> {
+  state: S;
   error: any;
   grpcService: any;
-  entity: any;
-  entityId: any;
+  entity: ValueEntity;
+  entityId: string;
 
-  constructor(entity: any, entityId: any) {
+  constructor(entity: ValueEntity, entityId: string) {
     this.entity = entity;
     this.entityId = entityId;
     this.state = entity.initial(entityId);
     this.grpcService = entity.serviceName
       .split(".")
+      // @ts-ignore
       .reduce((obj: any, part: any) => obj[part], entity.grpc).service;
   }
 
@@ -112,7 +49,7 @@ export class MockValueEntity {
    * @returns the result of the command
    */
   handleCommand(
-    commandName: any,
+    commandName: string,
     command: any,
     ctx = new MockValueEntityCommandContext()
   ) {
@@ -174,28 +111,17 @@ export class MockCommandContext {
  * construct their own instance of this class, however for making assertions on
  * forwarding or emmitted effects you may provide your own.
  *
- * @type { import("../lib/akkaserverless").EventSourcedCommandContext<unknown> }
- */
-export class MockEventSourcedCommandContext extends MockCommandContext {
-  events: Array<any> = [];
-
-  emit(event: any) {
-    this.events.push(event);
-  }
-}
-
-/**
- * Mocks the behaviour of the command context object within Akka Serverless.
- *
- * By default, calls to [AkkaServerlessTestKitEntity~handleCommand] will
- * construct their own instance of this class, however for making assertions on
- * forwarding or emmitted effects you may provide your own.
- *
  * @type { import("../lib/akkaserverless").ValueEntityCommandContext<unknown> }
  */
-export class MockValueEntityCommandContext extends MockCommandContext {
+export class MockValueEntityCommandContext extends MockCommandContext implements ValueEntity.ValueEntityCommandContext {
   updatedState = undefined;
   delete = false;
+  metadata: Metadata;
+  entityId: string;
+  commandId: Long;
+  replyMetadata: Metadata;
+
+  forward() {};
 
   updateState(state: any) {
     this.updatedState = state;
