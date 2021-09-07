@@ -1,0 +1,48 @@
+{
+  "name": "ts-views-example",
+  "version": "0.0.0",
+  "description": "Akka Serverless TypeScript SDK example that demonstrates views",
+  "engineStrict": true,
+  "engines": {
+    "node": "~14"
+  },
+  "homepage": "https://github.com/lightbend/akkaserverless-javascript-sdk",
+  "bugs": {
+    "url": "https://github.com/lightbend/akkaserverless-javascript-sdk/issues"
+  },
+  "license": "Apache-2.0",
+  "author": {
+    "name": "Akka Serverless Team",
+    "email": "info@lightbend.com",
+    "url": "https://lightbend.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/lightbend/akkaserverless-javascript-sdk",
+    "directory": "samples/ts-views-example"
+  },
+  "//": "https://npm.community/t/npm-install-does-not-install-transitive-dependencies-of-local-dependency/2264",
+  "main": "dist/index.js",
+  "dependencies": {
+    "@lightbend/akkaserverless-javascript-sdk": "0.33.0"
+  },
+  "devDependencies": {
+    "@types/mocha": "^8.2.3",
+    "chai": "4.2.0",
+    "mocha": "^8.4.0",
+    "ts-mocha": "^8.0.0",
+    "typescript": "^4.3.5"
+  },
+  "scripts": {
+    "compile-users-proto": "mkdirp lib/generated && pbjs -t static-module -w commonjs --no-encode --no-decode --no-verify --no-convert --no-delimited users.proto -o lib/generated/proto.js && pbts --no-comments -o lib/generated/proto.d.ts lib/generated/proto.js",
+    "build": "compile-descriptor users.proto & npm run compile-users-proto & tsc",
+    "pretest": "npm run build",
+    "test": "ts-mocha",
+    "prestart": "npm run build",
+    "start": "node dist/index.js",
+    "start-no-prestart": "node dist/index.js",
+    "docker-build": "docker build -f Dockerfile -t ${DOCKER_PUBLISH_TO:-akkaserverless}/ts-views-example:$(../../sdk/bin/version.sh) ../..",
+    "docker-push": "docker push ${DOCKER_PUBLISH_TO:-akkaserverless}/ts-views-example:$(../../sdk/bin/version.sh)",
+    "docker-build-push": "npm run docker-build && npm run docker-push"
+  }
+}
