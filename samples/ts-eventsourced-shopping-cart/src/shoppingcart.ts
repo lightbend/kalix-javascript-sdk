@@ -45,7 +45,7 @@ type ItemRemoved        = proto.com.example.shoppingcart.domain.ItemRemoved
 /**
  * @type ShoppingCartService
  */
-const entity = new EventSourcedEntity(
+const entity: EventSourcedEntity = new EventSourcedEntity(
   [
     "shoppingcart_domain.proto",
     "shoppingcart_api.proto"
