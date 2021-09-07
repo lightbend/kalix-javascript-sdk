@@ -14,10 +14,21 @@
  * limitations under the License.
  */
 
-const ValueEntity = require("@lightbend/akkaserverless-javascript-sdk").ValueEntity;
-const { replies } = require("@lightbend/akkaserverless-javascript-sdk");
+import { ValueEntity, replies } from "@lightbend/akkaserverless-javascript-sdk";
+import { customer as customerApi } from "../lib/generated/customer_api";
+import { customer as customerDomain } from "../lib/generated/customer_domain";
 
-const entity = new ValueEntity(
+type Context              = ValueEntity.ValueEntityCommandContext;
+
+type State                = customerDomain.domain.CustomerState
+
+type Customer             = customerApi.api.Customer
+type ChangeNameRequest    = customerApi.api.ChangeNameRequest
+type ChangeAddressRequest = customerApi.api.ChangeAddressRequest
+type GetCustomerRequest   = customerApi.api.GetCustomerRequest
+
+
+const entity: ValueEntity = new ValueEntity(
   ["customer_api.proto", "customer_domain.proto"],
   "customer.api.CustomerService",
   "customers"
@@ -42,46 +53,45 @@ entity.setCommandHandlers({
   GetCustomer: getCustomer
 })
 
-function create(customer, customerState, ctx) {
-  let domainCustomer = apiCustomerToCustomerState(customer)
+function create(customerRequest: Customer, customer: State, ctx: Context): replies.Reply {
+  let domainCustomer = apiCustomerToCustomerState(customerRequest)
   ctx.updateState(domainCustomer)
   return replies.noReply()
 }
 
-function changeName(changeNameRequest, customerState, ctx) {
-  if (!customerState.name && !customerState.email) {
+function changeName(changeNameRequest: ChangeNameRequest, customer: State, ctx: Context): replies.Reply {
+  if (!customer.name && !customer.email) {
     return replies.failure("Customer must be created before name can be changed.")
   } else {
-    customerState.name = changeNameRequest.newName
-    ctx.updateState(customerState)
+    customer.name = changeNameRequest.newName
+    ctx.updateState(customer)
     return replies.noReply()
   }
 }
 
-function changeAddress(changeAddressRequest, customerState, ctx) {
-  if (!customerState.name) {
+function changeAddress(changeAddressRequest: ChangeAddressRequest, customer: State, ctx: Context): replies.Reply {
+  if (!customer.name) {
     return replies.failure("Customer must be created before address can be changed.")
   } else {
-    customerState.address = changeAddressRequest.newAddress
-    ctx.updateState(customerState)
+    customer.address = changeAddressRequest.newAddress
+    ctx.updateState(customer)
     return replies.noReply()
   }
 }
 
-function getCustomer(request, state, ctx) {
+function getCustomer(getCustomerRequest: GetCustomerRequest, state: State): replies.Reply {
   let apiCustomer = customerStateToApiCustomer(state)
   return replies.message(apiCustomer)
 }
 
-function apiCustomerToCustomerState(apiCustomer) {
+function apiCustomerToCustomerState(apiCustomer: Customer) {
   // right now these two have the same fields so conversion is easy
   return domain.CustomerState.create(apiCustomer)
 }
 
-function customerStateToApiCustomer(customerState) {
+function customerStateToApiCustomer(customer: State) {
   // right now these two have the same fields so conversion is easy
-  return api.Customer.create(customerState)
+  return api.Customer.create(customer)
 }
 
-module.exports = entity;
-
+export default entity;
