@@ -1,0 +1,4 @@
+user-function.desc
+lib/generated
+dist/
+package-lock.json
