@@ -79,7 +79,7 @@ const Cart = entity.lookupType(pkg + "Cart");
  */
 entity.setInitial(cartId => Cart.create({items: []}));
 
-entity.setBehavior(cart => {
+entity.setBehavior((cart: State) => {
   return {
     // Command handlers. The name of the command corresponds to the name of the rpc call in
     // the gRPC service that this entity offers.

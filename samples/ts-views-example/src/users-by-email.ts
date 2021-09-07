@@ -24,4 +24,4 @@ const view: View = new View(
   }
 );
 
-export default view
+export default view;
