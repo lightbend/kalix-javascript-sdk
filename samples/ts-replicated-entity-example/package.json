@@ -1,0 +1,50 @@
+{
+  "name": "ts-replicated-entity-example",
+  "version": "0.0.0",
+  "description": "Akka Serverless JavaScript SDK example for replicated entities",
+  "homepage": "https://github.com/lightbend/akkaserverless-javascript-sdk",
+  "bugs": {
+    "url": "https://github.com/lightbend/akkaserverless-javascript-sdk/issues"
+  },
+  "license": "Apache-2.0",
+  "author": {
+    "name": "Akka Serverless Team",
+    "email": "info@lightbend.com",
+    "url": "https://lightbend.com"
+  },
+  "main": "dist/index.js",
+  "engineStrict": true,
+  "engines": {
+    "node": "~14"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/lightbend/akkaserverless-javascript-sdk",
+    "directory": "samples/ts-replicated-entity-example"
+  },
+  "dependencies": {
+    "@lightbend/akkaserverless-javascript-sdk": "0.33.0"
+  },
+  "devDependencies": {
+    "@lightbend/akkasls-scripts": "0.33.0",
+    "@types/mocha": "^8.2.3",
+    "chai": "^4.3.3",
+    "jsdoc": "^3.6.3",
+    "mocha": "^8.4.0",
+    "ts-mocha": "^8.0.0",
+    "uglify-js": "^3.7.7",
+    "typescript": "^4.3.5"
+  },
+  "scripts": {
+    "compile-proto": "mkdirp lib/generated && pbjs -t static-module -w commonjs --no-encode --no-decode --no-verify --no-convert --no-delimited replicated_entity_example.proto -o lib/generated/proto.js && pbts --no-comments -o lib/generated/proto.d.ts lib/generated/proto.js",
+    "build": "compile-descriptor replicated_entity_example.proto && npm run compile-proto && tsc",
+    "pretest": "npm run build",
+    "test": "ts-mocha",
+    "prestart": "npm run build",
+    "start": "node dist/index.js",
+    "start-no-prestart": "node dist/index.js",
+    "docker-build": "docker build -f Dockerfile -t ${DOCKER_PUBLISH_TO:-akkaserverless}/ts-replicated-entity-example:$(../../sdk/bin/version.sh) ../..",
+    "docker-push": "docker push ${DOCKER_PUBLISH_TO:-akkaserverless}/ts-replicated-entity-example:$(../../sdk/bin/version.sh)",
+    "docker-build-push": "npm run docker-build && npm run docker-push"
+  }
+}

@@ -4,5 +4,6 @@
     "strict": true,
     "target": "es6",
     "module": "commonJS"
-  }
+  },
+  "include": ["./src/**/*"]
 }
