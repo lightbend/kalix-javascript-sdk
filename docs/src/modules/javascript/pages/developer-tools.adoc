@@ -39,7 +39,7 @@ The _akkasls-scripts_ script is expected to be invoked with a single argument, s
 * `package`; invokes the Docker CLI to build a deployable image, based on a Dockerfile expected to exist in the root directory of your project. The Kickstart tool generates a suitable Dockerfile, however you can modify or replace this to suit your needs.
 * `deploy`; invokes the `akkasls` command line tool to deploy the service to Akka Serverless. This relies on an existing installation of the CLI and uses configuration and credentials from that installation.
 
-NOTE: The deploy command requires the Akka Serverless CLI to be installed on your system. Download the latest version as described in xref:akkasls:install-akkasls.adoc[installing the Akka Serverless CLI, window="new-doc"]
+NOTE: The deploy command requires the Akka Serverless CLI to be installed on your system.
 
 === Installation
 The package can be added to your project via NPM:
