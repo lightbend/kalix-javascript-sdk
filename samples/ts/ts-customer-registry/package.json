@@ -19,7 +19,7 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/lightbend/akkaserverless-javascript-sdk",
-    "directory": "samples/js-customer-registry"
+    "directory": "samples/ts/ts-customer-registry"
   },
   "//": "https://npm.community/t/npm-install-does-not-install-transitive-dependencies-of-local-dependency/2264",
   "main": "dist/index.js",
