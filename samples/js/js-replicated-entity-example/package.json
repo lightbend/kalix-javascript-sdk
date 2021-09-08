@@ -19,7 +19,7 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/lightbend/akkaserverless-javascript-sdk",
-    "directory": "samples/js-replicated-entity-example"
+    "directory": "samples/js/js-replicated-entity-example"
   },
   "dependencies": {
     "@lightbend/akkaserverless-javascript-sdk": "0.30.0"
