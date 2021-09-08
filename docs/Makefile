@@ -32,6 +32,8 @@ attributes:
 		> "${managed_partials}/attributes.adoc"
 	echo ":minimum_node_version: 14" \
 		>> "${managed_partials}/attributes.adoc"
+	echo ":javascript_minimum_sdk_version: 0.31.0" \
+		>> "${managed_partials}/attributes.adoc"
 
 apidocs:
 	cd ../sdk && npm ci && npm run jsdoc
