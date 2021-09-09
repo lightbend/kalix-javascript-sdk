@@ -14,18 +14,21 @@
  * limitations under the License.
  */
 
-import { EventSourcedEntity, replies } from "@lightbend/akkaserverless-javascript-sdk";
+import {
+  EventSourcedEntity,
+  replies
+} from "@lightbend/akkaserverless-javascript-sdk";
 import * as proto from "../lib/generated/proto";
 
-type Context            = EventSourcedEntity.EventSourcedEntityCommandContext;
+type Context = EventSourcedEntity.EventSourcedEntityCommandContext;
 
-type State              = proto.com.example.shoppingcart.domain.Cart;
+type State = proto.com.example.shoppingcart.domain.Cart;
 
-type AddLineItem        = proto.com.example.shoppingcart.AddLineItem
-type RemoveLineItem     = proto.com.example.shoppingcart.RemoveLineItem
-type GetShoppingCart    = proto.com.example.shoppingcart.GetShoppingCart
-type ItemAdded          = proto.com.example.shoppingcart.domain.ItemAdded
-type ItemRemoved        = proto.com.example.shoppingcart.domain.ItemRemoved
+type AddLineItem = proto.com.example.shoppingcart.AddLineItem;
+type RemoveLineItem = proto.com.example.shoppingcart.RemoveLineItem;
+type GetShoppingCart = proto.com.example.shoppingcart.GetShoppingCart;
+type ItemAdded = proto.com.example.shoppingcart.domain.ItemAdded;
+type ItemRemoved = proto.com.example.shoppingcart.domain.ItemRemoved;
 
 /**
  * Type definitions.
@@ -46,10 +49,7 @@ type ItemRemoved        = proto.com.example.shoppingcart.domain.ItemRemoved
  * @type ShoppingCartService
  */
 const entity: EventSourcedEntity = new EventSourcedEntity(
-  [
-    "shoppingcart_domain.proto",
-    "shoppingcart_api.proto"
-  ],
+  ["shoppingcart_domain.proto", "shoppingcart_api.proto"],
   "com.example.shoppingcart.ShoppingCartService",
   "eventsourced-shopping-cart",
   {
@@ -77,7 +77,7 @@ const Cart = entity.lookupType(pkg + "Cart");
  * We can ignore the cartId parameter if we want, it's the id of the entity, which is
  * automatically associated with all events and state for this entity.
  */
-entity.setInitial(cartId => Cart.create({items: []}));
+entity.setInitial(cartId => Cart.create({ items: [] }));
 
 entity.setBehavior((cart: State) => {
   return {
@@ -97,15 +97,20 @@ entity.setBehavior((cart: State) => {
   };
 });
 
-
 /**
  * Handler for add item commands.
  */
-function addItem(addItem: AddLineItem, cart: State, ctx: Context): replies.Reply {
+function addItem(
+  addItem: AddLineItem,
+  cart: State,
+  ctx: Context
+): replies.Reply {
   // Validation:
   // Make sure that it is not possible to add negative quantities
   if (addItem.quantity < 1) {
-    return replies.failure("Cannot add negative quantity to item " + addItem.productId);
+    return replies.failure(
+      "Cannot add negative quantity to item " + addItem.productId
+    );
   }
 
   // Create the event.
@@ -124,7 +129,11 @@ function addItem(addItem: AddLineItem, cart: State, ctx: Context): replies.Reply
 /**
  * Handler for remove item commands.
  */
-function removeItem(removeItem: RemoveLineItem, cart: State, ctx: Context): replies.Reply {
+function removeItem(
+  removeItem: RemoveLineItem,
+  cart: State,
+  ctx: Context
+): replies.Reply {
   // Validation:
   // Check that the item that we're removing actually exists.
   const existing = cart.items.find(item => {
@@ -184,6 +193,5 @@ function itemRemoved(removed: ItemRemoved, cart: State): State {
   // And return the new state.
   return cart;
 }
-
 
 export default entity;

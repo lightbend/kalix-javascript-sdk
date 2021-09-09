@@ -33,28 +33,43 @@ describe("ShoppingCartService", () => {
   describe("AddItem", () => {
     it("should respond to addItem commands", () => {
       const entity = new MockEventSourcedEntity<State>(shoppingcart, entityId);
-      entity.handleCommand(
-        "AddItem", {cartId: "cart1", productId: "a", name: "Apple", quantity: 1});
-      entity.handleCommand(
-        "AddItem", {cartId: "cart1", productId: "b", name: "Banana", quantity: 2});
-      entity.handleCommand(
-        "AddItem", {cartId: "cart1", productId: "c", name: "Cantaloupe", quantity: 3});
+      entity.handleCommand("AddItem", {
+        cartId: "cart1",
+        productId: "a",
+        name: "Apple",
+        quantity: 1
+      });
+      entity.handleCommand("AddItem", {
+        cartId: "cart1",
+        productId: "b",
+        name: "Banana",
+        quantity: 2
+      });
+      entity.handleCommand("AddItem", {
+        cartId: "cart1",
+        productId: "c",
+        name: "Cantaloupe",
+        quantity: 3
+      });
 
       expect(entity.error).to.be.undefined;
-      expect(entity.state.items)
-        .to.deep.equal(
-        [
-          {productId: 'a', name: 'Apple', quantity: 1},
-          {productId: 'b', name: 'Banana', quantity: 2},
-          {productId: 'c', name: 'Cantaloupe', quantity: 3}
-        ]);
+      expect(entity.state.items).to.deep.equal([
+        { productId: "a", name: "Apple", quantity: 1 },
+        { productId: "b", name: "Banana", quantity: 2 },
+        { productId: "c", name: "Cantaloupe", quantity: 3 }
+      ]);
 
-      expect(entity.events).to.deep.equal(
-        [
-          ItemAdded.create({item: {productId: 'a', name: 'Apple', quantity: 1}}),
-          ItemAdded.create({item: {productId: 'b', name: 'Banana', quantity: 2}}),
-          ItemAdded.create({item: {productId: 'c', name: 'Cantaloupe', quantity: 3}})
-        ]);
+      expect(entity.events).to.deep.equal([
+        ItemAdded.create({
+          item: { productId: "a", name: "Apple", quantity: 1 }
+        }),
+        ItemAdded.create({
+          item: { productId: "b", name: "Banana", quantity: 2 }
+        }),
+        ItemAdded.create({
+          item: { productId: "c", name: "Cantaloupe", quantity: 3 }
+        })
+      ]);
     });
   });
 
@@ -62,52 +77,60 @@ describe("ShoppingCartService", () => {
     it("should remove items from a cart", () => {
       const entity = new MockEventSourcedEntity<State>(shoppingcart, entityId);
 
-      entity.handleCommand(
-        "AddItem", {cartId: "cart1", productId: "a", name: "Apple", quantity: 1});
-      entity.handleCommand(
-        "AddItem", {cartId: "cart1", productId: "b", name: "Banana", quantity: 2});
+      entity.handleCommand("AddItem", {
+        cartId: "cart1",
+        productId: "a",
+        name: "Apple",
+        quantity: 1
+      });
+      entity.handleCommand("AddItem", {
+        cartId: "cart1",
+        productId: "b",
+        name: "Banana",
+        quantity: 2
+      });
 
       expect(entity.error).to.be.undefined;
-      expect(entity.state.items)
-        .to.deep.equal(
-        [
-          {productId: 'a', name: 'Apple', quantity: 1},
-          {productId: 'b', name: 'Banana', quantity: 2}
-        ]);
+      expect(entity.state.items).to.deep.equal([
+        { productId: "a", name: "Apple", quantity: 1 },
+        { productId: "b", name: "Banana", quantity: 2 }
+      ]);
 
-      expect(entity.events).to.deep.equal(
-        [
-          ItemAdded.create({item: {productId: 'a', name: 'Apple', quantity: 1}}),
-          ItemAdded.create({item: {productId: 'b', name: 'Banana', quantity: 2}}),
-        ]);
+      expect(entity.events).to.deep.equal([
+        ItemAdded.create({
+          item: { productId: "a", name: "Apple", quantity: 1 }
+        }),
+        ItemAdded.create({
+          item: { productId: "b", name: "Banana", quantity: 2 }
+        })
+      ]);
 
-      entity.handleCommand(
-        "RemoveItem", {cartId: "cart1", productId: "a"});
+      entity.handleCommand("RemoveItem", { cartId: "cart1", productId: "a" });
       expect(entity.error).to.be.undefined;
-      expect(entity.state.items)
-        .to.deep.equal(
-        [
-          {productId: 'b', name: 'Banana', quantity: 2}
-        ]);
+      expect(entity.state.items).to.deep.equal([
+        { productId: "b", name: "Banana", quantity: 2 }
+      ]);
 
-      expect(entity.events).to.deep.equal(
-        [
-          ItemAdded.create({item: {productId: 'a', name: 'Apple', quantity: 1}}),
-          ItemAdded.create({item: {productId: 'b', name: 'Banana', quantity: 2}}),
-          ItemRemoved.create({productId: 'a'})
-        ]);
+      expect(entity.events).to.deep.equal([
+        ItemAdded.create({
+          item: { productId: "a", name: "Apple", quantity: 1 }
+        }),
+        ItemAdded.create({
+          item: { productId: "b", name: "Banana", quantity: 2 }
+        }),
+        ItemRemoved.create({ productId: "a" })
+      ]);
     });
   });
 
   describe("GetCart", () => {
     it("should default to an empty cart", () => {
       const entity = new MockEventSourcedEntity<State>(shoppingcart, entityId);
-      const result = entity.handleCommand("GetCart", {entityId});
+      const result = entity.handleCommand("GetCart", { entityId });
       expect(result).to.deep.equal({});
       expect(entity.error).to.be.undefined;
       expect(entity.state.items).to.be.empty;
       expect(entity.events).to.be.empty;
     });
   });
-
-})
+});

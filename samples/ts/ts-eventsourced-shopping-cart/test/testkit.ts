@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-import { Metadata, EventSourcedEntity } from "@lightbend/akkaserverless-javascript-sdk";
+import {
+  Metadata,
+  EventSourcedEntity
+} from "@lightbend/akkaserverless-javascript-sdk";
 
 /**
  * Mocks the behaviour of a single Akka Serverless EventSourcedEntity.
@@ -63,7 +66,7 @@ export class MockEventSourcedEntity<S> {
     );
 
     const result = handler(request, this.state, ctx);
-    ctx.events.forEach((event) => this.handleEvent(event));
+    ctx.events.forEach(event => this.handleEvent(event));
     this.error = ctx.error;
 
     return grpcMethod.responseDeserialize(grpcMethod.responseSerialize(result));
@@ -110,7 +113,7 @@ export class MockCommandContext {
       method,
       message,
       synchronous,
-      metadata,
+      metadata
     });
   }
 }
@@ -124,14 +127,17 @@ export class MockCommandContext {
  *
  * @type { import("../lib/akkaserverless").EventSourcedCommandContext<unknown> }
  */
-export class MockEventSourcedCommandContext extends MockCommandContext implements EventSourcedEntity.EventSourcedEntityCommandContext {
+export class MockEventSourcedCommandContext
+  extends MockCommandContext
+  implements EventSourcedEntity.EventSourcedEntityCommandContext
+{
   events: Array<any> = [];
   metadata: Metadata;
   entityId: string;
   commandId: Long;
   replyMetadata: Metadata;
 
-  forward() {};
+  forward() {}
 
   emit(event) {
     this.events.push(event);
