@@ -17,7 +17,7 @@ The following are required to develop services in JavaScript:
 
 Node:: Akka Serverless requires at least Node {minimum_node_version}. You will find links to download Node https://nodejs.org/dist/latest-v14.x/[here {tab-icon}, window="new"].
 
-Build tool:: Akka Serverless does not require any particular build tool, you can select your own but out-of-the-box experience is provided in conjunction with NPM and YARN.
+Build tool:: Akka Serverless does not require any particular build tool, you can select your own but out-of-the-box experience is provided in conjunction with npm and Yarn.
 
 Docker:: Akka Serverless requires https://docs.docker.com/get-docker/[Docker {tab-icon}, window="new"] {minimum_docker_version} for building your service images. Most popular build tools have plugins that assist in building Docker images.
 
@@ -25,7 +25,7 @@ Since Akka Serverless is based on gRPC, you need a protoc compiler to compile gR
 
 == Development project requirements
 
-The following examples show how to install the SDK to build your services with NPM or YARM. The code generation tools include an Akka Serverless xref:kickstart.adoc[code generation tools] that generates the recommended project structure, including a `package.json` file with the necessary references.
+The following examples show how to install the SDK to build your services with npm or Yarn. The code generation tools include an Akka Serverless xref:kickstart.adoc[code generation tools] that generates the recommended project structure, including a `package.json` file with the necessary references.
 
 NOTE: The code generation tools do more than just provide a starter project, after you modify a `.proto` file, they will generate code stubs for the elements you changed or added.
 

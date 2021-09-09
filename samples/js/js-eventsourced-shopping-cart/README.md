@@ -107,5 +107,5 @@ You will need to update the `config.dockerImage` property in the `package.json` 
 
 Finally, you can use the [Akka Serverless Console](https://console.akkaserverless.com)
 to create a project and then deploy your service into the project either by using `npm run deploy`,
-through the `akkasls` CLI or via the web interface. When using `npm run deploy`, NPM will also
+through the `akkasls` CLI or via the web interface. When using `npm run deploy`, npm will also
 conveniently package and publish your docker image prior to deployment.
