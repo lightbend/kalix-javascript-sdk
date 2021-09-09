@@ -14,26 +14,30 @@
  * limitations under the License.
  */
 
-import { replicatedentity, replies } from "@lightbend/akkaserverless-javascript-sdk";
-import * as proto from "../lib/generated/proto"
+import {
+  replicatedentity,
+  replies
+} from "@lightbend/akkaserverless-javascript-sdk";
+import * as proto from "../lib/generated/proto";
 
-type UpdateCounter  = proto.com.example.replicatedentity.UpdateCounter
-type Get            = proto.com.example.replicatedentity.Get
-type MutateSet      = proto.com.example.replicatedentity.MutateSet
+type UpdateCounter = proto.com.example.replicatedentity.UpdateCounter;
+type Get = proto.com.example.replicatedentity.Get;
+type MutateSet = proto.com.example.replicatedentity.MutateSet;
 
 type ContextSet = replicatedentity.ReplicatedEntityCommandContext & {
-  state: replicatedentity.ReplicatedSet
-}
+  state: replicatedentity.ReplicatedSet;
+};
 
 type ContextCounter = replicatedentity.ReplicatedEntityCommandContext & {
-  state: replicatedentity.ReplicatedCounter
-}
+  state: replicatedentity.ReplicatedCounter;
+};
 
-const entity: replicatedentity.ReplicatedEntity = new replicatedentity.ReplicatedEntity(
-  "replicated_entity_example.proto",
-  "com.example.replicatedentity.ReplicatedEntityExample",
-  "replicated-entity-example"
-);
+const entity: replicatedentity.ReplicatedEntity =
+  new replicatedentity.ReplicatedEntity(
+    "replicated_entity_example.proto",
+    "com.example.replicatedentity.ReplicatedEntityExample",
+    "replicated-entity-example"
+  );
 
 entity.commandHandlers = {
   // @ts-ignore
@@ -46,7 +50,10 @@ entity.commandHandlers = {
   GetReplicatedSet: getReplicatedSet
 };
 
-function updateReplicatedCounter(update: UpdateCounter, ctx: ContextCounter): replies.Reply {
+function updateReplicatedCounter(
+  update: UpdateCounter,
+  ctx: ContextCounter
+): replies.Reply {
   if (ctx.state === null) {
     ctx.state = new replicatedentity.ReplicatedCounter();
   }
@@ -69,7 +76,10 @@ function getReplicatedCounter(get: Get, ctx: ContextCounter): replies.Reply {
   });
 }
 
-function mutateReplicatedSet(mutate: MutateSet, ctx: ContextSet): replies.Reply {
+function mutateReplicatedSet(
+  mutate: MutateSet,
+  ctx: ContextSet
+): replies.Reply {
   if (ctx.state === null) {
     ctx.state = new replicatedentity.ReplicatedSet();
   }
@@ -86,7 +96,7 @@ function mutateReplicatedSet(mutate: MutateSet, ctx: ContextSet): replies.Reply 
 
   return replies.message({
     size: ctx.state.size
-  })
+  });
 }
 
 function getReplicatedSet(get: Get, ctx: ContextSet): replies.Reply {

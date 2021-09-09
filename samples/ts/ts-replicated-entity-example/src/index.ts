@@ -15,6 +15,6 @@
  */
 
 import { AkkaServerless } from "@lightbend/akkaserverless-javascript-sdk";
-import replicatedEntity from './replicated-entity-example'
+import replicatedEntity from "./replicated-entity-example";
 
 new AkkaServerless().addComponent(replicatedEntity).start();
