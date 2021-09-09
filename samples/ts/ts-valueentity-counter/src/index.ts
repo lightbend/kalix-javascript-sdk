@@ -15,6 +15,6 @@
  */
 
 import { AkkaServerless } from "@lightbend/akkaserverless-javascript-sdk";
-import counterEntity from './counter'
+import counterEntity from "./counter";
 
 new AkkaServerless().addComponent(counterEntity).start();

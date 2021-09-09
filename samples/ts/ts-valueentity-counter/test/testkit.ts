@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-import { Metadata, ValueEntity } from "@lightbend/akkaserverless-javascript-sdk";
+import {
+  Metadata,
+  ValueEntity
+} from "@lightbend/akkaserverless-javascript-sdk";
 import { Message } from "protobufjs";
 
 /**
@@ -36,9 +39,9 @@ export class MockValueEntity<S extends object> {
     this.entityId = entityId;
     this.state = entity.initial(entityId);
     this.grpcService = entity.serviceName
-        .split(".")
-        // @ts-ignore
-        .reduce((obj: any, part: any) => obj[part], entity.grpc).service;
+      .split(".")
+      // @ts-ignore
+      .reduce((obj: any, part: any) => obj[part], entity.grpc).service;
   }
 
   /**
@@ -50,15 +53,15 @@ export class MockValueEntity<S extends object> {
    * @returns the result of the command
    */
   handleCommand(
-      commandName: string,
-      command: any,
-      ctx = new MockValueEntityCommandContext()
+    commandName: string,
+    command: any,
+    ctx = new MockValueEntityCommandContext()
   ) {
     const handler = this.entity.commandHandlers[commandName];
     const grpcMethod = this.grpcService[commandName];
 
     const request = grpcMethod.requestDeserialize(
-        grpcMethod.requestSerialize(command)
+      grpcMethod.requestSerialize(command)
     );
 
     const { message, failure } = handler(request, this.state, ctx);
@@ -69,7 +72,9 @@ export class MockValueEntity<S extends object> {
     }
     this.error = failure;
 
-    return grpcMethod.responseDeserialize(grpcMethod.responseSerialize(message));
+    return grpcMethod.responseDeserialize(
+      grpcMethod.responseSerialize(message)
+    );
   }
 }
 
@@ -100,7 +105,7 @@ export class MockCommandContext {
       method,
       message,
       synchronous,
-      metadata,
+      metadata
     });
   }
 }
@@ -114,7 +119,10 @@ export class MockCommandContext {
  *
  * @type { import("../lib/akkaserverless").ValueEntityCommandContext<unknown> }
  */
-export class MockValueEntityCommandContext extends MockCommandContext implements ValueEntity.ValueEntityCommandContext {
+export class MockValueEntityCommandContext
+  extends MockCommandContext
+  implements ValueEntity.ValueEntityCommandContext
+{
   updatedState = undefined;
   delete = false;
   metadata: Metadata;
@@ -122,7 +130,7 @@ export class MockValueEntityCommandContext extends MockCommandContext implements
   commandId: Long;
   replyMetadata: Metadata;
 
-  forward() {};
+  forward() {}
 
   updateState(state: any) {
     this.updatedState = state;

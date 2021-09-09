@@ -16,23 +16,23 @@
 import { ValueEntity, replies } from "@lightbend/akkaserverless-javascript-sdk";
 import * as proto from "../lib/generated/proto";
 
-type Context            = ValueEntity.ValueEntityCommandContext;
+type Context = ValueEntity.ValueEntityCommandContext;
 
-type State              = proto.com.example.domain.CounterState;
+type State = proto.com.example.domain.CounterState;
 
-type IncreaseValue      = proto.com.example.IncreaseValue;
-type DecreaseValue      = proto.com.example.DecreaseValue;
-type ResetValue         = proto.com.example.ResetValue;
-type GetCounter         = proto.com.example.GetCounter;
+type IncreaseValue = proto.com.example.IncreaseValue;
+type DecreaseValue = proto.com.example.DecreaseValue;
+type ResetValue = proto.com.example.ResetValue;
+type GetCounter = proto.com.example.GetCounter;
 
 /**
  * Type definitions.
  * These types have been generated based on your proto source.
  * A TypeScript aware editor such as VS Code will be able to leverage them to provide hinting and validation.
- * 
+ *
  * State; the serialisable and persistable state of the entity
  * @typedef { import("../lib/generated/counterservice").State } State
- * 
+ *
  * CounterService; a strongly typed extension of ValueEntity derived from your proto source
  * @typedef { import("../lib/generated/counterservice").CounterService } CounterService
  */
@@ -41,10 +41,7 @@ type GetCounter         = proto.com.example.GetCounter;
  * @type CounterService
  */
 const entity: ValueEntity = new ValueEntity(
-  [
-    "counter_domain.proto",
-    "counter_api.proto"
-  ],
+  ["counter_domain.proto", "counter_api.proto"],
   "com.example.CounterService",
   "counter",
   {
@@ -65,32 +62,48 @@ entity.setCommandHandlers({
   GetCurrentCounter: getCurrentCounter
 });
 
-function increase(command: IncreaseValue, counter: State, ctx: Context): replies.Reply {
+function increase(
+  command: IncreaseValue,
+  counter: State,
+  ctx: Context
+): replies.Reply {
   if (command.value < 0) {
-    return replies.failure(`Increase requires a positive value. It was [${command.value}].`);
+    return replies.failure(
+      `Increase requires a positive value. It was [${command.value}].`
+    );
   }
   counter.value += command.value;
   ctx.updateState(counter);
   return replies.message({});
 }
 
-function decrease(command: DecreaseValue, counter: State, ctx: Context): replies.Reply {
+function decrease(
+  command: DecreaseValue,
+  counter: State,
+  ctx: Context
+): replies.Reply {
   if (command.value < 0) {
-    return replies.failure(`Decrease requires a positive value. It was [${command.value}].`);
+    return replies.failure(
+      `Decrease requires a positive value. It was [${command.value}].`
+    );
   }
   counter.value -= command.value;
   ctx.updateState(counter);
   return replies.message({});
 }
 
-function reset(command: ResetValue, counter: State, ctx: Context): replies.Reply {
+function reset(
+  command: ResetValue,
+  counter: State,
+  ctx: Context
+): replies.Reply {
   counter.value = 0;
   ctx.updateState(counter);
   return replies.message({});
 }
 
 function getCurrentCounter(command: GetCounter, counter: State): replies.Reply {
-  return replies.message({value: counter.value});
+  return replies.message({ value: counter.value });
 }
 
 export default entity;

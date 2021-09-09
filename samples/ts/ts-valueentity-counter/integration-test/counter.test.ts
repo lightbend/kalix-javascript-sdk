@@ -15,16 +15,15 @@
  */
 
 import { IntegrationTestkit } from "@lightbend/akkaserverless-javascript-sdk";
-import { expect } from "chai"
+import { expect } from "chai";
 import * as proto from "../lib/generated/proto";
 import counterEntity from "../src/counter";
 
-type CounterService = proto.com.example.CounterService
+type CounterService = proto.com.example.CounterService;
 
 type AsyncCounterService = {
-  [K in keyof CounterService as `${K}Async`]: CounterService[K]
-}
-
+  [K in keyof CounterService as `${K}Async`]: CounterService[K];
+};
 
 const testkit = new IntegrationTestkit().addComponent(counterEntity);
 
@@ -33,8 +32,7 @@ function client(): AsyncCounterService {
   return testkit.clients.CounterService;
 }
 
-describe("Counter service", function() {
-
+describe("Counter service", function () {
   this.timeout(60000);
 
   before(done => testkit.start(done));
@@ -43,7 +41,9 @@ describe("Counter service", function() {
   it("should increase non existing entity", async () => {
     const entityId = "new-id";
     await client().increaseAsync({ counterId: entityId, value: 42 });
-    const result = await client().getCurrentCounterAsync({ counterId: entityId });
+    const result = await client().getCurrentCounterAsync({
+      counterId: entityId
+    });
     expect(result).to.deep.equal({ value: 42 });
   });
 
@@ -51,8 +51,9 @@ describe("Counter service", function() {
     const entityId = "another-id";
     await client().increaseAsync({ counterId: entityId, value: 42 });
     await client().increaseAsync({ counterId: entityId, value: 27 });
-    const result = await client().getCurrentCounterAsync({ counterId: entityId });
+    const result = await client().getCurrentCounterAsync({
+      counterId: entityId
+    });
     expect(result).to.deep.equal({ value: 69 });
   });
-
 });
