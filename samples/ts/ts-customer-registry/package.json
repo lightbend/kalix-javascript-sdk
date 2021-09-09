@@ -36,11 +36,12 @@
     "typescript": "^4.3.5"
   },
   "scripts": {
-    "prettier-format": "prettier --write .",
+    "prettier-check": "prettier --check {src,integration-test}/**/*.ts",
+    "prettier-format": "prettier --write {src,integration-test}/**/*.ts",
     "compile-customer-api-proto": "mkdirp lib/generated && pbjs -t static-module -w commonjs --no-encode --no-decode --no-verify --no-convert --no-delimited customer_api.proto -o lib/generated/customer_api.js && pbts --no-comments -o lib/generated/customer_api.d.ts lib/generated/customer_api.js",
     "compile-customer-domain-proto": "mkdirp lib/generated && pbjs -t static-module -w commonjs --no-encode --no-decode --no-verify --no-convert --no-delimited customer_domain.proto -o lib/generated/customer_domain.js && pbts --no-comments -o lib/generated/customer_domain.d.ts lib/generated/customer_domain.js",
     "compile-customer-view-proto": "mkdirp lib/generated && pbjs -t static-module -w commonjs --no-encode --no-decode --no-verify --no-convert --no-delimited customer_view.proto -o lib/generated/customer_view.js && pbts --no-comments -o lib/generated/customer_view.d.ts lib/generated/customer_view.js",
-    "build": "compile-descriptor customer_api.proto customer_domain.proto customer_view.proto && npm run compile-customer-api-proto && npm run compile-customer-domain-proto && npm run compile-customer-view-proto && tsc",
+    "build": "compile-descriptor customer_api.proto customer_domain.proto customer_view.proto && npm run compile-customer-api-proto && npm run compile-customer-domain-proto && npm run compile-customer-view-proto && npm run prettier-check && tsc",
     "pretest": "npm run build",
     "test": "ts-mocha",
     "preintegration-test": "npm run build",
