@@ -19,27 +19,30 @@ import * as proto from "../lib/generated/proto";
 
 type State = proto.example.users.User;
 
-type User  = proto.example.users.User;
+type User = proto.example.users.User;
 
-const view: View = new View(
-    ["users.proto"],
-    "example.users.UserEmailCount",
-    {
-        viewId: "user-email-count"
-    }
-);
+const view: View = new View(["users.proto"], "example.users.UserEmailCount", {
+  viewId: "user-email-count"
+});
 
 view.setUpdateHandlers({
-    "UpdateUser": updateUser
+  UpdateUser: updateUser
 });
 
 function updateUser(userEvent: User, previousViewState: State) {
-    console.log("Updating view for " + userEvent.userId + " with " + userEvent.emails.length + " email addresses, previous state: " + JSON.stringify(previousViewState))
-    // object automagically turned into UserEmailCountState by sdk view logic
-    return {
-        userId: userEvent.userId,
-        emailCount: userEvent.emails.length
-    };
+  console.log(
+    "Updating view for " +
+      userEvent.userId +
+      " with " +
+      userEvent.emails.length +
+      " email addresses, previous state: " +
+      JSON.stringify(previousViewState)
+  );
+  // object automagically turned into UserEmailCountState by sdk view logic
+  return {
+    userId: userEvent.userId,
+    emailCount: userEvent.emails.length
+  };
 }
 
 export default view;

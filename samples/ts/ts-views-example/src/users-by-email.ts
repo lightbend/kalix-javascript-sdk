@@ -16,12 +16,8 @@
 
 import { View } from "@lightbend/akkaserverless-javascript-sdk";
 
-const view: View = new View(
-  ["users.proto"],
-  "example.users.UsersByEmail",
-  {
-    viewId: "users-by-email"
-  }
-);
+const view: View = new View(["users.proto"], "example.users.UsersByEmail", {
+  viewId: "users-by-email"
+});
 
 export default view;

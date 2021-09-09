@@ -28,14 +28,21 @@
   },
   "devDependencies": {
     "@types/mocha": "^8.2.3",
+    "@typescript-eslint/eslint-plugin": "^4.31.0",
+    "@typescript-eslint/parser": "^4.31.0",
     "chai": "4.2.0",
+    "eslint": "^7.32.0",
+    "eslint-config-prettier": "^8.3.0",
     "mocha": "^8.4.0",
+    "prettier": "^2.3.2",
     "ts-mocha": "^8.0.0",
     "typescript": "^4.3.5"
   },
   "scripts": {
+    "lint-check": "eslint src --ext .ts && prettier --check src/**/*.ts",
+    "lint-fix": "eslint src --ext .ts --fix && prettier --write src/**/*.ts",
     "compile-users-proto": "mkdirp lib/generated && pbjs -t static-module -w commonjs --no-encode --no-decode --no-verify --no-convert --no-delimited users.proto -o lib/generated/proto.js && pbts --no-comments -o lib/generated/proto.d.ts lib/generated/proto.js",
-    "build": "compile-descriptor users.proto & npm run compile-users-proto & tsc",
+    "build": "compile-descriptor users.proto && npm run compile-users-proto && npm run lint-check && tsc",
     "pretest": "npm run build",
     "test": "ts-mocha",
     "prestart": "npm run build",

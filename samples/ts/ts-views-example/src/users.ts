@@ -17,11 +17,11 @@
 import { ValueEntity, replies } from "@lightbend/akkaserverless-javascript-sdk";
 import * as proto from "../lib/generated/proto";
 
-type Context           = ValueEntity.ValueEntityCommandContext;
-type State             = proto.example.users.User;
+type Context = ValueEntity.ValueEntityCommandContext;
+type State = proto.example.users.User;
 
-type User              = proto.example.users.User;
-type GetUserRequest    = proto.example.users.GetUserRequest;
+type User = proto.example.users.User;
+type GetUserRequest = proto.example.users.GetUserRequest;
 
 const entity: ValueEntity = new ValueEntity(
   ["users.proto"],
@@ -32,12 +32,12 @@ const entity: ValueEntity = new ValueEntity(
 const pkg = "example.users.";
 const User = entity.lookupType(pkg + "User");
 
-entity.initial = (entityId) => User.create({userId: entityId});
+entity.initial = entityId => User.create({ userId: entityId });
 
 entity.commandHandlers = {
   UpdateUser: updateUser,
   GetUser: getUser
-}
+};
 
 function updateUser(update: User, user: State, ctx: Context): replies.Reply {
   update.userId = ctx.entityId;

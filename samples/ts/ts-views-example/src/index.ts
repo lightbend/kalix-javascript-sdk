@@ -20,8 +20,7 @@ import usersByMailView from "./users-by-email";
 import usersMailCountView from "./user-email-count";
 
 new AkkaServerless()
-    .addComponent(usersEntity)
-    .addComponent(usersByMailView)
-    .addComponent(usersMailCountView)
-    .start();
-
+  .addComponent(usersEntity)
+  .addComponent(usersByMailView)
+  .addComponent(usersMailCountView)
+  .start();
