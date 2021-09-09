@@ -16,14 +16,14 @@
 import { ValueEntity, replies } from "@lightbend/akkaserverless-javascript-sdk";
 import * as proto from "../lib/generated/proto";
 
-type Context            = ValueEntity.ValueEntityCommandContext;
+type Context = ValueEntity.ValueEntityCommandContext;
 
-type State              = proto.com.example.shoppingcart.domain.Cart;
+type State = proto.com.example.shoppingcart.domain.Cart;
 
-type AddLineItem        = proto.com.example.shoppingcart.AddLineItem
-type RemoveLineItem     = proto.com.example.shoppingcart.RemoveLineItem
-type GetShoppingCart    = proto.com.example.shoppingcart.GetShoppingCart
-type RemoveShoppingCart = proto.com.example.shoppingcart.RemoveShoppingCart
+type AddLineItem = proto.com.example.shoppingcart.AddLineItem;
+type RemoveLineItem = proto.com.example.shoppingcart.RemoveLineItem;
+type GetShoppingCart = proto.com.example.shoppingcart.GetShoppingCart;
+type RemoveShoppingCart = proto.com.example.shoppingcart.RemoveShoppingCart;
 
 /**
  * Type definitions.
@@ -41,10 +41,7 @@ type RemoveShoppingCart = proto.com.example.shoppingcart.RemoveShoppingCart
  * @type ShoppingCartService
  */
 const entity: ValueEntity = new ValueEntity(
-  [
-    "shoppingcart_domain.proto",
-    "shoppingcart_api.proto"
-  ],
+  ["shoppingcart_domain.proto", "shoppingcart_api.proto"],
   "com.example.shoppingcart.ShoppingCartService",
   "shopping-cart",
   {
@@ -83,15 +80,20 @@ entity.setCommandHandlers({
   RemoveCart: removeCart
 });
 
-
 /**
  * Handler for add item commands.
  */
-function addItem(addItem: AddLineItem, cart: State, ctx: Context): replies.Reply {
+function addItem(
+  addItem: AddLineItem,
+  cart: State,
+  ctx: Context
+): replies.Reply {
   // Validation:
   // Make sure that it is not possible to add negative quantities
   if (addItem.quantity < 1) {
-    return replies.failure("Cannot add negative quantity to item " + addItem.productId);
+    return replies.failure(
+      "Cannot add negative quantity to item " + addItem.productId
+    );
   } else {
     // If there is an existing item with that product id, we need to increment its quantity.
     const existing = cart.items.find(item => {
@@ -112,7 +114,11 @@ function addItem(addItem: AddLineItem, cart: State, ctx: Context): replies.Reply
 /**
  * Handler for remove item commands.
  */
-function removeItem(removeItem: RemoveLineItem, cart: State, ctx: Context): replies.Reply {
+function removeItem(
+  removeItem: RemoveLineItem,
+  cart: State,
+  ctx: Context
+): replies.Reply {
   // Validation:
   // Check that the item that we're removing actually exists.
   const existing = cart.items.find(item => {
@@ -145,7 +151,11 @@ function getCart(request: GetShoppingCart, cart: State): replies.Reply {
 /**
  * Handler for remove cart commands.
  */
-function removeCart(request: RemoveShoppingCart, cart: State, ctx: Context): replies.Reply {
+function removeCart(
+  request: RemoveShoppingCart,
+  cart: State,
+  ctx: Context
+): replies.Reply {
   ctx.deleteState();
   return replies.noReply();
 }

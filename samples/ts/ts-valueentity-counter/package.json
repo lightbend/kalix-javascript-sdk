@@ -39,7 +39,7 @@
     "start": "node dist/index.js",
     "test": "ts-mocha test/**/*.test.ts",
     "integration-test": "ts-mocha integration-test/**/*.test.ts",
-    "build": "akkasls-scripts build && rimraf {src,test,integration-test}/**/*.js && rimraf lib/**/*{akkaserverless,counter,index}.{js,d.ts} && tsc",
+    "build": "akkasls-scripts build && rimraf {src,test,integration-test}/**/*.js && rimraf lib/**/*{akkaserverless,counter,index}.{js,d.ts} && npm run lint-check && tsc",
     "package": "akkasls-scripts package",
     "deploy": "akkasls-scripts deploy"
   }

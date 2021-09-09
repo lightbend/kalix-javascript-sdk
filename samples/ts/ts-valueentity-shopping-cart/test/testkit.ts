@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-import { Metadata, ValueEntity } from "@lightbend/akkaserverless-javascript-sdk";
+import {
+  Metadata,
+  ValueEntity
+} from "@lightbend/akkaserverless-javascript-sdk";
 
 /**
  * Mocks the behaviour of a single Akka Serverless Value entity.
@@ -99,7 +102,7 @@ export class MockCommandContext {
       method,
       message,
       synchronous,
-      metadata,
+      metadata
     });
   }
 }
@@ -113,7 +116,10 @@ export class MockCommandContext {
  *
  * @type { import("../lib/akkaserverless").ValueEntityCommandContext<unknown> }
  */
-export class MockValueEntityCommandContext extends MockCommandContext implements ValueEntity.ValueEntityCommandContext {
+export class MockValueEntityCommandContext
+  extends MockCommandContext
+  implements ValueEntity.ValueEntityCommandContext
+{
   updatedState = undefined;
   delete = false;
   metadata: Metadata;
@@ -121,7 +127,7 @@ export class MockValueEntityCommandContext extends MockCommandContext implements
   commandId: Long;
   replyMetadata: Metadata;
 
-  forward() {};
+  forward() {}
 
   updateState(state: any) {
     this.updatedState = state;

@@ -28,21 +28,31 @@ describe("ShoppingCartService", () => {
     it("should respond to addItem commands", () => {
       const entity = new MockValueEntity<State>(shoppingcart, entityId);
 
-      entity.handleCommand(
-        "AddItem", { cartId: "cart1", productId: "a", name: "Apple", quantity: 1 });
-      entity.handleCommand(
-        "AddItem", { cartId: "cart1", productId: "b", name: "Banana", quantity: 2 });
-      entity.handleCommand(
-        "AddItem", { cartId: "cart1", productId: "c", name: "Cantaloupe", quantity: 3 });
+      entity.handleCommand("AddItem", {
+        cartId: "cart1",
+        productId: "a",
+        name: "Apple",
+        quantity: 1
+      });
+      entity.handleCommand("AddItem", {
+        cartId: "cart1",
+        productId: "b",
+        name: "Banana",
+        quantity: 2
+      });
+      entity.handleCommand("AddItem", {
+        cartId: "cart1",
+        productId: "c",
+        name: "Cantaloupe",
+        quantity: 3
+      });
 
       expect(entity.error).to.be.undefined;
-      expect(entity.state.items)
-        .to.deep.equal(
-          [
-            { cartId: 'cart1', productId: 'a', name: 'Apple', quantity: 1 },
-            { cartId: 'cart1', productId: 'b', name: 'Banana', quantity: 2 },
-            { cartId: 'cart1', productId: 'c', name: 'Cantaloupe', quantity: 3 }
-          ]);
+      expect(entity.state.items).to.deep.equal([
+        { cartId: "cart1", productId: "a", name: "Apple", quantity: 1 },
+        { cartId: "cart1", productId: "b", name: "Banana", quantity: 2 },
+        { cartId: "cart1", productId: "c", name: "Cantaloupe", quantity: 3 }
+      ]);
     });
   });
 
@@ -50,27 +60,30 @@ describe("ShoppingCartService", () => {
     it("should remove items from a cart", () => {
       const entity = new MockValueEntity<State>(shoppingcart, entityId);
 
-      entity.handleCommand(
-        "AddItem", { cartId: "cart1", productId: "a", name: "Apple", quantity: 1 });
-      entity.handleCommand(
-        "AddItem", { cartId: "cart1", productId: "b", name: "Banana", quantity: 2 });
+      entity.handleCommand("AddItem", {
+        cartId: "cart1",
+        productId: "a",
+        name: "Apple",
+        quantity: 1
+      });
+      entity.handleCommand("AddItem", {
+        cartId: "cart1",
+        productId: "b",
+        name: "Banana",
+        quantity: 2
+      });
 
       expect(entity.error).to.be.undefined;
-      expect(entity.state.items)
-        .to.deep.equal(
-          [
-            { cartId: 'cart1', productId: 'a', name: 'Apple', quantity: 1 },
-            { cartId: 'cart1', productId: 'b', name: 'Banana', quantity: 2 }
-          ]);
+      expect(entity.state.items).to.deep.equal([
+        { cartId: "cart1", productId: "a", name: "Apple", quantity: 1 },
+        { cartId: "cart1", productId: "b", name: "Banana", quantity: 2 }
+      ]);
 
-      entity.handleCommand(
-        "RemoveItem", { cartId: "cart1", productId: "a" });
+      entity.handleCommand("RemoveItem", { cartId: "cart1", productId: "a" });
       expect(entity.error).to.be.undefined;
-      expect(entity.state.items)
-        .to.deep.equal(
-          [
-            { cartId: 'cart1', productId: 'b', name: 'Banana', quantity: 2 }
-          ]);
+      expect(entity.state.items).to.deep.equal([
+        { cartId: "cart1", productId: "b", name: "Banana", quantity: 2 }
+      ]);
     });
   });
 
@@ -86,28 +99,36 @@ describe("ShoppingCartService", () => {
 
   describe("RemoveCart", () => {
     it("should remove a cart", () => {
-
       const entity = new MockValueEntity<State>(shoppingcart, entityId);
 
-      entity.handleCommand(
-        "AddItem", { cartId: "cart1", productId: "a", name: "Apple", quantity: 1 });
-      entity.handleCommand(
-        "AddItem", { cartId: "cart1", productId: "b", name: "Banana", quantity: 2 });
-      entity.handleCommand(
-        "AddItem", { cartId: "cart1", productId: "c", name: "Cantaloupe", quantity: 3 });
+      entity.handleCommand("AddItem", {
+        cartId: "cart1",
+        productId: "a",
+        name: "Apple",
+        quantity: 1
+      });
+      entity.handleCommand("AddItem", {
+        cartId: "cart1",
+        productId: "b",
+        name: "Banana",
+        quantity: 2
+      });
+      entity.handleCommand("AddItem", {
+        cartId: "cart1",
+        productId: "c",
+        name: "Cantaloupe",
+        quantity: 3
+      });
 
       expect(entity.error).to.be.undefined;
-      expect(entity.state.items)
-        .to.deep.equal(
-          [
-            { cartId: 'cart1', productId: 'a', name: 'Apple', quantity: 1 },
-            { cartId: 'cart1', productId: 'b', name: 'Banana', quantity: 2 },
-            { cartId: 'cart1', productId: 'c', name: 'Cantaloupe', quantity: 3 }
-          ]);
+      expect(entity.state.items).to.deep.equal([
+        { cartId: "cart1", productId: "a", name: "Apple", quantity: 1 },
+        { cartId: "cart1", productId: "b", name: "Banana", quantity: 2 },
+        { cartId: "cart1", productId: "c", name: "Cantaloupe", quantity: 3 }
+      ]);
 
-      entity.handleCommand(
-        "RemoveCart", { cartId: "cart1" })
-      expect(entity.state.items).to.be.empty
+      entity.handleCommand("RemoveCart", { cartId: "cart1" });
+      expect(entity.state.items).to.be.empty;
     });
   });
 });

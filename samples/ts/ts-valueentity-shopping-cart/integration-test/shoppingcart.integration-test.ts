@@ -15,15 +15,15 @@
  */
 
 import { IntegrationTestkit } from "@lightbend/akkaserverless-javascript-sdk";
-import { expect } from "chai"
+import { expect } from "chai";
 import * as proto from "../lib/generated/proto";
-import shoppingcartEnity from '../src/shoppingcart'
+import shoppingcartEnity from "../src/shoppingcart";
 
-type ShoppingCartService = proto.com.example.shoppingcart.ShoppingCartService
+type ShoppingCartService = proto.com.example.shoppingcart.ShoppingCartService;
 
 type AsyncShoppingCartService = {
-  [K in keyof ShoppingCartService as `${K}Async`]: ShoppingCartService[K]
-}
+  [K in keyof ShoppingCartService as `${K}Async`]: ShoppingCartService[K];
+};
 
 const testkit = new IntegrationTestkit().addComponent(shoppingcartEnity);
 
@@ -33,7 +33,6 @@ function client(): AsyncShoppingCartService {
 }
 
 describe("Shopping cart service", function () {
-
   this.timeout(60000);
 
   before(done => testkit.start(done));
@@ -45,57 +44,94 @@ describe("Shopping cart service", function () {
   });
 
   it("should add items to a cart", async () => {
-    await client().addItemAsync({ cartId: "cart2", productId: "a", name: "Apple", quantity: 1 });
-    await client().addItemAsync({ cartId: "cart2", productId: "b", name: "Banana", quantity: 2 });
-    await client().addItemAsync({ cartId: "cart2", productId: "c", name: "Cantaloupe", quantity: 3 });
-    
+    await client().addItemAsync({
+      cartId: "cart2",
+      productId: "a",
+      name: "Apple",
+      quantity: 1
+    });
+    await client().addItemAsync({
+      cartId: "cart2",
+      productId: "b",
+      name: "Banana",
+      quantity: 2
+    });
+    await client().addItemAsync({
+      cartId: "cart2",
+      productId: "c",
+      name: "Cantaloupe",
+      quantity: 3
+    });
+
     const cart = await client().getCartAsync({ cartId: "cart2" });
     expect(cart.items).to.deep.equal([
-      { productId: 'a', name: 'Apple', quantity: 1 },
-      { productId: 'b', name: 'Banana', quantity: 2 },
-      { productId: 'c', name: 'Cantaloupe', quantity: 3 }
+      { productId: "a", name: "Apple", quantity: 1 },
+      { productId: "b", name: "Banana", quantity: 2 },
+      { productId: "c", name: "Cantaloupe", quantity: 3 }
     ]);
   });
 
   it("should remove items from a cart", async () => {
-    await client().addItemAsync({ cartId: "cart3", productId: "a", name: "Apple", quantity: 1 });
-    await client().addItemAsync({ cartId: "cart3", productId: "b", name: "Banana", quantity: 2 });
+    await client().addItemAsync({
+      cartId: "cart3",
+      productId: "a",
+      name: "Apple",
+      quantity: 1
+    });
+    await client().addItemAsync({
+      cartId: "cart3",
+      productId: "b",
+      name: "Banana",
+      quantity: 2
+    });
 
-    { // after adding items
+    {
+      // after adding items
       const cart = await client().getCartAsync({ cartId: "cart3" });
       expect(cart.items).to.deep.equal([
-        { productId: 'a', name: 'Apple', quantity: 1 },
-        { productId: 'b', name: 'Banana', quantity: 2 }
+        { productId: "a", name: "Apple", quantity: 1 },
+        { productId: "b", name: "Banana", quantity: 2 }
       ]);
     }
-    
+
     await client().removeItemAsync({ cartId: "cart3", productId: "a" });
-    { // after removing 'Apple'
+    {
+      // after removing 'Apple'
       const cart = await client().getCartAsync({ cartId: "cart3" });
       expect(cart.items).to.deep.equal([
-        { productId: 'b', name: 'Banana', quantity: 2 }
+        { productId: "b", name: "Banana", quantity: 2 }
       ]);
     }
   });
 
   it("should remove a cart", async () => {
-    await client().addItemAsync({ cartId: "cart4", productId: "a", name: "Apple", quantity: 1 });
-    await client().addItemAsync({ cartId: "cart4", productId: "b", name: "Banana", quantity: 2 });
+    await client().addItemAsync({
+      cartId: "cart4",
+      productId: "a",
+      name: "Apple",
+      quantity: 1
+    });
+    await client().addItemAsync({
+      cartId: "cart4",
+      productId: "b",
+      name: "Banana",
+      quantity: 2
+    });
 
-    { // after adding items
+    {
+      // after adding items
       const cart = await client().getCartAsync({ cartId: "cart4" });
       expect(cart.items).to.deep.equal([
-        { productId: 'a', name: 'Apple', quantity: 1 },
-        { productId: 'b', name: 'Banana', quantity: 2 }
+        { productId: "a", name: "Apple", quantity: 1 },
+        { productId: "b", name: "Banana", quantity: 2 }
       ]);
     }
 
     await client().removeCartAsync({ cartId: "cart4" });
-    { // after removing cart
+    {
+      // after removing cart
       const cart = await client().getCartAsync({ cartId: "cart4" });
       expect(cart).to.deep.equal({});
     }
-    
   });
-
 });

@@ -15,6 +15,6 @@
  */
 
 import { AkkaServerless } from "@lightbend/akkaserverless-javascript-sdk";
-import shoppingcartEntity from './shoppingcart'
+import shoppingcartEntity from "./shoppingcart";
 
 new AkkaServerless().addComponent(shoppingcartEntity).start();
