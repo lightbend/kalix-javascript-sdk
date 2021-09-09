@@ -16,12 +16,12 @@
 
 import { View } from "@lightbend/akkaserverless-javascript-sdk";
 import { customer as customerDomain } from "../lib/generated/customer_domain";
-import { customer as customerView } from "../lib/generated/customer_view"
+import { customer as customerView } from "../lib/generated/customer_view";
 
-type State                    = customerDomain.domain.CustomerState
-type CustomerCreated          = customerDomain.domain.CustomerCreated
-type CustomerNameChanged      = customerDomain.domain.CustomerNameChanged
-type Any                      = customerView.view.Any
+type State = customerDomain.domain.CustomerState;
+type CustomerCreated = customerDomain.domain.CustomerCreated;
+type CustomerNameChanged = customerDomain.domain.CustomerNameChanged;
+type Any = customerView.view.Any;
 
 const view: View = new View(
   ["customer_view.proto", "customer_domain.proto"],
@@ -31,7 +31,7 @@ const view: View = new View(
   }
 );
 
-const CustomerState = view.lookupType("customer.domain.CustomerState")
+const CustomerState = view.lookupType("customer.domain.CustomerState");
 
 view.setUpdateHandlers({
   ProcessCustomerCreated: customerCreated,
@@ -40,19 +40,18 @@ view.setUpdateHandlers({
 });
 
 function customerCreated(event: CustomerCreated, state: State) {
-  if (state)
-    return state // already created
-  else
-    return CustomerState.create(event.customer || {})
+  if (state) return state;
+  // already created
+  else return CustomerState.create(event.customer || {});
 }
 
 function customerNameChanged(event: CustomerNameChanged, state: State) {
-  state.name = event.newName
-  return state
+  state.name = event.newName;
+  return state;
 }
 
 function ignoreOtherEvents(event: Any, state: State) {
-  return state
+  return state;
 }
 
 export default view;

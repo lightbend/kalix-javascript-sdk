@@ -18,15 +18,14 @@ import { ValueEntity, replies } from "@lightbend/akkaserverless-javascript-sdk";
 import { customer as customerApi } from "../lib/generated/customer_api";
 import { customer as customerDomain } from "../lib/generated/customer_domain";
 
-type Context              = ValueEntity.ValueEntityCommandContext;
+type Context = ValueEntity.ValueEntityCommandContext;
 
-type State                = customerDomain.domain.CustomerState
+type State = customerDomain.domain.CustomerState;
 
-type Customer             = customerApi.api.Customer
-type ChangeNameRequest    = customerApi.api.ChangeNameRequest
-type ChangeAddressRequest = customerApi.api.ChangeAddressRequest
-type GetCustomerRequest   = customerApi.api.GetCustomerRequest
-
+type Customer = customerApi.api.Customer;
+type ChangeNameRequest = customerApi.api.ChangeNameRequest;
+type ChangeAddressRequest = customerApi.api.ChangeAddressRequest;
+type GetCustomerRequest = customerApi.api.GetCustomerRequest;
 
 const entity: ValueEntity = new ValueEntity(
   ["customer_api.proto", "customer_domain.proto"],
@@ -37,61 +36,82 @@ const entity: ValueEntity = new ValueEntity(
 const domainPkg = "customer.domain.";
 const domain = {
   CustomerState: entity.lookupType(domainPkg + "CustomerState"),
-  Address: entity.lookupType(domainPkg + "Address"),
-}
-const apiPkg = "customer.api."
+  Address: entity.lookupType(domainPkg + "Address")
+};
+const apiPkg = "customer.api.";
 const api = {
   Customer: entity.lookupType(apiPkg + "Customer")
-}
+};
 
-entity.setInitial(customerId => domain.CustomerState.create({ customerId: customerId }));
+entity.setInitial(customerId =>
+  domain.CustomerState.create({ customerId: customerId })
+);
 
 entity.setCommandHandlers({
   Create: create,
   ChangeName: changeName,
   ChangeAddress: changeAddress,
   GetCustomer: getCustomer
-})
+});
 
-function create(customerRequest: Customer, customer: State, ctx: Context): replies.Reply {
-  let domainCustomer = apiCustomerToCustomerState(customerRequest)
-  ctx.updateState(domainCustomer)
-  return replies.noReply()
+function create(
+  customerRequest: Customer,
+  customer: State,
+  ctx: Context
+): replies.Reply {
+  let domainCustomer = apiCustomerToCustomerState(customerRequest);
+  ctx.updateState(domainCustomer);
+  return replies.noReply();
 }
 
-function changeName(changeNameRequest: ChangeNameRequest, customer: State, ctx: Context): replies.Reply {
+function changeName(
+  changeNameRequest: ChangeNameRequest,
+  customer: State,
+  ctx: Context
+): replies.Reply {
   if (!customer.name && !customer.email) {
-    return replies.failure("Customer must be created before name can be changed.")
+    return replies.failure(
+      "Customer must be created before name can be changed."
+    );
   } else {
-    customer.name = changeNameRequest.newName
-    ctx.updateState(customer)
-    return replies.noReply()
+    customer.name = changeNameRequest.newName;
+    ctx.updateState(customer);
+    return replies.noReply();
   }
 }
 
-function changeAddress(changeAddressRequest: ChangeAddressRequest, customer: State, ctx: Context): replies.Reply {
+function changeAddress(
+  changeAddressRequest: ChangeAddressRequest,
+  customer: State,
+  ctx: Context
+): replies.Reply {
   if (!customer.name) {
-    return replies.failure("Customer must be created before address can be changed.")
+    return replies.failure(
+      "Customer must be created before address can be changed."
+    );
   } else {
-    customer.address = changeAddressRequest.newAddress
-    ctx.updateState(customer)
-    return replies.noReply()
+    customer.address = changeAddressRequest.newAddress;
+    ctx.updateState(customer);
+    return replies.noReply();
   }
 }
 
-function getCustomer(getCustomerRequest: GetCustomerRequest, state: State): replies.Reply {
-  let apiCustomer = customerStateToApiCustomer(state)
-  return replies.message(apiCustomer)
+function getCustomer(
+  getCustomerRequest: GetCustomerRequest,
+  state: State
+): replies.Reply {
+  let apiCustomer = customerStateToApiCustomer(state);
+  return replies.message(apiCustomer);
 }
 
 function apiCustomerToCustomerState(apiCustomer: Customer) {
   // right now these two have the same fields so conversion is easy
-  return domain.CustomerState.create(apiCustomer)
+  return domain.CustomerState.create(apiCustomer);
 }
 
 function customerStateToApiCustomer(customer: State) {
   // right now these two have the same fields so conversion is easy
-  return api.Customer.create(customer)
+  return api.Customer.create(customer);
 }
 
 export default entity;

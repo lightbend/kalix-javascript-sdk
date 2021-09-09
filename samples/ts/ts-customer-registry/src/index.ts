@@ -20,16 +20,17 @@ import customerValueEntityView from "./customer-value-entity-view";
 import customerEventSourcedEntity from "./customer-event-sourced-entity";
 import customerEventSourcedEntityView from "./customer-event-sourced-view";
 
-if (!process.argv || process.argv.length === 2) { // node file.js - 2 args means no extra arg
-  console.log("Starting Value Entity")
+if (!process.argv || process.argv.length === 2) {
+  // node file.js - 2 args means no extra arg
+  console.log("Starting Value Entity");
   new AkkaServerless()
-      .addComponent(customerValueEntity)
-      .addComponent(customerValueEntityView)
-      .start();
+    .addComponent(customerValueEntity)
+    .addComponent(customerValueEntityView)
+    .start();
 } else {
-  console.log("Starting Event Sourced Entity")
+  console.log("Starting Event Sourced Entity");
   new AkkaServerless()
-      .addComponent(customerEventSourcedEntity)
-      .addComponent(customerEventSourcedEntityView)
-      .start();
+    .addComponent(customerEventSourcedEntity)
+    .addComponent(customerEventSourcedEntityView)
+    .start();
 }
