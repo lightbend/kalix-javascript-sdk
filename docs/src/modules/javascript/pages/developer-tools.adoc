@@ -1,0 +1,64 @@
+= Developer Tools
+
+The Javascript tooling is published to npm or yarn under the https://www.npmjs.com/org/lightbend[`@lightbend` organisation].
+
+== Kickstart
+
+Entity initialization is provided via the _create-akkasls-entity_ command line tool. This tool requires only a name for the new entity, and creates a new npm project directory with the Akka Serverless SDK and associated development support tooling set up.
+
+An initial codebase for a new entity can be created using either npm or Yarn:
+
+[.tabset]
+npm::
++
+[source,command line]
+----
+npx @lightbend/create-akkasls-entity my-entity
+cd my-entity
+npm install
+npm run build
+----
+
+Yarn::
++
+[source,command line]
+----
+yarn create @lightbend/akkasls-entity my-entity
+cd my-entity
+yarn
+yarn build
+----
+
+== Ongoing development support
+The development support tooling is provided via a single npm package; _akkasls-scripts_. This package is intended to be invoked from your npm scripts configuration and provides a single script designed to be invoked from the command line.
+
+=== Commands
+The _akkasls-scripts_ script is expected to be invoked with a single argument, specifying one of the following commands:
+
+* `build`; generates implementation stubs for your entity/service and corresponding tests, as well as a refined Typescript interface for your implementation to implement. This interface is referenced in the generated implementation using JsDoc, such that any Typescript-aware editor (such as VS Code) can leverage it.  If you make further updates to your Protobuf specification after the initial generation, existing implementation is left unchanged but the interface is updated to align. This allows you to leverage native developer tooling to guide the desired changes.
+* `package`; invokes the Docker CLI to build a deployable image, based on a Dockerfile expected to exist in the root directory of your project. The Kickstart tool generates a suitable Dockerfile, however you can modify or replace this to suit your needs.
+* `deploy`; invokes the `akkasls` command line tool to deploy the service to Akka Serverless. This relies on an existing installation of the CLI and uses configuration and credentials from that installation.
+
+NOTE: The deploy command requires the Akka Serverless CLI to be installed on your system.
+
+=== Installation
+The package can be added to your project via npm:
+
+[source,command line]
+----
+npm install --save-dev @lightbend/akkasls-scripts
+----
+
+=== Configuration
+Configuration is pulled from the `config` section of your project's `package.json`, and the command will fail if any required configuration is not present. For example:
+
+[source,json]
+----
+  "config": {
+    "dockerImage": "my-docker-repo/my-image",
+    "sourceDir": "./src",
+    "testSourceDir": "./test",
+    "protoSourceDir": "./proto",
+    "generatedSourceDir": "./lib/generated"
+  },
+----
