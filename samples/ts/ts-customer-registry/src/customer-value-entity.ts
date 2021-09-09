@@ -59,7 +59,7 @@ function create(
   customer: State,
   ctx: Context
 ): replies.Reply {
-  let domainCustomer = apiCustomerToCustomerState(customerRequest);
+  const domainCustomer = apiCustomerToCustomerState(customerRequest);
   ctx.updateState(domainCustomer);
   return replies.noReply();
 }
@@ -100,7 +100,7 @@ function getCustomer(
   getCustomerRequest: GetCustomerRequest,
   state: State
 ): replies.Reply {
-  let apiCustomer = customerStateToApiCustomer(state);
+  const apiCustomer = customerStateToApiCustomer(state);
   return replies.message(apiCustomer);
 }
 
