@@ -42,7 +42,7 @@ entity.commandHandlers = {
 function updateUser(update: User, user: State, ctx: Context): replies.Reply {
   update.userId = ctx.entityId;
   ctx.updateState(User.create(update));
-  return replies.noReply();
+  return replies.message({});
 }
 
 function getUser(request: GetUserRequest, user: State): replies.Reply {

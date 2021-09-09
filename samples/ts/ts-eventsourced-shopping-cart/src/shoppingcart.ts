@@ -123,7 +123,7 @@ function addItem(
   });
   // Emit the event.
   ctx.emit(itemAdded);
-  return replies.noReply();
+  return replies.message({});
 }
 
 /**
@@ -150,7 +150,7 @@ function removeItem(
     productId: removeItem.productId
   });
   ctx.emit(itemRemoved);
-  return replies.noReply();
+  return replies.message({});
 }
 
 /**

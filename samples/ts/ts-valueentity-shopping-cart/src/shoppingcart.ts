@@ -108,7 +108,7 @@ function addItem(
     }
     ctx.updateState(cart);
   }
-  return replies.noReply();
+  return replies.message({});
 }
 
 /**
@@ -137,7 +137,7 @@ function removeItem(
 
     ctx.updateState(cart);
   }
-  return replies.noReply();
+  return replies.message({});
 }
 
 /**
@@ -157,7 +157,7 @@ function removeCart(
   ctx: Context
 ): replies.Reply {
   ctx.deleteState();
-  return replies.noReply();
+  return replies.message({});
 }
 
 export default entity;

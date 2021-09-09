@@ -61,7 +61,7 @@ function create(
 ): replies.Reply {
   const domainCustomer = apiCustomerToCustomerState(customerRequest);
   ctx.updateState(domainCustomer);
-  return replies.noReply();
+  return replies.message({});
 }
 
 function changeName(
@@ -76,7 +76,7 @@ function changeName(
   } else {
     customer.name = changeNameRequest.newName;
     ctx.updateState(customer);
-    return replies.noReply();
+    return replies.message({});
   }
 }
 
@@ -92,7 +92,7 @@ function changeAddress(
   } else {
     customer.address = changeAddressRequest.newAddress;
     ctx.updateState(customer);
-    return replies.noReply();
+    return replies.message({});
   }
 }
 
