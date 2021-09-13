@@ -1,7 +1,7 @@
 {
   "name": "ts-replicated-entity-example",
   "version": "0.0.0",
-  "description": "Akka Serverless JavaScript SDK example for replicated entities",
+  "description": "Akka Serverless TypeScript SDK example for replicated entities",
   "homepage": "https://github.com/lightbend/akkaserverless-javascript-sdk",
   "bugs": {
     "url": "https://github.com/lightbend/akkaserverless-javascript-sdk/issues"
