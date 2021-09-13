@@ -42,10 +42,10 @@ apidocs:
 
 examples:
 	mkdir -p "${managed_examples}"
-	rsync -a --exclude-from=.examplesignore ../samples/js-customer-registry/ "${managed_examples}/js-customer-registry/"
-	rsync -a --exclude-from=.examplesignore ../samples/js-valueentity-shopping-cart/ "${managed_examples}/js-valueentity-shopping-cart/"
-	rsync -a --exclude-from=.examplesignore ../samples/valueentity-counter/ "${managed_examples}/valueentity-counter/"
-	rsync -a --exclude-from=.examplesignore ../samples/js-eventsourced-shopping-cart/ "${managed_examples}/js-eventsourced-shopping-cart/"
+	rsync -a --exclude-from=.examplesignore ../samples/js/js-customer-registry/ "${managed_examples}/js-customer-registry/"
+	rsync -a --exclude-from=.examplesignore ../samples/js/js-valueentity-shopping-cart/ "${managed_examples}/js-valueentity-shopping-cart/"
+	rsync -a --exclude-from=.examplesignore ../samples/js/valueentity-counter/ "${managed_examples}/valueentity-counter/"
+	rsync -a --exclude-from=.examplesignore ../samples/js/js-eventsourced-shopping-cart/ "${managed_examples}/js-eventsourced-shopping-cart/"
 
 
 dev: clean managed validate-xrefs dev-html
