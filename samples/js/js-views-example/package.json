@@ -1,0 +1,46 @@
+{
+  "name": "js-views-example",
+  "version": "0.0.0",
+  "description": "Akka Serverless JavaScript SDK example that demonstrates views",
+  "engineStrict": true,
+  "engines": {
+    "node": "~14"
+  },
+  "homepage": "https://github.com/lightbend/akkaserverless-javascript-sdk",
+  "bugs": {
+    "url": "https://github.com/lightbend/akkaserverless-javascript-sdk/issues"
+  },
+  "license": "Apache-2.0",
+  "author": {
+    "name": "Akka Serverless Team",
+    "email": "info@lightbend.com",
+    "url": "https://lightbend.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/lightbend/akkaserverless-javascript-sdk",
+    "directory": "samples/js/js-views-example"
+  },
+  "//": "https://npm.community/t/npm-install-does-not-install-transitive-dependencies-of-local-dependency/2264",
+  "dependencies": {
+    "@grpc/proto-loader": "^0.1.0",
+    "@lightbend/akkaserverless-javascript-sdk": "file:../../../sdk",
+    "google-protobuf": "^3.11.4",
+    "grpc": "^1.24.9"
+  },
+  "devDependencies": {
+    "chai": "4.2.0",
+    "mocha": "^6.2.3"
+  },
+  "scripts": {
+    "build": "compile-descriptor users.proto",
+    "pretest": "npm run build",
+    "test": "mocha",
+    "prestart": "npm run build",
+    "start": "node index.js",
+    "start-no-prestart": "node index.js",
+    "docker-build": "docker build -f Dockerfile -t ${DOCKER_PUBLISH_TO:-akkaserverless}/js-views-example:$(../../../sdk/bin/version.sh) ../../..",
+    "docker-push": "docker push ${DOCKER_PUBLISH_TO:-akkaserverless}/js-views-example:$(../../../sdk/bin/version.sh)",
+    "docker-build-push": "npm run docker-build && npm run docker-push"
+  }
+}

@@ -1,0 +1,42 @@
+{
+  "name": "js-replicated-entity-example",
+  "version": "0.0.0",
+  "description": "Akka Serverless JavaScript SDK example for replicated entities",
+  "homepage": "https://github.com/lightbend/akkaserverless-javascript-sdk",
+  "bugs": {
+    "url": "https://github.com/lightbend/akkaserverless-javascript-sdk/issues"
+  },
+  "license": "Apache-2.0",
+  "author": {
+    "name": "Akka Serverless Team",
+    "email": "info@lightbend.com",
+    "url": "https://lightbend.com"
+  },
+  "engineStrict": true,
+  "engines": {
+    "node": "~14"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/lightbend/akkaserverless-javascript-sdk",
+    "directory": "samples/js/js-replicated-entity-example"
+  },
+  "dependencies": {
+    "@lightbend/akkaserverless-javascript-sdk": "0.33.0"
+  },
+  "devDependencies": {
+    "chai": "4.2.0",
+    "mocha": "^6.1.4"
+  },
+  "scripts": {
+    "build": "compile-descriptor replicated_entity_example.proto",
+    "pretest": "npm run build",
+    "test": "mocha",
+    "prestart": "npm run build",
+    "start": "node index.js",
+    "start-no-prestart": "node index.js",
+    "docker-build": "docker build -f Dockerfile -t ${DOCKER_PUBLISH_TO:-akkaserverless}/js-replicated-entity-example:$(../../../sdk/bin/version.sh) ../../..",
+    "docker-push": "docker push ${DOCKER_PUBLISH_TO:-akkaserverless}/js-replicated-entity-example:$(../../../sdk/bin/version.sh)",
+    "docker-build-push": "npm run docker-build && npm run docker-push"
+  }
+}
