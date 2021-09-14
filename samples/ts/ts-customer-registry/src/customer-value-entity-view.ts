@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+// tag::register[]
 import { View } from "@lightbend/akkaserverless-javascript-sdk";
 
 const view: View = new View(
@@ -25,3 +26,4 @@ const view: View = new View(
 );
 
 export default view;
+// end::register[]

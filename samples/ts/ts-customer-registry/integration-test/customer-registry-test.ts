@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+// tag::client[]
 import { IntegrationTestkit } from "@lightbend/akkaserverless-javascript-sdk";
 import { expect } from "chai";
 import customerValueEntity from "../src/customer-value-entity";
@@ -40,7 +41,9 @@ function client(): CustomerServiceAsync {
   // @ts-ignore
   return testkit.clients.CustomerService;
 }
+// end::client[]
 
+// tag::view[]
 function view(): CustomersResponseByNameAsync {
   // @ts-ignore
   return testkit.clients.CustomersResponseByName;
@@ -51,6 +54,20 @@ describe("Customer registry service", function () {
 
   before(done => testkit.start(done));
   after(done => testkit.shutdown(done));
+
+  this.retries(2); // in case view has not updated yet
+  beforeEach(function (done) {
+    // add a delay between retries
+    // @ts-ignore
+    if (this.currentTest.currentRetry() > 0) {
+      // add a delay between retries
+      // @ts-ignore
+      setTimeout(done, this.currentTest.currentRetry() * 1000);
+    } else {
+      done();
+    }
+  });
+  // end::view[]
 
   // tag::data[]
   const alice = {
@@ -85,6 +102,7 @@ describe("Customer registry service", function () {
     await client().createAsync(alice2);
   });
 
+  // tag::exercise[]
   it("should get existing customers", async () => {
     expect(
       await client().getCustomerAsync({ customerId: "alice" })
@@ -105,6 +123,7 @@ describe("Customer registry service", function () {
       await view().getCustomersAsync({ customerName: "Bob" })
     ).to.deep.equal({ results: [bob] });
   });
+  // end::exercise[]
 
   it("should change customer names", async () => {
     await client().changeNameAsync({

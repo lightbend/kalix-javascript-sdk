@@ -2,15 +2,28 @@
  * Copyright 2021 Lightbend Inc.
  */
 
-// tag::entity-class[]
-const ValueEntity = require("@lightbend/akkaserverless-javascript-sdk").ValueEntity;
 
-const entity = new ValueEntity(
+import * as proto from "../lib/generated/proto";
+import { replies } from "@lightbend/akkaserverless-javascript-sdk";
+
+// tag::entity-class[]
+import { ValueEntity } from "@lightbend/akkaserverless-javascript-sdk";
+
+const entity: ValueEntity = new ValueEntity(
   ["shoppingcart.proto", "domain.proto"],
   "example.shoppingcart.ShoppingCartService",
   "shopping-cart"
 );
 // end::entity-class[]
+
+type Context = ValueEntity.ValueEntityCommandContext;
+
+type State = proto.com.example.shoppingcart.domain.Cart;
+
+type AddLineItem = proto.com.example.shoppingcart.AddLineItem;
+type RemoveLineItem = proto.com.example.shoppingcart.RemoveLineItem;
+type GetShoppingCart = proto.com.example.shoppingcart.GetShoppingCart;
+type RemoveShoppingCart = proto.com.example.shoppingcart.RemoveShoppingCart;
 
 // tag::lookup-type[]
 const Cart = entity.lookupType("example.shoppingcart.Cart");
@@ -31,11 +44,17 @@ entity.setCommandHandlers({
 });
 
 // tag::add-item[]
-function addItem(addItem, cart, ctx) {
+function addItem(
+    addItem: AddLineItem,
+    cart: State,
+    ctx: Context
+): replies.Reply {
   // Validation:
   // Make sure that it is not possible to add negative quantities
   if (addItem.quantity < 1) {
-    ctx.fail("Cannot add negative quantity to item " + addItem.productId);
+    return replies.failure(
+        "Cannot add negative quantity to item " + addItem.productId
+    );
   } else {
     // If there is an existing item with that product id, we need to increment its quantity.
     const existing = cart.items.find(item => {
@@ -43,18 +62,22 @@ function addItem(addItem, cart, ctx) {
     });
 
     if (existing) {
-      existing.quantity = existing.quantity + addItem.quantity;
+      existing.quantity = (existing.quantity || 0) + addItem.quantity;
     } else {
       // Otherwise, we just add the item to the existing list.
       cart.items.push(addItem);
     }
     ctx.updateState(cart);
   }
-  return {};
+  return replies.message({});
 }
 // end::add-item[]
 
-function removeItem(removeItem, cart, ctx) {
+function removeItem(
+    removeItem: RemoveLineItem,
+    cart: State,
+    ctx: Context
+): replies.Reply {
   // Validation:
   // Check that the item that we're removing actually exists.
   const existing = cart.items.find(item => {
@@ -63,37 +86,32 @@ function removeItem(removeItem, cart, ctx) {
 
   // If not, fail the command.
   if (!existing) {
-    ctx.fail("Item " + removeItem.productId + " not in cart");
+    return replies.failure("Item " + removeItem.productId + " not in cart");
   } else {
     // Otherwise, remove the item.
-
     // Filter the removed item from the items by product id.
     cart.items = cart.items.filter(item => {
-      return item.productId !== removed.productId;
+      return item.productId !== removeItem.productId;
     });
 
     ctx.updateState(cart);
   }
-  return {};
+  return replies.message({});
 }
 
 // tag::get-cart[]
-function getCart(request, cart, ctx) {
-  return cart;
+function getCart(request: GetShoppingCart, cart: State): replies.Reply {
+  return replies.message(cart);
 }
 // end::get-cart[]
 
 // Export the entity
-module.exports = entity;
+export default entity;
 
 
-describe("The ValueEntity class", () => {
-  it("should allow adding the entity to the AkkaServerless server", () => {
-    // tag::add-component[]
-    const AkkaServerless = require("@lightbend/akkaserverless-javascript-sdk").AkkaServerless;
-    const server = new AkkaServerless();
-    server.addComponent(entity);
-    server.start();
-    // end::add-component[]
-  })
-});
+// tag::add-component[]
+import { AkkaServerless } from "@lightbend/akkaserverless-javascript-sdk";
+import shoppingcartEntity from "./shoppingcart";
+
+new AkkaServerless().addComponent(shoppingcartEntity).start();
+// end::add-component[]

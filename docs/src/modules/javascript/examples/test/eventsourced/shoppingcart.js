@@ -35,7 +35,7 @@ const Cart = entity.lookupType(pkg + "Cart");
 // end::lookup-type[]
 
 // tag::initial[]
-entity.initial = entityId => Cart.create({items: []});
+entity.initial = entityId => Cart.create({ items: [] });
 // end::initial[]
 
 // tag::get-cart[]

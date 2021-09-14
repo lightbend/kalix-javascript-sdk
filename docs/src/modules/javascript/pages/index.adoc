@@ -96,16 +96,36 @@ By default, the descriptor is written to `user-function.desc`, if you wish to ch
 
 There are two ways to create and start an Akka Serverless gRPC server. The first is to create an link:{attachmentsdir}/api/module-akkaserverless.Entity.html[`Entity`{tab-icon}, window="new"], and invoke link:{attachmentsdir}/api/module-akkaserverless.Entity.html#start[`start`{tab-icon}, window="new"] on it. This allows creating a server that serves a single entity, with the default options. We'll look at this more in the subsequent pages. Alternatively, you can use the link:{attachmentsdir}/api/module-akkaserverless.AkkaServerless.html[`AkkaServerless`{tab-icon}, window="new"] class, add one or more entities to it, and then invoke link:{attachmentsdir}/api/module-akkaserverless.AkkaServerless.html#start[`start`{tab-icon}, window="new"], like so:
 
+[.tabset]
+JS::
++
 [source,js,indent=0]
 ----
 include::example$test/gettingstarted/index.js[tag=start]
 ----
 
+TS::
++
+[source,ts,indent=0]
+----
+include::example$test/gettingstarted/index.ts[tag=start]
+----
+
 If you created your protobuf file descriptor set at a different location to the default of `user-function.desc`, you can configure that here:
 
+[.tabset]
+JS::
++
 [source,js,indent=0]
 ----
 include::example$test/gettingstarted/index.js[tag=custom-desc]
+----
+
+TS::
++
+[source,ts,indent=0]
+----
+include::example$test/gettingstarted/index.ts[tag=custom-desc]
 ----
 
 For all options available on the `AkkaServerless` class, see link:{attachmentsdir}++/api/module-akkaserverless.AkkaServerless.html#~options++[`AkkaServerless~options`{tab-icon}, window="new"].

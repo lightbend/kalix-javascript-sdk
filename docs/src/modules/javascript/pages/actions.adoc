@@ -14,7 +14,17 @@ include::example$action/service.proto[]
 
 The following shows the implementation:
 
+[.tabset]
+JS::
++
 [source,javascript]
 ----
 include::example$action/src/action.js[]
+----
+
+TS::
++
+[source,typescript]
+----
+include::example$action/src/action.ts[]
 ----
