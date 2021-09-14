@@ -13,17 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+// tag::entity-class[]
 import { ValueEntity, replies } from "@lightbend/akkaserverless-javascript-sdk";
 import * as proto from "../lib/generated/proto";
-
-type Context = ValueEntity.ValueEntityCommandContext;
-
-type State = proto.com.example.domain.CounterState;
-
-type IncreaseValue = proto.com.example.IncreaseValue;
-type DecreaseValue = proto.com.example.DecreaseValue;
-type ResetValue = proto.com.example.ResetValue;
-type GetCounter = proto.com.example.GetCounter;
 
 /**
  * Type definitions.
@@ -50,10 +42,24 @@ const entity: ValueEntity = new ValueEntity(
     serializeFallbackToJson: true
   }
 );
+// end::entity-class[]
 
+type Context = ValueEntity.ValueEntityCommandContext;
+
+type State = proto.com.example.domain.CounterState;
+
+type IncreaseValue = proto.com.example.IncreaseValue;
+type DecreaseValue = proto.com.example.DecreaseValue;
+type ResetValue = proto.com.example.ResetValue;
+type GetCounter = proto.com.example.GetCounter;
+
+// tag::lookup-type[]
 const CounterState = entity.lookupType("com.example.domain.CounterState");
+// end::lookup-type[]
 
+// tag::initial[]
 entity.setInitial((entityId: string) => CounterState.create({ value: 0 }));
+// end::initial[]
 
 entity.setCommandHandlers({
   Increase: increase,
@@ -62,6 +68,7 @@ entity.setCommandHandlers({
   GetCurrentCounter: getCurrentCounter
 });
 
+// tag::increase[]
 function increase(
   command: IncreaseValue,
   counter: State,
@@ -76,6 +83,7 @@ function increase(
   ctx.updateState(counter);
   return replies.message({});
 }
+// end::increase[]
 
 function decrease(
   command: DecreaseValue,
@@ -102,8 +110,10 @@ function reset(
   return replies.message({});
 }
 
+// tag::get-current[]
 function getCurrentCounter(command: GetCounter, counter: State): replies.Reply {
   return replies.message({ value: counter.value });
 }
+// end::get-current[]
 
 export default entity;

@@ -24,9 +24,19 @@ Create an Event Sourced Entity with the link:{attachmentsdir}/api/module-akkaser
 
 ifdef::todo[TODO: update with new SDK names.]
 
+[.tabset]
+JS::
++
 [source,js,indent=0]
 ----
 include::example$test/eventsourced/shoppingcart.js[tag=entity-class]
+----
+
+TS::
++
+[source,ts,indent=0]
+----
+include::example$test/eventsourced/shoppingcart.ts[tag=entity-class]
 ----
 
 .Example details:
@@ -46,9 +56,19 @@ When you pass an event or snapshot to persist, Akka Serverless needs to know how
 
 The `EventSourced` class provides a helper method called link:{attachmentsdir}/api/module-akkaserverless.EventSourcedEntity.html#lookupType[`lookupType`{tab-icon}, window="new"]. So before implementing, we'll use `lookupType` to get these types to use later.
 
+[.tabset]
+JS::
++
 [source,js,indent=0]
 ----
 include::example$test/eventsourced/shoppingcart.js[tag=lookup-type]
+----
+
+TS::
++
+[source,ts,indent=0]
+----
+include::example$test/eventsourced/shoppingcart.ts[tag=lookup-type]
 ----
 
 == Initial state
@@ -57,9 +77,19 @@ When there are no snapshots persisted for an entity (such as when the entity is 
 
 To create the initial state, we set the link:{attachmentsdir}/api/module-akkaserverless.EventSourcedEntity.html#initial[`initial`{tab-icon}, window="new"] callback. This takes the id of the entity being created, and returns a new empty state, in this case, an empty shopping cart:
 
+[.tabset]
+JS::
++
 [source,js,indent=0]
 ----
 include::example$test/eventsourced/shoppingcart.js[tag=initial]
+----
+
+TS::
++
+[source,ts,indent=0]
+----
+include::example$test/eventsourced/shoppingcart.ts[tag=initial]
 ----
 
 Note the use of `Cart.create()`, this creates a `protobuf` message using the `Cart` `protobuf` message type that we looked up earlier.
@@ -78,9 +108,19 @@ The command handler must return a message of the same type as the output type of
 
 The following shows the implementation of the `GetCart` command handler. This command handler is a read-only command handler, it doesn't emit any events, it just returns some state:
 
+[.tabset]
+JS::
++
 [source,js,indent=0]
 ----
 include::example$test/eventsourced/shoppingcart.js[tag=get-cart]
+----
+
+TS::
++
+[source,ts,indent=0]
+----
+include::example$test/eventsourced/shoppingcart.ts[tag=get-cart]
 ----
 
 === Emitting events from commands
@@ -93,9 +133,19 @@ A command handler may emit an event by using the link:{attachmentsdir}/api/modul
 
 The following command handler example emits an event:
 
+[.tabset]
+JS::
++
 [source,js,indent=0]
 ----
 include::example$test/eventsourced/shoppingcart.js[tag=add-item]
+----
+
+TS::
++
+[source,ts,indent=0]
+----
+include::example$test/eventsourced/shoppingcart.ts[tag=add-item]
 ----
 
 This command handler also validates the command by ensuring that the quantity of items added is greater than zero. Invoking link:{attachmentsdir}/api/module-akkaserverless.EventSourcedEntity.EventSourcedEntityCommandContext.html#fail[`fail`{tab-icon}, window="new"] fails the command - this method throws so there's no need to explicitly throw an exception.
@@ -115,9 +165,19 @@ Event handlers take the event they are handling, and the state, and must return 
 
 Here's an example event handler for the `ItemAdded` event:
 
+[.tabset]
+JS::
++
 [source,js,indent=0]
 ----
 include::example$test/eventsourced/shoppingcart.js[tag=item-added]
+----
+
+TS::
++
+[source,ts,indent=0]
+----
+include::example$test/eventsourced/shoppingcart.ts[tag=item-added]
 ----
 
 === Setting the behavior
@@ -126,9 +186,19 @@ Once you have command handler and event handler functions implemented, you can s
 
 The behavior callback can be set by setting the link:{attachmentsdir}/api/module-akkaserverless.EventSourcedEntity.html#behavior[`behavior`{tab-icon}, window="new"] property on the entity:
 
+[.tabset]
+JS::
++
 [source,js,indent=0]
 ----
 include::example$test/eventsourced/shoppingcart.js[tag=behavior]
+----
+
+TS::
++
+[source,ts,indent=0]
+----
+include::example$test/eventsourced/shoppingcart.ts[tag=behavior]
 ----
 
 The command handlers are a mapping of the gRPC service call names to the command handler functions we implemented. Note the names, as in the gRPC convention for service call names, are uppercase.
@@ -143,16 +213,36 @@ The Entity's behavior can be changed by returning different sets of handlers fro
 
 In the example below, we show a shopping cart that also has a checkout command. Once checked out, the shopping cart no longer accepts any commands to add or remove items, its state and therefore behavior changes:
 
+[.tabset]
+JS::
++
 [source,js,indent=0]
 ----
 include::example$test/eventsourced/shoppingcart.js[tag=multiple-behaviors]
+----
+
+TS::
++
+[source,ts,indent=0]
+----
+include::example$test/eventsourced/shoppingcart.ts[tag=multiple-behaviors]
 ----
 
 == Starting the entity
 
 You can let Akka Serverless start entities by adding the entities to an `Akka Serverless server` instance:
 
+[.tabset]
+JS::
++
 [source,js,indent=0]
 ----
 include::example$test/eventsourced/shoppingcart.js[tag=add-entity]
+----
+
+TS::
++
+[source,ts,indent=0]
+----
+include::example$test/eventsourced/shoppingcart.ts[tag=add-entity]
 ----

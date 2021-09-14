@@ -56,9 +56,19 @@ The following code creates the Value Entity with the link:{attachmentsdir}/api/m
 
 * The fully qualified name of the service the Value Entity implements, `com.example.CounterService`. The `entityType` is used to namespace the state in the journal.
 
+[.tabset]
+JS::
++
 [source,js]
 ----
 include::example$valueentity-counter/src/counter.js[tag=entity-class]
+----
+
+TS::
++
+[source,ts]
+----
+include::example$ts-valueentity-counter/src/counter.ts[tag=entity-class]
 ----
 
 
@@ -68,9 +78,19 @@ When passing state to Akka Serverless  the persisted data must be serialized and
 
 Use the `ValueEntity` link:{attachmentsdir}/api/module-akkaserverless.ValueEntity.html#lookupType[`lookupType`{tab-icon}, window="new"] helper to look up these types so we can use them later.
 
+[.tabset]
+JS::
++
 [source,js]
 ----
 include::example$valueentity-counter/src/counter.js[tag=lookup-type]
+----
+
+TS::
++
+[source,ts]
+----
+include::example$ts-valueentity-counter/src/counter.ts[tag=lookup-type]
 ----
 
 == Initial state
@@ -79,9 +99,19 @@ An Entity must have an initial state when it is created and no state has been pe
 
 To create the initial state, set the link:{attachmentsdir}/api/module-akkaserverless.ValueEntity.html#initial[`initial`{tab-icon}, window="new"] callback. This takes the ID of the entity being created, and returns a new empty state, in this case, an empty counter state:
 
+[.tabset]
+JS::
++
 [source,js]
 ----
 include::example$valueentity-counter/src/counter.js[tag=initial]
+----
+
+TS::
++
+[source,ts]
+----
+include::example$ts-valueentity-counter/src/counter.ts[tag=initial]
 ----
 
 NOTE: The `CounterState.create()` method creates a protobuf message using the `CounterState` protobuf message type.
@@ -98,9 +128,19 @@ The command handler must return a message of the same type as the output type of
 
 The following example shows the implementation of a `GetCurrentCounter` command handler. This command handler is a read-only command handler, it doesn't update the state, it just returns it:
 
+[.tabset]
+JS::
++
 [source,js]
 ----
 include::example$valueentity-counter/src/counter.js[tag=get-current]
+----
+
+TS::
++
+[source,ts]
+----
+include::example$ts-valueentity-counter/src/counter.ts[tag=get-current]
 ----
 
 === Updating state
@@ -109,16 +149,36 @@ When updating the state, a command handler MUST persist that change by calling t
 
 The following command handler updates the state. It also validates the command, ensuring the quantity of items added is greater than zero. Invoking link:{attachmentsdir}/api/module-akkaserverless.ValueEntity.ValueEntityCommandContext.html#fail[`fail`{tab-icon}, window="new"] fails the command. This method throws, so there's no need to explicitly throw an exception.
 
+[.tabset]
+JS::
++
 [source,js]
 ----
 include::example$valueentity-counter/src/counter.js[tag=increase]
+----
+
+TS::
++
+[source,ts]
+----
+include::example$ts-valueentity-counter/src/counter.ts[tag=increase]
 ----
 
 == Starting the entity
 
 A helper method for listing the components declared in the current project is provided by the code generator. It also creates the relevant code for starting all of the components:
 
+[.tabset]
+JS::
++
 [source,js]
 ----
 include::example$valueentity-counter/src/index.js[tag=starting]
+----
+
+TS::
++
+[source,ts]
+----
+include::example$ts-valueentity-counter/src/index.ts[tag=starting]
 ----

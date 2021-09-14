@@ -21,15 +21,15 @@ if (!process.argv || process.argv.length === 2) { // node file.js - 2 args means
   // tag::register[]
   const server = new AkkaServerless();
   server.addComponent(require("./customer-value-entity-view"))
-  // end::register[]
   server.addComponent(require("./customer-value-entity"))
   server.start()
+  // end::register[]
 } else {
   console.log("Starting Event Sourced Entity")
   // tag::register-event-sourced[]
   const server = new AkkaServerless();
   server.addComponent(require("./customer-event-sourced-entity"))
-  // end::register-event-sourced[]
   server.addComponent(require("./customer-event-sourced-view"))
   server.start()
+  // end::register-event-sourced[]
 }

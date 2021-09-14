@@ -14,14 +14,11 @@
  * limitations under the License.
  */
 
-import { View } from "@lightbend/akkaserverless-javascript-sdk";
 import { customer as customerDomain } from "../lib/generated/customer_domain";
 import { customer as customerView } from "../lib/generated/customer_view";
 
-type State = customerDomain.domain.CustomerState;
-type CustomerCreated = customerDomain.domain.CustomerCreated;
-type CustomerNameChanged = customerDomain.domain.CustomerNameChanged;
-type Any = customerView.view.Any;
+// tag::register[]
+import { View } from "@lightbend/akkaserverless-javascript-sdk";
 
 const view: View = new View(
   ["customer_view.proto", "customer_domain.proto"],
@@ -30,7 +27,14 @@ const view: View = new View(
     viewId: "customer-event-sourced-view"
   }
 );
+// end::register[]
 
+type State = customerDomain.domain.CustomerState;
+type CustomerCreated = customerDomain.domain.CustomerCreated;
+type CustomerNameChanged = customerDomain.domain.CustomerNameChanged;
+type Any = customerView.view.Any;
+
+// tag::process-events[]
 const CustomerState = view.lookupType("customer.domain.CustomerState");
 
 view.setUpdateHandlers({
@@ -53,5 +57,8 @@ function customerNameChanged(event: CustomerNameChanged, state: State) {
 function ignoreOtherEvents(event: Any, state: State) {
   return state;
 }
+// end::process-events[]
 
+// tag::register[]
 export default view;
+// end::register[]

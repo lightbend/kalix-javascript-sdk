@@ -23,14 +23,18 @@ import customerEventSourcedEntityView from "./customer-event-sourced-view";
 if (!process.argv || process.argv.length === 2) {
   // node file.js - 2 args means no extra arg
   console.log("Starting Value Entity");
+  // tag::register[]
   new AkkaServerless()
     .addComponent(customerValueEntity)
     .addComponent(customerValueEntityView)
     .start();
+  // end::register[]
 } else {
   console.log("Starting Event Sourced Entity");
+  // tag::register-event-sourced[]
   new AkkaServerless()
     .addComponent(customerEventSourcedEntity)
     .addComponent(customerEventSourcedEntityView)
     .start();
+  // end::register-event-sourced[]
 }
