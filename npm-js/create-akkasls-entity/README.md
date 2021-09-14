@@ -1,6 +1,6 @@
 # create-akkasls-entity
 
-This repository provides the `create-akkasls-entity` tool to support Akka Serverless development with the NPM/JavaScript toolchain.
+This repository provides the `create-akkasls-entity` tool to support Akka Serverless development with the npm/JavaScript toolchain.
 
 ## Usage
 
@@ -12,7 +12,7 @@ There are two templates available to select from:
 - `value-entity` (default); provides the starting point to develop a [Value Entity](https://docs.akkaserverless.dev/js-services/value-entity.html)
 - `event-sourced-entity`; provides the starting point to develop an [Event Sourced Entity](https://docs.akkaserverless.dev/js-services/eventsourced.html)
 
-To create the initial codebase for a new entity with NPM:
+To create the initial codebase for a new entity with npm:
 
 ```sh
 npx @lightbend/create-akkasls-entity my-entity --template value-entity

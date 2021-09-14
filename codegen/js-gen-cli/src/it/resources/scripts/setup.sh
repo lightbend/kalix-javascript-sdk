@@ -11,7 +11,7 @@ mv package.json original-package.json
 node /home/scripts/disable-download-cli.js original-package.json > package.json
 cp /home/akkasls-codegen-js bin/akkasls-codegen-js.bin
 
-# Use NPM link to make this available within the container
+# Use npm link to make this available within the container
 npm install
 npm link
 popd

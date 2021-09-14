@@ -1,6 +1,6 @@
 = Developer Tools
 
-The Javascript tooling is published to npm or yarn under the https://www.npmjs.com/org/lightbend[`@lightbend` organisation].
+The Javascript tooling is published to the npm registry under the https://www.npmjs.com/org/lightbend[`@lightbend` organisation].
 
 == Kickstart
 
