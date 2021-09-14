@@ -7,18 +7,23 @@ package com.lightbend.akkasls.codegen
 package js
 
 import scopt.OParser
-
 import java.io.File
 import java.nio.file.{ Path, Paths }
+import js.{ SourceGenerator => JavaScriptGenerator }
+import ts.{ SourceGenerator => TypeScriptGenerator }
 
 object Cli {
 
   private final val CWD = Paths.get(".")
 
+  sealed trait Language
+  final case object TypeScript extends Language
+  final case object JavaScript extends Language
+
   @SuppressWarnings(Array("org.wartremover.warts.DefaultArguments"))
   private case class Config(
       baseDir: Path = CWD,
-      indexFile: String = "index.js",
+      indexFile: String = "index.ts",
       descriptorSetOutputDirectory: Path = CWD,
       descriptorSetFileName: String = "user-function.desc",
       protoSourceDirectory: Path = CWD,
@@ -26,7 +31,8 @@ object Cli {
       sourceDirectory: Path = CWD,
       testSourceDirectory: Path = CWD,
       generatedSourceDirectory: Path = CWD,
-      integrationTestSourceDirectory: Option[Path] = None
+      integrationTestSourceDirectory: Option[Path] = None,
+      language: Language = TypeScript
   )
 
   private val builder = OParser.builder[Config]
@@ -43,7 +49,7 @@ object Cli {
       opt[String]("main-file")
         .action((x, c) => c.copy(indexFile = x))
         .text(
-          "The name of the file to be used to set up entities, relative to the source directory - defaults to index.js"
+          "The name of the file to be used to set up entities, relative to the source directory - defaults to index.ts"
         ),
       opt[File]("descriptor-set-output-dir")
         .action((x, c) => c.copy(descriptorSetOutputDirectory = x.toPath))
@@ -85,6 +91,16 @@ object Cli {
         .text(
           "The location of integration test source files in relation to the base directory - defaults to the current working directory"
         ),
+      opt[String]("language")
+        .action((x, c) =>
+          c.copy(language =
+            if ("js".equalsIgnoreCase(x) || "javascript".equalsIgnoreCase(x)) JavaScript
+            else TypeScript
+          )
+        )
+        .text(
+          "Either js or ts - defaults to ts (TypeScript)"
+        ),
       help("help").text("Prints this usage text")
     )
   }
@@ -112,20 +128,35 @@ object Cli {
                 )
 
               val absBaseDir = config.baseDir.toAbsolutePath
-              js.SourceGenerator
-                .generate(
-                  protobufDescriptor.toPath,
-                  model,
-                  config.protoSourceDirectory,
-                  config.sourceDirectory,
-                  config.testSourceDirectory,
-                  config.generatedSourceDirectory,
-                  config.integrationTestSourceDirectory,
-                  config.indexFile
-                )
-                .foreach { p =>
-                  println("Generated: " + absBaseDir.relativize(p.toAbsolutePath).toString)
-                }
+              val generated = config.language match {
+                case JavaScript =>
+                  JavaScriptGenerator
+                    .generate(
+                      protobufDescriptor.toPath,
+                      model,
+                      config.protoSourceDirectory,
+                      config.sourceDirectory,
+                      config.testSourceDirectory,
+                      config.generatedSourceDirectory,
+                      config.integrationTestSourceDirectory,
+                      config.indexFile
+                    )
+                case TypeScript =>
+                  TypeScriptGenerator
+                    .generate(
+                      protobufDescriptor.toPath,
+                      model,
+                      config.protoSourceDirectory,
+                      config.sourceDirectory,
+                      config.testSourceDirectory,
+                      config.generatedSourceDirectory,
+                      config.integrationTestSourceDirectory,
+                      config.indexFile
+                    )
+              }
+              generated.foreach { p =>
+                println("Generated: " + absBaseDir.relativize(p.toAbsolutePath).toString)
+              }
 
             case Left(DescriptorSet.CannotOpen(e)) =>
               System.err.println(
