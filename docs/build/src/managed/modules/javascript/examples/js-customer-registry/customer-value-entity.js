@@ -49,7 +49,7 @@ function create(customer, customerState, ctx) {
 }
 
 function changeName(changeNameRequest, customerState, ctx) {
-  if (!customerState.name && !customer.email) {
+  if (!customerState.name && !customerState.email) {
     return replies.failure("Customer must be created before name can be changed.")
   } else {
     customerState.name = changeNameRequest.newName

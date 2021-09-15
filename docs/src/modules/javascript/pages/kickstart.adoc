@@ -120,16 +120,36 @@ NOTE: The `lib/generated` directory contains files used by the tools. Any change
 
 Akka Serverless codegen creates a unit test stub for each class within `counter.test.js`. Use these stubs as a starting point to test the logic in your implementation. You can use any of the common Node.js testing tools, such as Mocha or Jest.
 
+[.tabset]
+JS::
++
 [source,javascript]
 ----
 include::example$valueentity-counter/test/counter.test.js[]
 ----
 
+TS::
++
+[source,typescript]
+----
+include::example$ts-valueentity-counter/test/counter.test.ts[]
+----
+
 The entity used by `counter.test.js` is contained within `testkit.js`.
 
+[.tabset]
+JS::
++
 [source,javascript]
 ----
 include::example$valueentity-counter/test/testkit.js[]
+----
+
+TS::
++
+[source,typescript]
+----
+include::example$ts-valueentity-counter/test/testkit.ts[]
 ----
 
 == Run locally

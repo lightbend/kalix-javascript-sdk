@@ -17,7 +17,7 @@ const Cart = entity.lookupType("example.shoppingcart.Cart");
 // end::lookup-type[]
 
 // tag::initial[]
-entity.setInitial(userId => Cart.create({items: []}));
+entity.setInitial(userId => Cart.create({ items: [] }));
 // end::initial[]
 
 /*

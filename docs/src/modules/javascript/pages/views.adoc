@@ -19,7 +19,7 @@ In addition, this page describes:
 
 IMPORTANT: Be aware that Views are not updated immediately when Entity state changes. Akka Serverless does update Views as quickly as possible, but it is not instant and can take up to a few seconds for the changes to become visible in the query results. View updates might also take more time during failure scenarios than during normal operation.
 
-https://github.com/lightbend/akkaserverless-javascript-sdk/tree/main/samples/js-customer-registry[The `akkaserverless-javascript-sdk` GitHub repository] includes an example of all views described on this page.
+https://github.com/lightbend/akkaserverless-javascript-sdk/tree/main/samples/js/js-customer-registry[The `akkaserverless-javascript-sdk` GitHub repository] includes an example of all views described on this page.
 [#value-entity]
 == View from a Value Entity
 
@@ -77,17 +77,37 @@ See <<#query>> for examples of valid query syntax.
 In the View implementation, register the View with Akka Serverless. In addition to passing the service descriptor and a unique identifier, pass any descriptors that define state. In this example, the `customer_domain.proto` descriptor defines the Value Entity state:
 
 .customer-value-entity-view.js
+[.tabset]
+JS::
++
 [source,js,indent=0]
 ----
 include::example$js-customer-registry/customer-value-entity-view.js[tag=register]
 ----
 
+TS::
++
+[source,ts,indent=0]
+----
+include::example$ts-customer-registry/src/customer-value-entity-view.ts[tag=register]
+----
+
 Invoke the `addComponent` function to register the view with the service. For example:
 
 .index.js
+[.tabset]
+JS::
++
 [source,js,indent=0]
 ----
 include::example$js-customer-registry/index.js[tag=register]
+----
+
+TS::
++
+[source,ts,indent=0]
+----
+include::example$ts-customer-registry/src/index.ts[tag=register]
 ----
 
 [#event-sourced-entity]
@@ -139,9 +159,19 @@ See <<#query>> for more examples of valid query syntax.
 Implement the View by defining the functions that transform events to View state and ignore other events:
 
 .customer-event-sourced-view.js
+[.tabset]
+JS::
++
 [source,js,indent=0]
 ----
 include::example$js-customer-registry/customer-event-sourced-view.js[tag=process-events]
+----
+
+TS::
++
+[source,ts,indent=0]
+----
+include::example$ts-customer-registry/src/customer-event-sourced-view.ts[tag=process-events]
 ----
 
 <1> Each update method in the Protobuf definition should have a corresponding JavaScript function in `view.setUpdateHandlers`.
@@ -156,17 +186,37 @@ NOTE: This type of update transformation is a natural fit for Events emitted by 
 In the implementation, register the View with `AkkaServerless`:
 
 .customer-event-sourced-view.js
+[.tabset]
+JS::
++
 [source,js,indent=0]
 ----
 include::example$js-customer-registry/customer-event-sourced-view.js[tag=register]
 ----
 
+TS::
++
+[source,ts,indent=0]
+----
+include::example$ts-customer-registry/src/customer-event-sourced-view.ts[tag=register]
+----
+
 Invoke the `addComponent` function to register the view with the service. For example:
 
 .index.js
+[.tabset]
+JS::
++
 [source,js,indent=0]
 ----
 include::example$js-customer-registry/index.js[tags=register-event-sourced]
+----
+
+TS::
++
+[source,ts,indent=0]
+----
+include::example$ts-customer-registry/src/index.ts[tags=register-event-sourced]
 ----
 
 [#topic-view]
@@ -221,33 +271,73 @@ include::example$js-customer-registry/customer_view.proto[tag=wrap-repeated]
 
 View tests need to create gRPC clients for both the Entity and the View. For example:
 
+[.tabset]
+JS::
++
 [source,javascript]
 ----
 include::example$js-customer-registry/integration-test/customer-registry-test.js[tag=client]
 ----
 
+TS::
++
+[source,typescript]
+----
+include::example$ts-customer-registry/integration-test/customer-registry-test.ts[tag=client]
+----
+
 Since Views do not immediately update on changes, add a retry to make sure the test doesn't fail unnecessarily. For example:
 
+[.tabset]
+JS::
++
 [source,javascript]
 ----
 include::example$js-customer-registry/integration-test/customer-registry-test.js[tag=view]
 ----
 
+TS::
++
+[source,typescript]
+----
+include::example$ts-customer-registry/integration-test/customer-registry-test.ts[tag=view]
+----
+
 Provide some data:
 
+[.tabset]
+JS::
++
 [source,javascript]
 ----
 include::example$js-customer-registry/integration-test/customer-registry-test.js[tag=data]
 ----
 
+TS::
++
+[source,typescript]
+----
+include::example$ts-customer-registry/integration-test/customer-registry-test.ts[tag=data]
+----
+
 Exercise the View:
 
+[.tabset]
+JS::
++
 [source,javascript]
 ----
 include::example$js-customer-registry/integration-test/customer-registry-test.js[tag=exercise]
 ----
 
-Find the complete test example https://github.com/lightbend/akkaserverless-javascript-sdk/blob/main/samples/js-customer-registry/integration-test/customer-registry-test.js[on GitHub].
+TS::
++
+[source,typescript]
+----
+include::example$ts-customer-registry/integration-test/customer-registry-test.ts[tag=exercise]
+----
+
+Find the complete test example https://github.com/lightbend/akkaserverless-javascript-sdk/blob/main/samples/js/js-customer-registry/integration-test/customer-registry-test.js[on GitHub].
 
 [#changing]
 == How to modify a View

@@ -1,4 +1,5 @@
 ** xref:javascript:index.adoc[]
+*** xref:javascript:developer-tools.adoc[]
 *** xref:developing:development-process-js.adoc[]
 *** xref:javascript:kickstart.adoc[]
 *** xref:javascript:proto.adoc[]
