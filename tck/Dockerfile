@@ -20,4 +20,4 @@ ENV HOST 0.0.0.0
 ENV NODE_ENV production
 ENV DEBUG akkaserverless*
 EXPOSE 8080
-CMD ["npm", "start"]
+CMD ["node", "dist/index.js"]

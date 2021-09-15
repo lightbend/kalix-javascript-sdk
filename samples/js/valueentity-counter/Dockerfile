@@ -44,4 +44,5 @@ USER node
 
 # Run
 EXPOSE 8080
-CMD ["npm", "start"]
+# Call node directly to get SIGTERM for graceful shutdown
+CMD ["node", "src/index.js"]
