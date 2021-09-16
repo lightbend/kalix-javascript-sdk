@@ -50,7 +50,7 @@ function _bundle {
   local -r zip_dir="$(cd -P "$(dirname "$zip")" && pwd)"
   local -r zip_file="$zip_dir/$(basename "$zip")"
 
-  rsync -a --exclude-from "$sample/.bundleignore" --exclude ".bundleignore" "$sample"/ "$sample_bundle_dir"/
+  rsync -a --exclude ".bundleignore" "$sample"/ "$sample_bundle_dir"/
 
   _remove_doc_tags "$sample_bundle_dir"
 
