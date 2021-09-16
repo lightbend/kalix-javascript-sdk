@@ -244,6 +244,7 @@ jobs:
             source /opt/circleci/.nvm/nvm.sh
             pushd sdk && nvm install && popd
             make -C docs
+            make -C docs validate-links
 
   publish:
     docker:

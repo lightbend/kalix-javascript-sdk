@@ -105,7 +105,7 @@ To deploy your service, install the `akkasls` CLI as documented in
 and configure a Docker Registry to upload your docker image to.
 
 You will need to update the `config.dockerImage` property in the `package.json` and refer to
-[Configuring registries](https://developer.lightbend.com/docs/akka-serverless/deploying/registries.html)
+[Configuring registries](https://developer.lightbend.com/docs/akka-serverless/projects/container-registries.html)
 for more information on how to make your docker image available to Akka Serverless.
 
 Finally you can use the [Akka Serverless Console](https://console.akkaserverless.com)
