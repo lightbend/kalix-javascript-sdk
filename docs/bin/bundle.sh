@@ -27,6 +27,7 @@ function _remove_doc_tags {
   # note: use commands that are compatible with both GNU sed and BSD (macOS) sed
   find "$dir" -type f -exec sed -i.bak "/tag::[^\[]*\[.*\]/d" {} \; -exec rm -f {}.bak \;
   find "$dir" -type f -exec sed -i.bak "/end::[^\[]*\[.*\]/d" {} \; -exec rm -f {}.bak \;
+  find "$dir" -type f -exec sed -i.bak "s/\/\/\s<.>//g" {} \; -exec rm -f {}.bak \;
 }
 
 function _bundle {
@@ -54,8 +55,8 @@ function _bundle {
 
   _remove_doc_tags "$sample_bundle_dir"
 
-  pushd "$bundle_dir" > /dev/null
-  zip -q -r "$zip_file" "$sample_name"
+  pushd "$sample_bundle_dir" > /dev/null
+  zip -q -r "$zip_file" .
   popd > /dev/null
 
   echo "Bundled $sample as $zip"

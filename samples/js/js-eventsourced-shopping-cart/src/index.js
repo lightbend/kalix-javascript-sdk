@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/* tag::imports[] */
+// tag::imports[]
 import { AkkaServerless } from "@lightbend/akkaserverless-javascript-sdk";
 import generatedComponents from "../lib/generated/index.js";
-/* end::imports[] */
-/* tag::server[] */
+// end::imports[]
+// tag::server[]
 const server = new AkkaServerless();
 
 generatedComponents.forEach((component) => {
@@ -25,4 +25,4 @@ generatedComponents.forEach((component) => {
 });
 
 server.start();
-/* end::server[] */
+// end::server[]

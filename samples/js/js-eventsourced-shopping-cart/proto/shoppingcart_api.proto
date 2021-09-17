@@ -13,7 +13,7 @@
 // limitations under the License.
 
 // This is the public API offered by the shopping cart entity.
-/* tag::declarations[] */
+// tag::declarations[]
 syntax = "proto3";
 
 package com.example.shoppingcart;
@@ -21,9 +21,9 @@ package com.example.shoppingcart;
 import "google/api/annotations.proto";
 import "google/protobuf/empty.proto";
 import "akkaserverless/annotations.proto";
-/* end::declarations[] */
+// end::declarations[] 
 
-/* tag::messages1[] */
+// tag::messages1[]
 message Cart {
   repeated LineItem items = 1;
 }
@@ -33,8 +33,8 @@ message LineItem {
   string name = 2;
   int32 quantity = 3;
 }
-/* end::messages1[] */
-/* tag::messages2[] */
+// end::messages1[]
+// tag::messages2[]
 message AddLineItem {
   string cart_id = 1 [(akkaserverless.field).entity_key = true];
   string product_id = 2;
@@ -50,8 +50,8 @@ message RemoveLineItem {
 message GetShoppingCart {
   string cart_id = 1 [(akkaserverless.field).entity_key = true];
 }
-/* end::messages2[] */
-/* tag::service[] */
+// end::messages2[]
+// tag::service[]
 service ShoppingCartService {
   option (akkaserverless.service) = {
     type: SERVICE_TYPE_ENTITY
@@ -77,4 +77,4 @@ service ShoppingCartService {
       };
   }
 }
-/* end::service[] */
+// end::service[]
