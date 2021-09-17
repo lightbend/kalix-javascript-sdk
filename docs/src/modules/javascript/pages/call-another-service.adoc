@@ -1,0 +1,49 @@
+= Calling other services
+
+== Akka Serverless services
+
+In some cases it is useful to call a component in another service, for example interacting with multiple entities or actions, aggregating their return values or performing a multi-step workflow. xref:forwarding.adoc[Forwards] and side-effects allow us to trigger other services but does not make it possible to compose and transform the results of calling them.
+
+Calling other Akka Serverless services in the same project from an Action is done by invoking them over gRPC much like how an external client would. The service is however identified only by the name it has been deployed as, Akka Serverless takes care of routing requests to the service and keeping the data safe by encrypting the connection for us.
+
+In this sample we will make an action that does two sequential calls to the xref:value-entity.adoc[Value Entity Counter] service, deployed with the service name "counter".
+
+We start by adding the public API of the counter to the `src/main/proto` directory of our project.
+
+Since the proto file of an Akka Serverless service contains annotations that cause the SDK code generation to generate services, and we only want to consume the service, we need to start by removing the annotations.
+
+Copy the API definition proto file from the other service into the `proto` directory but remove all `akkaserverless.service` option blocks as well as all other Akka Serverless annotations and the `import "akkaserverless/annotations.proto"` from it.
+
+This is how the counter descriptor looks with all annotations removed:
+
+[source,protobuf,indent=0]
+.proto/counter_api.proto
+----
+include::example$js-doc-snippets/proto/counter_api.proto[tag=other-service-api]
+----
+
+The protojs (?) will now generate a client for the service in `lib/generated/proto.js` when we compile the project.
+
+Creating an instance of the generated client is done FIXME how?
+
+In our delegating service implementation:
+
+[source,javascript,indent=0]
+.src/main/java/com/example/DelegatingServiceAction.java
+----
+include::example$js-doc-snippets/src/delegatingservice.js[tag=delegating-action]
+----
+
+// FIXME individual steps
+
+For additional documentation about Akka gRPC see the https://doc.akka.io/docs/akka-grpc/current/index.html[Akka gRPC documentation].
+
+== External gRPC services
+
+Calling an Akka Serverless service in another project, or an arbitrary external gRPC service is done the same way as described above, with the difference that it will use the full public hostname of the service and TLS/HTTPS to encrypt the connection.
+
+
+
+
+
+
