@@ -1,5 +1,0 @@
-= Run a service locally
-:JavaScript: ""
-
-include::ROOT:partial$include.adoc[]
-include::partial$running-service-locally.adoc[]

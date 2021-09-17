@@ -72,7 +72,7 @@ Use a Docker image to package your service and any of its dependencies. See the 
 == Run locally
 
 You can test and debug your services by
-xref:javascript:run-locally.adoc[running them locally] before deploying to Akka Serverless.
+https://developer.lightbend.com/docs/akka-serverless/services/running-locally.html[running them locally] before deploying to Akka Serverless.
 
 == Deploy to Akka Serverless
 

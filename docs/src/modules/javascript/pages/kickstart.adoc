@@ -197,7 +197,7 @@ yarn start
 ----
 --
 
-TIP: For more details see xref:javascript:run-locally.adoc[Run a service locally].
+TIP: For more details see https://developer.lightbend.com/docs/akka-serverless/services/running-locally.html[Run a service locally].
 
 ifdef::todo[TODO: we need to add how to exercise the counter with gRPC or HTTP.]
 
