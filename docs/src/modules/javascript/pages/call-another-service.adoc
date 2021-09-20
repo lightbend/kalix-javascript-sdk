@@ -2,11 +2,11 @@
 
 == Akka Serverless services
 
-In some cases it is useful to call a component in another service, for example interacting with multiple entities or actions, aggregating their return values or performing a multi-step workflow. xref:forwarding.adoc[Forwards] and side-effects allow us to trigger other services but does not make it possible to compose and transform the results of calling them.
+In some cases it is useful to call a component in another service, for example interacting with multiple entities or actions, aggregating their return values or performing a multi-step workflow. xref:forwarding.adoc[Forwards] and side-effects allow us to trigger other services but can't compose or transform the results.
 
 Calling other Akka Serverless services in the same project from an Action is done by invoking them over gRPC much like how an external client would. The service is however identified only by the name it has been deployed as, Akka Serverless takes care of routing requests to the service and keeping the data safe by encrypting the connection for us.
 
-In this sample we will make an action that does two sequential calls to the xref:value-entity.adoc[Value Entity Counter] service, deployed with the service name "counter".
+In this sample we will show an action that does two sequential calls to the xref:value-entity.adoc[Value Entity Counter] service, deployed with the service name "counter".
 
 We start by adding the public API of the counter to the `src/main/proto` directory of our project.
 
@@ -22,7 +22,7 @@ This is how the counter descriptor looks with all annotations removed:
 include::example$js-doc-snippets/proto/com/example/counter_api.proto[tag=other-service-api]
 ----
 
-The proto-js will now generate a client for the service in `lib/generated/proto.js` when we compile the project.
+The proto-js tool will now generate a client for the service in `lib/generated/proto.js` when we compile the project.
 
 Creating an instance of the generated client is done through the `.grpc` object on the action.
 In our delegating service implementation:
