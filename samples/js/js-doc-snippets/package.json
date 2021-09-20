@@ -17,8 +17,7 @@
     "uglify-js": "^3.7.7"
   },
   "config": {
-    "##": "FIXME stop publishing to my own repo (used for verifying)",
-    "dockerImage": "johanandren/servicetwo-js",
+    "dockerImage": "gcr.io/akkaserverless-public/samples-js-doc-snippets",
     "sourceDir": "./src",
     "testSourceDir": "./test",
     "protoSourceDir": "./proto",

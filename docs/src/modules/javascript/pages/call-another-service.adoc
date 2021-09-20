@@ -17,31 +17,36 @@ Copy the API definition proto file from the other service into the `proto` direc
 This is how the counter descriptor looks with all annotations removed:
 
 [source,protobuf,indent=0]
-.proto/counter_api.proto
+.proto/com/example/counter_api.proto
 ----
-include::example$js-doc-snippets/proto/counter_api.proto[tag=other-service-api]
+include::example$js-doc-snippets/proto/com/example/counter_api.proto[tag=other-service-api]
 ----
 
-The protojs (?) will now generate a client for the service in `lib/generated/proto.js` when we compile the project.
+The proto-js will now generate a client for the service in `lib/generated/proto.js` when we compile the project.
 
-Creating an instance of the generated client is done FIXME how?
-
+Creating an instance of the generated client is done through the `.grpc` object on the action.
 In our delegating service implementation:
 
 [source,javascript,indent=0]
-.src/main/java/com/example/DelegatingServiceAction.java
+.src/main/java/com/example/delegatingservice.js
 ----
 include::example$js-doc-snippets/src/delegatingservice.js[tag=delegating-action]
 ----
-
-// FIXME individual steps
-
-For additional documentation about Akka gRPC see the https://doc.akka.io/docs/akka-grpc/current/index.html[Akka gRPC documentation].
+<1> Import `grpc-js`, we need later to create the client.
+<2> Include the `proto` file of the other service in the action service descriptors.
+<3> Use the name that the other Akka Serverless service was deployed as, in this case `counter` and port `80`.
+<4> Use a cleartext connection as TLS is handled transparently for us.
+<5> We can now call the various methods on the other service with their method names directly on the client. The calls needs to be done asynchronously, either using callbacks or like in this case using a `Promise`.
 
 == External gRPC services
 
 Calling an Akka Serverless service in another project, or an arbitrary external gRPC service is done the same way as described above, with the difference that it will use the full public hostname of the service and TLS/HTTPS to encrypt the connection.
 
+[source,javascript,indent=0]
+.src/main/java/com/example/delegatingservice.js
+----
+include::example$js-doc-snippets/src/delegatingservice.js[tag=public-grpc]
+----
 
 
 
