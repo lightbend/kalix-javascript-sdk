@@ -27,7 +27,7 @@ function _remove_doc_tags {
   # note: use commands that are compatible with both GNU sed and BSD (macOS) sed
   find "$dir" -type f -exec sed -i.bak "/tag::[^\[]*\[.*\]/d" {} \; -exec rm -f {}.bak \;
   find "$dir" -type f -exec sed -i.bak "/end::[^\[]*\[.*\]/d" {} \; -exec rm -f {}.bak \;
-  find "$dir" -type f -exec sed -i.bak "s/\/\/\s<.>//g" {} \; -exec rm -f {}.bak \;
+  find "$dir" -type f -exec sed -i.bak "s/ *\/\/ *<[0-9][0-9]*>//g" {} \; -exec rm -f {}.bak \;
 }
 
 function _bundle {
