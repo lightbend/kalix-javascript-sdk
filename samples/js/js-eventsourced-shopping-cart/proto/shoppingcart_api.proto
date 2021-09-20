@@ -66,15 +66,15 @@ service ShoppingCartService {
   }
 
   rpc RemoveItem(RemoveLineItem) returns (google.protobuf.Empty) {
-      option (google.api.http) = {
-        post: "/cart/{cart_id}/items/{product_id}/remove"
-      };
+    option (google.api.http) = {
+      post: "/cart/{cart_id}/items/{product_id}/remove"
+    };
   }
 
   rpc GetCart(GetShoppingCart) returns (Cart) {
-      option (google.api.http) = {
-        get: "/carts/{cart_id}"
-      };
+    option (google.api.http) = {
+      get: "/carts/{cart_id}"
+    };
   }
 }
 // end::service[]
