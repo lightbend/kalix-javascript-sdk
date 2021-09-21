@@ -11,5 +11,4 @@
 *** xref:javascript:topic-eventing.adoc[Publishing and Subscribing]
 *** xref:javascript:views.adoc[Creating Views]
 *** xref:javascript:serialization.adoc[Handling Serialization]
-*** xref:javascript:run-locally.adoc[]
 *** xref:javascript:api.adoc[JavaScript API docs]

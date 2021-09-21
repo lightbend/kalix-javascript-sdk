@@ -57,28 +57,27 @@ For more details and examples take a look at the following topics:
 [#_create_unit_tests]
 == Create unit tests
 
-It is good practice to write unit tests as you implement your services. The JavaScript kickstart codegen project packages Mocha and Chai and is configured for test-driven development. For implementation details see the https://developer.lightbend.com/docs/akka-serverless/tutorial/node-cart-test.html#_ii_add_unit_tests[Shopping cart tutorial - Create unit tests] topic.
+It is good practice to write unit tests as you implement your services. The JavaScript kickstart codegen project packages Mocha and Chai and is configured for test-driven development.
 
 [#_package_service]
 == Package service
 
 Use a Docker image to package your service and any of its dependencies. See the following pages for more information:
 
-* https://developer.lightbend.com/docs/akka-serverless/getting-started/set-up-development-env.html#_docker[Installing Docker]
-* https://developer.lightbend.com/docs/akka-serverless/deploying/docker.html[Packaging with Docker]
-* https://developer.lightbend.com/docs/akka-serverless/deploying/registries.html[Configuring registries]
-* https://developer.lightbend.com/docs/akka-serverless/tutorial/node-cart-package-deploy.html[Example of how to package a service]
+* https://developer.lightbend.com/docs/akka-serverless/setting-up/index.html#_containers[Installing Docker]
+* https://developer.lightbend.com/docs/akka-serverless/quickstart/cr-value-entity-javascript.html#_package_and_deploy_your_service[Packaging with Docker]
+* https://developer.lightbend.com/docs/akka-serverless/projects/container-registries.html[Configuring registries]
 
 [#_run_locally]
 == Run locally
 
 You can test and debug your services by
-xref:javascript:run-locally.adoc[running them locally] before deploying to Akka Serverless.
+https://developer.lightbend.com/docs/akka-serverless/services/running-locally.html[running them locally] before deploying to Akka Serverless.
 
 == Deploy to Akka Serverless
 
 After testing locally, deploy your service to Akka Serverless using the CLI or the Console. The following pages provide information about deployment:
 
-* https://developer.lightbend.com/docs/akka-serverless/getting-started/projects.html[Working with Akka Serverless deployment projects]
-* https://developer.lightbend.com/docs/akka-serverless/deploying/deploying.html[Deploying a packaged service]
-* https://developer.lightbend.com/docs/akka-serverless/tutorial/index.html[Examples of how to deploy]
+* https://developer.lightbend.com/docs/akka-serverless/projects/index.html[Working with Akka Serverless projects]
+* https://developer.lightbend.com/docs/akka-serverless/services/deploy-service.html#_deploy[Deploying a packaged service]
+* https://developer.lightbend.com/docs/akka-serverless/quickstart/cr-value-entity-javascript.html#_package_and_deploy_your_service[Example of how to package and deploy a service]

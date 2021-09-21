@@ -22,8 +22,8 @@ Before running the code generation tools, make sure that you have the following:
 * Docker >= {minimum_docker_version} (to run locally)
 * The https://developer.lightbend.com/docs/akka-serverless/getting-started/set-up-development-env.html#_akka_serverless_cli[`akkasls` CLI downloaded]
 * A configured Docker Registry
-* An https://developer.lightbend.com/docs/akka-serverless/getting-started/lightbend-account.html[Akka Serverless account]
-* An https://developer.lightbend.com/docs/akka-serverless/getting-started/projects.html[Akka Serverless deployment project]
+* An https://developer.lightbend.com/docs/akka-serverless/setting-up/index.html#_akka_serverless_account[Akka Serverless account]
+* An https://developer.lightbend.com/docs/akka-serverless/projects/index.html[Akka Serverless project]
 
 :sectnums:
 == Prepare the development project
@@ -83,7 +83,7 @@ Take a look at the initial structure. The project contains the following directo
 * `proto` - files containing domain and api Protobuf definitions for a `Counter` Value Entity.
 * `test` - testkit file
 
-To understand how the Protobuf definitions relate to the implementation files, see https://developer.lightbend.com/docs/akka-serverless/designing/working.html#dev-process[The development process] and https://developer.lightbend.com/docs/akka-serverless/designing/programming-model.html[Understanding the programming model].
+To understand how the Protobuf definitions relate to the implementation files, see https://developer.lightbend.com/docs/akka-serverless/developing/development-process-js.html#_specify_service_interface_and_domain_model[The development process] and https://developer.lightbend.com/docs/akka-serverless/services/state-model.html#_choosing_a_state_model[Understanding the programming model].
 
 == Build and generate code
 
@@ -197,7 +197,7 @@ yarn start
 ----
 --
 
-TIP: For more details see xref:javascript:run-locally.adoc[Run a service locally].
+TIP: For more details see https://developer.lightbend.com/docs/akka-serverless/services/running-locally.html[Run a service locally].
 
 ifdef::todo[TODO: we need to add how to exercise the counter with gRPC or HTTP.]
 
@@ -234,7 +234,7 @@ To deploy your service:
 
 . Update the `dockerImage` property in the project's `package.json` file.
 +
-Refer to https://developer.lightbend.com/docs/akka-serverless/deploying/registries.html[Configuring registries] for more information on how to make your docker image available to Akka Serverless.
+Refer to https://developer.lightbend.com/docs/akka-serverless/projects/container-registries.html[Configuring registries] for more information on how to make your docker image available to Akka Serverless.
 
 . In your command window, set your Akka Serverless project to be the current project:
 +
