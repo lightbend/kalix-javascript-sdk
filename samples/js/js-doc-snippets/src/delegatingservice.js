@@ -68,22 +68,8 @@ action.commandHandlers = {
   // but actually calling without callback fails on param validation in grpc-js
   // so for now we do this promise dance ourselves
   async AddAndReturn(request, ctx) {
-    const increaseDone = await new Promise((resolve, reject) => {
-      counterClient.increase({counterId: request.counterId, value: 1}, // <5>
-        (error, emptyResult) => {
-          if (error) reject(error);
-          else resolve(emptyResult);
-        });
-    });
-
-    const currentCounter = await new Promise((resolve, reject) => {
-      counterClient.getCurrentCounter({counterId: request.counterId },
-        (error, emptyResult) => {
-          if (error) reject(error);
-          else resolve(emptyResult);
-        });
-    });
-
+    const increaseDone = await counterClient.increase({counterId: request.counterId, value: 1}); // <5>
+    const currentCounter = await counterClient.getCurrentCounter({counterId: request.counterId });
     return replies.message({value: currentCounter.value });
   }
 };

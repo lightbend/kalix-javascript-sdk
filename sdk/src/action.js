@@ -20,6 +20,7 @@ const grpc = require('@grpc/grpc-js');
 const protoLoader = require('@grpc/proto-loader');
 const ActionSupport = require('./action-support');
 const AkkaServerless = require('./akkaserverless');
+import { GrpcUtil } from './grpc-util';
 
 const actionServices = new ActionSupport();
 
@@ -118,7 +119,11 @@ class Action {
     const packageDefinition = protoLoader.loadSync(desc, {
       includeDirs: allIncludeDirs,
     });
+    /**
+     * @type {GrpcObject}
+     */
     this.grpc = grpc.loadPackageDefinition(packageDefinition);
+    GrpcUtil.promisifyAllClients(this.grpc);
 
     /**
      * The command handlers.

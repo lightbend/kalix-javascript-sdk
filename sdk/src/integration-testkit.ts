@@ -16,7 +16,7 @@
 
 import * as grpc from '@grpc/grpc-js';
 import * as settings from '../settings';
-import * as util from 'util';
+import { GrpcUtil } from './grpc-util';
 
 import { AkkaServerless, Component } from './akkaserverless';
 import { GenericContainer, TestContainers, Wait } from 'testcontainers';
@@ -102,26 +102,12 @@ export class IntegrationTestkit {
           'localhost:' + proxyPort,
           grpc.credentials.createInsecure(),
         );
-        this.clients[parts[parts.length - 1]] = this.promisifyClient(client);
+        this.clients[parts[parts.length - 1]] = GrpcUtil.promisifyClient(client, 'Async');
       }
     });
   }
 
-  // add async versions of unary request methods, suffixed with "Async"
-  private promisifyClient(client: any) {
-    Object.keys(Object.getPrototypeOf(client)).forEach((methodName) => {
-      const methodFunction = client[methodName];
-      if (
-        methodFunction.requestStream == false &&
-        methodFunction.responseStream == false
-      ) {
-        client[methodName + 'Async'] = util
-          .promisify(methodFunction)
-          .bind(client);
-      }
-    });
-    return client;
-  }
+
 
   /**
    * Shut down the testkit.
