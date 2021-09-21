@@ -394,7 +394,7 @@ jobs:
             source /opt/circleci/.nvm/nvm.sh
             nvm install v14
             # Run proxy in background
-            docker-compose -f docker-compose.yml -f docker-compose.linux.yml up -d
+            docker-compose up -d
             # Run the service in background
             npm run start &
             # Test the event-sourced-entity
