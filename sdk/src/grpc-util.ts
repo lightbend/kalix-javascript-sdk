@@ -15,10 +15,8 @@
  */
 
 import * as util from 'util';
-import {GrpcObject} from "@grpc/grpc-js/src/make-client";
 
 export class GrpcUtil {
-
   /**
    * INTERNAL API
    *
@@ -29,10 +27,11 @@ export class GrpcUtil {
       if (key == key.toLowerCase()) {
         // package (lower case name), recurse
         this.promisifyAllClients(value);
-      } else { // @ts-ignore
+      } else {
+        // @ts-ignore
         if (value.service) {
           // a service client, patch it!
-          grpc[key] = GrpcUtil.promisifyClient(value, "");
+          grpc[key] = GrpcUtil.promisifyClient(value, '');
         }
       }
     });

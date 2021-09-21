@@ -102,12 +102,13 @@ export class IntegrationTestkit {
           'localhost:' + proxyPort,
           grpc.credentials.createInsecure(),
         );
-        this.clients[parts[parts.length - 1]] = GrpcUtil.promisifyClient(client, 'Async');
+        this.clients[parts[parts.length - 1]] = GrpcUtil.promisifyClient(
+          client,
+          'Async',
+        );
       }
     });
   }
-
-
 
   /**
    * Shut down the testkit.
