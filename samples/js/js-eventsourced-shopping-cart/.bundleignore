@@ -1,0 +1,4 @@
+lib/generated
+node_modules
+package-lock.json
+user-function.desc
