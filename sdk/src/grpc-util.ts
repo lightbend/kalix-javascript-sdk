@@ -20,7 +20,7 @@ export class GrpcUtil {
   /**
    * add async versions of unary request methods, suffixed with the given suffix
    */
-  static promisifyClient(client: any, suffix: String = "") {
+  static promisifyClient(client: any, suffix: String = '') {
     Object.keys(Object.getPrototypeOf(client)).forEach((methodName) => {
       const methodFunction = client[methodName];
       if (
