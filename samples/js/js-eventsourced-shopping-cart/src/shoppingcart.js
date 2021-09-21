@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
+// tag::imports[]
 import {EventSourcedEntity} from "@lightbend/akkaserverless-javascript-sdk";
-
+// end::imports[]
 /**
  * Type definitions.
  * These types have been generated based on your proto source.
@@ -34,6 +34,7 @@ import {EventSourcedEntity} from "@lightbend/akkaserverless-javascript-sdk";
 /**
  * @type ShoppingCartService
  */
+// tag::esentity[]
 const entity = new EventSourcedEntity(
   [
     "shoppingcart_domain.proto",
@@ -46,7 +47,7 @@ const entity = new EventSourcedEntity(
     serializeFallbackToJson: true
   }
 );
-
+// end::esentity[]
 /*
  * Here we load the Protobuf types. When emitting events or setting state, we need to return
  * protobuf message objects, not just ordinary JavaScript objects, so that the framework can
@@ -54,11 +55,12 @@ const entity = new EventSourcedEntity(
  *
  * Note this shows loading them dynamically, they could also be compiled and statically loaded.
  */
+// tag::espersistence[]
 const pkg = "com.example.shoppingcart.domain.";
 const ItemAdded = entity.lookupType(pkg + "ItemAdded");
 const ItemRemoved = entity.lookupType(pkg + "ItemRemoved");
 const Cart = entity.lookupType(pkg + "Cart");
-
+// end::espersistence[]
 /*
  * Set a callback to create the initial state. This is what is created if there is no
  * snapshot to load.
@@ -66,8 +68,10 @@ const Cart = entity.lookupType(pkg + "Cart");
  * We can ignore the cartId parameter if we want, it's the id of the entity, which is
  * automatically associated with all events and state for this entity.
  */
+// tag::initialstate[]
 entity.setInitial(cartId => Cart.create({items: []}));
-
+// end::initialstate[]
+// tag::behavior[]
 entity.setBehavior(cart => {
   return {
     // Command handlers. The name of the command corresponds to the name of the rpc call in
@@ -85,11 +89,13 @@ entity.setBehavior(cart => {
     }
   };
 });
+// end::behavior[]
 
 
 /**
  * Handler for add item commands.
  */
+// tag::additem[]
 function addItem(addItem, cart, ctx) {
   // Validation:
   // Make sure that it is not possible to add negative quantities
@@ -109,10 +115,11 @@ function addItem(addItem, cart, ctx) {
     return {};
   }
 }
-
+// end::additem[]
 /**
  * Handler for remove item commands.
  */
+// tag::removeitem[]
 function removeItem(removeItem, cart, ctx) {
   // Validation:
   // Check that the item that we're removing actually exists.
@@ -132,18 +139,20 @@ function removeItem(removeItem, cart, ctx) {
     return {};
   }
 }
-
+// end::removeitem[]
 /**
  * Handler for get cart commands.
  */
+// tag::getcart[]
 function getCart(request, cart) {
   // Simply return the shopping cart as is.
   return cart;
 }
-
+// end::getcart[]
 /**
  * Handler for item added events.
  */
+// tag::itemadded[]
 function itemAdded(added, cart) {
   // If there is an existing item with that product id, we need to increment its quantity.
   const existing = cart.items.find(item => {
@@ -160,10 +169,11 @@ function itemAdded(added, cart) {
   // And return the new state.
   return cart;
 }
-
+// end::itemadded[]
 /**
  * Handler for item removed events.
  */
+// tag::itemremoved[]
 function itemRemoved(removed, cart) {
   // Filter the removed item from the items by product id.
   cart.items = cart.items.filter(item => {
@@ -173,6 +183,8 @@ function itemRemoved(removed, cart) {
   // And return the new state.
   return cart;
 }
+// end::itemremoved[]
 
-
+// tag::export[]
 export default entity;
+// end::export[]

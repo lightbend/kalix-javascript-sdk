@@ -22,7 +22,7 @@ build: dev
 clean:
 	rm -rf build
 
-managed: attributes apidocs examples
+managed: attributes apidocs examples bundles
 	mkdir -p "${src_managed}"
 	cp src/antora.yml "${src_managed}/antora.yml"
 
@@ -51,6 +51,11 @@ examples:
 	rsync -a --exclude-from=.examplesignore ../samples/ts/ts-valueentity-counter/ "${managed_examples}/ts-valueentity-counter/"
 	rsync -a --exclude-from=.examplesignore ../samples/ts/ts-eventsourced-shopping-cart/ "${managed_examples}/ts-eventsourced-shopping-cart/"
 
+bundles:
+	bin/bundle.sh --zip "${managed_attachments}/js-customer-registry-quickstart.zip" ../samples/js/js-customer-registry
+	bin/bundle.sh --zip "${managed_attachments}/ts-customer-registry-quickstart.zip" ../samples/ts/ts-customer-registry
+	bin/bundle.sh --zip "${managed_attachments}/js-eventsourced-shopping-cart.zip" ../samples/js/js-eventsourced-shopping-cart
+	bin/bundle.sh --zip "${managed_attachments}/ts-eventsourced-shopping-cart.zip" ../samples/ts/ts-eventsourced-shopping-cart
 
 dev: clean managed validate-xrefs dev-html
 
