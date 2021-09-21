@@ -23,6 +23,7 @@
 import { Action } from "@lightbend/akkaserverless-javascript-sdk";
 import { replies } from '@lightbend/akkaserverless-javascript-sdk';
 import * as grpc from '@grpc/grpc-js'; // <1>
+import { GrpcUtil } from '@lightbend/akkaserverless-javascript-sdk'; // <2>
 
 /**
  * Type definitions.
@@ -39,7 +40,7 @@ import * as grpc from '@grpc/grpc-js'; // <1>
 const action = new Action(
   [
     "com/example/delegating_service.proto",
-    "com/example/counter_api.proto" // <2>
+    "com/example/counter_api.proto" // <3>
   ],
   "com.example.DelegatingService",
   {
@@ -48,15 +49,15 @@ const action = new Action(
   }
 );
 
-const counterClient = new action.grpc.com.example.CounterService(
-  "counter:80", // <3>
-  grpc.credentials.createInsecure()); // <4>
+const counterClient = GrpcUtil.promisifyClient(new action.grpc.com.example.CounterService( // <4>
+  "counter:80", // <5>
+  grpc.credentials.createInsecure())); // <6>
 
 // end::delegating-action[]
 function showExternal() {
   // tag::public-grpc[]
-  const counterClient = new action.grpc.com.example.CounterService(
-    "public-host-name.akkaserverless.com",
+  const counterClient = GrpcUtil.promisifyClient(new action.grpc.com.example.CounterService(
+    "still-queen-1447.us-east1.apps.akkaserverless.dev",
     grpc.credentials.createSsl());
   // end::public-grpc[]
 }
@@ -65,7 +66,7 @@ function showExternal() {
 
 action.commandHandlers = {
   async AddAndReturn(request, ctx) {
-    const increaseDone = await counterClient.increase({counterId: request.counterId, value: 1}); // <5>
+    await counterClient.increase({counterId: request.counterId, value: 1}); // <7>
     const currentCounter = await counterClient.getCurrentCounter({counterId: request.counterId });
     return replies.message({value: currentCounter.value });
   }

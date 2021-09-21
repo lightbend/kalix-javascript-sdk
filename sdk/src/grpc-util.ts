@@ -18,31 +18,9 @@ import * as util from 'util';
 
 export class GrpcUtil {
   /**
-   * INTERNAL API
-   *
-   * Monkey patch async versions of unary request methods onto all clients in the given grpc descriptor hierarchy
-   */
-  static promisifyAllClients(grpc: any) {
-    Object.entries(grpc).forEach(([key, value]) => {
-      if (key == key.toLowerCase()) {
-        // package (lower case name), recurse
-        this.promisifyAllClients(value);
-      } else {
-        // @ts-ignore
-        if (value.service) {
-          // a service client, patch it!
-          grpc[key] = GrpcUtil.promisifyClient(value, '');
-        }
-      }
-    });
-  }
-
-  /**
-   * INTERNAL API
-   *
    * add async versions of unary request methods, suffixed with the given suffix
    */
-  static promisifyClient(client: any, suffix: String) {
+  static promisifyClient(client: any, suffix: String = "") {
     Object.keys(Object.getPrototypeOf(client)).forEach((methodName) => {
       const methodFunction = client[methodName];
       if (
