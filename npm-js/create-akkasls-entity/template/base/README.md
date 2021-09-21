@@ -49,20 +49,12 @@ To run your application locally, you must run the Akka Serverless proxy. The inc
 
 To start the proxy, run the following command from this directory:
 
-### macOS and Windows
-
 ```
 docker-compose up
 ```
 
-### Linux
-
 > On Linux this requires Docker 20.10 or later (https://github.com/moby/moby/pull/40007),
 > or for a `USER_FUNCTION_HOST` environment variable to be set manually.
-
-```
-docker-compose -f docker-compose.yml -f docker-compose.linux.yml up
-```
 
 To start the application locally, use the following commands:
 
