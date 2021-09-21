@@ -16,4 +16,4 @@ WORKDIR /home/node/samples/js/js-views-example
 USER node
 ENV NODE_ENV production
 EXPOSE 8080
-CMD ["npm", "run", "start-no-prestart"]
+CMD ["node", "index.js"]
