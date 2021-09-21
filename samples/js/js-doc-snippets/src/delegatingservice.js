@@ -64,9 +64,6 @@ function showExternal() {
 
 
 action.commandHandlers = {
-  // FIXME grpc-js api-docs says there is async rpc unary method calls
-  // but actually calling without callback fails on param validation in grpc-js
-  // so for now we do this promise dance ourselves
   async AddAndReturn(request, ctx) {
     const increaseDone = await counterClient.increase({counterId: request.counterId, value: 1}); // <5>
     const currentCounter = await counterClient.getCurrentCounter({counterId: request.counterId });
