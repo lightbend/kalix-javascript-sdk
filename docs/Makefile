@@ -46,10 +46,12 @@ examples:
 	rsync -a --exclude-from=.examplesignore ../samples/js/js-valueentity-shopping-cart/ "${managed_examples}/js-valueentity-shopping-cart/"
 	rsync -a --exclude-from=.examplesignore ../samples/js/valueentity-counter/ "${managed_examples}/valueentity-counter/"
 	rsync -a --exclude-from=.examplesignore ../samples/js/js-eventsourced-shopping-cart/ "${managed_examples}/js-eventsourced-shopping-cart/"
+	rsync -a --exclude-from=.examplesignore ../samples/js/js-replicated-entity-shopping-cart/ "${managed_examples}/js-replicated-entity-shopping-cart/"
 	rsync -a --exclude-from=.examplesignore ../samples/ts/ts-customer-registry/ "${managed_examples}/ts-customer-registry/"
 	rsync -a --exclude-from=.examplesignore ../samples/ts/ts-valueentity-shopping-cart/ "${managed_examples}/ts-valueentity-shopping-cart/"
 	rsync -a --exclude-from=.examplesignore ../samples/ts/ts-valueentity-counter/ "${managed_examples}/ts-valueentity-counter/"
 	rsync -a --exclude-from=.examplesignore ../samples/ts/ts-eventsourced-shopping-cart/ "${managed_examples}/ts-eventsourced-shopping-cart/"
+	rsync -a --exclude-from=.examplesignore ../samples/ts/ts-replicated-entity-shopping-cart/ "${managed_examples}/ts-replicated-entity-shopping-cart/"
 
 bundles:
 	bin/bundle.sh --zip "${managed_attachments}/js-customer-registry-quickstart.zip" ../samples/js/js-customer-registry

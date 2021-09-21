@@ -1,0 +1,351 @@
+= Implementing Replicated Entities in JavaScript
+:page-aliases: replicated-entity.adoc
+
+include::ROOT:partial$include.adoc[]
+
+// TODO: add glossary link for Replicated Entity to the main docs
+
+Replicated Entities distribute state using a https://en.wikipedia.org/wiki/Conflict-free_replicated_data_type[conflict-free replicated data type (CRDT)]. Data is shared across multiple instances of a Replicated Entity and is eventually consistent to provide high availability with low latency. The underlying CRDT semantics allow Replicated Entity instances to update their state independently and concurrently and without coordination. The state changes will always converge without conflicts, but note that with the state being eventually consistent, reading the current data may return an out-of-date value.
+
+Akka Serverless needs to serialize the data to replicate, and it is recommended that this is done with Protocol Buffers using `protobuf` types. While Protocol Buffers are the recommended format for state, we recommend that you do not use your service's public `protobuf` messages in the replicated data. This may introduce some overhead to convert from one type to the other, but allows the service public interface logic to evolve independently of the data format, which should be private.
+
+The steps necessary to implement a Replicated Entity include:
+
+. Defining the API and domain objects in `.proto` files.
+. Implementing behavior in command handlers.
+. Creating and initializing the Replicated Entity.
+
+The sections on this page walk through these steps using a shopping cart service as an example.
+
+
+== Defining the `proto` files
+
+NOTE: Our Replicated Entity example is a shopping cart service.
+
+The following `shoppingcart_domain.proto` file defines our "Shopping Cart" Replicated Entity. The entity manages line items of a cart and stores these as a <<_replicated_counter_map>>, mapping from each item's product details to its quantity. The counter for each item can be incremented independently in separate Replicated Entity instances and will converge to a total quantity.
+
+[source,proto]
+.proto/shoppingcart_domain.proto
+----
+include::example$js-replicated-entity-shopping-cart/proto/shoppingcart_domain.proto[tag=domain]
+----
+<1> Define the protobuf package for the domain messages.
+<2> A `Product` message will be the key for the Replicated Counter Map.
+
+// TODO: add notes for Replicated Entity codegen -- when it gets added
+
+The `shoppingcart_api.proto` file defines the commands we can send to the shopping cart service to manipulate or access the cart's state. They make up the service API:
+
+[source,proto]
+.proto/shoppingcart_api.proto
+----
+include::example$js-replicated-entity-shopping-cart/proto/shoppingcart_api.proto[tag=api]
+----
+<1> Define the protobuf package for the service and API messages.
+<2> Import the Akka Serverless protobuf annotations, or options.
+<3> We use protobuf messages to describe the Commands that our service handles. They may contain other messages to represent structured data.
+<4> Every Command must contain a `string` field that contains the entity ID and is marked with the `(akkaserverless.field).entity_key` option.
+<5> Messages describe the return value for our API. For methods that don't have return values, we use `google.protobuf.Empty`.
+<6> The service descriptor shows the API of the entity. It lists the methods a client can use to issue Commands to the entity.
+
+// TODO: add notes for Replicated Entity codegen -- when it gets added
+
+
+== Implementing behavior
+
+A Replicated Entity is implemented with the link:{attachmentsdir}/api/module-akkaserverless.replicatedentity.ReplicatedEntity.html[ReplicatedEntity{tab-icon}, window="new"] class:
+
+[.tabset]
+JS::
++
+[source,js]
+.src/shoppingcart.js
+----
+include::example$js-replicated-entity-shopping-cart/src/shoppingcart.js[tags=import-replicatedentity;class]
+----
+TS::
++
+[source,ts]
+.src/shoppingcart.ts
+----
+include::example$ts-replicated-entity-shopping-cart/src/shoppingcart.ts[tags=import-replicatedentity;class]
+----
+
+<1> Create a Replicated Entity using the constructor.
+<2> Specify the protobuf files for this entity.
+<3> Provide the fully qualified gRPC service name (defined in the protobuf files).
+<4> The entity type is a unique identifier for data replication (and can't be changed).
+<5> Add any options, such as the directory to find protobuf files.
+
+Set a default Replicated Data value for the Replicated Entity:
+
+[.tabset]
+JS::
++
+[source,js]
+.src/shoppingcart.js
+----
+include::example$js-replicated-entity-shopping-cart/src/shoppingcart.js[tag=defaultValue]
+----
+TS::
++
+[source,ts]
+.src/shoppingcart.ts
+----
+include::example$ts-replicated-entity-shopping-cart/src/shoppingcart.ts[tag=defaultValue]
+----
+
+<1> Create a new Replicated Counter Map as the default value for when this entity is first initialized.
+
+NOTE: Each Replicated Entity is associated with one underlying Replicated Data type.
+
+=== Using protobuf types
+
+To create protobuf messages, for responses or the replicated state, first lookup the protobuf type constructors using the Replicated Entity link:{attachmentsdir}/api/module-akkaserverless.replicatedentity.ReplicatedEntity.html#lookupType[`lookupType`{tab-icon}, window="new"] helper. For TypeScript, the protobuf types used in command handlers can be added using the statically generated type declarations.
+
+[.tabset]
+JS::
++
+[source,js]
+.src/shoppingcart.js
+----
+include::example$js-replicated-entity-shopping-cart/src/shoppingcart.js[tag=types]
+----
+TS::
++
+[source,ts]
+.src/shoppingcart.ts
+----
+include::example$ts-replicated-entity-shopping-cart/src/shoppingcart.ts[tag=types]
+----
+
+NOTE: Each protobuf type constructor has a `create` method for creating a protobuf message.
+
+=== Defining command handlers
+
+We need to implement all methods our Replicated Entity offers as https://developer.lightbend.com/docs/akka-serverless/reference/glossary.html#command_handler[_command handlers_]. A link:{attachmentsdir}/api/module-akkaserverless.replicatedentity.ReplicatedEntity.html#~commandHandler[`command handler`{tab-icon}, window="new"] is a function that takes a command and a link:{attachmentsdir}/api/module-akkaserverless.replicatedentity.ReplicatedEntityCommandContext.html[`ReplicatedEntityCommandContext`{tab-icon}, window="new"]. The command is the input message type for the gRPC service call, and the command handler must return a message of the same type as the output type of the gRPC service call.
+
+We map each method to a command handler function using link:{attachmentsdir}/api/module-akkaserverless.replicatedentity.ReplicatedEntity.html#commandHandlers[`commandHandlers`{tab-icon}, window="new"].
+
+[.tabset]
+JS::
++
+[source,js]
+.src/shoppingcart.js
+----
+include::example$js-replicated-entity-shopping-cart/src/shoppingcart.js[tag=commandHandlers]
+----
+TS::
++
+[source,ts]
+.src/shoppingcart.ts
+----
+include::example$ts-replicated-entity-shopping-cart/src/shoppingcart.ts[tag=commandHandlers]
+----
+
+=== Updating state
+
+In the example below, the `AddItem` service call uses the request message `AddLineItem` to update items in the shopping cart.
+
+The current Replicated Data value can be accessed using the link:{attachmentsdir}/api/module-akkaserverless.replicatedentity.ReplicatedEntityCommandContext.html#state[`state`{tab-icon}, window="new"] method on the provided context.
+
+[.tabset]
+JS::
++
+[source,js]
+.src/shoppingcart.js
+----
+include::example$js-replicated-entity-shopping-cart/src/shoppingcart.js[tags=import-replies;addItem]
+----
+TS::
++
+[source,ts]
+.src/shoppingcart.ts
+----
+include::example$ts-replicated-entity-shopping-cart/src/shoppingcart.ts[tags=import-replies;addItem]
+----
+
+<1> The validation ensures that the quantity of items added is greater than zero or fails the call using `replies.failure`.
+<2> Access the current Replicated Data value using `context.state`.
+<3> From the current incoming `AddLineItem` we create a new `Product` object to represent the item's key in the counter map.
+<4> We increment the counter for this item in the cart. A new counter will be created if the cart doesn't contain this item already.
+<5> An acknowledgment that the command was successfully processed is sent with a reply message.
+
+=== Retrieving state
+
+The following example shows the implementation of the `GetCart` command handler. This command handler is a read-only command handler--it doesn't update the state, it just returns it.
+
+The current Replicated Data value can be accessed using the link:{attachmentsdir}/api/module-akkaserverless.replicatedentity.ReplicatedEntityCommandContext.html#state[`state`{tab-icon}, window="new"] method on the provided context.
+
+IMPORTANT: The state of Replicated Entities is eventually consistent. An individual Replicated Entity instance may have an out-of-date value, if there are concurrent modifications made by another instance.
+
+[.tabset]
+JS::
++
+[source,js]
+.src/shoppingcart.js
+----
+include::example$js-replicated-entity-shopping-cart/src/shoppingcart.js[tags=import-replies;getCart]
+----
+TS::
++
+[source,ts]
+.src/shoppingcart.ts
+----
+include::example$ts-replicated-entity-shopping-cart/src/shoppingcart.ts[tags=import-replies;getCart]
+----
+
+<1> Access the current Replicated Data value using `context.state`.
+<2> Iterate over the items in the cart to convert the domain representation to the API representation.
+<3> Access a value in the Replicated Counter Map using `get` with the key.
+<4> Return the reply with a `Cart` message.
+
+=== Deleting state
+
+The following example shows the implementation of the `RemoveCart` command handler. Replicated Entity instances for a particular entity identifier can be deleted, using the link:{attachmentsdir}/api/module-akkaserverless.replicatedentity.ReplicatedEntityCommandContext.html#delete[`delete`{tab-icon}, window="new"] method on the provided context. Once deleted, an entity instance cannot be recreated, and all subsequent commands for that entity identifier will be rejected with an error.
+
+IMPORTANT: Caution should be taken with creating and deleting Replicated Entities, as Akka Serverless maintains the replicated state in memory and also retains tombstones for each deleted entity. Over time, if many Replicated Entities are created and deleted, this will result in hitting memory limits.
+
+
+[.tabset]
+JS::
++
+[source,js]
+.src/shoppingcart.js
+----
+include::example$js-replicated-entity-shopping-cart/src/shoppingcart.js[tags=import-replies;removeCart]
+----
+TS::
++
+[source,ts]
+.src/shoppingcart.ts
+----
+include::example$ts-replicated-entity-shopping-cart/src/shoppingcart.ts[tags=import-replies;removeCart]
+----
+
+<1> The Replicated Entity instances for the associated entity key are deleted by using `context.delete`.
+<2> An acknowledgment that the command was successfully processed is sent with a reply message.
+
+
+== Registering the Entity
+
+To make Akka Serverless aware of the Replicated Entity, we need to register it with the service.
+
+// TODO: use generated components once there's codegen for Replicated Entities
+
+[.tabset]
+JS::
++
+[source,js]
+.src/index.js
+----
+include::example$js-replicated-entity-shopping-cart/src/index.js[tag=register]
+----
+TS::
++
+[source,ts]
+.src/index.ts
+----
+include::example$ts-replicated-entity-shopping-cart/src/index.ts[tag=register]
+----
+
+<1> Create an `AkkaServerless` service.
+<2> Register the Replicated Entity using `addComponent`.
+<3> Start the service.
+
+
+== Replicated Data types
+
+Each Replicated Entity is associated with one underlying Replicated Data type. Counter, Register, Set, and Map data structures are available. This section describes how to configure and implement a Replicated Entity with each of the Replicated Data types.
+
+NOTE: The current value for a Replicated Data object may not be the most up-to-date value when there are concurrent modifications.
+
+=== Replicated Counter
+
+A link:{attachmentsdir}/api/module-akkaserverless.replicatedentity.ReplicatedCounter.html[ReplicatedCounter{tab-icon}, window="new"] can be incremented and decremented.
+
+// TODO: add codegen protobuf when avaliable for Replicated Entities
+
+When implementing a Replicated Counter entity, the state can be updated by calling the `increment` or `decrement` methods on the current data object. The current value of a Replicated Counter can be retrieved using `value` or `longValue`.
+
+// TODO: examples
+
+=== Replicated Register
+
+A link:{attachmentsdir}/api/module-akkaserverless.replicatedentity.ReplicatedRegister.html[ReplicatedRegister{tab-icon}, window="new"] can contain any (serializable) value. Updates to the value are replicated using last-write-wins semantics, where concurrent modifications are resolved by using the update with the highest timestamp.
+
+// TODO: configuring clocks for register replication
+
+// TODO: add codegen protobuf when avaliable for Replicated Entities
+
+When creating a Replicated Register, an initial or empty value needs to be defined. The current value of a Replicated Register can be retrieved using the `value` property, and updated by assigning a new value to the `value` property.
+
+// TODO: examples
+
+=== Replicated Set
+
+A link:{attachmentsdir}/api/module-akkaserverless.replicatedentity.ReplicatedSet.html[ReplicatedSet{tab-icon}, window="new"] is a set of (serializable) values, where elements can be added or removed.
+
+// TODO: add codegen protobuf when avaliable for Replicated Entities
+
+When implementing a Replicated Set entity, the state can be updated by calling the `add` or `delete` methods on the current data object. The `elements` method for Replicated Set returns a regular `Set`. Replicated Sets are also iterable.
+
+// TODO: examples
+
+IMPORTANT: Care needs to be taken to ensure that the serialized values for elements in the set are stable.
+
+=== Replicated Counter Map
+
+A link:{attachmentsdir}/api/module-akkaserverless.replicatedentity.ReplicatedCounterMap.html[ReplicatedCounterMap{tab-icon}, window="new"] maps (serializable) keys to replicated counters, where each value can be incremented and decremented.
+
+// TODO: add codegen protobuf when avaliable for Replicated Entities
+
+When implementing a Replicated Counter Map entity, the value of an entry can be updated by calling the `increment` or `decrement` methods. Entries can be removed from the map using the `delete` method. Individual counters in a Replicated Counter Map can be accessed using `get` or `getLong`, or the set of `keys` can be used to iterate over all counters.
+
+// TODO: examples
+
+=== Replicated Register Map
+
+A link:{attachmentsdir}/api/module-akkaserverless.replicatedentity.ReplicatedRegisterMap.html[ReplicatedRegisterMap{tab-icon}, window="new"] maps (serializable) keys to replicated registers of (serializable) values. Updates to values are replicated using last-write-wins semantics, where concurrent modifications are resolved by using the update with the highest timestamp.
+
+// TODO: configuring clocks for register replication
+
+// TODO: add codegen protobuf when avaliable for Replicated Entities
+
+When implementing a Replicated Register Map entity, the value of an entry can be updated by calling the `set` method on the current data object. Entries can be removed from the map using the `delete` method. Individual registers in a Replicated Register Map can be accessed using the `get` method, or the set of `keys` can be used to iterate over all registers.
+
+// TODO: examples
+
+=== Replicated Multi-Map
+
+A link:{attachmentsdir}/api/module-akkaserverless.replicatedentity.ReplicatedMultiMap.html[ReplicatedMultiMap{tab-icon}, window="new"] maps (serializable) keys to replicated sets of (serializable) values, providing a multi-map interface that can associate multiple values with each key.
+
+// TODO: add codegen protobuf when avaliable for Replicated Entities
+
+When implementing a Replicated Multi-Map entity, the values of an entry can be updated by calling the `put`, `putAll`, or `delete` methods on the current data object. Entries can be removed entirely from the map using the `deleteAll` method. Individual entries in a Replicated Multi-Map can be accessed using the `get` method which returns a `Set` of values, or the set of `keys` can be used to iterate over all value sets.
+
+// TODO: examples
+
+=== Replicated Map
+
+A link:{attachmentsdir}/api/module-akkaserverless.replicatedentity.ReplicatedMap.html[ReplicatedMap{tab-icon}, window="new"] maps (serializable) keys to any other Replicated Data types, allowing a heterogeneous map where values can be of any Replicated Data type.
+
+NOTE: Prefer to use the specialized replicated maps (<<_replicated_counter_map>>, <<_replicated_register_map>>, or <<_replicated_multi_map>>) whenever the values of the map are of the same type -- counters, registers, or sets.
+
+// TODO: add codegen protobuf when avaliable for Replicated Entities
+
+When implementing a Replicated Map entity, the replicated data for an entry can be updated by retrieving the data value using the `get` method, with a default value defined using `defaultValue` for when a key is not present in the map, and then updating the Replicated Data value. Entries can be removed from the map using the `delete` method.
+
+// TODO: examples
+
+
+[IMPORTANT]
+====
+All objects used within Replicated Data types -- as keys, values, or elements -- must be immutable, and their serialized form must be stable.
+
+Akka Serverless uses the serialized form of these values to track changes in Replicated Sets or Maps. If the same value serializes to different bytes on different occasions, they will be treated as different keys, values, or elements in a Replicated Set or Map.
+
+This is particularly relevant when using Protocol Buffers (`protobuf`) for serialization. The serialized ordering for the entries of a protobuf `map` type is undefined, so protobuf `map` types should not be used within protobuf messages that are keys, values, or elements in Replicated Data objects.
+
+For the rest of the protobuf specification, while no guarantees are made on the stability by the protobuf specification itself, the Java libraries do produce stable orderings for message fields and repeated fields. But care should be taken when changing the protobuf structure of any types used within Replicated Data objects -- many changes that are backwards compatible from a protobuf standpoint do not necessarily translate into stable serializations.
+====
