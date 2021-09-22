@@ -1,0 +1,5 @@
+/user-function.desc
+/docker-compose.yml
+/node_modules
+/README.md
+**/*.ts

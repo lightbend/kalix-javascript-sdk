@@ -33,3 +33,4 @@ module.exports.IntegrationTestkit =
 module.exports.View = require('./src/view');
 module.exports.replies = require('./src/reply');
 module.exports.settings = require('./settings');
+module.exports.GrpcUtil = require('./src/grpc-util').GrpcUtil;
