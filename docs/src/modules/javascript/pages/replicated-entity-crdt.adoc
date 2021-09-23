@@ -1,5 +1,6 @@
 = Implementing Replicated Entities in JavaScript
 :page-aliases: replicated-entity.adoc
+:page-supergroup-javascript-typescript: Language
 
 include::ROOT:partial$include.adoc[]
 
@@ -56,14 +57,14 @@ include::example$js-replicated-entity-shopping-cart/proto/shoppingcart_api.proto
 A Replicated Entity is implemented with the link:{attachmentsdir}/api/module-akkaserverless.replicatedentity.ReplicatedEntity.html[ReplicatedEntity{tab-icon}, window="new"] class:
 
 [.tabset]
-JS::
+JavaScript::
 +
 [source,js]
 .src/shoppingcart.js
 ----
 include::example$js-replicated-entity-shopping-cart/src/shoppingcart.js[tags=import-replicatedentity;class]
 ----
-TS::
+TypeScript::
 +
 [source,ts]
 .src/shoppingcart.ts
@@ -80,14 +81,14 @@ include::example$ts-replicated-entity-shopping-cart/src/shoppingcart.ts[tags=imp
 Set a default Replicated Data value for the Replicated Entity:
 
 [.tabset]
-JS::
+JavaScript::
 +
 [source,js]
 .src/shoppingcart.js
 ----
 include::example$js-replicated-entity-shopping-cart/src/shoppingcart.js[tag=defaultValue]
 ----
-TS::
+TypeScript::
 +
 [source,ts]
 .src/shoppingcart.ts
@@ -104,14 +105,14 @@ NOTE: Each Replicated Entity is associated with one underlying Replicated Data t
 To create protobuf messages, for responses or the replicated state, first lookup the protobuf type constructors using the Replicated Entity link:{attachmentsdir}/api/module-akkaserverless.replicatedentity.ReplicatedEntity.html#lookupType[`lookupType`{tab-icon}, window="new"] helper. For TypeScript, the protobuf types used in command handlers can be added using the statically generated type declarations.
 
 [.tabset]
-JS::
+JavaScript::
 +
 [source,js]
 .src/shoppingcart.js
 ----
 include::example$js-replicated-entity-shopping-cart/src/shoppingcart.js[tag=types]
 ----
-TS::
+TypeScript::
 +
 [source,ts]
 .src/shoppingcart.ts
@@ -128,14 +129,14 @@ We need to implement all methods our Replicated Entity offers as https://develop
 We map each method to a command handler function using link:{attachmentsdir}/api/module-akkaserverless.replicatedentity.ReplicatedEntity.html#commandHandlers[`commandHandlers`{tab-icon}, window="new"].
 
 [.tabset]
-JS::
+JavaScript::
 +
 [source,js]
 .src/shoppingcart.js
 ----
 include::example$js-replicated-entity-shopping-cart/src/shoppingcart.js[tag=commandHandlers]
 ----
-TS::
+TypeScript::
 +
 [source,ts]
 .src/shoppingcart.ts
@@ -150,14 +151,14 @@ In the example below, the `AddItem` service call uses the request message `AddLi
 The current Replicated Data value can be accessed using the link:{attachmentsdir}/api/module-akkaserverless.replicatedentity.ReplicatedEntityCommandContext.html#state[`state`{tab-icon}, window="new"] method on the provided context.
 
 [.tabset]
-JS::
+JavaScript::
 +
 [source,js]
 .src/shoppingcart.js
 ----
 include::example$js-replicated-entity-shopping-cart/src/shoppingcart.js[tags=import-replies;addItem]
 ----
-TS::
+TypeScript::
 +
 [source,ts]
 .src/shoppingcart.ts
@@ -180,14 +181,14 @@ The current Replicated Data value can be accessed using the link:{attachmentsdir
 IMPORTANT: The state of Replicated Entities is eventually consistent. An individual Replicated Entity instance may have an out-of-date value, if there are concurrent modifications made by another instance.
 
 [.tabset]
-JS::
+JavaScript::
 +
 [source,js]
 .src/shoppingcart.js
 ----
 include::example$js-replicated-entity-shopping-cart/src/shoppingcart.js[tags=import-replies;getCart]
 ----
-TS::
+TypeScript::
 +
 [source,ts]
 .src/shoppingcart.ts
@@ -208,14 +209,14 @@ IMPORTANT: Caution should be taken with creating and deleting Replicated Entitie
 
 
 [.tabset]
-JS::
+JavaScript::
 +
 [source,js]
 .src/shoppingcart.js
 ----
 include::example$js-replicated-entity-shopping-cart/src/shoppingcart.js[tags=import-replies;removeCart]
 ----
-TS::
+TypeScript::
 +
 [source,ts]
 .src/shoppingcart.ts
@@ -234,14 +235,14 @@ To make Akka Serverless aware of the Replicated Entity, we need to register it w
 // TODO: use generated components once there's codegen for Replicated Entities
 
 [.tabset]
-JS::
+JavaScript::
 +
 [source,js]
 .src/index.js
 ----
 include::example$js-replicated-entity-shopping-cart/src/index.js[tag=register]
 ----
-TS::
+TypeScript::
 +
 [source,ts]
 .src/index.ts
