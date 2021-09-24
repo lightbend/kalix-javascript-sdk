@@ -39,7 +39,7 @@ npm::
 --
 [source, command window, subs="attributes"]
 ----
-npx @lightbend/create-akkasls-entity my-entity
+npx @lightbend/create-akkasls-entity@latest my-entity
 ----
 --
 yarn::
@@ -47,7 +47,7 @@ yarn::
 --
 [source, command window, subs="attributes"]
 ----
-yarn create @lightbend/akkasls-entity my-entity
+yarn create @lightbend/akkasls-entity@latest my-entity
 ----
 --
 
