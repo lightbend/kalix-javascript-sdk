@@ -1,4 +1,5 @@
 = Serialization options for JavaScript services
+:page-supergroup-javascript-typescript: Language
 
 include::ROOT:partial$include.adoc[]
 include::partial$serialization.adoc[]
@@ -11,7 +12,7 @@ As a JavaScript developer, JSON is likely more familiar to you. When creating Ev
 The following example sets JSON serialization fo a snapshot:
 
 [.tabset]
-JS::
+JavaScript::
 +
 [source,javascript,indent=0]
 ----
@@ -29,7 +30,7 @@ const entity = new EventSourcedEntity(
 );
 ----
 
-TS::
+TypeScript::
 +
 [source,typescript,indent=0]
 ----
