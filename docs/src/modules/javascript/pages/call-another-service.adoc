@@ -32,13 +32,10 @@ In our delegating service implementation:
 ----
 include::example$js-doc-snippets/src/delegatingservice.js[tag=delegating-action]
 ----
-<1> Import `grpc-js`, we need later to create the client.
-<2> Import `GrpcUtil` from the Akka Serverless JS SDK.
-<3> Include the `proto` file of the other service in the action service descriptors.
-<4> Wrap the client with `GrpcUtil.promisifyClient` to get async methods.
-<5> Use the name that the other Akka Serverless service was deployed as, in this case `counter` and port `80`.
-<6> Use a cleartext connection as TLS is handled transparently for us.
-<7> We can now call the various methods on the other service with their method names directly on the client. The calls return promises so we can use `await/async` to interact with them.
+<1> Include the `proto` file of the other service in the action service descriptors.
+<2> Create the client using the provided creators to get async methods. Defaults to a cleartext connection as TLS is handled transparently for us.
+<3> Use the name that the other Akka Serverless service was deployed as, in this case `counter` and port `80`.
+<4> We can now call the various methods on the other service with their method names directly on the client. The calls return promises so we can use `await/async` to interact with them.
 
 == External gRPC services
 
@@ -49,8 +46,7 @@ Calling an Akka Serverless service in another project, or an arbitrary external 
 ----
 include::example$js-doc-snippets/src/delegatingservice.js[tag=public-grpc]
 ----
-
-
-
-
-
+<1> Import `grpc-js`, to provide credentials when creating the client.
+<2> Create the client using the provided creators to get async methods.
+<3> Use the full public hostname of the service.
+<4> Enable TLS/HTTPS to encrypt the connection.

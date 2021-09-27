@@ -15,3 +15,4 @@
  */
 
 import * as protobuf from 'protobufjs';
+import * as grpc from '@grpc/grpc-js';

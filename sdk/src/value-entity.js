@@ -20,6 +20,7 @@ const grpc = require('@grpc/grpc-js');
 const protoLoader = require('@grpc/proto-loader');
 const ValueEntityServices = require('./value-entity-support');
 const AkkaServerless = require('./akkaserverless');
+const { GrpcUtil } = require('./grpc-util');
 
 const valueEntityServices = new ValueEntityServices();
 
@@ -125,6 +126,13 @@ class ValueEntity {
       includeDirs: allIncludeDirs,
     });
     this.grpc = grpc.loadPackageDefinition(packageDefinition);
+
+    /**
+     * Access to gRPC clients (with promisified unary methods).
+     *
+     * @type module:akkaserverless.GrpcClientLookup
+     */
+    this.clients = GrpcUtil.clientCreators(this.root, this.grpc);
   }
 
   /**
