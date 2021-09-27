@@ -15,8 +15,85 @@
  */
 
 import * as util from 'util';
+import * as Protobuf from 'protobufjs';
+import * as Grpc from '@grpc/grpc-js';
+import { ServiceClientConstructor } from '@grpc/grpc-js/build/src/make-client';
+
+export interface GrpcClient extends Grpc.Client {
+  [methodName: string]: Function;
+}
+
+export interface GrpcClientCreator {
+  createClient(
+    address: string,
+    credentials?: Grpc.ChannelCredentials,
+  ): GrpcClient;
+}
+
+export interface GrpcClientLookup {
+  [index: string]: GrpcClientLookup | GrpcClientCreator;
+}
 
 export class GrpcUtil {
+  /**
+   * Create gRPC client creators for defined services, with promisified clients.
+   */
+  static clientCreators(
+    namespace: Protobuf.Namespace,
+    grpc: Grpc.GrpcObject,
+  ): GrpcClientLookup {
+    const result: GrpcClientLookup = {};
+    for (const serviceFqn of GrpcUtil.getServiceNames(namespace)) {
+      let currentLookup = result;
+      let currentGrpc = grpc;
+      const nameComponents = serviceFqn.split('.');
+      for (const packageName of nameComponents.slice(0, -1)) {
+        if (!currentLookup[packageName]) {
+          currentLookup[packageName] = {};
+        }
+        currentLookup = currentLookup[packageName] as GrpcClientLookup;
+        currentGrpc = currentGrpc[packageName] as Grpc.GrpcObject;
+      }
+      const serviceName = nameComponents[nameComponents.length - 1];
+      const serviceClientConstructor = currentGrpc[
+        serviceName
+      ] as ServiceClientConstructor;
+      const clientCreator = function (
+        address: string,
+        credentials?: Grpc.ChannelCredentials,
+      ) {
+        const creds = credentials || Grpc.credentials.createInsecure();
+        const client = new serviceClientConstructor(address, creds);
+        return GrpcUtil.promisifyClient(client);
+      };
+      currentLookup[serviceName] = {
+        createClient: clientCreator,
+      };
+    }
+    return result;
+  }
+
+  /**
+   * Iterate through a (resolved) protobufjs reflection object to find services.
+   */
+  static getServiceNames(
+    obj: Protobuf.ReflectionObject,
+    parentName: string = '',
+  ): Array<string> {
+    const fullName = parentName === '' ? obj.name : parentName + '.' + obj.name;
+    if (obj instanceof Protobuf.Service) {
+      return [fullName];
+    } else if (
+      obj instanceof Protobuf.Namespace &&
+      typeof obj.nestedArray !== 'undefined'
+    ) {
+      return obj.nestedArray
+        .map((nestedObj) => GrpcUtil.getServiceNames(nestedObj, fullName))
+        .reduce((acc, val) => acc.concat(val), []);
+    }
+    return [];
+  }
+
   /**
    * add async versions of unary request methods, suffixed with the given suffix
    */

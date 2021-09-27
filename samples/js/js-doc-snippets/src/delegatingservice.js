@@ -22,8 +22,12 @@
 // tag::delegating-action[]
 import { Action } from "@lightbend/akkaserverless-javascript-sdk";
 import { replies } from '@lightbend/akkaserverless-javascript-sdk';
+// end::delegating-action[]
+// tag::public-grpc[]
 import * as grpc from '@grpc/grpc-js'; // <1>
-import { GrpcUtil } from '@lightbend/akkaserverless-javascript-sdk'; // <2>
+
+// end::public-grpc[]
+// tag::delegating-action[]
 
 /**
  * Type definitions.
@@ -40,33 +44,32 @@ import { GrpcUtil } from '@lightbend/akkaserverless-javascript-sdk'; // <2>
 const action = new Action(
   [
     "com/example/delegating_service.proto",
-    "com/example/counter_api.proto" // <3>
+    "com/example/counter_api.proto" // <1>
   ],
   "com.example.DelegatingService",
   {
-    includeDirs: ["./proto"],
-    serializeFallbackToJson: true
+    includeDirs: ["./proto"]
   }
 );
 
-const counterClient = GrpcUtil.promisifyClient(new action.grpc.com.example.CounterService( // <4>
-  "counter:80", // <5>
-  grpc.credentials.createInsecure())); // <6>
+const counterClient = action.clients.com.example.CounterService.createClient( // <2>
+  "counter:80" // <3>
+);
 
 // end::delegating-action[]
-function showExternal() {
-  // tag::public-grpc[]
-  const counterClient = GrpcUtil.promisifyClient(new action.grpc.com.example.CounterService(
-    "still-queen-1447.us-east1.apps.akkaserverless.dev",
-    grpc.credentials.createSsl());
-  // end::public-grpc[]
+{
+// tag::public-grpc[]
+const counterClient = action.clients.com.example.CounterService.createClient( // <2>
+  "still-queen-1447.us-east1.apps.akkaserverless.dev", // <3>
+  grpc.credentials.createSsl() // <4>
+);
+// end::public-grpc[]
 }
 // tag::delegating-action[]
 
-
 action.commandHandlers = {
-  async AddAndReturn(request, ctx) {
-    await counterClient.increase({counterId: request.counterId, value: 1}); // <7>
+  async AddAndReturn(request) {
+    await counterClient.increase({counterId: request.counterId, value: 1}); // <4>
     const currentCounter = await counterClient.getCurrentCounter({counterId: request.counterId });
     return replies.message({value: currentCounter.value });
   }

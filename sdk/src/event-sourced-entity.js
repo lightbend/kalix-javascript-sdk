@@ -20,6 +20,7 @@ const grpc = require('@grpc/grpc-js');
 const protoLoader = require('@grpc/proto-loader');
 const EventSourcedEntityServices = require('./event-sourced-entity-support');
 const AkkaServerless = require('./akkaserverless');
+const { GrpcUtil } = require('./grpc-util');
 
 const eventSourcedEntityServices = new EventSourcedEntityServices();
 
@@ -156,6 +157,13 @@ class EventSourcedEntity {
       includeDirs: allIncludeDirs,
     });
     this.grpc = grpc.loadPackageDefinition(packageDefinition);
+
+    /**
+     * Access to gRPC clients (with promisified unary methods).
+     *
+     * @type module:akkaserverless.GrpcClientLookup
+     */
+    this.clients = GrpcUtil.clientCreators(this.root, this.grpc);
   }
 
   /**

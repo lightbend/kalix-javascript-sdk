@@ -21,6 +21,7 @@ const protoLoader = require('@grpc/proto-loader');
 const AkkaServerless = require('./akkaserverless');
 const replicatedData = require('./replicated-data');
 const support = require('./replicated-entity-support');
+const { GrpcUtil } = require('./grpc-util');
 
 const replicatedEntityServices = new support.ReplicatedEntityServices();
 
@@ -156,6 +157,13 @@ class ReplicatedEntity {
       includeDirs: allIncludeDirs,
     });
     this.grpc = grpc.loadPackageDefinition(packageDefinition);
+
+    /**
+     * Access to gRPC clients (with promisified unary methods).
+     *
+     * @type module:akkaserverless.GrpcClientLookup
+     */
+    this.clients = GrpcUtil.clientCreators(this.root, this.grpc);
 
     /**
      * The command handlers.
