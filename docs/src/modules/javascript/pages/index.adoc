@@ -1,4 +1,5 @@
 = Developing with JavaScript
+:page-supergroup-javascript-typescript: Language
 
 include::ROOT:partial$include.adoc[]
 include::partial$attributes.adoc[]
@@ -41,7 +42,7 @@ Once you have the prerequisites, you need to add the `@lightbend/akkaserverless-
 
 [source,sh,subs="attributes+"]
 ----
-npm install akkaserverless@{akkaserverless-javascript-sdk-version} --save-exact
+npm install @lightbend/akkaserverless-javascript-sdk@{akkaserverless-javascript-sdk-version} --save-exact
 ----
 
 To create a basic service, you need to include the `akkaserverless` package dependencies in your project, define gRPC descriptors in `.proto` files and reference them in your project, compile the `.proto` files, and have logic to start the gRPC server in your source code.
@@ -97,14 +98,14 @@ By default, the descriptor is written to `user-function.desc`, if you wish to ch
 There are two ways to create and start an Akka Serverless gRPC server. The first is to create an link:{attachmentsdir}/api/module-akkaserverless.Entity.html[`Entity`{tab-icon}, window="new"], and invoke link:{attachmentsdir}/api/module-akkaserverless.Entity.html#start[`start`{tab-icon}, window="new"] on it. This allows creating a server that serves a single entity, with the default options. We'll look at this more in the subsequent pages. Alternatively, you can use the link:{attachmentsdir}/api/module-akkaserverless.AkkaServerless.html[`AkkaServerless`{tab-icon}, window="new"] class, add one or more entities to it, and then invoke link:{attachmentsdir}/api/module-akkaserverless.AkkaServerless.html#start[`start`{tab-icon}, window="new"], like so:
 
 [.tabset]
-JS::
+JavaScript::
 +
 [source,js,indent=0]
 ----
 include::example$test/gettingstarted/index.js[tag=start]
 ----
 
-TS::
+TypeScript::
 +
 [source,ts,indent=0]
 ----
@@ -114,14 +115,14 @@ include::example$test/gettingstarted/index.ts[tag=start]
 If you created your protobuf file descriptor set at a different location to the default of `user-function.desc`, you can configure that here:
 
 [.tabset]
-JS::
+JavaScript::
 +
 [source,js,indent=0]
 ----
 include::example$test/gettingstarted/index.js[tag=custom-desc]
 ----
 
-TS::
+TypeScript::
 +
 [source,ts,indent=0]
 ----

@@ -13,7 +13,7 @@ npm::
 +
 [source,command line]
 ----
-npx @lightbend/create-akkasls-entity my-entity
+npx @lightbend/create-akkasls-entity@latest my-entity
 cd my-entity
 npm install
 npm run build
@@ -23,7 +23,7 @@ Yarn::
 +
 [source,command line]
 ----
-yarn create @lightbend/akkasls-entity my-entity
+yarn create @lightbend/akkasls-entity@latest my-entity
 cd my-entity
 yarn
 yarn build
