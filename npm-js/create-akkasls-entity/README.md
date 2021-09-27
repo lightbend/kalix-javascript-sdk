@@ -15,7 +15,7 @@ There are two templates available to select from:
 To create the initial codebase for a new entity with npm:
 
 ```sh
-npx @lightbend/create-akkasls-entity my-entity --template value-entity
+npx @lightbend/create-akkasls-entity@latest my-entity --template value-entity
 cd my-entity
 npm install
 npm run build
@@ -24,7 +24,7 @@ npm run build
 Or using Yarn:
 
 ```sh
-yarn create @lightbend/akkasls-entity my-entity --template value-entity
+yarn create @lightbend/akkasls-entity@latest my-entity --template value-entity
 cd my-entity
 yarn
 yarn build
