@@ -42,7 +42,7 @@ Once you have the prerequisites, you need to add the `@lightbend/akkaserverless-
 
 [source,sh,subs="attributes+"]
 ----
-npm install akkaserverless@{akkaserverless-javascript-sdk-version} --save-exact
+npm install @lightbend/akkaserverless-javascript-sdk@{akkaserverless-javascript-sdk-version} --save-exact
 ----
 
 To create a basic service, you need to include the `akkaserverless` package dependencies in your project, define gRPC descriptors in `.proto` files and reference them in your project, compile the `.proto` files, and have logic to start the gRPC server in your source code.
