@@ -29,7 +29,9 @@ TIP: Kickstart a project using the xref:javascript:kickstart.adoc[JavaScript cod
 [#_implement_components]
 == Implement components
 
-Stateful services can implement https://developer.lightbend.com/docs/akka-serverless/reference/glossary.html#value_entity[Value Entity] or https://developer.lightbend.com/docs/akka-serverless/reference/glossary.html#event_sourced_entity[Event Sourced Entity] components. Stateless services implement Actions. Typically, a stateful service should only have one Entity type, but can also include Actions.
+ifdef::todo[TODO: link to glossary for Replicated Entity in main docs]
+
+Stateful services can implement https://developer.lightbend.com/docs/akka-serverless/reference/glossary.html#value_entity[Value Entity], https://developer.lightbend.com/docs/akka-serverless/reference/glossary.html#event_sourced_entity[Event Sourced Entity], or Replicated Entity components. Stateless services implement Actions. Typically, a stateful service should only have one Entity type, but can also include Actions.
 
 === Actions
 
@@ -37,9 +39,9 @@ Actions are stateless functions that can be triggered by gRPC or HTTP calls. The
 
 === Entities
 
-Stateful services encapsulate business logic in in Value Entities or Event Sourced Entities. At runtime, command messages invoke operations on Entities. A command may only act on one Entity at a time. 
+Stateful services encapsulate business logic in in Value Entities, Event Sourced Entities, or Replicated Entities. At runtime, command messages invoke operations on Entities. A command may only act on one Entity at a time.
 
-TIP: To learn more about Akka Serverless entities see xref:javascript:value-entity.adoc[Implement a Value Entity] and xref:javascript:eventsourced.adoc[Implement an Event Sourced Entity].
+TIP: To learn more about Akka Serverless entities see xref:javascript:value-entity.adoc[Implement a Value Entity], xref:javascript:eventsourced.adoc[Implement an Event Sourced Entity], and xref:javascript:replicated-entity.adoc[Implement a Replicated Entity].
 
 To update multiple Entities from a single command use forwarding and effects. 
 
@@ -49,10 +51,11 @@ Services can interact asynchronously with other services and with external syste
 
 For more details and examples take a look at the following topics:
 
-* Event Sourced Entities in xref:javascript:eventsourced.adoc[JavaScript]
-* Value Entities in xref:javascript:value-entity.adoc[JavaScript]
-* Subscribe to a journal in xref:javascript:entity-eventing.adoc[JavaScript]
-* Set up pub/sub for xref:javascript:topic-eventing.adoc[JavaScript]
+* xref:javascript:value-entity.adoc[Implementing Value Entities]
+* xref:javascript:eventsourced.adoc[Implementing Event Sourced Entities]
+* xref:javascript:replicated-entity.adoc[Implementing Replicated Entities]
+* xref:javascript:entity-eventing.adoc[Subscribing to a journal]
+* xref:javascript:topic-eventing.adoc[Publishing and subscribing to topics on a broker]
 
 [#_create_unit_tests]
 == Create unit tests

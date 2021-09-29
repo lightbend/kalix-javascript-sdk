@@ -1,0 +1,36 @@
+{
+  "name": "js-replicated-entity-shopping-cart",
+  "version": "0.0.1",
+  "type": "module",
+  "engines": {
+    "node": ">=14.0.0",
+    "npm": ">=6.0.0"
+  },
+  "dependencies": {
+    "@lightbend/akkaserverless-javascript-sdk": "0.33.1"
+  },
+  "devDependencies": {
+    "@lightbend/akkasls-scripts": "0.33.1",
+    "chai": "^4.3.3",
+    "chai-as-promised": "^7.1.1",
+    "jsdoc": "^3.6.3",
+    "mocha": "^8.3.1",
+    "uglify-js": "^3.7.7"
+  },
+  "config": {
+    "dockerImage": "gcr.io/akkaserverless-public/samples-js-replicated-entity-shopping-cart",
+    "sourceDir": "./src",
+    "testSourceDir": "./test",
+    "protoSourceDir": "./proto",
+    "generatedSourceDir": "./lib/generated",
+    "compileDescriptorArgs": []
+  },
+  "scripts": {
+    "start": "node src/index.js",
+    "test": "mocha ./test",
+    "integration-test": "mocha ./integration-test",
+    "build": "akkasls-scripts build",
+    "package": "akkasls-scripts package",
+    "deploy": "akkasls-scripts deploy"
+  }
+}

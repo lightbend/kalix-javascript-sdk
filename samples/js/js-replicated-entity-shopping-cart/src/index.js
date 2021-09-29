@@ -13,3 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+// tag::register[]
+import { AkkaServerless } from "@lightbend/akkaserverless-javascript-sdk";
+import shoppingcart from "./shoppingcart.js";
+
+new AkkaServerless() // <1>
+  .addComponent(shoppingcart) // <2>
+  .start(); // <3>
+// end::register[]
