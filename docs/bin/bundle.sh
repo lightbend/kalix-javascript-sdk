@@ -20,7 +20,12 @@ function _script_path {
 readonly script_path=$(_script_path)
 readonly script_dir="$(cd -P "$(dirname "$script_path")" && pwd)"
 readonly docs_dir="$(cd "$script_dir/.." && pwd)"
-readonly bundle_dir="$docs_dir/build/bundle"
+readonly build_dir="$docs_dir/build"
+readonly bundle_dir="$build_dir/bundle"
+readonly npm_dir="$build_dir/npm"
+readonly json="$npm_dir/bin/json"
+
+readonly sdk_version="$("$script_dir/version.sh")"
 
 function _remove_doc_tags {
   local -r dir="$1"
@@ -28,6 +33,18 @@ function _remove_doc_tags {
   find "$dir" -type f -exec sed -i.bak "/tag::[^\[]*\[.*\]/d" {} \; -exec rm -f {}.bak \;
   find "$dir" -type f -exec sed -i.bak "/end::[^\[]*\[.*\]/d" {} \; -exec rm -f {}.bak \;
   find "$dir" -type f -exec sed -i.bak "s/ *\/\/ *<[0-9][0-9]*>//g" {} \; -exec rm -f {}.bak \;
+}
+
+function _set_sdk_version {
+  local -r dir="$1"
+  # install json command once in a local dir
+  [ -f "$json" ] || npm install --prefix "$npm_dir" -g json
+  if [ -n "$("$json" -q -f "$dir/package.json" "dependencies['@lightbend/akkaserverless-javascript-sdk']")" ] ; then
+    "$json" -q -I -f "$dir/package.json" -e "this.dependencies['@lightbend/akkaserverless-javascript-sdk'] = '$sdk_version'"
+  fi
+  if [ -n "$("$json" -q -f "$dir/package.json" "devDependencies['@lightbend/akkasls-scripts']")" ] ; then
+    "$json" -q -I -f "$dir/package.json" -e "this.devDependencies['@lightbend/akkasls-scripts'] = '$sdk_version'"
+  fi
 }
 
 function _bundle {
@@ -54,6 +71,7 @@ function _bundle {
   rsync -a --exclude-from "$sample/.bundleignore" --exclude ".bundleignore" "$sample"/ "$sample_bundle_dir"/
 
   _remove_doc_tags "$sample_bundle_dir"
+  _set_sdk_version "$sample_bundle_dir"
 
   pushd "$sample_bundle_dir" > /dev/null
   zip -q -r "$zip_file" .
