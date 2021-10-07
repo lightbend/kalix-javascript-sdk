@@ -158,6 +158,7 @@ include::example$ts-valueentity-counter/test/testkit.ts[]
 You can run your services locally and test them manually with HTTP or gRPC requests. To run locally, you need to initiate the Akka Serverless https://developer.lightbend.com/docs/akka-serverless/reference/glossary.html#proxy[proxy]. The `docker-compose` file contains the configuration required to run the proxy.
 
 . To start the proxy, run the following command from the top-level project directory:
+
 +
 +
 --
@@ -165,6 +166,7 @@ You can run your services locally and test them manually with HTTP or gRPC reque
 ----
 docker compose up
 ----
+
 --
 
 . Start the application locally with the following command:
