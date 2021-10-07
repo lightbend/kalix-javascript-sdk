@@ -118,7 +118,7 @@ lazy val `akkasls-codegen-js-cli` =
 lazy val library =
   new {
     object Version {
-      val akkaserverless = "0.7.0"
+      val akkaserverless = "0.7.1"
       val commonsIo      = "2.8.0"
       val kiama          = "2.4.0"
       val logback        = "1.2.3"
