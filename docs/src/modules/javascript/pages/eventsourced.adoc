@@ -46,7 +46,7 @@ include::example$test/eventsourced/shoppingcart.ts[tag=entity-class]
 
 * The example defines the fully qualified name of the service the Event Sourced Entity implements, `example.shoppingcart.ShoppingCartService` and specifies options:
 
-** Akka Serverless uses the `persistenceId` to namespace events in the journal.
+** Akka Serverless uses the `entityType` to namespace events in the journal.
 
 ** The `snapshotEvery` parameter controls how often Akka Serverless takes snapshots, so that the entity doesn't need to be recovered from the whole journal each time it's loaded. If left unset, it defaults to every 100 events. Setting it to a negative number disables snapshots. Typically, the default works well, we only recommend changing it if you have specific data from performance tests to justify a change.
 ****
