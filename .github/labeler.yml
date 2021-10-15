@@ -1,0 +1,16 @@
+# https://github.com/marketplace/actions/labeler
+
+as-framework:
+  - '**/*'
+
+javascript-sdk:
+  - sdk/**/*.js
+  - codegen/js-gen/**/*
+  - samples/js/**/*
+
+typescript-sdk:
+  - sdk/**/*.ts
+  - samples/ts/**/*
+
+Documentation:
+  - docs/**/*
