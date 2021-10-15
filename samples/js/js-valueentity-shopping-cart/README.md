@@ -45,12 +45,9 @@ In order to run your application locally, you must run the Akka Serverless proxy
 It also contains the configuration to start a local Google Pub/Sub emulator that the Akka Serverless proxy will connect to.
 To start the proxy, run the following command from this directory:
 
-```
+```shell
 docker-compose up
 ```
-
-> On Linux this requires Docker 20.10 or later (https://github.com/moby/moby/pull/40007),
-> or for a `USER_FUNCTION_HOST` environment variable to be set manually.
 
 To start the application locally, use the following commands:
 
