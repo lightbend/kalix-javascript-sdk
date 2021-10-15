@@ -22,7 +22,7 @@ Before running the code generation tools, make sure that you have the following:
 * `npm` or `yarn`
 * Docker >= {minimum_docker_version} (to run locally)
 * The https://developer.lightbend.com/docs/akka-serverless/getting-started/set-up-development-env.html#_akka_serverless_cli[`akkasls` CLI downloaded]
-* A configured Docker Registry
+* A https://developer.lightbend.com/docs/akka-serverless/projects/container-registries.html[configured Docker Registry]
 * An https://developer.lightbend.com/docs/akka-serverless/setting-up/index.html#_akka_serverless_account[Akka Serverless account]
 * An https://developer.lightbend.com/docs/akka-serverless/projects/index.html[Akka Serverless project]
 
