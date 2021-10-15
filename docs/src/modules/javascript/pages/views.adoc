@@ -1,4 +1,5 @@
 = Implementing Views
+:page-supergroup-javascript-typescript: Language
 
 include::ROOT:partial$include.adoc[]
 
@@ -78,14 +79,14 @@ In the View implementation, register the View with Akka Serverless. In addition 
 
 .customer-value-entity-view.js
 [.tabset]
-JS::
+JavaScript::
 +
 [source,js,indent=0]
 ----
 include::example$js-customer-registry/customer-value-entity-view.js[tag=register]
 ----
 
-TS::
+TypeScript::
 +
 [source,ts,indent=0]
 ----
@@ -96,14 +97,14 @@ Invoke the `addComponent` function to register the view with the service. For ex
 
 .index.js
 [.tabset]
-JS::
+JavaScript::
 +
 [source,js,indent=0]
 ----
 include::example$js-customer-registry/index.js[tag=register]
 ----
 
-TS::
+TypeScript::
 +
 [source,ts,indent=0]
 ----
@@ -160,14 +161,14 @@ Implement the View by defining the functions that transform events to View state
 
 .customer-event-sourced-view.js
 [.tabset]
-JS::
+JavaScript::
 +
 [source,js,indent=0]
 ----
 include::example$js-customer-registry/customer-event-sourced-view.js[tag=process-events]
 ----
 
-TS::
+TypeScript::
 +
 [source,ts,indent=0]
 ----
@@ -187,14 +188,14 @@ In the implementation, register the View with `AkkaServerless`:
 
 .customer-event-sourced-view.js
 [.tabset]
-JS::
+JavaScript::
 +
 [source,js,indent=0]
 ----
 include::example$js-customer-registry/customer-event-sourced-view.js[tag=register]
 ----
 
-TS::
+TypeScript::
 +
 [source,ts,indent=0]
 ----
@@ -205,14 +206,14 @@ Invoke the `addComponent` function to register the view with the service. For ex
 
 .index.js
 [.tabset]
-JS::
+JavaScript::
 +
 [source,js,indent=0]
 ----
 include::example$js-customer-registry/index.js[tags=register-event-sourced]
 ----
 
-TS::
+TypeScript::
 +
 [source,ts,indent=0]
 ----
@@ -272,14 +273,14 @@ include::example$js-customer-registry/customer_view.proto[tag=wrap-repeated]
 View tests need to create gRPC clients for both the Entity and the View. For example:
 
 [.tabset]
-JS::
+JavaScript::
 +
 [source,javascript]
 ----
 include::example$js-customer-registry/integration-test/customer-registry-test.js[tag=client]
 ----
 
-TS::
+TypeScript::
 +
 [source,typescript]
 ----
@@ -289,14 +290,14 @@ include::example$ts-customer-registry/integration-test/customer-registry-test.ts
 Since Views do not immediately update on changes, add a retry to make sure the test doesn't fail unnecessarily. For example:
 
 [.tabset]
-JS::
+JavaScript::
 +
 [source,javascript]
 ----
 include::example$js-customer-registry/integration-test/customer-registry-test.js[tag=view]
 ----
 
-TS::
+TypeScript::
 +
 [source,typescript]
 ----
@@ -306,14 +307,14 @@ include::example$ts-customer-registry/integration-test/customer-registry-test.ts
 Provide some data:
 
 [.tabset]
-JS::
+JavaScript::
 +
 [source,javascript]
 ----
 include::example$js-customer-registry/integration-test/customer-registry-test.js[tag=data]
 ----
 
-TS::
+TypeScript::
 +
 [source,typescript]
 ----
@@ -323,14 +324,14 @@ include::example$ts-customer-registry/integration-test/customer-registry-test.ts
 Exercise the View:
 
 [.tabset]
-JS::
+JavaScript::
 +
 [source,javascript]
 ----
 include::example$js-customer-registry/integration-test/customer-registry-test.js[tag=exercise]
 ----
 
-TS::
+TypeScript::
 +
 [source,typescript]
 ----

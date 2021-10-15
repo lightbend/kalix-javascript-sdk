@@ -1,4 +1,5 @@
 = Kickstart a Node module
+:page-supergroup-javascript-typescript: Language
 
 include::ROOT:partial$include.adoc[]
 include::partial$attributes.adoc[]
@@ -21,7 +22,7 @@ Before running the code generation tools, make sure that you have the following:
 * `npm` or `yarn`
 * Docker >= {minimum_docker_version} (to run locally)
 * The https://developer.lightbend.com/docs/akka-serverless/getting-started/set-up-development-env.html#_akka_serverless_cli[`akkasls` CLI downloaded]
-* A configured Docker Registry
+* A https://developer.lightbend.com/docs/akka-serverless/projects/container-registries.html[configured Docker Registry]
 * An https://developer.lightbend.com/docs/akka-serverless/setting-up/index.html#_akka_serverless_account[Akka Serverless account]
 * An https://developer.lightbend.com/docs/akka-serverless/projects/index.html[Akka Serverless project]
 
@@ -38,7 +39,7 @@ npm::
 --
 [source, command window, subs="attributes"]
 ----
-npx @lightbend/create-akkasls-entity my-entity
+npx @lightbend/create-akkasls-entity@latest my-entity
 ----
 --
 yarn::
@@ -46,7 +47,7 @@ yarn::
 --
 [source, command window, subs="attributes"]
 ----
-yarn create @lightbend/akkasls-entity my-entity
+yarn create @lightbend/akkasls-entity@latest my-entity
 ----
 --
 
@@ -121,14 +122,14 @@ NOTE: The `lib/generated` directory contains files used by the tools. Any change
 Akka Serverless codegen creates a unit test stub for each class within `counter.test.js`. Use these stubs as a starting point to test the logic in your implementation. You can use any of the common Node.js testing tools, such as Mocha or Jest.
 
 [.tabset]
-JS::
+JavaScript::
 +
 [source,javascript]
 ----
 include::example$valueentity-counter/test/counter.test.js[]
 ----
 
-TS::
+TypeScript::
 +
 [source,typescript]
 ----
@@ -138,14 +139,14 @@ include::example$ts-valueentity-counter/test/counter.test.ts[]
 The entity used by `counter.test.js` is contained within `testkit.js`.
 
 [.tabset]
-JS::
+JavaScript::
 +
 [source,javascript]
 ----
 include::example$valueentity-counter/test/testkit.js[]
 ----
 
-TS::
+TypeScript::
 +
 [source,typescript]
 ----
@@ -157,24 +158,15 @@ include::example$ts-valueentity-counter/test/testkit.ts[]
 You can run your services locally and test them manually with HTTP or gRPC requests. To run locally, you need to initiate the Akka Serverless https://developer.lightbend.com/docs/akka-serverless/reference/glossary.html#proxy[proxy]. The `docker-compose` file contains the configuration required to run the proxy.
 
 . To start the proxy, run the following command from the top-level project directory:
+
 +
-[.tabset]
-macOS, Windows::
 +
 --
 [source,bash]
 ----
 docker compose up
 ----
---
-Linux::
-+
---
-NOTE: On Linux this requires Docker 20.10 or later (https://github.com/moby/moby/pull/40007), or for a `USER_FUNCTION_HOST` environment variable to be set manually.
-[source,bash]
-----
-docker compose -f docker-compose.yml -f docker-compose.linux.yml up
-----
+
 --
 
 . Start the application locally with the following command:

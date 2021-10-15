@@ -1,4 +1,5 @@
 = Implementing Event Sourced Entities in JavaScript
+:page-supergroup-javascript-typescript: Language
 
 include::ROOT:partial$include.adoc[]
 include::partial$eventsourced.adoc[]
@@ -25,14 +26,14 @@ Create an Event Sourced Entity with the link:{attachmentsdir}/api/module-akkaser
 ifdef::todo[TODO: update with new SDK names.]
 
 [.tabset]
-JS::
+JavaScript::
 +
 [source,js,indent=0]
 ----
 include::example$test/eventsourced/shoppingcart.js[tag=entity-class]
 ----
 
-TS::
+TypeScript::
 +
 [source,ts,indent=0]
 ----
@@ -45,7 +46,7 @@ include::example$test/eventsourced/shoppingcart.ts[tag=entity-class]
 
 * The example defines the fully qualified name of the service the Event Sourced Entity implements, `example.shoppingcart.ShoppingCartService` and specifies options:
 
-** Akka Serverless uses the `persistenceId` to namespace events in the journal.
+** Akka Serverless uses the `entityType` to namespace events in the journal.
 
 ** The `snapshotEvery` parameter controls how often Akka Serverless takes snapshots, so that the entity doesn't need to be recovered from the whole journal each time it's loaded. If left unset, it defaults to every 100 events. Setting it to a negative number disables snapshots. Typically, the default works well, we only recommend changing it if you have specific data from performance tests to justify a change.
 ****
@@ -57,14 +58,14 @@ When you pass an event or snapshot to persist, Akka Serverless needs to know how
 The `EventSourced` class provides a helper method called link:{attachmentsdir}/api/module-akkaserverless.EventSourcedEntity.html#lookupType[`lookupType`{tab-icon}, window="new"]. So before implementing, we'll use `lookupType` to get these types to use later.
 
 [.tabset]
-JS::
+JavaScript::
 +
 [source,js,indent=0]
 ----
 include::example$test/eventsourced/shoppingcart.js[tag=lookup-type]
 ----
 
-TS::
+TypeScript::
 +
 [source,ts,indent=0]
 ----
@@ -78,14 +79,14 @@ When there are no snapshots persisted for an entity (such as when the entity is 
 To create the initial state, we set the link:{attachmentsdir}/api/module-akkaserverless.EventSourcedEntity.html#initial[`initial`{tab-icon}, window="new"] callback. This takes the id of the entity being created, and returns a new empty state, in this case, an empty shopping cart:
 
 [.tabset]
-JS::
+JavaScript::
 +
 [source,js,indent=0]
 ----
 include::example$test/eventsourced/shoppingcart.js[tag=initial]
 ----
 
-TS::
+TypeScript::
 +
 [source,ts,indent=0]
 ----
@@ -109,14 +110,14 @@ The command handler must return a message of the same type as the output type of
 The following shows the implementation of the `GetCart` command handler. This command handler is a read-only command handler, it doesn't emit any events, it just returns some state:
 
 [.tabset]
-JS::
+JavaScript::
 +
 [source,js,indent=0]
 ----
 include::example$test/eventsourced/shoppingcart.js[tag=get-cart]
 ----
 
-TS::
+TypeScript::
 +
 [source,ts,indent=0]
 ----
@@ -134,14 +135,14 @@ A command handler may emit an event by using the link:{attachmentsdir}/api/modul
 The following command handler example emits an event:
 
 [.tabset]
-JS::
+JavaScript::
 +
 [source,js,indent=0]
 ----
 include::example$test/eventsourced/shoppingcart.js[tag=add-item]
 ----
 
-TS::
+TypeScript::
 +
 [source,ts,indent=0]
 ----
@@ -166,14 +167,14 @@ Event handlers take the event they are handling, and the state, and must return 
 Here's an example event handler for the `ItemAdded` event:
 
 [.tabset]
-JS::
+JavaScript::
 +
 [source,js,indent=0]
 ----
 include::example$test/eventsourced/shoppingcart.js[tag=item-added]
 ----
 
-TS::
+TypeScript::
 +
 [source,ts,indent=0]
 ----
@@ -187,14 +188,14 @@ Once you have command handler and event handler functions implemented, you can s
 The behavior callback can be set by setting the link:{attachmentsdir}/api/module-akkaserverless.EventSourcedEntity.html#behavior[`behavior`{tab-icon}, window="new"] property on the entity:
 
 [.tabset]
-JS::
+JavaScript::
 +
 [source,js,indent=0]
 ----
 include::example$test/eventsourced/shoppingcart.js[tag=behavior]
 ----
 
-TS::
+TypeScript::
 +
 [source,ts,indent=0]
 ----
@@ -214,14 +215,14 @@ The Entity's behavior can be changed by returning different sets of handlers fro
 In the example below, we show a shopping cart that also has a checkout command. Once checked out, the shopping cart no longer accepts any commands to add or remove items, its state and therefore behavior changes:
 
 [.tabset]
-JS::
+JavaScript::
 +
 [source,js,indent=0]
 ----
 include::example$test/eventsourced/shoppingcart.js[tag=multiple-behaviors]
 ----
 
-TS::
+TypeScript::
 +
 [source,ts,indent=0]
 ----
@@ -233,14 +234,14 @@ include::example$test/eventsourced/shoppingcart.ts[tag=multiple-behaviors]
 You can let Akka Serverless start entities by adding the entities to an `Akka Serverless server` instance:
 
 [.tabset]
-JS::
+JavaScript::
 +
 [source,js,indent=0]
 ----
 include::example$test/eventsourced/shoppingcart.js[tag=add-entity]
 ----
 
-TS::
+TypeScript::
 +
 [source,ts,indent=0]
 ----
