@@ -24,8 +24,8 @@ import { EventSourcedEntity } from "@lightbend/akkaserverless-javascript-sdk";
 const entity: EventSourcedEntity = new EventSourcedEntity(
     ["shoppingcart.proto", "domain.proto"],
     "example.shoppingcart.ShoppingCartService",
+    "shopping-cart",
     {
-        persistenceId: "shopping-cart",
         snapshotEvery: 100
     }
 );
