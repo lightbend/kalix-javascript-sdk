@@ -227,6 +227,19 @@ class EventSourcedEntityHandler {
       this.handleEvent(event.payload);
     } else if (eventSourcedStreamIn.command) {
       this.commandHelper.handleCommand(eventSourcedStreamIn.command);
+    } else if (eventSourcedStreamIn.snapshotRequest) {
+      this.ensureAnyState();
+      this.call.write({
+        snapshotReply: {
+          requestId: eventSourcedStreamIn.snapshotRequest.requestId,
+          snapshot: this.anyState,
+        },
+      });
+    } else {
+      this.streamDebug(
+        'Unknown event sourced stream in message: %s',
+        eventSourcedStreamIn,
+      );
     }
   }
 
@@ -260,10 +273,14 @@ class EventSourcedEntityHandler {
     this.anyState = this.entity.serialize(stateObj, false);
   }
 
-  withBehaviorAndState(callback) {
+  ensureAnyState() {
     if (this.anyState === null) {
       this.updateState(this.entity.initial(this.entityId));
     }
+  }
+
+  withBehaviorAndState(callback) {
+    this.ensureAnyState();
     const stateObj = this.entity.deserialize(this.anyState);
     const behavior = this.entity.behavior(stateObj);
     return callback(behavior, stateObj);
