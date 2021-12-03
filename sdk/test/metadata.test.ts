@@ -146,4 +146,36 @@ describe('Metadata', () => {
     meta.set('ce-time', now.toISOString());
     expect((meta.cloudevent.time as Date).getTime()).to.be.equal(now.getTime());
   });
+
+  it('allows getting the JWT subject', () => {
+    const meta = new Metadata();
+    meta.set('_akkasls-jwt-claim-sub', 'some-subject');
+    expect(meta.jwtClaims.subject).to.be.equal('some-subject');
+  });
+
+  it('allows getting the JWT expiration time', () => {
+    const meta = new Metadata();
+    meta.set('_akkasls-jwt-claim-exp', '12345');
+    expect((meta.jwtClaims.expirationTime as Date).getTime()).to.be.equal(
+      12345000,
+    );
+  });
+
+  it('allows getting JWT object claims', () => {
+    const meta = new Metadata();
+    meta.set('_akkasls-jwt-claim-foo', '{"a":"b"}');
+    expect((meta.jwtClaims.getObject('foo') as any).a).to.be.equal('b');
+  });
+
+  it('allows getting JWT number claims', () => {
+    const meta = new Metadata();
+    meta.set('_akkasls-jwt-claim-foo', '123');
+    expect(meta.jwtClaims.getNumber('foo')).to.be.equal(123);
+  });
+
+  it('allows getting JWT string array claims', () => {
+    const meta = new Metadata();
+    meta.set('_akkasls-jwt-claim-foo', '["foo","bar"]');
+    expect(meta.jwtClaims.getStringArray('foo')).to.eql(['foo', 'bar']);
+  });
 });

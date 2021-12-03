@@ -15,6 +15,7 @@
  */
 
 import { Cloudevent } from './cloudevent';
+import { JwtClaims } from './jwt-claims';
 
 type MetadataValue = string | Buffer;
 
@@ -161,6 +162,11 @@ export class Metadata {
    * This object is backed by this Metadata, changes to the Cloudevent will be reflected in the Metadata.
    */
   readonly cloudevent: Cloudevent = new Cloudevent(this);
+
+  /**
+   * The JWT claims, if there was a validated bearer token with this request.
+   */
+  readonly jwtClaims: JwtClaims = new JwtClaims(this);
 
   constructor(entries: MetadataEntry[] = []) {
     this.entries = entries;
