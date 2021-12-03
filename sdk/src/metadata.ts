@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { Cloudevent } from './cloudevent';
+
 type MetadataValue = string | Buffer;
 
 // Using an interface for compatibility with legacy JS code
@@ -21,6 +23,107 @@ interface MetadataEntry {
   readonly key: string;
   readonly bytesValue: Buffer | undefined;
   readonly stringValue: string | undefined;
+}
+
+interface MetadataMap {
+  [key: string]: string | Buffer | undefined;
+}
+
+class MetadataMapProxyHandler implements ProxyHandler<MetadataMap> {
+  private metadata: Metadata;
+
+  constructor(metadata: Metadata) {
+    this.metadata = metadata;
+  }
+
+  ownKeys(target: MetadataMap): ArrayLike<string | symbol> {
+    const keys = new Array<string>();
+    for (const entry of this.metadata.entries) {
+      keys.push(entry.key);
+    }
+    return keys;
+  }
+
+  deleteProperty(target: MetadataMap, key: string | symbol): boolean {
+    if (typeof key === 'string') {
+      const hasKey = this.metadata.has(key as string);
+      if (hasKey) {
+        this.metadata.delete(key);
+      }
+      return hasKey;
+    }
+    return false;
+  }
+
+  get(target: MetadataMap, key: string | symbol, receiver: any): any {
+    if (typeof key === 'string') {
+      const lowercaseKey = (key as string).toLowerCase();
+      for (const entry of this.metadata.entries) {
+        if (lowercaseKey === entry.key.toLowerCase()) {
+          if (entry.stringValue) {
+            return entry.stringValue;
+          }
+          if (entry.bytesValue) {
+            return entry.bytesValue;
+          }
+        }
+      }
+    }
+    return undefined;
+  }
+
+  has(target: MetadataMap, key: string | symbol): boolean {
+    if (typeof key === 'string') {
+      const lowercaseKey = (key as string).toLowerCase();
+      for (const entry of this.metadata.entries) {
+        if (lowercaseKey === entry.key.toLowerCase()) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
+  set(
+    target: MetadataMap,
+    key: string | symbol,
+    value: any,
+    receiver: any,
+  ): boolean {
+    if (typeof key === 'string') {
+      this.metadata.delete(key as string);
+      this.metadata.set(key as string, value);
+      return true;
+    }
+    return false;
+  }
+
+  getOwnPropertyDescriptor(
+    target: MetadataMap,
+    key: string | symbol,
+  ): PropertyDescriptor | undefined {
+    const superThis = this;
+    if (typeof key === 'string') {
+      const v = this.get(target, key as string, null);
+      if (v !== undefined) {
+        return new (class implements PropertyDescriptor {
+          readonly value = v;
+          readonly writable = true;
+          readonly enumerable = true;
+          readonly configurable = false;
+
+          get(): any {
+            return v;
+          }
+
+          set(v: any): void {
+            superThis.set(target, key, v, null);
+          }
+        })();
+      }
+    }
+    return undefined;
+  }
 }
 
 /**
@@ -36,16 +139,36 @@ interface MetadataEntry {
  * @param entries - the list of entries
  */
 export class Metadata {
-  readonly entries: MetadataEntry[] = [];
+  readonly entries: MetadataEntry[];
+  /**
+   * The metadata expressed as an object/map.
+   *
+   * The map is backed by the this Metadata object - changes to this map will be reflected in this metadata object and
+   * changes to this object will be reflected in the map.
+   *
+   * The map will return the first metadata entry that matches the key, case insensitive, when properties are looked up.
+   * When setting properties, it will replace all entries that match the key, case insensitive.
+   */
+  readonly asMap: MetadataMap = new Proxy(
+    new (class implements MetadataMap {
+      [key: string]: string | Buffer | undefined;
+    })(),
+    new MetadataMapProxyHandler(this),
+  );
+  /**
+   * The Cloudevent data from this Metadata.
+   *
+   * This object is backed by this Metadata, changes to the Cloudevent will be reflected in the Metadata.
+   */
+  readonly cloudevent: Cloudevent = new Cloudevent(this);
 
   constructor(entries: MetadataEntry[] = []) {
-    if (entries) {
-      this.entries = entries;
-    }
+    this.entries = entries;
   }
 
   /**
    * @returns CloudEvent subject value
+   * @deprecated Use cloudevent.subject instead.
    */
   getSubject(): MetadataValue | undefined {
     const subject = this.get('ce-subject');

@@ -97,15 +97,53 @@ describe('Metadata', () => {
     expect(res.length).to.be.equal(0);
   });
 
-  it('should return the subject', () => {
+  it('allows access to Cloudevent subject', () => {
     // Arrange
     const meta = new Metadata();
     meta.set('ce-subject', 'hello1');
 
     // Act
-    const res = meta.getSubject();
+    const res = meta.cloudevent.subject;
 
     // Assert
     expect(res).to.be.equal('hello1');
+  });
+
+  it('should make string entries accessible as a map', () => {
+    const meta = new Metadata();
+    meta.set('foo', 'string');
+    meta.set('foo', new Buffer('bytes'));
+    expect(meta.asMap.foo).to.be.equal('string');
+  });
+
+  it('should make byte entries accessible as a map', () => {
+    const meta = new Metadata();
+    meta.set('foo', new Buffer('bytes'));
+    meta.set('foo', 'string');
+    expect((meta.asMap.foo as Buffer).toString()).to.be.equal('bytes');
+  });
+
+  it('changes to the map should be reflected in the metadata', () => {
+    const meta = new Metadata();
+    meta.set('foo', 'string');
+    meta.set('foo', new Buffer('bytes'));
+    meta.asMap.foo = 'new string';
+    expect(meta.entries.length).to.be.equal(1);
+    expect(meta.entries[0].stringValue).to.be.equal('new string');
+  });
+
+  it('allows deleting properties from the map', () => {
+    const meta = new Metadata();
+    meta.set('foo', 'string');
+    meta.set('foo', new Buffer('bytes'));
+    delete meta.asMap.foo;
+    expect(meta.entries.length).to.be.equal(0);
+  });
+
+  it('correctly handles Cloudevent times', () => {
+    const now = new Date();
+    const meta = new Metadata();
+    meta.set('ce-time', now.toISOString());
+    expect((meta.cloudevent.time as Date).getTime()).to.be.equal(now.getTime());
   });
 });
