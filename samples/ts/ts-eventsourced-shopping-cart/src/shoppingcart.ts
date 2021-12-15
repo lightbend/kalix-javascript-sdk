@@ -109,7 +109,7 @@ function addItem(
   // Make sure that it is not possible to add negative quantities
   if (addItem.quantity < 1) {
     return replies.failure(
-      "Cannot add negative quantity to item " + addItem.productId
+      "Quantity for item " + addItem.productId + " must be greater than zero."
     );
   }
 

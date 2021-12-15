@@ -47,7 +47,7 @@ function getCart(request, cart) {
 // tag::add-item[]
 function addItem(addItem, cart, ctx) {
     if (addItem.quantity < 1) {
-        ctx.fail("Cannot add negative quantity to item " + addItem.productId);
+        ctx.fail("Quantity for item " + addItem.productId + " must be greater than zero.");
     } else {
         const itemAdded = ItemAdded.create({
             item: {
