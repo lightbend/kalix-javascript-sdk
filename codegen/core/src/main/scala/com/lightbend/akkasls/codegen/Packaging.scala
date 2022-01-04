@@ -9,12 +9,9 @@ import scala.jdk.CollectionConverters._
 import com.google.protobuf.Descriptors
 
 /**
-  * A fully qualified name that can be resolved in any target language
-  */
-case class FullyQualifiedName(
-    name: String,
-    parent: PackageNaming
-) {
+ * A fully qualified name that can be resolved in any target language
+ */
+case class FullyQualifiedName(name: String, parent: PackageNaming) {
   lazy val fullName = s"${parent.pkg}.$name"
 }
 
@@ -32,28 +29,23 @@ object FullyQualifiedName {
           Some(s"google.golang.org/protobuf/types/known/${descriptor.getName.toLowerCase}pb"),
           Some(s"com.${fileDescriptor.getPackage}"),
           Some(s"${descriptor.getName}Proto"),
-          javaMultipleFiles = true
-        )
+          javaMultipleFiles = true)
       } else PackageNaming.from(fileDescriptor)
-    FullyQualifiedName(
-      descriptor.getName,
-      packageNaming
-    )
+    FullyQualifiedName(descriptor.getName, packageNaming)
   }
 }
 
 /**
-  * The details of a package's naming, sufficient to construct fully qualified names in any target language
-  */
+ * The details of a package's naming, sufficient to construct fully qualified names in any target language
+ */
 case class PackageNaming(
     name: String,
     pkg: String,
     goPackage: Option[String],
     javaPackageOption: Option[String],
     javaOuterClassnameOption: Option[String],
-    javaMultipleFiles: Boolean
-) {
-  lazy val javaPackage: String        = javaPackageOption.getOrElse(pkg)
+    javaMultipleFiles: Boolean) {
+  lazy val javaPackage: String = javaPackageOption.getOrElse(pkg)
   lazy val javaOuterClassname: String = javaOuterClassnameOption.getOrElse(name)
 }
 
@@ -71,8 +63,8 @@ object PackageNaming {
         .map(s => s.headOption.fold("")(first => s"${first.toUpper.toString}${s.tail}"))
         .mkString
 
-    val generalOptions = descriptor.getOptions.getAllFields.asScala.map {
-      case (fieldDescriptor, field) => (fieldDescriptor.getFullName, field)
+    val generalOptions = descriptor.getOptions.getAllFields.asScala.map { case (fieldDescriptor, field) =>
+      (fieldDescriptor.getFullName, field)
     }
 
     val goPackage = generalOptions.get("google.protobuf.FileOptions.go_package").map(_.toString())
@@ -87,13 +79,6 @@ object PackageNaming {
     val javaMultipleFiles =
       generalOptions.get("google.protobuf.FileOptions.java_multiple_files").contains(true)
 
-    PackageNaming(
-      name,
-      descriptor.getPackage,
-      goPackage,
-      javaPackage,
-      javaOuterClassname,
-      javaMultipleFiles
-    )
+    PackageNaming(name, descriptor.getPackage, goPackage, javaPackage, javaOuterClassname, javaMultipleFiles)
   }
 }

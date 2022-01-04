@@ -6,17 +6,17 @@
 package com.lightbend.akkasls.codegen
 package js
 
-import java.nio.file.{ Paths }
+import java.nio.file.Paths
 
 class ActionServiceSourceGeneratorSuite extends munit.FunSuite {
 
   test("source") {
     val protoRef = TestData.serviceProto()
-    val service  = TestData.simpleActionService(protoRef)
+    val service = TestData.simpleActionService(protoRef)
 
-    val protoSources             = List(Paths.get("myentity1.proto"), Paths.get("someother.proto"))
-    val protobufSourceDirectory  = Paths.get("./src/proto")
-    val sourceDirectory          = Paths.get("./src/js")
+    val protoSources = List(Paths.get("myentity1.proto"), Paths.get("someother.proto"))
+    val protobufSourceDirectory = Paths.get("./src/proto")
+    val sourceDirectory = Paths.get("./src/js")
     val generatedSourceDirectory = Paths.get("./lib/generated")
 
     val sourceDoc =
@@ -25,8 +25,7 @@ class ActionServiceSourceGeneratorSuite extends munit.FunSuite {
         protobufSourceDirectory,
         sourceDirectory,
         generatedSourceDirectory,
-        service
-      )
+        service)
     assertEquals(
       sourceDoc.layout.replace("\\", "/"), // Cope with windows testing
       """/* This code was initialised by Akka Serverless tooling.
@@ -75,18 +74,15 @@ class ActionServiceSourceGeneratorSuite extends munit.FunSuite {
         |  }
         |};
         |
-        |export default action;""".stripMargin
-    )
+        |export default action;""".stripMargin)
   }
 
   test("typedef source") {
     val protoRef = TestData.serviceProto()
-    val service  = TestData.simpleActionService(protoRef)
+    val service = TestData.simpleActionService(protoRef)
 
     val sourceDoc =
-      ActionServiceSourceGenerator.typedefSource(
-        service
-      )
+      ActionServiceSourceGenerator.typedefSource(service)
     assertEquals(
       sourceDoc.layout.replace("\\", "/"), // Cope with windows testing
       """/* This code is managed by Akka Serverless tooling.
@@ -120,7 +116,6 @@ class ActionServiceSourceGeneratorSuite extends munit.FunSuite {
         |};
         |
         |export type MyService = TypedAction<CommandHandlers>;
-        |""".stripMargin
-    )
+        |""".stripMargin)
   }
 }

@@ -6,17 +6,17 @@
 package com.lightbend.akkasls.codegen
 package js
 
-import java.nio.file.{ Paths }
+import java.nio.file.Paths
 
 class ViewServiceSourceGeneratorSuite extends munit.FunSuite {
 
   test("source") {
     val protoRef = TestData.serviceProto()
-    val service  = TestData.simpleViewService(protoRef)
+    val service = TestData.simpleViewService(protoRef)
 
-    val protoSources             = List(Paths.get("myentity1.proto"), Paths.get("someother.proto"))
-    val protobufSourceDirectory  = Paths.get("./src/proto")
-    val sourceDirectory          = Paths.get("./src/js")
+    val protoSources = List(Paths.get("myentity1.proto"), Paths.get("someother.proto"))
+    val protobufSourceDirectory = Paths.get("./src/proto")
+    val sourceDirectory = Paths.get("./src/js")
     val generatedSourceDirectory = Paths.get("./lib/generated")
 
     val sourceDoc =
@@ -25,8 +25,7 @@ class ViewServiceSourceGeneratorSuite extends munit.FunSuite {
         protobufSourceDirectory,
         sourceDirectory,
         generatedSourceDirectory,
-        service
-      )
+        service)
     assertEquals(
       sourceDoc.layout.replace("\\", "/"), // Cope with windows testing
       """/* This code was initialised by Akka Serverless tooling.
@@ -70,20 +69,17 @@ class ViewServiceSourceGeneratorSuite extends munit.FunSuite {
         |  }
         |});
         |
-        |export default view;""".stripMargin
-    )
+        |export default view;""".stripMargin)
   }
   test("source without transformations") {
     val protoRef = TestData.serviceProto()
     val service = TestData
       .simpleViewService(protoRef)
-      .copy(
-        transformedUpdates = List.empty
-      )
+      .copy(transformedUpdates = List.empty)
 
-    val protoSources             = List(Paths.get("myentity1.proto"), Paths.get("someother.proto"))
-    val protobufSourceDirectory  = Paths.get("./src/proto")
-    val sourceDirectory          = Paths.get("./src/js")
+    val protoSources = List(Paths.get("myentity1.proto"), Paths.get("someother.proto"))
+    val protobufSourceDirectory = Paths.get("./src/proto")
+    val sourceDirectory = Paths.get("./src/js")
     val generatedSourceDirectory = Paths.get("./lib/generated")
 
     val sourceDoc =
@@ -92,8 +88,7 @@ class ViewServiceSourceGeneratorSuite extends munit.FunSuite {
         protobufSourceDirectory,
         sourceDirectory,
         generatedSourceDirectory,
-        service
-      )
+        service)
     assertEquals(
       sourceDoc.layout.replace("\\", "/"), // Cope with windows testing
       """/* This code was initialised by Akka Serverless tooling.
@@ -128,18 +123,15 @@ class ViewServiceSourceGeneratorSuite extends munit.FunSuite {
         |  }
         |);
         |
-        |export default view;""".stripMargin
-    )
+        |export default view;""".stripMargin)
   }
 
   test("typedef source") {
     val protoRef = TestData.serviceProto()
-    val service  = TestData.simpleViewService(protoRef)
+    val service = TestData.simpleViewService(protoRef)
 
     val sourceDoc =
-      ViewServiceSourceGenerator.typedefSource(
-        service
-      )
+      ViewServiceSourceGenerator.typedefSource(service)
     assertEquals(
       sourceDoc.layout.replace("\\", "/"), // Cope with windows testing
       """/* This code is managed by Akka Serverless tooling.
@@ -167,7 +159,6 @@ class ViewServiceSourceGeneratorSuite extends munit.FunSuite {
         |};
         |
         |export type MyService = TypedView<UpdateHandlers>;
-        |""".stripMargin
-    )
+        |""".stripMargin)
   }
 }

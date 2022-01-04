@@ -14,8 +14,7 @@ object TestData {
       None,
       None,
       Some(s"ServiceOuterClass$suffix"),
-      javaMultipleFiles = false
-    )
+      javaMultipleFiles = false)
 
   def domainProto(suffix: String = ""): PackageNaming =
     PackageNaming(
@@ -24,23 +23,12 @@ object TestData {
       None,
       None,
       Some(s"EntityOuterClass$suffix"),
-      javaMultipleFiles = false
-    )
+      javaMultipleFiles = false)
 
   val knownGoogleProto: PackageNaming =
-    PackageNaming(
-      "EXT",
-      "google.protobuf",
-      None,
-      None,
-      None,
-      javaMultipleFiles = true
-    )
+    PackageNaming("EXT", "google.protobuf", None, None, None, javaMultipleFiles = true)
 
-  def simpleEntityService(
-      proto: PackageNaming = serviceProto(),
-      suffix: String = ""
-  ): ModelBuilder.EntityService =
+  def simpleEntityService(proto: PackageNaming = serviceProto(), suffix: String = ""): ModelBuilder.EntityService =
     ModelBuilder.EntityService(
       FullyQualifiedName(s"MyService$suffix", proto),
       List(
@@ -49,23 +37,16 @@ object TestData {
           FullyQualifiedName("SetValue", proto),
           FullyQualifiedName("Empty", knownGoogleProto),
           streamedInput = false,
-          streamedOutput = false
-        ),
+          streamedOutput = false),
         ModelBuilder.Command(
           FullyQualifiedName("Get", proto),
           FullyQualifiedName("GetValue", proto),
           FullyQualifiedName("MyState", proto),
           streamedInput = false,
-          streamedOutput = false
-        )
-      ),
-      s"com.example.Entity$suffix"
-    )
+          streamedOutput = false)),
+      s"com.example.Entity$suffix")
 
-  def simpleViewService(
-      proto: PackageNaming = serviceProto(),
-      suffix: String = ""
-  ): ModelBuilder.ViewService =
+  def simpleViewService(proto: PackageNaming = serviceProto(), suffix: String = ""): ModelBuilder.ViewService =
     ModelBuilder.ViewService(
       FullyQualifiedName(s"MyService$suffix", proto),
       List(
@@ -74,23 +55,19 @@ object TestData {
           FullyQualifiedName("EntityCreated", domainProto(suffix)),
           FullyQualifiedName("ViewState", proto),
           streamedInput = false,
-          streamedOutput = false
-        ),
+          streamedOutput = false),
         ModelBuilder.Command(
           FullyQualifiedName("Updated", proto),
           FullyQualifiedName("EntityUpdated", domainProto(suffix)),
           FullyQualifiedName("ViewState", proto),
           streamedInput = false,
-          streamedOutput = false
-        ),
+          streamedOutput = false),
         ModelBuilder.Command(
           FullyQualifiedName("MyQuery", proto),
           FullyQualifiedName("QueryRequest", proto),
           FullyQualifiedName("ViewState", proto),
           streamedInput = false,
-          streamedOutput = false
-        )
-      ),
+          streamedOutput = false)),
       s"my-view-id$suffix",
       List(
         ModelBuilder.Command(
@@ -98,22 +75,15 @@ object TestData {
           FullyQualifiedName("EntityCreated", domainProto(suffix)),
           FullyQualifiedName("ViewState", proto),
           streamedInput = false,
-          streamedOutput = false
-        ),
+          streamedOutput = false),
         ModelBuilder.Command(
           FullyQualifiedName("Updated", proto),
           FullyQualifiedName("EntityUpdated", domainProto(suffix)),
           FullyQualifiedName("ViewState", proto),
           streamedInput = false,
-          streamedOutput = false
-        )
-      )
-    )
+          streamedOutput = false)))
 
-  def simpleActionService(
-      proto: PackageNaming = serviceProto(),
-      suffix: String = ""
-  ): ModelBuilder.ActionService =
+  def simpleActionService(proto: PackageNaming = serviceProto(), suffix: String = ""): ModelBuilder.ActionService =
     ModelBuilder.ActionService(
       FullyQualifiedName(s"MyService$suffix", proto),
       List(
@@ -122,48 +92,36 @@ object TestData {
           FullyQualifiedName("Request", domainProto(suffix)),
           FullyQualifiedName("Response", proto),
           streamedInput = false,
-          streamedOutput = false
-        ),
+          streamedOutput = false),
         ModelBuilder.Command(
           FullyQualifiedName("StreamedIn", proto),
           FullyQualifiedName("Request", domainProto(suffix)),
           FullyQualifiedName("Response", proto),
           streamedInput = true,
-          streamedOutput = false
-        ),
+          streamedOutput = false),
         ModelBuilder.Command(
           FullyQualifiedName("StreamedOut", proto),
           FullyQualifiedName("Request", domainProto(suffix)),
           FullyQualifiedName("Response", proto),
           streamedInput = false,
-          streamedOutput = true
-        ),
+          streamedOutput = true),
         ModelBuilder.Command(
           FullyQualifiedName("FullyStreamed", proto),
           FullyQualifiedName("Request", domainProto(suffix)),
           FullyQualifiedName("Response", proto),
           streamedInput = true,
-          streamedOutput = true
-        )
-      )
-    )
+          streamedOutput = true)))
 
-  def eventSourcedEntity(
-      suffix: String = ""
-  ): ModelBuilder.EventSourcedEntity =
+  def eventSourcedEntity(suffix: String = ""): ModelBuilder.EventSourcedEntity =
     ModelBuilder.EventSourcedEntity(
       FullyQualifiedName(s"MyEntity$suffix", domainProto(suffix)),
       entityType = s"my-eventsourcedentity$suffix-persistence",
       Some(ModelBuilder.State(FullyQualifiedName("MyState", domainProto(suffix)))),
-      List(
-        ModelBuilder.Event(FullyQualifiedName("SetEvent", domainProto(suffix)))
-      )
-    )
+      List(ModelBuilder.Event(FullyQualifiedName("SetEvent", domainProto(suffix)))))
 
   def valueEntity(suffix: String = ""): ModelBuilder.ValueEntity =
     ModelBuilder.ValueEntity(
       FullyQualifiedName(s"MyValueEntity$suffix", domainProto(suffix)),
       entityType = s"my-valueentity$suffix-persistence",
-      ModelBuilder.State(FullyQualifiedName("MyState", domainProto(suffix)))
-    )
+      ModelBuilder.State(FullyQualifiedName("MyState", domainProto(suffix))))
 }
