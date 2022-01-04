@@ -7,11 +7,12 @@
   },
   "main": "dist/index.js",
   "dependencies": {
-    "@lightbend/akkaserverless-javascript-sdk": "0.33.1"
+    "@lightbend/akkaserverless-javascript-sdk": "file:../../../sdk/lightbend-akkaserverless-javascript-sdk-0.0.0.tgz"
   },
   "devDependencies": {
     "@lightbend/akkasls-scripts": "0.33.1",
     "@types/mocha": "^8.2.3",
+    "@types/node": "14.18.3",
     "@typescript-eslint/eslint-plugin": "^4.31.0",
     "@typescript-eslint/parser": "^4.31.0",
     "chai": "^4.3.3",
