@@ -6,18 +6,18 @@
 package com.lightbend.akkasls.codegen
 package js
 
-import java.nio.file.{ Paths }
+import java.nio.file.Paths
 
 class EntityServiceSourceGeneratorSuite extends munit.FunSuite {
 
   test("EventSourcedEntity source") {
     val protoRef = TestData.serviceProto()
-    val service  = TestData.simpleEntityService(protoRef)
-    val entity   = TestData.eventSourcedEntity()
+    val service = TestData.simpleEntityService(protoRef)
+    val entity = TestData.eventSourcedEntity()
 
-    val protoSources             = List(Paths.get("myentity1.proto"), Paths.get("someother.proto"))
-    val protobufSourceDirectory  = Paths.get("./src/proto")
-    val sourceDirectory          = Paths.get("./src/js")
+    val protoSources = List(Paths.get("myentity1.proto"), Paths.get("someother.proto"))
+    val protobufSourceDirectory = Paths.get("./src/proto")
+    val sourceDirectory = Paths.get("./src/js")
     val generatedSourceDirectory = Paths.get("./lib/generated")
 
     val sourceDoc =
@@ -27,8 +27,7 @@ class EntityServiceSourceGeneratorSuite extends munit.FunSuite {
         sourceDirectory,
         generatedSourceDirectory,
         service,
-        entity
-      )
+        entity)
     assertEquals(
       sourceDoc.layout.replace("\\", "/"), // Cope with windows testing
       """/* This code was initialised by Akka Serverless tooling.
@@ -89,18 +88,17 @@ class EntityServiceSourceGeneratorSuite extends munit.FunSuite {
         |  }
         |}));
         |
-        |export default entity;""".stripMargin
-    )
+        |export default entity;""".stripMargin)
   }
 
   test("ValueEntity source") {
     val protoRef = TestData.serviceProto()
-    val service  = TestData.simpleEntityService(protoRef)
-    val entity   = TestData.valueEntity()
+    val service = TestData.simpleEntityService(protoRef)
+    val entity = TestData.valueEntity()
 
-    val protoSources             = List(Paths.get("myentity1.proto"), Paths.get("someother.proto"))
-    val protobufSourceDirectory  = Paths.get("./src/proto")
-    val sourceDirectory          = Paths.get("./src/js")
+    val protoSources = List(Paths.get("myentity1.proto"), Paths.get("someother.proto"))
+    val protobufSourceDirectory = Paths.get("./src/proto")
+    val sourceDirectory = Paths.get("./src/js")
     val generatedSourceDirectory = Paths.get("./lib/generated")
 
     val sourceDoc =
@@ -110,8 +108,7 @@ class EntityServiceSourceGeneratorSuite extends munit.FunSuite {
         sourceDirectory,
         generatedSourceDirectory,
         service,
-        entity
-      )
+        entity)
     assertEquals(
       sourceDoc.layout.replace("\\", "/"), // Cope with windows testing
       """/* This code was initialised by Akka Serverless tooling.
@@ -161,20 +158,16 @@ class EntityServiceSourceGeneratorSuite extends munit.FunSuite {
         |  }
         |});
         |
-        |export default entity;""".stripMargin
-    )
+        |export default entity;""".stripMargin)
   }
 
   test("EventSourcedEntity typedef source") {
     val protoRef = TestData.serviceProto()
-    val service  = TestData.simpleEntityService(protoRef)
-    val entity   = TestData.eventSourcedEntity()
+    val service = TestData.simpleEntityService(protoRef)
+    val entity = TestData.eventSourcedEntity()
 
     val sourceDoc =
-      EntityServiceSourceGenerator.typedefSource(
-        service,
-        entity
-      )
+      EntityServiceSourceGenerator.typedefSource(service, entity)
     assertEquals(
       sourceDoc.layout.replace("\\", "/"), // Cope with windows testing
       """/* This code is managed by Akka Serverless tooling.
@@ -219,20 +212,16 @@ class EntityServiceSourceGeneratorSuite extends munit.FunSuite {
         |  EventHandlers,
         |  CommandHandlers
         |>;
-        |""".stripMargin
-    )
+        |""".stripMargin)
   }
 
   test("ValueEntity typedef source") {
     val protoRef = TestData.serviceProto()
-    val service  = TestData.simpleEntityService(protoRef)
-    val entity   = TestData.valueEntity()
+    val service = TestData.simpleEntityService(protoRef)
+    val entity = TestData.valueEntity()
 
     val sourceDoc =
-      EntityServiceSourceGenerator.typedefSource(
-        service,
-        entity
-      )
+      EntityServiceSourceGenerator.typedefSource(service, entity)
     assertEquals(
       sourceDoc.layout.replace("\\", "/"), // Cope with windows testing
       """/* This code is managed by Akka Serverless tooling.
@@ -268,17 +257,16 @@ class EntityServiceSourceGeneratorSuite extends munit.FunSuite {
         |  State,
         |  CommandHandlers
         |>;
-        |""".stripMargin
-    )
+        |""".stripMargin)
   }
 
   test("EventSourcedEntity test source") {
     val protoRef = TestData.serviceProto()
-    val service  = TestData.simpleEntityService(protoRef, "1")
-    val entity   = TestData.eventSourcedEntity()
+    val service = TestData.simpleEntityService(protoRef, "1")
+    val entity = TestData.eventSourcedEntity()
 
     val testSourceDirectory = Paths.get("./test/js")
-    val sourceDirectory     = Paths.get("./src/js")
+    val sourceDirectory = Paths.get("./src/js")
     val sourceDoc =
       EntityServiceSourceGenerator.testSource(service, entity, testSourceDirectory, sourceDirectory)
     assertEquals(
@@ -320,17 +308,16 @@ class EntityServiceSourceGeneratorSuite extends munit.FunSuite {
         |      // expect(entity.events).to.deep.equal([]);
         |    });
         |  });
-        |});""".stripMargin
-    )
+        |});""".stripMargin)
   }
 
   test("ValueEntity test source") {
     val protoRef = TestData.serviceProto()
-    val service  = TestData.simpleEntityService(protoRef, "1")
-    val entity   = TestData.valueEntity()
+    val service = TestData.simpleEntityService(protoRef, "1")
+    val entity = TestData.valueEntity()
 
     val testSourceDirectory = Paths.get("./test/js")
-    val sourceDirectory     = Paths.get("./src/js")
+    val sourceDirectory = Paths.get("./src/js")
     val sourceDoc =
       EntityServiceSourceGenerator.testSource(service, entity, testSourceDirectory, sourceDirectory)
     assertEquals(
@@ -370,24 +357,18 @@ class EntityServiceSourceGeneratorSuite extends munit.FunSuite {
         |      // expect(entity.state).to.deep.equal({});
         |    });
         |  });
-        |});""".stripMargin
-    )
+        |});""".stripMargin)
   }
 
   test("ValueEntity integration test source") {
     val protoRef = TestData.serviceProto()
-    val service  = TestData.simpleEntityService(protoRef, "1")
-    val entity   = TestData.valueEntity()
+    val service = TestData.simpleEntityService(protoRef, "1")
+    val entity = TestData.valueEntity()
 
     val testSourceDirectory = Paths.get("./test/js")
-    val sourceDirectory     = Paths.get("./src/js")
+    val sourceDirectory = Paths.get("./src/js")
     val sourceDoc =
-      EntityServiceSourceGenerator.integrationTestSource(
-        service,
-        entity,
-        testSourceDirectory,
-        sourceDirectory
-      )
+      EntityServiceSourceGenerator.integrationTestSource(service, entity, testSourceDirectory, sourceDirectory)
     assertEquals(
       sourceDoc.layout.replace("\\", "/"), // Cope with windows testing
       """/* This code was initialised by Akka Serverless tooling.
@@ -422,8 +403,7 @@ class EntityServiceSourceGeneratorSuite extends munit.FunSuite {
         |      // const result = await client().get({});
         |    });
         |  });
-        |});""".stripMargin
-    )
+        |});""".stripMargin)
   }
 
 }

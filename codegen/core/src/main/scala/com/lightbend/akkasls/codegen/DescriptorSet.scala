@@ -14,36 +14,33 @@ import scala.util.{ Failure, Success, Using }
 import com.google.protobuf.ExtensionRegistry
 
 /**
-  * Provides conveniences for reading and parsing Protobuf descriptor sets
-  */
+ * Provides conveniences for reading and parsing Protobuf descriptor sets
+ */
 object DescriptorSet {
 
   /**
-    * The descriptor file cannot be opened
-    */
+   * The descriptor file cannot be opened
+   */
   final case class CannotOpen(e: Throwable)
 
   /**
-    * Various error conditions during a read
-    */
+   * Various error conditions during a read
+   */
   sealed abstract class ReadFailure
-  case class CannotRead(e: IOException)                                   extends ReadFailure
+  case class CannotRead(e: IOException) extends ReadFailure
   case class CannotValidate(e: Descriptors.DescriptorValidationException) extends ReadFailure
 
   /**
-    * Read Protobuf FileDescriptor objects from given a file hosting a DescriptorSet
-    * @param file the file to read
-    * @return a collection of FileDescriptor objects or an error condition
-    */
+   * Read Protobuf FileDescriptor objects from given a file hosting a DescriptorSet
+   * @param file
+   *   the file to read
+   * @return
+   *   a collection of FileDescriptor objects or an error condition
+   */
   @SuppressWarnings(Array("org.wartremover.warts.Throw"))
-  def fileDescriptors(
-      file: File
-  ): Either[CannotOpen, Iterable[Either[ReadFailure, Descriptors.FileDescriptor]]] =
-    Using[FileInputStream, Either[CannotOpen, Iterable[
-      Either[ReadFailure, Descriptors.FileDescriptor]
-    ]]](
-      new FileInputStream(file)
-    ) { fis =>
+  def fileDescriptors(file: File): Either[CannotOpen, Iterable[Either[ReadFailure, Descriptors.FileDescriptor]]] =
+    Using[FileInputStream, Either[CannotOpen, Iterable[Either[ReadFailure, Descriptors.FileDescriptor]]]](
+      new FileInputStream(file)) { fis =>
       val registry = ExtensionRegistry.newInstance()
       registry.add(com.akkaserverless.Annotations.service)
       registry.add(com.akkaserverless.Annotations.file)

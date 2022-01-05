@@ -6,6 +6,6 @@
 package io.netty.channel.socket.nio
 
 /**
-  * Dummy class for gRPC reflection and native image building - which isn't being used.
-  */
+ * Dummy class for gRPC reflection and native image building - which isn't being used.
+ */
 class NioServerSocketChannel {}

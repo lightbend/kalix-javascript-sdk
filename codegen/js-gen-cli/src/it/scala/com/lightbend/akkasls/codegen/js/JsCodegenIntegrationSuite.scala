@@ -20,11 +20,11 @@ import org.testcontainers.images.builder.ImageFromDockerfile
 import org.testcontainers.utility.MountableFile
 
 class JsCodegenIntegrationSuite extends munit.FunSuite {
-  val config       = ConfigFactory.load()
-  val npmJsPath    = Paths.get(config.getString("akkaserverless-npm-js.path"))
+  val config = ConfigFactory.load()
+  val npmJsPath = Paths.get(config.getString("akkaserverless-npm-js.path"))
   val cliImagePath = Paths.get(config.getString("js-codegen-cli.native-image"))
-  val proxyImage   = config.getString("akkaserverless-proxy.image")
-  val logger       = LoggerFactory.getLogger(classOf[JsCodegenIntegrationSuite])
+  val proxyImage = config.getString("akkaserverless-proxy.image")
+  val logger = LoggerFactory.getLogger(classOf[JsCodegenIntegrationSuite])
   logger.info(cliImagePath.toString)
   val codegenImage =
     new ImageFromDockerfile("akkasls-codegen-js-test", /* deleteOnExit */ false)
@@ -65,28 +65,12 @@ class JsCodegenIntegrationSuite extends munit.FunSuite {
 
     // Generate a new entity within the codegen container
     assertSuccessful(
-      codegenContainer.execInContainer(
-        "create-akkasls-entity",
-        entityName,
-        "--template",
-        "event-sourced-entity"
-      )
-    )
+      codegenContainer.execInContainer("create-akkasls-entity", entityName, "--template", "event-sourced-entity"))
 
     // Setup and build the entity
-    assertSuccessful(
-      codegenContainer.execInContainer(
-        "./scripts/setup-entity.sh",
-        entityName
-      )
-    )
+    assertSuccessful(codegenContainer.execInContainer("./scripts/setup-entity.sh", entityName))
     // Start the entity gRPC server
-    assertSuccessful(
-      codegenContainer.execInContainer(
-        "./scripts/start-entity.sh",
-        entityName
-      )
-    )
+    assertSuccessful(codegenContainer.execInContainer("./scripts/start-entity.sh", entityName))
 
     // Start the proxy
     proxyContainer.start()
@@ -98,19 +82,13 @@ class JsCodegenIntegrationSuite extends munit.FunSuite {
         s"$proxyUrl/com.example.MyServiceEntity/GetValue",
         check = false,
         data = """{"entityId": "test-entity-id"}""",
-        headers = Map("Content-Type" -> "application/json")
-      )
+        headers = Map("Content-Type" -> "application/json"))
     }
     assertEquals(getResult.statusCode, 500)
     assertEquals(getResult.text(), "The command handler for `GetValue` is not implemented, yet")
 
     // Kill the gRPC server, and stop the proxy
-    assertSuccessful(
-      codegenContainer.execInContainer(
-        "./scripts/stop-entity.sh",
-        entityName
-      )
-    )
+    assertSuccessful(codegenContainer.execInContainer("./scripts/stop-entity.sh", entityName))
     proxyContainer.stop()
   }
 
@@ -119,21 +97,10 @@ class JsCodegenIntegrationSuite extends munit.FunSuite {
 
     // Generate a new entity within the codegen container
     assertSuccessful(
-      codegenContainer.execInContainer(
-        "create-akkasls-entity",
-        entityName,
-        "--template",
-        "event-sourced-entity"
-      )
-    )
+      codegenContainer.execInContainer("create-akkasls-entity", entityName, "--template", "event-sourced-entity"))
 
     // Setup and build the entity
-    assertSuccessful(
-      codegenContainer.execInContainer(
-        "./scripts/setup-entity.sh",
-        entityName
-      )
-    )
+    assertSuccessful(codegenContainer.execInContainer("./scripts/setup-entity.sh", entityName))
 
     // Stream generated MyEntityImpl, and replace function bodies with simple implementations
     val implFile = Files.createTempFile("generated-entity-impl", ".js")
@@ -147,14 +114,9 @@ class JsCodegenIntegrationSuite extends munit.FunSuite {
           .getLines()
           .flatMap {
             case """      return ctx.fail("The command handler for `GetValue` is not implemented, yet");""" =>
-              Seq(
-                """      return state;"""
-              )
+              Seq("""      return state;""")
             case """      return ctx.fail("The command handler for `SetValue` is not implemented, yet");""" =>
-              Seq(
-                """      ctx.emit({ type: "ValueSet", value: command.value });""",
-                """      return {};"""
-              )
+              Seq("""      ctx.emit({ type: "ValueSet", value: command.value });""", """      return {};""")
             case """      return state;""" =>
               Seq("""        return { value: event.value };""")
             case line => Seq(line)
@@ -162,18 +124,12 @@ class JsCodegenIntegrationSuite extends munit.FunSuite {
           .foreach { line =>
             println(line)
             writer.write(s"${line}\n")
-          }
-      )
+          })
     }
     codegenContainer.copyFileToContainer(MountableFile.forHostPath(implFile), implContainerPath)
 
     // Start the entity gRPC server
-    assertSuccessful(
-      codegenContainer.execInContainer(
-        "./scripts/start-entity.sh",
-        entityName
-      )
-    )
+    assertSuccessful(codegenContainer.execInContainer("./scripts/start-entity.sh", entityName))
 
     // Start the proxy
     proxyContainer.start()
@@ -185,8 +141,7 @@ class JsCodegenIntegrationSuite extends munit.FunSuite {
         s"$proxyUrl/com.example.MyServiceEntity/GetValue",
         check = false,
         data = """{"entityId": "test-entity-id"}""",
-        headers = Map("Content-Type" -> "application/json")
-      )
+        headers = Map("Content-Type" -> "application/json"))
     }
     assertEquals(getResult.statusCode, 200)
     assertEquals(getResult.text(), """{"value":0}""")
@@ -197,8 +152,7 @@ class JsCodegenIntegrationSuite extends munit.FunSuite {
       s"$proxyUrl/com.example.MyServiceEntity/SetValue",
       check = false,
       data = s"""{"entityId": "test-entity-id", "value": ${newValue}}""",
-      headers = Map("Content-Type" -> "application/json")
-    )
+      headers = Map("Content-Type" -> "application/json"))
     assertEquals(setResult.statusCode, 200)
 
     val getAgainResult =
@@ -206,18 +160,12 @@ class JsCodegenIntegrationSuite extends munit.FunSuite {
         s"$proxyUrl/com.example.MyServiceEntity/GetValue",
         check = false,
         data = """{"entityId": "test-entity-id"}""",
-        headers = Map("Content-Type" -> "application/json")
-      )
+        headers = Map("Content-Type" -> "application/json"))
     assertEquals(getAgainResult.statusCode, 200)
     assertEquals(getAgainResult.text(), s"""{"value":${newValue}}""")
 
     // Kill the gRPC server, and stop the proxy
-    assertSuccessful(
-      codegenContainer.execInContainer(
-        "./scripts/stop-entity.sh",
-        entityName
-      )
-    )
+    assertSuccessful(codegenContainer.execInContainer("./scripts/stop-entity.sh", entityName))
     proxyContainer.stop()
   }
 
@@ -226,35 +174,18 @@ class JsCodegenIntegrationSuite extends munit.FunSuite {
 
     // Generate a new entity within the codegen container
     assertSuccessful(
-      codegenContainer.execInContainer(
-        "create-akkasls-entity",
-        entityName,
-        "--template",
-        "event-sourced-entity"
-      )
-    )
+      codegenContainer.execInContainer("create-akkasls-entity", entityName, "--template", "event-sourced-entity"))
 
     // Overwrite the domain with a value entity definition
     codegenContainer.copyFileToContainer(
       MountableFile.forClasspathResource("proto/value-entity-domain.proto"),
-      s"/home/$entityName/proto/myentity_domain.proto"
-    )
+      s"/home/$entityName/proto/myentity_domain.proto")
 
     // Setup and build the entity
-    assertSuccessful(
-      codegenContainer.execInContainer(
-        "./scripts/setup-entity.sh",
-        entityName
-      )
-    )
+    assertSuccessful(codegenContainer.execInContainer("./scripts/setup-entity.sh", entityName))
 
     // Start the entity gRPC server
-    assertSuccessful(
-      codegenContainer.execInContainer(
-        "./scripts/start-entity.sh",
-        entityName
-      )
-    )
+    assertSuccessful(codegenContainer.execInContainer("./scripts/start-entity.sh", entityName))
 
     // Start the proxy
     proxyContainer.start()
@@ -269,19 +200,13 @@ class JsCodegenIntegrationSuite extends munit.FunSuite {
         s"$proxyUrl/com.example.MyServiceEntity/GetValue",
         check = false,
         data = """{"entityId": "test-entity-id"}""",
-        headers = Map("Content-Type" -> "application/json")
-      )
+        headers = Map("Content-Type" -> "application/json"))
     }
     assertEquals(getResult.statusCode, 500)
     assertEquals(getResult.text(), "The command handler for `GetValue` is not implemented, yet")
 
     // Kill the gRPC server, and stop the proxy
-    assertSuccessful(
-      codegenContainer.execInContainer(
-        "./scripts/stop-entity.sh",
-        entityName
-      )
-    )
+    assertSuccessful(codegenContainer.execInContainer("./scripts/stop-entity.sh", entityName))
     proxyContainer.stop()
   }
 
@@ -290,27 +215,15 @@ class JsCodegenIntegrationSuite extends munit.FunSuite {
 
     // Generate a new entity within the codegen container
     assertSuccessful(
-      codegenContainer.execInContainer(
-        "create-akkasls-entity",
-        entityName,
-        "--template",
-        "event-sourced-entity"
-      )
-    )
+      codegenContainer.execInContainer("create-akkasls-entity", entityName, "--template", "event-sourced-entity"))
 
     // Overwrite the domain with a value entity definition
     codegenContainer.copyFileToContainer(
       MountableFile.forClasspathResource("proto/value-entity-domain.proto"),
-      s"/home/$entityName/proto/myentity_domain.proto"
-    )
+      s"/home/$entityName/proto/myentity_domain.proto")
 
     // Setup and build the entity
-    assertSuccessful(
-      codegenContainer.execInContainer(
-        "./scripts/setup-entity.sh",
-        entityName
-      )
-    )
+    assertSuccessful(codegenContainer.execInContainer("./scripts/setup-entity.sh", entityName))
 
     // Stream generated MyEntityImpl, and replace function bodies with simple implementations
     val implFile = Files.createTempFile("generated-entity-impl", ".js")
@@ -324,37 +237,22 @@ class JsCodegenIntegrationSuite extends munit.FunSuite {
           .getLines()
           .flatMap {
             case """    return ctx.fail("The command handler for `GetValue` is not implemented, yet");""" =>
-              Seq(
-                """    return state;"""
-              )
+              Seq("""    return state;""")
             case """    return ctx.fail("The command handler for `SetValue` is not implemented, yet");""" =>
-              Seq(
-                """    ctx.updateState({ type: "MyState", value: command.value });""",
-                """    return {};"""
-              )
+              Seq("""    ctx.updateState({ type: "MyState", value: command.value });""", """    return {};""")
             case line => Seq(line)
           }
           .foreach { line =>
             println(line)
             writer.write(s"${line}\n")
-          }
-      )
+          })
     }
     codegenContainer.copyFileToContainer(MountableFile.forHostPath(implFile), implContainerPath)
 
-    assertSuccessful(
-      codegenContainer.execInContainer(
-        "ps"
-      )
-    )
+    assertSuccessful(codegenContainer.execInContainer("ps"))
 
     // Start the entity gRPC server
-    assertSuccessful(
-      codegenContainer.execInContainer(
-        "./scripts/start-entity.sh",
-        entityName
-      )
-    )
+    assertSuccessful(codegenContainer.execInContainer("./scripts/start-entity.sh", entityName))
 
     // Start the proxy
     proxyContainer.start()
@@ -369,8 +267,7 @@ class JsCodegenIntegrationSuite extends munit.FunSuite {
         s"$proxyUrl/com.example.MyServiceEntity/GetValue",
         check = false,
         data = """{"entityId": "test-entity-id"}""",
-        headers = Map("Content-Type" -> "application/json")
-      )
+        headers = Map("Content-Type" -> "application/json"))
     }
     assertEquals(getResult.statusCode, 200)
     assertEquals(getResult.text(), """{"value":0}""")
@@ -381,8 +278,7 @@ class JsCodegenIntegrationSuite extends munit.FunSuite {
       s"$proxyUrl/com.example.MyServiceEntity/SetValue",
       check = false,
       data = s"""{"entityId": "test-entity-id", "value": ${newValue}}""",
-      headers = Map("Content-Type" -> "application/json")
-    )
+      headers = Map("Content-Type" -> "application/json"))
     assertEquals(setResult.statusCode, 200)
 
     val getAgainResult =
@@ -390,64 +286,43 @@ class JsCodegenIntegrationSuite extends munit.FunSuite {
         s"$proxyUrl/com.example.MyServiceEntity/GetValue",
         check = false,
         data = """{"entityId": "test-entity-id"}""",
-        headers = Map("Content-Type" -> "application/json")
-      )
+        headers = Map("Content-Type" -> "application/json"))
     assertEquals(getAgainResult.statusCode, 200)
     assertEquals(getAgainResult.text(), s"""{"value":${newValue}}""")
 
     // Kill the gRPC server, and stop the proxy
-    assertSuccessful(
-      codegenContainer.execInContainer(
-        "./scripts/stop-entity.sh",
-        entityName
-      )
-    )
+    assertSuccessful(codegenContainer.execInContainer("./scripts/stop-entity.sh", entityName))
     proxyContainer.stop()
   }
 
   /**
-    * Action Services
-    *
-    * note: since an action without implementation can't gracefully report errors,
-    * we simply check it compiles before making changes rather than running a
-    * dedicated unmodified action test
-    */
+   * Action Services
+   *
+   * note: since an action without implementation can't gracefully report errors, we simply check it compiles before
+   * making changes rather than running a dedicated unmodified action test
+   */
 
   test("verify simple implementation of action") {
     val entityName = "simple-impl-action"
 
     // Generate a new entity within the codegen container
     assertSuccessful(
-      codegenContainer.execInContainer(
-        "create-akkasls-entity",
-        entityName,
-        "--template",
-        "event-sourced-entity"
-      )
-    )
+      codegenContainer.execInContainer("create-akkasls-entity", entityName, "--template", "event-sourced-entity"))
 
     // Remove default proto definitions
     assertSuccessful(
       codegenContainer.execInContainer(
         "rm",
         s"/home/$entityName/proto/myentity_api.proto",
-        s"/home/$entityName/proto/myentity_domain.proto"
-      )
-    )
+        s"/home/$entityName/proto/myentity_domain.proto"))
 
     // Replace proto with an action definition
     codegenContainer.copyFileToContainer(
       MountableFile.forClasspathResource("proto/action-service.proto"),
-      s"/home/$entityName/proto/myactionservice_action.proto"
-    )
+      s"/home/$entityName/proto/myactionservice_action.proto")
 
     // Setup and build the entity
-    assertSuccessful(
-      codegenContainer.execInContainer(
-        "./scripts/setup-entity.sh",
-        entityName
-      )
-    )
+    assertSuccessful(codegenContainer.execInContainer("./scripts/setup-entity.sh", entityName))
 
     // Stream generated action, and replace function bodies with simple implementations
     val implFile = Files.createTempFile("generated-service-impl", ".js")
@@ -461,33 +336,24 @@ class JsCodegenIntegrationSuite extends munit.FunSuite {
           .getLines()
           .flatMap {
             case """    throw new Error("The command handler for `SingleMethod` is not implemented, yet");""" =>
-              Seq(
-                """    return { type: "Response", value: request.value + 1 };"""
-              )
+              Seq("""    return { type: "Response", value: request.value + 1 };""")
             case """    throw new Error("The command handler for `StreamedMethod` is not implemented, yet");""" =>
               Seq(
                 """    [...Array(request.value).keys()].forEach(i =>""",
                 """      ctx.write({ type: "Response", value: i })""",
                 """    );""",
-                """    ctx.end();"""
-              )
+                """    ctx.end();""")
             case line => Seq(line)
           }
           .foreach { line =>
             println(line)
             writer.write(s"${line}\n")
-          }
-      )
+          })
     }
     codegenContainer.copyFileToContainer(MountableFile.forHostPath(implFile), implContainerPath)
 
     // Start the entity gRPC server
-    assertSuccessful(
-      codegenContainer.execInContainer(
-        "./scripts/start-entity.sh",
-        entityName
-      )
-    )
+    assertSuccessful(codegenContainer.execInContainer("./scripts/start-entity.sh", entityName))
 
     // Start the proxy
     proxyContainer.start()
@@ -499,8 +365,7 @@ class JsCodegenIntegrationSuite extends munit.FunSuite {
         s"$proxyUrl/com.example.MyActionService/SingleMethod",
         check = false,
         data = """{"value": 99}""",
-        headers = Map("Content-Type" -> "application/json")
-      )
+        headers = Map("Content-Type" -> "application/json"))
     }
     assertEquals(getResult.statusCode, 200)
     assertEquals(getResult.text(), """{"value":100}""")
@@ -509,8 +374,7 @@ class JsCodegenIntegrationSuite extends munit.FunSuite {
       s"$proxyUrl/com.example.MyActionService/StreamedMethod",
       check = false,
       data = """{"value": 3}""",
-      headers = Map("Content-Type" -> "application/json")
-    )
+      headers = Map("Content-Type" -> "application/json"))
     assertEquals(streamedResult.statusCode, 200)
 
     assertEquals(
@@ -518,16 +382,10 @@ class JsCodegenIntegrationSuite extends munit.FunSuite {
       """|{"value":0}
          |{"value":1}
          |{"value":2}
-         |""".stripMargin
-    )
+         |""".stripMargin)
 
     // Kill the gRPC server, and stop the proxy
-    assertSuccessful(
-      codegenContainer.execInContainer(
-        "./scripts/stop-entity.sh",
-        entityName
-      )
-    )
+    assertSuccessful(codegenContainer.execInContainer("./scripts/stop-entity.sh", entityName))
     proxyContainer.stop()
   }
 
@@ -539,9 +397,7 @@ class JsCodegenIntegrationSuite extends munit.FunSuite {
     assert(success, () => result.getStderr())
   }
 
-  def retryUntil[A](condition: A => Boolean, limit: Integer = 20, delay: Long = 1000)(
-      function: => A
-  ): A =
+  def retryUntil[A](condition: A => Boolean, limit: Integer = 20, delay: Long = 1000)(function: => A): A =
     Some(function).filter(condition).getOrElse {
       if (limit > 0) {
         Thread.sleep(delay)
