@@ -7,7 +7,7 @@
   },
   "main": "dist/index.js",
   "dependencies": {
-    "@lightbend/akkaserverless-javascript-sdk": "file:../../../sdk/lightbend-akkaserverless-javascript-sdk-0.0.0.tgz"
+    "@lightbend/akkaserverless-javascript-sdk": "0.33.1"
   },
   "devDependencies": {
     "@lightbend/akkasls-scripts": "0.33.1",
