@@ -21,9 +21,13 @@ message MyResult {
 }
 
 service MyServiceEntity {
-    option (akkaserverless.service) = {
-        type: SERVICE_TYPE_ENTITY
-        component: ".domain.MyEntity"
+    option (akkaserverless.codegen) = {
+      event_sourced_entity: {
+        name: ".domain.MyEntity"
+        entity_type: "MyEntity"
+        state: ".domain.MyState"
+        events: ".domain.ValueSet"
+      }
     };
     rpc SetValue(SetValueCommand) returns (google.protobuf.Empty);
     rpc GetValue(GetValueCommand) returns (MyResult);
