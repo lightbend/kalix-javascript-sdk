@@ -81,7 +81,8 @@ object TestData {
           FullyQualifiedName("EntityUpdated", domainProto(suffix)),
           FullyQualifiedName("ViewState", proto),
           streamedInput = false,
-          streamedOutput = false)))
+          streamedOutput = false)),
+      None)
 
   def simpleActionService(proto: PackageNaming = serviceProto(), suffix: String = ""): ModelBuilder.ActionService =
     ModelBuilder.ActionService(
@@ -110,7 +111,8 @@ object TestData {
           FullyQualifiedName("Request", domainProto(suffix)),
           FullyQualifiedName("Response", proto),
           streamedInput = true,
-          streamedOutput = true)))
+          streamedOutput = true)),
+      None)
 
   def eventSourcedEntity(suffix: String = ""): ModelBuilder.EventSourcedEntity =
     ModelBuilder.EventSourcedEntity(
