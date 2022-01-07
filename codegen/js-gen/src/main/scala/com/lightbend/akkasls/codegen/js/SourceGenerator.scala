@@ -169,7 +169,7 @@ object SourceGenerator extends PrettyPrinter {
               .resolve(s"$entityName.js")
               .toString)
         }
-      case ModelBuilder.ViewService(fqn, _, _, transformedUpdates) if transformedUpdates.nonEmpty =>
+      case ModelBuilder.ViewService(fqn, _, _, transformedUpdates, _) if transformedUpdates.nonEmpty =>
         val serviceName = fqn.name.toLowerCase
         Some(
           (
@@ -178,7 +178,7 @@ object SourceGenerator extends PrettyPrinter {
               .relativize(sourceDirectory.toAbsolutePath)
               .resolve(s"$serviceName.js")
               .toString))
-      case ModelBuilder.ActionService(fqn, _) =>
+      case ModelBuilder.ActionService(fqn, _, _) =>
         val serviceName = fqn.name.toLowerCase
         Some(
           (

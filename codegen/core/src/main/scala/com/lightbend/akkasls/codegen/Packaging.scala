@@ -12,7 +12,16 @@ import com.google.protobuf.Descriptors
  * A fully qualified name that can be resolved in any target language
  */
 case class FullyQualifiedName(name: String, parent: PackageNaming) {
-  lazy val fullName = s"${parent.pkg}.$name"
+  def fullName = s"${parent.pkg}.$name"
+
+  /**
+   * Create a 'derived' name based on a name, such as 'FooProvider' based on 'Foo'.
+   *
+   * Notably also removes any outer class name from the parent, since 'derived' classes are always outside of the outer
+   * class.
+   */
+  def deriveName(derive: String => String): FullyQualifiedName =
+    copy(name = derive(name))
 }
 
 object FullyQualifiedName {
@@ -47,6 +56,16 @@ case class PackageNaming(
     javaMultipleFiles: Boolean) {
   lazy val javaPackage: String = javaPackageOption.getOrElse(pkg)
   lazy val javaOuterClassname: String = javaOuterClassnameOption.getOrElse(name)
+
+  /**
+   * This changes both the proto package and the javaPackage (if defined) This is useful when we derived a component
+   * descriptor from a Service descriptor. In such a case, after we resolve the package where the component should live,
+   * we need to modify it in order to have the file generated in the right package.
+   */
+  def changePackages(newPackage: String): PackageNaming = {
+    val adaptedPackage = javaPackageOption.map(_ => newPackage)
+    copy(javaPackageOption = adaptedPackage, pkg = newPackage)
+  }
 }
 
 object PackageNaming {
