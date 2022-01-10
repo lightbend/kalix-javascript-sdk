@@ -211,6 +211,7 @@ object ModelBuilder {
     }
   }
 
+  @SuppressWarnings(Array("org.wartremover.warts.Throw"))
   private def modelFromCodegenOptions(
       serviceDescriptor: ServiceDescriptor,
       additionalDescriptors: Seq[Descriptors.FileDescriptor]): Model = {
@@ -343,6 +344,7 @@ object ModelBuilder {
    *
    * The above input will trigger a lookup for a descriptor defining package "foo.bar.baz" and message "Foo"
    */
+  @SuppressWarnings(Array("org.wartremover.warts.Throw"))
   private def lookupDescriptor(
       resolvedPackage: String,
       resolvedName: String,
@@ -386,6 +388,7 @@ object ModelBuilder {
    * @return
    *   the FQN for a proto 'message' (which are used not just for "messages", but also for state types etc)
    */
+  @SuppressWarnings(Array("org.wartremover.warts.Throw"))
   private def resolveFullyQualifiedMessageType(
       name: String,
       descriptor: Descriptors.FileDescriptor,
