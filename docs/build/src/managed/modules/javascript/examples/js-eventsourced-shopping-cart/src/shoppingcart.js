@@ -100,7 +100,7 @@ function addItem(addItem, cart, ctx) {
   // Validation:
   // Make sure that it is not possible to add negative quantities
   if (addItem.quantity < 1) {
-    ctx.fail("Cannot add negative quantity to item " + addItem.productId);
+    ctx.fail("Quantity for item " + addItem.productId + " must be greater than zero.");
   } else {
     // Create the event.
     const itemAdded = ItemAdded.create({

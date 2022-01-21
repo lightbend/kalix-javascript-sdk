@@ -35,7 +35,7 @@ function addItem(addItem, cart, ctx) {
   // Validation:
   // Make sure that it is not possible to add negative quantities
   if (addItem.quantity < 1) {
-    ctx.fail("Cannot add negative quantity to item " + addItem.productId);
+    ctx.fail("Quantity for item " + addItem.productId + " must be greater than zero.");
   } else {
     // If there is an existing item with that product id, we need to increment its quantity.
     const existing = cart.items.find(item => {

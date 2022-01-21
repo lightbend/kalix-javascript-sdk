@@ -66,7 +66,7 @@ function addItem(
 ): replies.Reply {
     if (addItem.quantity < 1) {
         return replies.failure(
-            "Cannot add negative quantity to item " + addItem.productId
+            "Quantity for item " + addItem.productId + " must be greater than zero."
         );
     }
 
