@@ -203,7 +203,8 @@ jobs:
             pushd samples/ts/ts-eventsourced-shopping-cart && npm install ../../../sdk/lightbend-akkaserverless-javascript-sdk-0.0.0.tgz && npm install && npm run build && npm test && popd
 
   integration-tests:
-    machine: true
+    machine:
+      image: ubuntu-2004:202104-01
     description: "integration tests"
     steps:
       - checkout-and-merge-to-main
@@ -224,7 +225,8 @@ jobs:
             pushd samples/ts/ts-replicated-entity-shopping-cart && npm install ../../../sdk/lightbend-akkaserverless-javascript-sdk-0.0.0.tgz && npm install && npm run build && npm run integration-test && popd
 
   tck-tests:
-    machine: true
+    machine:
+      image: ubuntu-2004:202104-01
     description: "TCK tests"
     steps:
       - checkout-and-merge-to-main
@@ -236,7 +238,8 @@ jobs:
             pushd tck && npm install && npm run tck && popd
 
   validate-docs:
-    machine: true
+    machine:
+      image: ubuntu-2004:202104-01
     description: "validate docs"
     steps:
       - checkout-and-merge-to-main
@@ -264,7 +267,8 @@ jobs:
             pushd npm-js/akkasls-scripts && npm publish --access public && popd
 
   publish-tck:
-    machine: true
+    machine:
+      image: ubuntu-2004:202104-01
     description: "publish TCK"
     steps:
       - checkout
@@ -276,7 +280,8 @@ jobs:
             pushd tck && nvm install && npm run docker-build && npm run docker-push && popd
 
   publish-docs:
-    machine: true
+    machine:
+      image: ubuntu-2004:202104-01
     description: "publish docs"
     steps:
       - checkout
