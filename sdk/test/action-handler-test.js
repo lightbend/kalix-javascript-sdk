@@ -35,10 +35,12 @@ const anySupport = new AnySupport(root);
 
 const In = root.lookupType('com.example.In');
 const Out = root.lookupType('com.example.Out');
+const Any = root.lookupType('google.protobuf.Any');
 const ExampleServiceName = 'com.example.ExampleService';
 const ExampleService = root.lookupService(ExampleServiceName);
 
 const replies = require('../src/reply');
+const stableJsonStringify = require('json-stable-stringify');
 
 class MockUnaryCall {
   constructor(request) {
@@ -90,6 +92,7 @@ function createAction(handler) {
       service: ExampleService,
       commandHandlers: {
         DoSomething: handler,
+        PublishJsonToTopic: handler,
       },
     },
     allComponents,
@@ -101,6 +104,18 @@ function callDoSomething(action, message) {
   const command = {
     serviceName: ExampleServiceName,
     name: 'DoSomething',
+    payload: AnySupport.serialize(In.create(message)),
+  };
+  const call = new MockUnaryCall(command);
+  const callback = (error, value) => call.write(value);
+  action.handleUnary(call, callback);
+  return call;
+}
+
+function callPublishJsonToTopic(action, message) {
+  const command = {
+    serviceName: ExampleServiceName,
+    name: 'PublishJsonToTopic',
     payload: AnySupport.serialize(In.create(message)),
   };
   const call = new MockUnaryCall(command);
@@ -561,5 +576,26 @@ describe('ActionHandler', () => {
         'field',
         'nested:promised:async:async:something',
       );
+  });
+
+  it('should reply with Akkaserverless JSON for unary methods returning Any', () => {
+    let expectedReply = { arbitrary: 'object' };
+    return callPublishJsonToTopic(
+      createAction((message, context) => {
+        return replies.message(expectedReply);
+      }),
+      { field: 'whatever' },
+    )
+      .value.then((response) => {
+        const payload = response.reply.payload;
+        payload.should.have.property(
+          'type_url',
+          'json.akkaserverless.com/object',
+        );
+        return JSON.parse(
+          AnySupport.deserializePrimitive(payload.value, 'string'),
+        );
+      })
+      .should.eventually.deep.equal(expectedReply);
   });
 });
