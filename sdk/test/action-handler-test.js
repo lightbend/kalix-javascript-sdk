@@ -35,12 +35,12 @@ const anySupport = new AnySupport(root);
 
 const In = root.lookupType('com.example.In');
 const Out = root.lookupType('com.example.Out');
-const Any = root.lookupType("google.protobuf.Any");
+const Any = root.lookupType('google.protobuf.Any');
 const ExampleServiceName = 'com.example.ExampleService';
 const ExampleService = root.lookupService(ExampleServiceName);
 
 const replies = require('../src/reply');
-const stableJsonStringify = require("json-stable-stringify");
+const stableJsonStringify = require('json-stable-stringify');
 
 class MockUnaryCall {
   constructor(request) {
@@ -92,7 +92,7 @@ function createAction(handler) {
       service: ExampleService,
       commandHandlers: {
         DoSomething: handler,
-        PublishJsonToTopic: handler
+        PublishJsonToTopic: handler,
       },
     },
     allComponents,
@@ -145,7 +145,7 @@ describe('ActionHandler', () => {
   });
 
   // synchronous handlers
-/*
+  /*
   it('should reply with returned value', () => {
     return testActionHandler('value', (message) => {
       return { field: 'returned:' + message.field };
@@ -578,17 +578,24 @@ describe('ActionHandler', () => {
       );
   });
 */
-  it("should reply with Akkaserverless JSON for unary methods returning Any", () => {
-    let expectedReply = {arbitrary: "object"}
-    return callPublishJsonToTopic(createAction((message, context) => {
-      return replies.message(expectedReply);
-    }), {field: "whatever"})
-      .value
-      .then(response => {
-        const payload = response.reply.payload
-        payload.should.have.property("type_url", "json.akkaserverless.com/object");
-        return JSON.parse(AnySupport.deserializePrimitive(payload.value, "string"));
-      }).should.eventually.deep.equal(expectedReply);
+  it('should reply with Akkaserverless JSON for unary methods returning Any', () => {
+    let expectedReply = { arbitrary: 'object' };
+    return callPublishJsonToTopic(
+      createAction((message, context) => {
+        return replies.message(expectedReply);
+      }),
+      { field: 'whatever' },
+    )
+      .value.then((response) => {
+        const payload = response.reply.payload;
+        payload.should.have.property(
+          'type_url',
+          'json.akkaserverless.com/object',
+        );
+        return JSON.parse(
+          AnySupport.deserializePrimitive(payload.value, 'string'),
+        );
+      })
+      .should.eventually.deep.equal(expectedReply);
   });
-
 });
