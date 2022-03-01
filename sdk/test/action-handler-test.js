@@ -145,7 +145,6 @@ describe('ActionHandler', () => {
   });
 
   // synchronous handlers
-  /*
   it('should reply with returned value', () => {
     return testActionHandler('value', (message) => {
       return { field: 'returned:' + message.field };
@@ -577,7 +576,6 @@ describe('ActionHandler', () => {
         'nested:promised:async:async:something',
       );
   });
-*/
   it('should reply with Akkaserverless JSON for unary methods returning Any', () => {
     let expectedReply = { arbitrary: 'object' };
     return callPublishJsonToTopic(
