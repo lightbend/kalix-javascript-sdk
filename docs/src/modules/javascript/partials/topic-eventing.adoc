@@ -43,3 +43,27 @@ service ShoppingCartTopicService {
     }
 }
 ----
+
+== Publishing JSON messages to a topic
+
+By default when publishig a message to a topic, the protobuf message is serialized to bytes and published with the `content-type`/`ce-datacontenttype` `application/protobuf`, and will also contain the metadata entry `ce-type` specifying the specific protobuf message type.
+
+This is convenient when the consumer is another Akka Serverless service that can handle protobuf messages.
+
+In many cases the consumer may be an external service though, and in such a case another serialization format for the messages can make sense. For such a use case the Akka Serverless Javascript SDK supports emitting JSON messages.
+
+To publish JSON messages to a topic, mark the return type of the message as `google.protobuf.Any`. The object returned with `replies.message()` will be serialized to string format and published to the topic with content type `Content-Type` attribute stating `application/json`.
+
+[source,protobuf,indent=0]
+----
+include::example$js-doc-snippets/proto/com/example/json/json_api.proto[tag=service]
+----
+<1> return `google.protobuf.Any` from the method
+<2> annotate the Protobuf rpc method with `(akkaserverless.method).eventing`
+<3> use `out` and `topic` to publish to a topic
+
+In the service implementation, return an arbitrary object, it will be serialized to JSON for the topic:
+[source,javascript,indent=0]
+----
+include::example$js-doc-snippets/src/myservice.js[tag=produce]
+----

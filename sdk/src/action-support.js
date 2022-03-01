@@ -319,9 +319,15 @@ class ActionHandler {
       this.streamDebug('Sending reply');
       this.ctx.alreadyReplied = true;
       if (message != null) {
-        const messageProto =
-          this.grpcMethod.resolvedResponseType.create(message);
-        const replyPayload = AnySupport.serialize(messageProto, false, false);
+        let replyPayload;
+        if (this.grpcMethod.resolvedResponseType.fullName === ".google.protobuf.Any") {
+          // special handling to emit JSON to topics by defining return type as proto Any
+          replyPayload = AnySupport.serialize(message, false, true);
+        } else {
+          const messageProto =
+            this.grpcMethod.resolvedResponseType.create(message);
+           replyPayload = AnySupport.serialize(messageProto, false, false);
+        }
         let replyMetadata = null;
         if (metadata && metadata.entries) {
           replyMetadata = {

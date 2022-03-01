@@ -1,0 +1,32 @@
+syntax = "proto3";
+package com.example.json;
+
+// tag::service[]
+import "google/protobuf/any.proto";
+import "google/protobuf/empty.proto";
+import "akkaserverless/annotations.proto";
+
+message KeyValue {
+  string key = 1;
+  int32 value = 2;
+}
+
+service MyService {
+  option (akkaserverless.codegen) = {
+    action: {}
+  };
+
+  rpc Consume(google.protobuf.Any) returns (google.protobuf.Empty) {
+    option (akkaserverless.method).eventing.in = {
+      topic:  "notifications"
+    };
+  }
+
+  rpc Produce(KeyValue) returns (google.protobuf.Any) { // <1>
+    option (akkaserverless.method).eventing.out = { // <2>
+      topic:  "notifications" // <3>
+    };
+  }
+  
+}
+// end::service[]

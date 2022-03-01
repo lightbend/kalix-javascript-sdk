@@ -41,6 +41,9 @@ function determineDownloadFile() {
           return makeDownloadFile('osx-x86_32');
         case 'x64':
           return makeDownloadFile('osx-x86_64');
+        case 'arm64':
+          // use rosetta for now
+          return makeDownloadFile('osx-x86_64');
       }
       break;
   }
