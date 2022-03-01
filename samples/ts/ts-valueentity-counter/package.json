@@ -7,10 +7,10 @@
   },
   "main": "dist/index.js",
   "dependencies": {
-    "@lightbend/akkaserverless-javascript-sdk": "0.33.1"
+    "@lightbend/akkaserverless-javascript-sdk": "0.33.4"
   },
   "devDependencies": {
-    "@lightbend/akkasls-scripts": "0.33.1",
+    "@lightbend/akkasls-scripts": "0.33.4",
     "@types/mocha": "^8.2.3",
     "@types/node": "14.18.3",
     "@typescript-eslint/eslint-plugin": "^4.31.0",
