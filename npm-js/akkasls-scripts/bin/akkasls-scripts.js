@@ -61,7 +61,7 @@ const scriptHandlers = {
     runOrFail(
       'Building static Javascript definitions from proto',
       path.resolve('node_modules', '.bin', 'pbjs'),
-      [...protoFiles, '-t', 'static', '-o', protoJs],
+      [...protoFiles, '-t', 'static-module', '-o', protoJs],
       { shell: true },
     );
 
