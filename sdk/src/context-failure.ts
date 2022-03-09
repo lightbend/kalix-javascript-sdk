@@ -17,12 +17,22 @@
 export class ContextFailure extends Error {
   readonly name: string = 'ContextFailure';
   readonly msg: string;
+  readonly grpcStatus?: number;
 
-  constructor(msg: string) {
+  constructor(msg: string, grpcStatus?: number) {
     super(msg);
     this.msg = msg;
     if (Error.captureStackTrace) {
       Error.captureStackTrace(this, ContextFailure);
+    }
+    if (grpcStatus !== undefined) {
+      if (grpcStatus === 0) {
+        throw new Error('gRPC failure status code must not be OK');
+      }
+      if (grpcStatus < 0 || grpcStatus > 16) {
+        throw new Error('Invalid gRPC status code: ' + grpcStatus);
+      }
+      this.grpcStatus = grpcStatus;
     }
   }
 }

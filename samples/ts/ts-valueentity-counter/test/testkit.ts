@@ -70,7 +70,9 @@ export class MockValueEntity<S extends object> {
     } else if (ctx.updatedState) {
       this.state = ctx.updatedState;
     }
-    this.error = failure;
+    if (failure !== undefined) {
+      this.error = failure.description;
+    }
 
     return grpcMethod.responseDeserialize(
       grpcMethod.responseSerialize(message)

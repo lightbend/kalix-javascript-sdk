@@ -97,7 +97,10 @@ function createReplyForGroup(group: ProcessGroup): replies.Reply {
           step.effect.synchronous || false
       );
     } else if (step.fail) {
-      reply = replies.failure(step.fail.message || "");
+      reply = replies.failure(
+          step.fail.message || "",
+          replies.GrpcStatus.FailedPrecondition, // Optional parameter, sets the gRPC code
+      );
     }
   });
   return reply;

@@ -53,7 +53,8 @@ function addItem(
   // Make sure that it is not possible to add negative quantities
   if (addItem.quantity < 1) {
     return replies.failure(
-        "Quantity for item " + addItem.productId + " must be greater than zero."
+        "Quantity for item " + addItem.productId + " must be greater than zero.",
+        replies.GrpcStatus.InvalidArgument, // optional parameter, customise gRPC code
     );
   } else {
     // If there is an existing item with that product id, we need to increment its quantity.

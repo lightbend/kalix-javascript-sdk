@@ -44,7 +44,7 @@ export class Reply {
     private message?: any,
     private metadata?: Metadata,
     private forward?: Reply,
-    private failure?: string,
+    private failure?: Failure,
     private effects: Effect[] = [],
   ) {}
 
@@ -120,20 +120,21 @@ export class Reply {
   }
 
   /**
-   * @returns the failure description
+   * @returns the failure
    */
-  getFailure(): string | undefined {
+  getFailure(): Failure | undefined {
     return this.failure;
   }
 
   /**
    * Make this a failure reply.
    *
-   * @param failure - the failure description
+   * @param description - the failure description
+   * @param status - the status code to fail with, defaults to Unknown.
    * @returns the updated reply
    */
-  setFailure(failure: string): Reply {
-    this.failure = failure;
+  setFailure(description: string, status?: GrpcStatus): Reply {
+    this.failure = new Failure(description, status);
     return this;
   }
 
@@ -226,10 +227,11 @@ export function forward(
  * Create a failure reply.
  *
  * @param description - description of the failure
+ * @param status - the GRPC status, defaults to Unknown
  * @return a failure reply
  */
-export function failure(description: string): Reply {
-  const reply = new Reply().setFailure(description);
+export function failure(description: string, status?: GrpcStatus): Reply {
+  const reply = new Reply().setFailure(description, status);
   return reply;
 }
 
@@ -242,4 +244,48 @@ export function failure(description: string): Reply {
  */
 export function noReply(): Reply {
   return new Reply();
+}
+
+export class Failure {
+  constructor(private description: string, private status?: GrpcStatus) {
+    if (status !== undefined) {
+      if (status === GrpcStatus.Ok) {
+        throw new Error('gRPC failure status code must not be OK');
+      }
+      if (status < 0 || status > 16) {
+        throw new Error('Invalid gRPC status code: ' + status);
+      }
+    }
+  }
+
+  getDescription(): string {
+    return this.description;
+  }
+
+  getStatus(): GrpcStatus | undefined {
+    return this.status;
+  }
+}
+
+/**
+ * The GRPC status codes.
+ */
+export enum GrpcStatus {
+  Ok = 0,
+  Cancelled = 1,
+  Unknown = 2,
+  InvalidArgument = 3,
+  DeadlineExceeded = 4,
+  NotFound = 5,
+  AlreadyExists = 6,
+  PermissionDenied = 7,
+  ResourceExhausted = 8,
+  FailedPrecondition = 9,
+  Aborted = 10,
+  OutOfRange = 11,
+  Unimplemented = 12,
+  Internal = 13,
+  Unavailable = 14,
+  DataLoss = 15,
+  Unauthenticated = 16,
 }
