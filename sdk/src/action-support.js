@@ -608,10 +608,10 @@ class ActionHandler {
     };
     if (grpcStatus !== undefined) {
       if (grpcStatus === 0) {
-        throw new Error("gRPC failure status code must not be OK")
+        throw new Error('gRPC failure status code must not be OK');
       }
       if (grpcStatus < 0 || grpcStatus > 16) {
-        throw new Error("Invalid gRPC status code: " + grpcStatus)
+        throw new Error('Invalid gRPC status code: ' + grpcStatus);
       }
       failure.grpcStatusCode = grpcStatus;
     }

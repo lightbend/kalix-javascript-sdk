@@ -59,7 +59,9 @@ describe('Replies', () => {
 
     expect(reply.getFailure()).to.not.be.undefined;
     expect(reply.getFailure()?.getDescription()).to.be.eq('my-msg');
-    expect(reply.getFailure()?.getStatus()).to.be.eq(replies.GrpcStatus.AlreadyExists);
+    expect(reply.getFailure()?.getStatus()).to.be.eq(
+      replies.GrpcStatus.AlreadyExists,
+    );
   });
 
   it('should create a forward Reply', () => {

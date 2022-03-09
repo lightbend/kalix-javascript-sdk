@@ -84,7 +84,10 @@ class CommandHelper {
 
     if (!this.service.methods.hasOwnProperty(command.name)) {
       ctx.commandDebug("Command '%s' unknown", command.name);
-      return errorReply('Unknown command named ' + command.name, 12 /* unimplemented */);
+      return errorReply(
+        'Unknown command named ' + command.name,
+        12 /* unimplemented */,
+      );
     } else {
       try {
         const grpcMethod = this.service.methods[command.name];
@@ -155,9 +158,9 @@ class CommandHelper {
     const failure = {
       commandId: ctx.commandId,
       description: msg,
-    }
+    };
     if (status !== undefined) {
-      failure.grpcStatusCode = status
+      failure.grpcStatusCode = status;
     }
     return {
       reply: {
@@ -173,11 +176,21 @@ class CommandHelper {
     const userReply = await this.invoke(handler, ctx);
 
     if (ctx.error !== null) {
-      return this.errorReply(ctx.error.message, ctx.error.grpcStatus, ctx, desc);
+      return this.errorReply(
+        ctx.error.message,
+        ctx.error.grpcStatus,
+        ctx,
+        desc,
+      );
     } else if (userReply instanceof Reply) {
       if (userReply.failure) {
         // handle failure with a separate write to make sure we don't write back events etc
-        return this.errorReply(userReply.failure.description, userReply.failure.status, ctx, desc);
+        return this.errorReply(
+          userReply.failure.description,
+          userReply.failure.status,
+          ctx,
+          desc,
+        );
       } else {
         // effects need to go first to end up in reply
         // note that we amend the ctx.reply to get events etc passed along from the entities

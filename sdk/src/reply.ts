@@ -247,16 +247,13 @@ export function noReply(): Reply {
 }
 
 export class Failure {
-  constructor(
-      private description: string,
-      private status?: GrpcStatus
-  ) {
+  constructor(private description: string, private status?: GrpcStatus) {
     if (status !== undefined) {
       if (status === GrpcStatus.Ok) {
-        throw new Error("gRPC failure status code must not be OK")
+        throw new Error('gRPC failure status code must not be OK');
       }
       if (status < 0 || status > 16) {
-        throw new Error("Invalid gRPC status code: " + status)
+        throw new Error('Invalid gRPC status code: ' + status);
       }
     }
   }
@@ -268,7 +265,6 @@ export class Failure {
   getStatus(): GrpcStatus | undefined {
     return this.status;
   }
-
 }
 
 /**
@@ -291,5 +287,5 @@ export enum GrpcStatus {
   Internal = 13,
   Unavailable = 14,
   DataLoss = 15,
-  Unauthenticated = 16
+  Unauthenticated = 16,
 }
