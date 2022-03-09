@@ -40,11 +40,29 @@ describe('Replies', () => {
     expect(reply.getMessage()).to.be.undefined;
     expect(reply.getMetadata()).to.be.undefined;
     expect(reply.getForward()).to.be.undefined;
-    expect(reply.getFailure()).to.be.eq('my-msg');
     expect(reply.getEffects()).to.be.empty;
+
+    expect(reply.getFailure()).to.not.be.undefined;
+    expect(reply.getFailure()?.getDescription()).to.be.eq('my-msg');
+    expect(reply.getFailure()?.getStatus()).to.be.undefined;
   });
 
-  it('should create a failure Reply', () => {
+  it('should create a failure Reply with status', () => {
+    const reply = replies.failure('my-msg', replies.GrpcStatus.AlreadyExists);
+
+    expect(reply.isEmpty()).to.be.false;
+    expect(reply.getMethod()).to.be.undefined;
+    expect(reply.getMessage()).to.be.undefined;
+    expect(reply.getMetadata()).to.be.undefined;
+    expect(reply.getForward()).to.be.undefined;
+    expect(reply.getEffects()).to.be.empty;
+
+    expect(reply.getFailure()).to.not.be.undefined;
+    expect(reply.getFailure()?.getDescription()).to.be.eq('my-msg');
+    expect(reply.getFailure()?.getStatus()).to.be.eq(replies.GrpcStatus.AlreadyExists);
+  });
+
+  it('should create a forward Reply', () => {
     // Arrange
     const reply = replies.forward(
       new protobuf.Method('my-method', 'rpc', 'my-request', 'my-response'),

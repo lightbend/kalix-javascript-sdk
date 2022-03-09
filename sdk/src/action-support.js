@@ -158,7 +158,7 @@ class ActionHandler {
       });
     }
     if (reply.failure) {
-      ctx.fail(reply.failure);
+      ctx.fail(reply.failure.description, reply.failure.status);
     } else if (reply.message) {
       ctx.write(reply.message, reply.metadata);
     } else if (reply.forward) {
@@ -375,14 +375,12 @@ class ActionHandler {
       );
     };
 
-    this.ctx.fail = (error) => {
+    this.ctx.fail = (description, status) => {
       this.ensureNotCancelled();
-      this.streamDebug('Failing with %s', error);
+      this.streamDebug('Failing with %s', description);
       this.ctx.alreadyReplied = true;
       this.grpcCallback(null, {
-        failure: {
-          description: error,
-        },
+        failure: this.createFailure(description, status),
         sideEffects: effects,
       });
     };
@@ -508,13 +506,11 @@ class ActionHandler {
       );
     };
 
-    this.ctx.fail = (error) => {
+    this.ctx.fail = (description, status) => {
       this.ensureNotCancelled();
-      this.streamDebug('Failing with %s', error);
+      this.streamDebug('Failing with %s', description);
       this.call.write({
-        failure: {
-          description: error,
-        },
+        failure: this.createFailure(description, status),
         sideEffects: effects,
       });
       effects = []; // clear effects after each streamed write
@@ -604,6 +600,22 @@ class ActionHandler {
         }
       }
     }
+  }
+
+  createFailure(description, grpcStatus) {
+    const failure = {
+      description: description,
+    };
+    if (grpcStatus !== undefined) {
+      if (grpcStatus === 0) {
+        throw new Error("gRPC failure status code must not be OK")
+      }
+      if (grpcStatus < 0 || grpcStatus > 16) {
+        throw new Error("Invalid gRPC status code: " + grpcStatus)
+      }
+      failure.grpcStatusCode = grpcStatus;
+    }
+    return failure;
   }
 }
 

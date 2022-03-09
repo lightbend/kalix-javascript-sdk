@@ -30,6 +30,9 @@ action.commandHandlers = {
     ctx.write({ field: 'Received ' + input.field });
     ctx.end();
   },
+  Fail: (input, ctx) => {
+    ctx.fail("some-error", 6);
+  },
 };
 
 const value_entity = new akkaserverless.ValueEntity(
@@ -53,6 +56,9 @@ value_entity.commandHandlers = {
         1000,
       );
     });
+  },
+  Fail: (input, state, ctx) => {
+    ctx.fail("some-error", 6);
   },
 };
 
@@ -82,6 +88,9 @@ entity.setBehavior((e) => {
             1000,
           );
         });
+      },
+      Fail: (input, state, ctx) => {
+        ctx.fail("some-error", 6);
       },
     },
     eventHandlers: {},
@@ -115,6 +124,20 @@ describe('The AkkaServerless IntegrationTestkit', function () {
     );
   });
 
+  it('should allow actions to fail with custom code', (done) => {
+    testkit.clients.ExampleService.Fail(
+        { field: 'hello' },
+        (err, msg) => {
+          err.should.not.be.undefined;
+          // Unfortunately, this appears to be the only way the JS library offers to read the error description,
+          // by reading this unspecified message string.
+          err.message.should.be.eq('6 ALREADY_EXISTS: some-error');
+          err.code.should.be.eq(6);
+          done();
+        },
+    );
+  });
+
   it('should handle value entities sync handlers', (done) => {
     testkit.clients.ExampleServiceTwo.DoSomethingOne(
       { field: 'hello' },
@@ -132,6 +155,18 @@ describe('The AkkaServerless IntegrationTestkit', function () {
         msg.field.should.equal('ValueEntityAsync Received hello');
         done();
       },
+    );
+  });
+
+  it('should allow value entities to fail with custom code', (done) => {
+    testkit.clients.ExampleServiceTwo.Fail(
+        { field: 'hello' },
+        (err, msg) => {
+          err.should.not.be.undefined;
+          err.message.should.be.eq('6 ALREADY_EXISTS: some-error');
+          err.code.should.be.eq(6);
+          done();
+        },
     );
   });
 
@@ -154,4 +189,17 @@ describe('The AkkaServerless IntegrationTestkit', function () {
       },
     );
   });
+
+  it('should allow event sourced entities to fail with custom code', (done) => {
+    testkit.clients.ExampleServiceThree.Fail(
+        { field: 'hello' },
+        (err, msg) => {
+          err.should.not.be.undefined;
+          err.message.should.be.eq('6 ALREADY_EXISTS: some-error');
+          err.code.should.be.eq(6);
+          done();
+        },
+    );
+  });
+
 });

@@ -72,18 +72,19 @@ class CommandHelper {
 
     const ctx = this.createContext(command.id, metadata);
 
-    const errorReply = (msg) => {
+    const errorReply = (msg, status) => {
       return {
         failure: {
           commandId: command.id,
           description: msg,
+          grpcStatusCode: status,
         },
       };
     };
 
     if (!this.service.methods.hasOwnProperty(command.name)) {
       ctx.commandDebug("Command '%s' unknown", command.name);
-      return errorReply('Unknown command named ' + command.name);
+      return errorReply('Unknown command named ' + command.name, 12 /* unimplemented */);
     } else {
       try {
         const grpcMethod = this.service.methods[command.name];
@@ -117,14 +118,14 @@ class CommandHelper {
           const msg =
             "No handler registered for command '" + command.name + "'";
           ctx.commandDebug(msg);
-          return errorReply(msg);
+          return errorReply(msg, 12 /* unimplemented */);
         }
       } catch (err) {
         const error = "Error handling command '" + command.name + "'";
         ctx.commandDebug(error);
         console.error(err);
 
-        throw errorReply(error + ': ' + err);
+        throw errorReply(error + ': ' + err, 2 /* unknown */);
       }
     }
   }
@@ -149,16 +150,20 @@ class CommandHelper {
     return userReply;
   }
 
-  errorReply(msg, ctx, desc) {
+  errorReply(msg, status, ctx, desc) {
     ctx.commandDebug("%s failed with message '%s'", desc, msg);
+    const failure = {
+      commandId: ctx.commandId,
+      description: msg,
+    }
+    if (status !== undefined) {
+      failure.grpcStatusCode = status
+    }
     return {
       reply: {
         commandId: ctx.commandId,
         clientAction: {
-          failure: {
-            commandId: ctx.commandId,
-            description: msg,
-          },
+          failure: failure,
         },
       },
     };
@@ -168,11 +173,11 @@ class CommandHelper {
     const userReply = await this.invoke(handler, ctx);
 
     if (ctx.error !== null) {
-      return this.errorReply(ctx.error.message, ctx, desc);
+      return this.errorReply(ctx.error.message, ctx.error.grpcStatus, ctx, desc);
     } else if (userReply instanceof Reply) {
       if (userReply.failure) {
         // handle failure with a separate write to make sure we don't write back events etc
-        return this.errorReply(userReply.failure, ctx, desc);
+        return this.errorReply(userReply.failure.description, userReply.failure.status, ctx, desc);
       } else {
         // effects need to go first to end up in reply
         // note that we amend the ctx.reply to get events etc passed along from the entities
@@ -436,16 +441,17 @@ class CommandHelper {
        *
        * @function module:akkaserverless.EffectContext#fail
        * @param {string} msg The failure message.
+       * @param {number} [grpcStatus] The grpcStatus.
        * @throws An error that captures the failure message. Note that even if you catch the error thrown by this
        * method, the command will still be failed with the given message.
        */
-      fail: (msg) => {
+      fail: (msg, grpcStatus) => {
         accessor.ensureActive();
         // We set it here to ensure that even if the user catches the error, for
         // whatever reason, we will still fail as instructed.
-        accessor.error = new ContextFailure(msg);
+        accessor.error = new ContextFailure(msg, grpcStatus);
         // Then we throw, to end processing of the command.
-        throw error;
+        throw accessor.error;
       },
     };
     return accessor;
