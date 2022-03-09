@@ -66,7 +66,8 @@ function addItem(
 ): replies.Reply {
     if (addItem.quantity < 1) {
         return replies.failure(
-            "Quantity for item " + addItem.productId + " must be greater than zero."
+            "Quantity for item " + addItem.productId + " must be greater than zero.",
+            replies.GrpcStatus.InvalidArgument, // optional parameter, customise gRPC code
         );
     }
 
