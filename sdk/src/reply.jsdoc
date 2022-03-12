@@ -165,6 +165,6 @@
  *
  * This may be useful for emitting effects without sending a message.
  *
- * @function module:akkaserverless.replies~noReply
+ * @function module:akkaserverless.replies~emptyReply
  * @return {module:akkaserverless.replies.Reply} An empty reply.
  */

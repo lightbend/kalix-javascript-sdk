@@ -57,7 +57,7 @@ entity.setBehavior(state => {
 function create(customer, customerState, ctx) {
   let domainCustomer = apiCustomerToCustomerState(customer)
   ctx.emit(domain.CustomerCreated.create({customer: domainCustomer}))
-  return replies.noReply()
+  return replies.emptyReply()
 }
 
 function changeName(changeNameRequest, customerState, ctx) {
@@ -65,7 +65,7 @@ function changeName(changeNameRequest, customerState, ctx) {
     return replies.failure("Customer must be created before name can be changed.")
   } else {
     ctx.emit(domain.CustomerNameChanged.create({ newName: changeNameRequest.newName }))
-    return replies.noReply()
+    return replies.emptyReply()
   }
 }
 
@@ -74,7 +74,7 @@ function changeAddress(changeAddressRequest, customerState, ctx) {
     return replies.failure("Customer must be created before address can be changed.")
   } else {
     ctx.emit(domain.CustomerAddressChanged.create({ newAddress: changeAddressRequest.newAddress }))
-    return replies.noReply()
+    return replies.emptyReply()
   }
 }
 

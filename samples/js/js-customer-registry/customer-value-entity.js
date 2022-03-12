@@ -45,7 +45,7 @@ entity.setCommandHandlers({
 function create(customer, customerState, ctx) {
   let domainCustomer = apiCustomerToCustomerState(customer)
   ctx.updateState(domainCustomer)
-  return replies.noReply()
+  return replies.emptyReply()
 }
 
 function changeName(changeNameRequest, customerState, ctx) {
@@ -54,7 +54,7 @@ function changeName(changeNameRequest, customerState, ctx) {
   } else {
     customerState.name = changeNameRequest.newName
     ctx.updateState(customerState)
-    return replies.noReply()
+    return replies.emptyReply()
   }
 }
 
@@ -64,7 +64,7 @@ function changeAddress(changeAddressRequest, customerState, ctx) {
   } else {
     customerState.address = changeAddressRequest.newAddress
     ctx.updateState(customerState)
-    return replies.noReply()
+    return replies.emptyReply()
   }
 }
 

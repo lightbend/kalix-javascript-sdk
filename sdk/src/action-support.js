@@ -169,8 +169,8 @@ class ActionHandler {
         true,
       );
     } else {
-      // no reply
-      ctx.write(null);
+      // empty reply
+      ctx.write(reply);
     }
   }
 

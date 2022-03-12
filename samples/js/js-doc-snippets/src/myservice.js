@@ -48,7 +48,7 @@ const action = new Action(
 action.commandHandlers = {
   async Consume(request) {
     console.log(request);
-    return replies.noReply();
+    return replies.emptyReply();
   },
   // tag::produce[]
   async Produce(request) {

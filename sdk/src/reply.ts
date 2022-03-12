@@ -242,7 +242,7 @@ export function failure(description: string, status?: GrpcStatus): Reply {
  *
  * @returns an empty reply
  */
-export function noReply(): Reply {
+export function emptyReply(): Reply {
   return new Reply();
 }
 
