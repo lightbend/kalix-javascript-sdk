@@ -173,6 +173,21 @@ export class Metadata {
   }
 
   /**
+   * If this metadata object is being returned as the metadata for an HTTP transcoded response, this will set the
+   * HTTP status code for the response.
+   *
+   * This will have no impact on gRPC responses.
+   *
+   * @param code The status code to set.
+   */
+  setHttpStatusCode(code: number) {
+    if (code < 100 || code >= 600) {
+      throw new Error('Invalid HTTP status code: ' + code);
+    }
+    this.set('_akkasls-http-code', code.toString());
+  }
+
+  /**
    * @returns CloudEvent subject value
    * @deprecated Use cloudevent.subject instead.
    */
