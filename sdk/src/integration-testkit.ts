@@ -83,6 +83,10 @@ export class IntegrationTestkit {
       .withEnv('USER_FUNCTION_HOST', 'host.testcontainers.internal')
       .withEnv('USER_FUNCTION_PORT', boundPort.toString())
       .withEnv('HTTP_PORT', '9000')
+      .withEnv(
+        'VERSION_CHECK_ON_STARTUP',
+        process.env.VERSION_CHECK_ON_STARTUP || 'true',
+      )
       .withWaitStrategy(Wait.forLogMessage('gRPC proxy started'))
       .start();
 

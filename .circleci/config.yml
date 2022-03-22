@@ -211,6 +211,7 @@ jobs:
       - run:
           name: "run integration tests"
           command: |
+            export VERSION_CHECK_ON_STARTUP=false
             source /opt/circleci/.nvm/nvm.sh
             pushd sdk && nvm install && npm ci && DEBUG='testcontainers*' npm run integration-test && npm pack && popd
             pushd samples/js/js-customer-registry && npm install ../../../sdk/lightbend-akkaserverless-javascript-sdk-0.0.0.tgz && npm ci && npm run integration-test && popd
@@ -401,6 +402,7 @@ jobs:
             source /opt/circleci/.nvm/nvm.sh
             nvm install v14
             # Run proxy in background
+            sed -i docker-compose.yml -e "s/environment:/environment:\n      VERSION_CHECK_ON_STARTUP: false/"
             docker-compose up -d
             # Run the service in background
             npm run start &
