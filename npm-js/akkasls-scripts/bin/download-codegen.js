@@ -35,7 +35,7 @@ if (localBinary) {
 } else if (releases[release]) {
   const url =
     process.platform == 'win32'
-      ? `https://repo.lightbend.com/raw/akkaserverless/names/${releases[release]}/versions/${akkaslsCodegenVersion}/${releases[release]}.exe`
+      ? `https://repo.lightbend.com/raw/akkaserverless/versions/${akkaslsCodegenVersion}/${releases[release]}.exe`
       : `https://repo.lightbend.com/raw/akkaserverless/versions/${akkaslsCodegenVersion}/${releases[release]}`;
   console.info(`Fetching akkasls-codegen-js from ${url}`);
   fetch(url).then((response) => {
