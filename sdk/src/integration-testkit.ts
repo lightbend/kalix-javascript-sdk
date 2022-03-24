@@ -116,14 +116,21 @@ export class IntegrationTestkit {
    * @param callback - shutdown callback, accepting possible error
    */
   shutdown(callback: (error?: any) => void) {
-    if (this.proxyContainer !== undefined) {
-      this.proxyContainer.stop();
-    }
-
     Object.getOwnPropertyNames(this.clients).forEach((client) => {
       this.clients[client].close();
     });
-
-    this.akkaServerless.tryShutdown(callback);
+    let proxyContainerStopped: Promise<void>;
+    if (this.proxyContainer !== undefined) {
+      // Important, ensure that the proxy container is stopped before we shut down
+      // ourselves, otherwise it will try to reconnect and that will cause unhandled
+      // exceptions.
+      proxyContainerStopped = this.proxyContainer.stop();
+    } else {
+      proxyContainerStopped = Promise.resolve();
+    }
+    proxyContainerStopped.then(
+      () => this.akkaServerless.tryShutdown(callback),
+      (err) => this.akkaServerless.tryShutdown(() => callback(err)),
+    );
   }
 }
