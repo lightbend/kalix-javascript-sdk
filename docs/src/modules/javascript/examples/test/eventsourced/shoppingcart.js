@@ -47,7 +47,10 @@ function getCart(request, cart) {
 // tag::add-item[]
 function addItem(addItem, cart, ctx) {
     if (addItem.quantity < 1) {
-        ctx.fail("Quantity for item " + addItem.productId + " must be greater than zero.");
+        ctx.fail(
+            "Quantity for item " + addItem.productId + " must be greater than zero.",
+            3, // optional parameter, sets the gRPC status code to 3 - INVALID_ARGUMENT
+        );
     } else {
         const itemAdded = ItemAdded.create({
             item: {

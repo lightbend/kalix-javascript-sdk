@@ -41,7 +41,10 @@ function processStreamed(context) {
 function respondWith(response, context) {
   // need to accumulate effects, before replying, forwarding, or failing
   response.effects.forEach(effect => context.effect(two.service.methods.Call, { id: effect.id }, effect.synchronous));
-  if (response.fail) context.fail(response.fail);
+  if (response.fail) context.fail(
+      response.fail,
+      9, // optional parameter, sets the gRPC status code to 9 - FAILED_PRECONDITION
+  );
   else if (response.forward) context.forward(two.service.methods.Call, { id: response.forward });
   else if (response.reply) context.write(Response.create({ message: response.reply }));
   else context.write(); // empty message

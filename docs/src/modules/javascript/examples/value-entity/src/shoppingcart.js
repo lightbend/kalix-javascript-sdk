@@ -35,7 +35,10 @@ function addItem(addItem, cart, ctx) {
   // Validation:
   // Make sure that it is not possible to add negative quantities
   if (addItem.quantity < 1) {
-    ctx.fail("Quantity for item " + addItem.productId + " must be greater than zero.");
+    ctx.fail(
+        "Quantity for item " + addItem.productId + " must be greater than zero.",
+        3, // optional parameter, sets the gRPC status code to 3 - INVALID_ARGUMENT
+    );
   } else {
     // If there is an existing item with that product id, we need to increment its quantity.
     const existing = cart.items.find(item => {
