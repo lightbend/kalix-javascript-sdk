@@ -111,8 +111,8 @@ export default entity;
 
 
 // tag::add-component[]
-import { AkkaServerless } from "@lightbend/akkaserverless-javascript-sdk";
+import { Kalix } from "@lightbend/akkaserverless-javascript-sdk";
 import shoppingcartEntity from "./shoppingcart";
 
-new AkkaServerless().addComponent(shoppingcartEntity).start();
+new Kalix().addComponent(shoppingcartEntity).start();
 // end::add-component[]

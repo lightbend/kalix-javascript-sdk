@@ -150,9 +150,9 @@ entity.behavior = cart => {
 describe("The Eventsourced class", () => {
     it("should allow adding the entity to the gRPC server", () => {
         // tag::add-entity[]
-        const AkkaServerless = require("@lightbend/akkaserverless-javascript-sdk").AkkaServerless;
+        const Kalix = require("@lightbend/akkaserverless-javascript-sdk").Kalix;
 
-        const server = new AkkaServerless();
+        const server = new Kalix();
         server.addComponent(require("./shoppingcart"));
         
         server.start();

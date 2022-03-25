@@ -4,13 +4,13 @@
 include::ROOT:partial$include.adoc[]
 include::partial$attributes.adoc[]
 
-The Akka Serverless code generation tool for JavaScript helps you to get started quickly with a project that you can build using npm or Yarn. The tool generates the recommended project structure (including `package.json`), a Value Entity, unit tests, and a `README.md` that explains what was created and how to work with the newly created service.
+The Kalix code generation tool for JavaScript helps you to get started quickly with a project that you can build using npm or Yarn. The tool generates the recommended project structure (including `package.json`), a Value Entity, unit tests, and a `README.md` that explains what was created and how to work with the newly created service.
 
-You can modify the `.proto` and source files, and the tools will generate code stubs for the elements you changed or added. The generated project also contains scripts for running the service locally and for packaging into a container and deploying on Akka Serverless
+You can modify the `.proto` and source files, and the tools will generate code stubs for the elements you changed or added. The generated project also contains scripts for running the service locally and for packaging into a container and deploying on Kalix
 
 [NOTE]
 ====
-The term "project" used in connection with code generation is a development project that contains your service implementation. This differs from an Akka Serverless project, which is where you deploy one or more packaged services.
+The term "project" used in connection with code generation is a development project that contains your service implementation. This differs from a Kalix project, which is where you deploy one or more packaged services.
 ====
 
 
@@ -23,8 +23,8 @@ Before running the code generation tools, make sure that you have the following:
 * Docker >= {minimum_docker_version} (to run locally)
 * The https://developer.lightbend.com/docs/akka-serverless/getting-started/set-up-development-env.html#_akka_serverless_cli[`akkasls` CLI downloaded]
 * A https://developer.lightbend.com/docs/akka-serverless/projects/container-registries.html[configured Docker Registry]
-* An https://developer.lightbend.com/docs/akka-serverless/setting-up/index.html#_akka_serverless_account[Akka Serverless account]
-* An https://developer.lightbend.com/docs/akka-serverless/projects/index.html[Akka Serverless project]
+* An https://developer.lightbend.com/docs/akka-serverless/setting-up/index.html#_akka_serverless_account[Kalix account]
+* An https://developer.lightbend.com/docs/akka-serverless/projects/index.html[Kalix project]
 
 :sectnums:
 == Prepare the development project
@@ -112,14 +112,14 @@ yarn build
 You should now see the following source files in your project:
 
 * `src/counter.js` - the implementation of the `counter` Value Entity.
-* `src/index.js` - a convenience file that starts the Akka Serverless proxy for running locally
+* `src/index.js` - a convenience file that starts the Kalix proxy for running locally
 * `test/counter.test.js` - a test for the `counter` Value Entity.
 
 NOTE: The `lib/generated` directory contains files used by the tools. Any changes made to files in this folder are overwritten on the next build.
 
 === Unit and integration tests
 
-Akka Serverless codegen creates a unit test stub for each class within `counter.test.js`. Use these stubs as a starting point to test the logic in your implementation. You can use any of the common Node.js testing tools, such as Mocha or Jest.
+Kalix codegen creates a unit test stub for each class within `counter.test.js`. Use these stubs as a starting point to test the logic in your implementation. You can use any of the common Node.js testing tools, such as Mocha or Jest.
 
 [.tabset]
 JavaScript::
@@ -155,7 +155,7 @@ include::example$ts-valueentity-counter/test/testkit.ts[]
 
 == Run locally
 
-You can run your services locally and test them manually with HTTP or gRPC requests. To run locally, you need to initiate the Akka Serverless https://developer.lightbend.com/docs/akka-serverless/reference/glossary.html#proxy[proxy]. The `docker-compose` file contains the configuration required to run the proxy.
+You can run your services locally and test them manually with HTTP or gRPC requests. To run locally, you need to initiate the Kalix https://developer.lightbend.com/docs/akka-serverless/reference/glossary.html#proxy[proxy]. The `docker-compose` file contains the configuration required to run the proxy.
 
 . To start the proxy, run the following command from the top-level project directory:
 
@@ -195,7 +195,7 @@ ifdef::todo[TODO: we need to add how to exercise the counter with gRPC or HTTP.]
 
 == Package service
 
-The project contains configuration files for packaging the service into a Docker image, which can then be deployed to Akka Serverless. The Docker image name can be changed in the `package.json` `config.dockerImage` string value. Update this configuration to publish your image to your Docker repository.
+The project contains configuration files for packaging the service into a Docker image, which can then be deployed to Kalix. The Docker image name can be changed in the `package.json` `config.dockerImage` string value. Update this configuration to publish your image to your Docker repository.
 
 The recommended version is Node {minimum_node_version} and the image is based on the official link:https://hub.docker.com/_/node[Node Docker Image]. Choose a different image in the `Dockerfile` placed in the root folder of the development project.
 
@@ -218,7 +218,7 @@ yarn package
 --
 
 
-== Deploy to Akka Serverless
+== Deploy to Kalix
 
 The build tool script conveniently packages and publishes the Docker image prior to deployment.
 
@@ -226,9 +226,9 @@ To deploy your service:
 
 . Update the `dockerImage` property in the project's `package.json` file.
 +
-Refer to https://developer.lightbend.com/docs/akka-serverless/projects/container-registries.html[Configuring registries] for more information on how to make your docker image available to Akka Serverless.
+Refer to https://developer.lightbend.com/docs/akka-serverless/projects/container-registries.html[Configuring registries] for more information on how to make your docker image available to Kalix.
 
-. In your command window, set your Akka Serverless project to be the current project:
+. In your command window, set your Kalix project to be the current project:
 +
 [source, command window]
 ----

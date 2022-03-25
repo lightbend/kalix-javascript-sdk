@@ -1,11 +1,11 @@
 // tag::start[]
-import { AkkaServerless } from "@lightbend/akkaserverless-javascript-sdk";
+import { Kalix } from "@lightbend/akkaserverless-javascript-sdk";
 import shoppingcartEntity from "./shoppingcart";
 
-new AkkaServerless().addComponent(shoppingcartEntity).start();
+new Kalix().addComponent(shoppingcartEntity).start();
 // end::start[]
 
 
 // tag::custom-desc[]
-new AkkaServerless({ descriptorSetPath: "my-descriptor.desc" });
+new Kalix({ descriptorSetPath: "my-descriptor.desc" });
 // end::custom-desc[]

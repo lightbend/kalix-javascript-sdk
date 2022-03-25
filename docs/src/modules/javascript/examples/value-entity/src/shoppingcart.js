@@ -91,10 +91,10 @@ module.exports = entity;
 
 
 describe("The ValueEntity class", () => {
-  it("should allow adding the entity to the AkkaServerless server", () => {
+  it("should allow adding the entity to the Kalix server", () => {
     // tag::add-component[]
-    const AkkaServerless = require("@lightbend/akkaserverless-javascript-sdk").AkkaServerless;
-    const server = new AkkaServerless();
+    const Kalix = require("@lightbend/akkaserverless-javascript-sdk").Kalix;
+    const server = new Kalix();
     server.addComponent(entity);
     server.start();
     // end::add-component[]

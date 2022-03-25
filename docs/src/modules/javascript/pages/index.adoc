@@ -4,11 +4,11 @@
 include::ROOT:partial$include.adoc[]
 include::partial$attributes.adoc[]
 
-The Akka Serverless JavaScript SDK offers an idiomatic JavaScript language SDK for writing components. This page describes prerequisites for JavaScript development and basic requirements for a development project.
+The Kalix JavaScript SDK offers an idiomatic JavaScript language SDK for writing components. This page describes prerequisites for JavaScript development and basic requirements for a development project.
 
 NOTE: Lightbend provides Tier 1 support for the JavaScript SDK. See https://developer.lightbend.com/docs/akka-serverless/faq/index.html#_what_languages_are_supported[an explanation of support tiers] for more information.
 
-Your development project needs to include the Akka Serverless JavaScript SDK and logic to start the gRPC server. You define your components in gRPC descriptors and use `protoc` to compile them. Finally, you implement business logic for service components.
+Your development project needs to include the Kalix JavaScript SDK and logic to start the gRPC server. You define your components in gRPC descriptors and use `protoc` to compile them. Finally, you implement business logic for service components.
 
 To save the work of starting from scratch, the JavaScript xref:kickstart.adoc[code generation tool] creates a project, complete with descriptors and implementations. Or, you can start from one of our https://developer.lightbend.com/docs/akka-serverless/quickstart/index.html[Quickstarts].
 
@@ -16,17 +16,17 @@ To save the work of starting from scratch, the JavaScript xref:kickstart.adoc[co
 
 The following are required to develop services in JavaScript:
 
-Node:: Akka Serverless requires at least Node {minimum_node_version}. You will find links to download Node https://nodejs.org/dist/latest-v14.x/[here {tab-icon}, window="new"].
+Node:: Kalix requires at least Node {minimum_node_version}. You will find links to download Node https://nodejs.org/dist/latest-v14.x/[here {tab-icon}, window="new"].
 
-Build tool:: Akka Serverless does not require any particular build tool, you can select your own but out-of-the-box experience is provided in conjunction with npm and Yarn.
+Build tool:: Kalix does not require any particular build tool, you can select your own but out-of-the-box experience is provided in conjunction with npm and Yarn.
 
-Docker:: Akka Serverless requires https://docs.docker.com/get-docker/[Docker {tab-icon}, window="new"] {minimum_docker_version} for building your service images. Most popular build tools have plugins that assist in building Docker images.
+Docker:: Kalix requires https://docs.docker.com/get-docker/[Docker {tab-icon}, window="new"] {minimum_docker_version} for building your service images. Most popular build tools have plugins that assist in building Docker images.
 
-Since Akka Serverless is based on gRPC, you need a protoc compiler to compile gRPC protobuf descriptors. The SDK provides helper scripts to automatically download the `protoc` compiler for your platform and compile your project.
+Since Kalix is based on gRPC, you need a protoc compiler to compile gRPC protobuf descriptors. The SDK provides helper scripts to automatically download the `protoc` compiler for your platform and compile your project.
 
 == Development project requirements
 
-The following examples show how to install the SDK to build your services with npm or Yarn. The code generation tools include an Akka Serverless xref:kickstart.adoc[code generation tools] that generates the recommended project structure, including a `package.json` file with the necessary references.
+The following examples show how to install the SDK to build your services with npm or Yarn. The code generation tools include a Kalix xref:kickstart.adoc[code generation tools] that generates the recommended project structure, including a `package.json` file with the necessary references.
 
 NOTE: The code generation tools do more than just provide a starter project, after you modify a `.proto` file, they will generate code stubs for the elements you changed or added.
 
@@ -71,7 +71,7 @@ Descriptors for gRPC are defined in `protobuf` files. You can place `protobuf` f
 
 === Precompile the protobuf descriptor set
 
-The gRPC descriptor is serialized to binary using the Protobuf https://developers.google.com/protocol-buffers/docs/techniques#self-description[`FileDescriptorSet` message type]. Akka Serverless requires that you precompile this descriptor using `protoc`. We provide a utility that does this for you. It downloads the `protoc` binary for your platform, and runs it with the necessary arguments and include paths. You can run the utility manually, or we recommend adding it as a script to the build.
+The gRPC descriptor is serialized to binary using the Protobuf https://developers.google.com/protocol-buffers/docs/techniques#self-description[`FileDescriptorSet` message type]. Kalix requires that you precompile this descriptor using `protoc`. We provide a utility that does this for you. It downloads the `protoc` binary for your platform, and runs it with the necessary arguments and include paths. You can run the utility manually, or we recommend adding it as a script to the build.
 
 To run the utility manually, invoke `node_modules/@lightbend/akkaserverless-javascript-sdk/bin/compile-descriptor.js`.
 
@@ -95,7 +95,7 @@ By default, the descriptor is written to `user-function.desc`, if you wish to ch
 
 === Create and start the gRPC server
 
-There are two ways to create and start an Akka Serverless gRPC server. The first is to create an link:{attachmentsdir}/api/module-akkaserverless.Entity.html[`Entity`{tab-icon}, window="new"], and invoke link:{attachmentsdir}/api/module-akkaserverless.Entity.html#start[`start`{tab-icon}, window="new"] on it. This allows creating a server that serves a single entity, with the default options. We'll look at this more in the subsequent pages. Alternatively, you can use the link:{attachmentsdir}/api/module-akkaserverless.AkkaServerless.html[`AkkaServerless`{tab-icon}, window="new"] class, add one or more entities to it, and then invoke link:{attachmentsdir}/api/module-akkaserverless.AkkaServerless.html#start[`start`{tab-icon}, window="new"], like so:
+There are two ways to create and start a Kalix gRPC server. The first is to create an link:{attachmentsdir}/api/module-akkaserverless.Entity.html[`Entity`{tab-icon}, window="new"], and invoke link:{attachmentsdir}/api/module-akkaserverless.Entity.html#start[`start`{tab-icon}, window="new"] on it. This allows creating a server that serves a single entity, with the default options. We'll look at this more in the subsequent pages. Alternatively, you can use the link:{attachmentsdir}/api/module-akkaserverless.Kalix.html[`Kalix`{tab-icon}, window="new"] class, add one or more entities to it, and then invoke link:{attachmentsdir}/api/module-akkaserverless.AkkaServerless.html#start[`start`{tab-icon}, window="new"], like so:
 
 [.tabset]
 JavaScript::
@@ -129,7 +129,7 @@ TypeScript::
 include::example$test/gettingstarted/index.ts[tag=custom-desc]
 ----
 
-For all options available on the `AkkaServerless` class, see link:{attachmentsdir}++/api/module-akkaserverless.AkkaServerless.html#~options++[`AkkaServerless~options`{tab-icon}, window="new"].
+For all options available on the `Kalix` class, see link:{attachmentsdir}++/api/module-akkaserverless.Kalix.html#~options++[`Kalix~options`{tab-icon}, window="new"].
 
 == What's next
 
