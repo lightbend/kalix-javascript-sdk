@@ -1,0 +1,27 @@
+{
+  "name": "@lightbend/kalix-scripts",
+  "version": "1.0.0",
+  "description": "Create an Akka Serverless entity codebase with a single command.",
+  "main": "kalix-scripts.js",
+  "repository": "https://github.com/lightbend/akkaserverless-npm-js",
+  "author": "Lightbend Inc",
+  "license": "Copyright (c) Lightbend Inc. 2021",
+  "engines": {
+    "node": ">=14.0.0",
+    "npm": ">=6.0.0"
+  },
+  "dependencies": {
+    "cross-spawn": "^7.0.3",
+    "node-fetch": "^2.6.1"
+  },
+  "bin": {
+    "kalix-scripts": "./bin/kalix-scripts.js"
+  },
+  "scripts": {
+    "install": "node bin/download-codegen.js",
+    "prepublishOnly": "npm version --no-git-tag-version $(../../sdk/bin/version.sh)"
+  },
+  "publishConfig": {
+    "@lightbend:registry": "https://registry.npmjs.org"
+  }
+}

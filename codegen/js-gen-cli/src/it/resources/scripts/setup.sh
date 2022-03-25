@@ -5,11 +5,11 @@ IFS=$'\n\t'
 # Set up and install our npm-js tooling
 pushd akkaserverless-npm-js
 
-pushd akkasls-scripts
+pushd kalix-scripts
 # Disable download of codegen CLI, and manually add our version
 mv package.json original-package.json
 node /home/scripts/disable-download-cli.js original-package.json > package.json
-cp /home/akkasls-codegen-js bin/akkasls-codegen-js.bin
+cp /home/kalix-codegen-js bin/kalix-codegen-js.bin
 
 # Use npm link to make this available within the container
 npm install

@@ -6,6 +6,6 @@ addSbtPlugin("org.scalameta" % "sbt-native-image" % "0.3.0")
 addSbtPlugin("com.eed3si9n" % "sbt-buildinfo" % "0.10.0")
 addSbtPlugin("com.eed3si9n" % "sbt-assembly" % "0.15.0")
 
-addSbtPlugin("com.thesamet" % "sbt-protoc" % "1.0.2")
+addSbtPlugin("com.thesamet" % "sbt-protoc" % "1.0.6")
 
-libraryDependencies += "com.thesamet.scalapb" %% "compilerplugin" % "0.11.3"
+libraryDependencies += "com.thesamet.scalapb" %% "compilerplugin" % "0.11.10"

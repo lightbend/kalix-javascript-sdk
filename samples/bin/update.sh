@@ -3,7 +3,7 @@
 # Update package versions in samples.
 #
 # If `--all` is specified, then all dependencies will be updated to latest versions,
-# otherwise just the SDK and akkasls-scripts dependencies will be updated.
+# otherwise just the SDK and kalix-scripts dependencies will be updated.
 #
 # If `--check` is specified, then don't upgrade and only check for updates.
 

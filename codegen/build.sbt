@@ -2,14 +2,14 @@
 // Projects
 // *****************************************************************************
 
-lazy val `akkasls-codegen` =
+lazy val `kalix-codegen` =
   project
     .in(file("."))
     .enablePlugins(AutomateHeaderPlugin)
     .settings(commonSettings ++ Seq(skip in publish := true))
-    .aggregate(`akkasls-codegen-core`, `akkasls-codegen-js`, `akkasls-codegen-js-cli`)
+    .aggregate(`kalix-codegen-core`, `kalix-codegen-js`, `kalix-codegen-js-cli`)
 
-lazy val `akkasls-codegen-core` =
+lazy val `kalix-codegen-core` =
   project
     .in(file("core"))
     .enablePlugins(AutomateHeaderPlugin)
@@ -23,7 +23,7 @@ lazy val `akkasls-codegen-core` =
         library.munitScalaCheck % Test),
       Compile / PB.targets := Seq(PB.gens.java -> (Compile / sourceManaged).value))
 
-lazy val `akkasls-codegen-js` =
+lazy val `kalix-codegen-js` =
   project
     .in(file("js-gen"))
     .enablePlugins(AutomateHeaderPlugin)
@@ -34,12 +34,12 @@ lazy val `akkasls-codegen-js` =
         library.commonsIo % Test,
         library.munit % Test,
         library.munitScalaCheck % Test))
-    .dependsOn(`akkasls-codegen-core`)
+    .dependsOn(`kalix-codegen-core`)
 
 lazy val cachedNativeImage =
   taskKey[File]("A cached version of the nativeImage task key, that only rebuilds when required.")
 
-lazy val `akkasls-codegen-js-cli` =
+lazy val `kalix-codegen-js-cli` =
   project
     .in(file("js-gen-cli"))
     .configs(IntegrationTest)
@@ -47,8 +47,8 @@ lazy val `akkasls-codegen-js-cli` =
     .settings(commonSettings, Defaults.itSettings)
     .settings(
       buildInfoKeys := Seq[BuildInfoKey](version),
-      buildInfoPackage := "com.lightbend.akkasls.codegen.js",
-      name in NativeImage := "akkasls-codegen-js",
+      buildInfoPackage := "com.lightbend.kalix.codegen.js",
+      name in NativeImage := "kalix-codegen-js",
       /**
        * Due to limitations of the Windows command prompt/PowerShell, with a the native-image command fails with a long
        * classpath By using sbt-assembly, we first build a fat JAR which is then able to be used in place of the full
@@ -92,7 +92,7 @@ lazy val `akkasls-codegen-js-cli` =
         library.typesafeConfig % "it"),
       testOptions in IntegrationTest += Tests.Argument(s"-Djs-codegen-cli.native-image=${cachedNativeImage.value}"),
       skip in publish := true)
-    .dependsOn(`akkasls-codegen-js`)
+    .dependsOn(`kalix-codegen-js`)
 
 // *****************************************************************************
 // Library dependencies
