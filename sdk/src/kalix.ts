@@ -267,10 +267,10 @@ export class Kalix {
   }
 
   /**
-   * Add one or more components to this AkkaServerless service.
+   * Add one or more components to this Kalix service.
    *
    * @param components - the components to add
-   * @returns this AkkaServerless service
+   * @returns this Kalix service
    */
   addComponent(...components: Array<Component>): Kalix {
     this.components = this.components.concat(components);

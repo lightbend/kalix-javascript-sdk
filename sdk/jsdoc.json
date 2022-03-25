@@ -18,7 +18,7 @@
         "monospaceLinks": false,
         "theme": "cosmo",
         "includeDate": false,
-        "systemName": "AkkaServerless"
+        "systemName": "Kalix"
     },
     "opts": {
         "destination": "./apidocs/",

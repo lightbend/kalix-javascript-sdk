@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "description": "Kalix JavaScript SDK SDK",
   "keywords": [
-    "akka",
+    "kalix",
     "serverless",
     "akka serverless"
   ],
@@ -13,7 +13,7 @@
   },
   "license": "Apache-2.0",
   "author": {
-    "name": "Akka Serverless Team",
+    "name": "Kalix Team",
     "email": "info@lightbend.com",
     "url": "https://lightbend.com"
   },
@@ -79,7 +79,7 @@
     }
   },
   "scripts": {
-    "clean": "rm -rf ./dist ./proto",
+    "clean": "rm -rf ./dist ./proto ./apidocs lightbend-kalix-javascript-sdk-0.0.0.tgz user-function.desc index.d.ts",
     "copy-files": "cp -r ./proto ./dist && cp index.d.ts ./dist",
     "compile": "tsc && npm run copy-files",
     "verify-types": "tsc dist/index.d.ts --noEmit",

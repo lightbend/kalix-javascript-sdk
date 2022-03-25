@@ -15,34 +15,34 @@
  */
 
 /**
- * @namespace module:akkaserverless.settings
+ * @namespace module:kalix.settings
  */
 
 /**
- * @constant module:akkaserverless.settings~frameworkVersion
+ * @constant module:kalix.settings~frameworkVersion
  * @type {string}
  */
 
 /**
- * @interface module:akkaserverless.settings.ProtocolVersion
+ * @interface module:kalix.settings.ProtocolVersion
  */
 
 /**
- * @name module:akkaserverless.settings.ProtocolVersion#major
+ * @name module:kalix.settings.ProtocolVersion#major
  * @type {string}
  */
 
 /**
- * @name module:akkaserverless.settings.ProtocolVersion#minor
+ * @name module:kalix.settings.ProtocolVersion#minor
  * @type {string}
  */
 
 /**
- * @function module:akkaserverless.settings~protocolVersion
- * @returns {module:akkaserverless.settings.ProtocolVersion}
+ * @function module:kalix.settings~protocolVersion
+ * @returns {module:kalix.settings.ProtocolVersion}
  */
 
 /**
- * @function module:akkaserverless.settings~baseVersion
+ * @function module:kalix.settings~baseVersion
  * @returns {string}
  */

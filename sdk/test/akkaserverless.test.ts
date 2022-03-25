@@ -18,7 +18,7 @@ import {
   Kalix,
   ComponentOptions,
   EntityOptions,
-} from '../src/akkaserverless';
+} from '../src/kalix';
 import discovery from '../proto/akkaserverless/protocol/discovery_pb';
 import { should } from 'chai';
 should();
@@ -118,7 +118,7 @@ describe('Akkaserverless', () => {
     );
 
     // Assert
-    const result = `Error reported from Akka Serverless system: AS-00112 test message
+    const result = `Error reported from Kalix system: AS-00112 test message
 
 test details
 See documentation: https://developer.lightbend.com/docs/akka-serverless/javascript/views.html#changing

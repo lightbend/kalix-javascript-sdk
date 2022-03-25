@@ -31,11 +31,11 @@
  * Kalix service.
  *
  * @class module:kalix.Kalix
- * @param {module:kalix.AkkaOptions} [options] The options for starting the service.
+ * @param {module:kalix.KalixOptions} [options] The options for starting the service.
  */
 
 /**
- * @interface module:kalix.AkkaOptions
+ * @interface module:kalix.KalixOptions
  * @property {string} [serviceName] The name of this service (defaults to name from package.json).
  * @property {string} [serviceVersion] The version of this service (defaults to version from package.json).
  * @property {string} [descriptorSetPath="user-function.desc"] Path to a Protobuf FileDescriptor
