@@ -97,7 +97,7 @@ Note the use of `Cart.create()`, this creates a `protobuf` message using the `Ca
 
 == Behavior
 
-Now we need to define the behavior for our entity. The behavior consists of two parts, https://developer.lightbend.com/docs/akka-serverless/reference/glossary.html#command_handler[_command handlers_], and https://developer.lightbend.com/docs/akka-serverless/reference/glossary.html#event_handler[_event handlers_].
+Now we need to define the behavior for our entity. The behavior consists of two parts, https://docs.kalix.io/reference/glossary.html#command_handler[_command handlers_], and https://docs.kalix.io/reference/glossary.html#event_handler[_event handlers_].
 
 === Command handlers
 

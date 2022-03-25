@@ -146,7 +146,7 @@ class DocLink {
   ]);
 
   constructor(
-    private baseUrl: string = 'https://developer.lightbend.com/docs/akka-serverless/',
+    private baseUrl: string = 'https://docs.kalix.io/',
   ) {
     this.specificCodes.forEach((value, key) => key.length >= 6);
   }

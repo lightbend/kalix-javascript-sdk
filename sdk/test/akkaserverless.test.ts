@@ -37,10 +37,10 @@ describe('Akkaserverless', () => {
 
     // Assert
     specificLink.should.equal(
-      'https://developer.lightbend.com/docs/akka-serverless/javascript/views.html#changing',
+      'https://docs.kalix.io/javascript/views.html#changing',
     );
     componentLink.should.equal(
-      'https://developer.lightbend.com/docs/akka-serverless/javascript/views.html',
+      'https://docs.kalix.io/javascript/views.html',
     );
     unknownLink.should.equal('');
   });
@@ -121,7 +121,7 @@ describe('Akkaserverless', () => {
     const result = `Error reported from Kalix system: AS-00112 test message
 
 test details
-See documentation: https://developer.lightbend.com/docs/akka-serverless/javascript/views.html#changing
+See documentation: https://docs.kalix.io/javascript/views.html#changing
 
 At package.test.json:2:4:
   "name": "some-name",

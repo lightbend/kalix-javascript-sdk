@@ -2,20 +2,20 @@
 
 ## Designing
 
-While designing your service it is useful to read [designing services](https://developer.lightbend.com/docs/akka-serverless/designing/index.html)
+While designing your service it is useful to read [designing services](https://docs.kalix.io/designing/index.html)
 
 ## Developing
 
 This project has a bare-bones skeleton service ready to go, but in order to adapt and
-extend it it may be useful to read up on [developing services](https://developer.lightbend.com/docs/akka-serverless/developing/index.html)
-and in particular the [JavaScript section](https://developer.lightbend.com/docs/akka-serverless/javascript/index.html)
+extend it it may be useful to read up on [developing services](https://docs.kalix.io/developing/index.html)
+and in particular the [JavaScript section](https://docs.kalix.io/javascript/index.html)
 
 ## Prerequisites
 
 No additional tooling is required for local development. To build and deploy to a cluster:
 
 - Docker; see https://docs.docker.com/engine/install/
-- Kalix CLI (`akkasls`); see https://developer.lightbend.com/docs/akka-serverless/getting-started/set-up-development-env.html#_akka_serverless_cli
+- Kalix CLI (`akkasls`); see https://docs.kalix.io/getting-started/set-up-development-env.html#_akka_serverless_cli
 
 ## Building
 
@@ -57,7 +57,7 @@ To start the application locally, use the following commands:
 npm run build && npm run start
 ```
 
-With both the proxy and your application running, any defined endpoints should be available at `http://localhost:9000`. In addition to the defined gRPC interface, each method has a corresponding HTTP endpoint. Unless configured otherwise (see [Transcoding HTTP](https://developer.lightbend.com/docs/akka-serverless/javascript/proto.html#_transcoding_http)), this endpoint accepts POST requests at the path `/[package].[entity name]/[method]`. For example, using `curl`:
+With both the proxy and your application running, any defined endpoints should be available at `http://localhost:9000`. In addition to the defined gRPC interface, each method has a corresponding HTTP endpoint. Unless configured otherwise (see [Transcoding HTTP](https://docs.kalix.io/javascript/proto.html#_transcoding_http)), this endpoint accepts POST requests at the path `/[package].[entity name]/[method]`. For example, using `curl`:
 
 ```shell
 > curl -XPOST -H "Content-Type: application/json" localhost:9000/com.example.shoppingcart.ShoppingCartService/AddItem -d '{"entityId": "foo"}'
@@ -90,14 +90,14 @@ grpcurl --plaintext -d '{"cart_id": "cart1"}' localhost:9000 com.example.shoppin
 ## Deploying
 
 To deploy your service, install the `akkasls` CLI as documented in
-[Setting up a local development environment](https://developer.lightbend.com/docs/akka-serverless/getting-started/set-up-development-env.html)
+[Setting up a local development environment](https://docs.kalix.io/getting-started/set-up-development-env.html)
 and configure a Docker Registry to upload your docker image to.
 
 You will need to update the `config.dockerImage` property in the `package.json` and refer to
-[Configuring registries](https://developer.lightbend.com/docs/akka-serverless/projects/container-registries.html)
+[Configuring registries](https://docs.kalix.io/projects/container-registries.html)
 for more information on how to make your docker image available to Kalix.
 
-Finally you can use the [Kalix Console](https://console.akkaserverless.com)
+Finally you can use the [Kalix Console](https://console.kalix.io)
 to create a project and then deploy your service into the project either by using `npm run deploy`,
 through the `akkasls` CLI or via the web interface. When using `npm run deploy`, npm will also
 conveniently package and publish your docker image prior to deployment.

@@ -21,15 +21,15 @@ Before running the code generation tools, make sure that you have the following:
 * Node >= {minimum_node_version}
 * `npm` or `yarn`
 * Docker >= {minimum_docker_version} (to run locally)
-* The https://developer.lightbend.com/docs/akka-serverless/getting-started/set-up-development-env.html#_akka_serverless_cli[`akkasls` CLI downloaded]
-* A https://developer.lightbend.com/docs/akka-serverless/projects/container-registries.html[configured Docker Registry]
-* An https://developer.lightbend.com/docs/akka-serverless/setting-up/index.html#_akka_serverless_account[Kalix account]
-* An https://developer.lightbend.com/docs/akka-serverless/projects/index.html[Kalix project]
+* The https://docs.kalix.io/getting-started/set-up-development-env.html#_akka_serverless_cli[`akkasls` CLI downloaded]
+* A https://docs.kalix.io/projects/container-registries.html[configured Docker Registry]
+* An https://docs.kalix.io/setting-up/index.html#_akka_serverless_account[Kalix account]
+* An https://docs.kalix.io/projects/index.html[Kalix project]
 
 :sectnums:
 == Prepare the development project
 
-The code generation tools create a new development project named `my-entity`, that contains build configuration and the https://developer.lightbend.com/docs/akka-serverless/reference/glossary.html#gRPC[gRPC Protobuf specifications] for a https://developer.lightbend.com/docs/akka-serverless/reference/glossary.html#value_entity[Value Entity].
+The code generation tools create a new development project named `my-entity`, that contains build configuration and the https://docs.kalix.io/reference/glossary.html#gRPC[gRPC Protobuf specifications] for a https://docs.kalix.io/reference/glossary.html#value_entity[Value Entity].
 
 . To create the initial codebase, from a command window enter the following:
 +
@@ -84,7 +84,7 @@ Take a look at the initial structure. The project contains the following directo
 * `proto` - files containing domain and api Protobuf definitions for a `Counter` Value Entity.
 * `test` - testkit file
 
-To understand how the Protobuf definitions relate to the implementation files, see https://developer.lightbend.com/docs/akka-serverless/developing/development-process-js.html#_specify_service_interface_and_domain_model[The development process] and https://developer.lightbend.com/docs/akka-serverless/services/state-model.html#_choosing_a_state_model[Understanding the programming model].
+To understand how the Protobuf definitions relate to the implementation files, see https://docs.kalix.io/developing/development-process-js.html#_specify_service_interface_and_domain_model[The development process] and https://docs.kalix.io/services/state-model.html#_choosing_a_state_model[Understanding the programming model].
 
 == Build and generate code
 
@@ -155,7 +155,7 @@ include::example$ts-valueentity-counter/test/testkit.ts[]
 
 == Run locally
 
-You can run your services locally and test them manually with HTTP or gRPC requests. To run locally, you need to initiate the Kalix https://developer.lightbend.com/docs/akka-serverless/reference/glossary.html#proxy[proxy]. The `docker-compose` file contains the configuration required to run the proxy.
+You can run your services locally and test them manually with HTTP or gRPC requests. To run locally, you need to initiate the Kalix https://docs.kalix.io/reference/glossary.html#proxy[proxy]. The `docker-compose` file contains the configuration required to run the proxy.
 
 . To start the proxy, run the following command from the top-level project directory:
 
@@ -189,7 +189,7 @@ yarn start
 ----
 --
 
-TIP: For more details see https://developer.lightbend.com/docs/akka-serverless/services/running-locally.html[Run a service locally].
+TIP: For more details see https://docs.kalix.io/services/running-locally.html[Run a service locally].
 
 ifdef::todo[TODO: we need to add how to exercise the counter with gRPC or HTTP.]
 
@@ -226,7 +226,7 @@ To deploy your service:
 
 . Update the `dockerImage` property in the project's `package.json` file.
 +
-Refer to https://developer.lightbend.com/docs/akka-serverless/projects/container-registries.html[Configuring registries] for more information on how to make your docker image available to Kalix.
+Refer to https://docs.kalix.io/projects/container-registries.html[Configuring registries] for more information on how to make your docker image available to Kalix.
 
 . In your command window, set your Kalix project to be the current project:
 +

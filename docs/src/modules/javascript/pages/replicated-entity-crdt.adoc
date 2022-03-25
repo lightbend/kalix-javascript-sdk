@@ -124,7 +124,7 @@ NOTE: Each protobuf type constructor has a `create` method for creating a protob
 
 === Defining command handlers
 
-We need to implement all methods our Replicated Entity offers as https://developer.lightbend.com/docs/akka-serverless/reference/glossary.html#command_handler[_command handlers_]. A link:{attachmentsdir}/api/module-akkaserverless.replicatedentity.ReplicatedEntity.html#~commandHandler[`command handler`{tab-icon}, window="new"] is a function that takes a command and a link:{attachmentsdir}/api/module-akkaserverless.replicatedentity.ReplicatedEntityCommandContext.html[`ReplicatedEntityCommandContext`{tab-icon}, window="new"]. The command is the input message type for the gRPC service call, and the command handler must return a message of the same type as the output type of the gRPC service call.
+We need to implement all methods our Replicated Entity offers as https://docs.kalix.io/reference/glossary.html#command_handler[_command handlers_]. A link:{attachmentsdir}/api/module-akkaserverless.replicatedentity.ReplicatedEntity.html#~commandHandler[`command handler`{tab-icon}, window="new"] is a function that takes a command and a link:{attachmentsdir}/api/module-akkaserverless.replicatedentity.ReplicatedEntityCommandContext.html[`ReplicatedEntityCommandContext`{tab-icon}, window="new"]. The command is the input message type for the gRPC service call, and the command handler must return a message of the same type as the output type of the gRPC service call.
 
 We map each method to a command handler function using link:{attachmentsdir}/api/module-akkaserverless.replicatedentity.ReplicatedEntity.html#commandHandlers[`commandHandlers`{tab-icon}, window="new"].
 

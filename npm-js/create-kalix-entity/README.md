@@ -5,7 +5,7 @@ This repository provides the `create-kalix-entity` tool to support Kalix develop
 ## Usage
 
 This tool can be used to generate a project suitable for the general development of
-[Kalix](https://www.lightbend.com/akka-serverless) applications.
+[Kalix](https://kalix.io) applications.
 
 There are two templates available to select from:
 
