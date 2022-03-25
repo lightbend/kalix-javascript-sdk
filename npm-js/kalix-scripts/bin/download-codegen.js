@@ -41,7 +41,7 @@ if (localBinary) {
   fetch(url).then((response) => {
     if (!response.ok) {
       throw new Error(
-        `Error fetching Akka Serverless codegen tool from [${url}]: ${response.statusText}.`,
+        `Error fetching Kalix codegen tool from [${url}]: ${response.statusText}.`,
       );
     }
     console.debug(`Saving to ${targetFile}`);
@@ -54,6 +54,6 @@ if (localBinary) {
   });
 } else {
   throw new Error(
-    'Unsupported platform. No prebuilt version of the Akka Serverless codegen tool exists for this platform.',
+    'Unsupported platform. No prebuilt version of the Kalix codegen tool exists for this platform.',
   );
 }

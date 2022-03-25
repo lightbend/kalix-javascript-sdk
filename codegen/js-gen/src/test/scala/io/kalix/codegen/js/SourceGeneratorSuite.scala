@@ -156,7 +156,7 @@ class SourceGeneratorSuite extends munit.FunSuite {
 
     assertEquals(
       sourceDoc.layout.replace("\\", "/"),
-      """/* This code is managed by Akka Serverless tooling.
+      """/* This code is managed by Kalix tooling.
         | * It will be re-generated to reflect any changes to your protobuf definitions.
         | * DO NOT EDIT
         | */
@@ -178,7 +178,7 @@ class SourceGeneratorSuite extends munit.FunSuite {
     val sourceDoc = SourceGenerator.indexSource(sourceDirectory, generatedComponentIndexPath)
     assertEquals(
       sourceDoc.layout.replace("\\", "/"),
-      """/* This code was initialised by Akka Serverless tooling.
+      """/* This code was initialised by Kalix tooling.
         | * As long as this file exists it will not be re-generated.
         | * You are free to make changes to this file.
         | */

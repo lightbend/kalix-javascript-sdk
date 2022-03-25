@@ -1,7 +1,7 @@
 {
   "name": "ts-customer-registry",
   "version": "0.0.0",
-  "description": "Akka Serverless TypeScript SDK sample application for customer registry",
+  "description": "Kalix TypeScript SDK sample application for customer registry",
   "engineStrict": true,
   "engines": {
     "node": "~14"
@@ -12,7 +12,7 @@
   },
   "license": "Apache-2.0",
   "author": {
-    "name": "Akka Serverless Team",
+    "name": "Kalix Team",
     "email": "info@lightbend.com",
     "url": "https://lightbend.com"
   },

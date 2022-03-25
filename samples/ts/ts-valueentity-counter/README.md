@@ -15,7 +15,7 @@ and in particular the [JavaScript section](https://docs.kalix.io/javascript/inde
 No additional tooling is required for local development. To build and deploy to a cluster:
 
 - Docker; see https://docs.docker.com/engine/install/
-- Akka Serverless CLI (`akkasls`); see https://docs.kalix.io/getting-started/set-up-development-env.html#_akka_serverless_cli
+- Kalix CLI (`akkasls`); see https://docs.kalix.io/getting-started/set-up-development-env.html#_akka_serverless_cli
 
 ## Building
 
@@ -48,8 +48,8 @@ npm run integration-test
 
 ## Running Locally
 
-In order to run your application locally, you must run the Akka Serverless proxy. The included `docker-compose` file contains the configuration required to run the proxy for a locally running application.
-It also contains the configuration to start a local Google Pub/Sub emulator that the Akka Serverless proxy will connect to.
+In order to run your application locally, you must run the Kalix proxy. The included `docker-compose` file contains the configuration required to run the proxy for a locally running application.
+It also contains the configuration to start a local Google Pub/Sub emulator that the Kalix proxy will connect to.
 To start the proxy, run the following command from this directory:
 
 ```
@@ -91,9 +91,9 @@ and configure a Docker Registry to upload your docker image to.
 
 You will need to update the `akkasls.dockerImage` property in the `pom.xml` and refer to
 [Configuring registries](https://docs.kalix.io/projects/container-registries.html)
-for more information on how to make your docker image available to Akka Serverless.
+for more information on how to make your docker image available to Kalix.
 
-Finally you can or use the [Akka Serverless Console](https://console.kalix.io)
+Finally you can or use the [Kalix Console](https://console.kalix.io)
 to create a project and then deploy your service into the project either by using `npm run deploy`,
 through the `akkasls` CLI or via the web interface. When using `npm run deploy`, NPM will also
 conveniently package and publish your docker image prior to deployment.

@@ -64,7 +64,7 @@ class JsCodegenIntegrationSuite extends munit.FunSuite {
 
     // Generate a new entity within the codegen container
     assertSuccessful(
-      codegenContainer.execInContainer("create-akkasls-entity", entityName, "--template", "event-sourced-entity"))
+      codegenContainer.execInContainer("create-kalix-entity", entityName, "--template", "event-sourced-entity"))
 
     // Setup and build the entity
     assertSuccessful(codegenContainer.execInContainer("./scripts/setup-entity.sh", entityName))
@@ -96,7 +96,7 @@ class JsCodegenIntegrationSuite extends munit.FunSuite {
 
     // Generate a new entity within the codegen container
     assertSuccessful(
-      codegenContainer.execInContainer("create-akkasls-entity", entityName, "--template", "event-sourced-entity"))
+      codegenContainer.execInContainer("create-kalix-entity", entityName, "--template", "event-sourced-entity"))
 
     // Setup and build the entity
     assertSuccessful(codegenContainer.execInContainer("./scripts/setup-entity.sh", entityName))
@@ -173,7 +173,7 @@ class JsCodegenIntegrationSuite extends munit.FunSuite {
 
     // Generate a new entity within the codegen container
     assertSuccessful(
-      codegenContainer.execInContainer("create-akkasls-entity", entityName, "--template", "event-sourced-entity"))
+      codegenContainer.execInContainer("create-kalix-entity", entityName, "--template", "event-sourced-entity"))
 
     // Overwrite the domain with a value entity definition
     codegenContainer.copyFileToContainer(
@@ -214,7 +214,7 @@ class JsCodegenIntegrationSuite extends munit.FunSuite {
 
     // Generate a new entity within the codegen container
     assertSuccessful(
-      codegenContainer.execInContainer("create-akkasls-entity", entityName, "--template", "event-sourced-entity"))
+      codegenContainer.execInContainer("create-kalix-entity", entityName, "--template", "event-sourced-entity"))
 
     // Overwrite the domain with a value entity definition
     codegenContainer.copyFileToContainer(
@@ -306,7 +306,7 @@ class JsCodegenIntegrationSuite extends munit.FunSuite {
 
     // Generate a new entity within the codegen container
     assertSuccessful(
-      codegenContainer.execInContainer("create-akkasls-entity", entityName, "--template", "event-sourced-entity"))
+      codegenContainer.execInContainer("create-kalix-entity", entityName, "--template", "event-sourced-entity"))
 
     // Remove default proto definitions
     assertSuccessful(

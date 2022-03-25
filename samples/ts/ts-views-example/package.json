@@ -1,7 +1,7 @@
 {
   "name": "ts-views-example",
   "version": "0.0.0",
-  "description": "Akka Serverless TypeScript SDK example that demonstrates views",
+  "description": "Kalix TypeScript SDK example that demonstrates views",
   "engineStrict": true,
   "engines": {
     "node": "~14"
@@ -12,7 +12,7 @@
   },
   "license": "Apache-2.0",
   "author": {
-    "name": "Akka Serverless Team",
+    "name": "Kalix Team",
     "email": "info@lightbend.com",
     "url": "https://lightbend.com"
   },

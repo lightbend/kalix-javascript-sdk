@@ -4,7 +4,7 @@ The Javascript tooling is published to the npm registry under the https://www.np
 
 == Kickstart
 
-Entity initialization is provided via the _create-akkasls-entity_ command line tool. This tool requires only a name for the new entity, and creates a new npm project directory with the Akka Serverless SDK and associated development support tooling set up.
+Entity initialization is provided via the _create-kalix-entity_ command line tool. This tool requires only a name for the new entity, and creates a new npm project directory with the Akka Serverless SDK and associated development support tooling set up.
 
 An initial codebase for a new entity can be created using either npm or Yarn:
 
@@ -13,7 +13,7 @@ npm::
 +
 [source,command line]
 ----
-npx @lightbend/create-akkasls-entity@latest my-entity
+npx @lightbend/create-kalix-entity@latest my-entity
 cd my-entity
 npm install
 npm run build
@@ -23,7 +23,7 @@ Yarn::
 +
 [source,command line]
 ----
-yarn create @lightbend/akkasls-entity@latest my-entity
+yarn create @lightbend/kalix-entity@latest my-entity
 cd my-entity
 yarn
 yarn build

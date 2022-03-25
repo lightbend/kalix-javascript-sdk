@@ -2,7 +2,7 @@
 set -euo pipefail
 IFS=$'\n\t'
 
-PID_FILE=$1/.akkasls-pid
+PID_FILE=$1/.kalix-pid
 
 if [ -f "$PID_FILE" ]; then
     kill $(cat "$PID_FILE")

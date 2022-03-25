@@ -29,7 +29,7 @@ class EntityServiceSourceGeneratorSuite extends munit.FunSuite {
         entity)
     assertEquals(
       sourceDoc.layout.replace("\\", "/"), // Cope with windows testing
-      """/* This code was initialised by Akka Serverless tooling.
+      """/* This code was initialised by Kalix tooling.
         | * As long as this file exists it will not be re-generated.
         | * You are free to make changes to this file.
         | */
@@ -110,7 +110,7 @@ class EntityServiceSourceGeneratorSuite extends munit.FunSuite {
         entity)
     assertEquals(
       sourceDoc.layout.replace("\\", "/"), // Cope with windows testing
-      """/* This code was initialised by Akka Serverless tooling.
+      """/* This code was initialised by Kalix tooling.
         | * As long as this file exists it will not be re-generated.
         | * You are free to make changes to this file.
         | */
@@ -169,7 +169,7 @@ class EntityServiceSourceGeneratorSuite extends munit.FunSuite {
       EntityServiceSourceGenerator.typedefSource(service, entity)
     assertEquals(
       sourceDoc.layout.replace("\\", "/"), // Cope with windows testing
-      """/* This code is managed by Akka Serverless tooling.
+      """/* This code is managed by Kalix tooling.
         | * It will be re-generated to reflect any changes to your protobuf definitions.
         | * DO NOT EDIT
         | */
@@ -223,7 +223,7 @@ class EntityServiceSourceGeneratorSuite extends munit.FunSuite {
       EntityServiceSourceGenerator.typedefSource(service, entity)
     assertEquals(
       sourceDoc.layout.replace("\\", "/"), // Cope with windows testing
-      """/* This code is managed by Akka Serverless tooling.
+      """/* This code is managed by Kalix tooling.
         | * It will be re-generated to reflect any changes to your protobuf definitions.
         | * DO NOT EDIT
         | */
@@ -270,7 +270,7 @@ class EntityServiceSourceGeneratorSuite extends munit.FunSuite {
       EntityServiceSourceGenerator.testSource(service, entity, testSourceDirectory, sourceDirectory)
     assertEquals(
       sourceDoc.layout.replace("\\", "/"), // Cope with windows testing
-      """/* This code was initialised by Akka Serverless tooling.
+      """/* This code was initialised by Kalix tooling.
         | * As long as this file exists it will not be re-generated.
         | * You are free to make changes to this file.
         | */
@@ -321,7 +321,7 @@ class EntityServiceSourceGeneratorSuite extends munit.FunSuite {
       EntityServiceSourceGenerator.testSource(service, entity, testSourceDirectory, sourceDirectory)
     assertEquals(
       sourceDoc.layout.replace("\\", "/"), // Cope with windows testing
-      """/* This code was initialised by Akka Serverless tooling.
+      """/* This code was initialised by Kalix tooling.
         | * As long as this file exists it will not be re-generated.
         | * You are free to make changes to this file.
         | */
@@ -370,7 +370,7 @@ class EntityServiceSourceGeneratorSuite extends munit.FunSuite {
       EntityServiceSourceGenerator.integrationTestSource(service, entity, testSourceDirectory, sourceDirectory)
     assertEquals(
       sourceDoc.layout.replace("\\", "/"), // Cope with windows testing
-      """/* This code was initialised by Akka Serverless tooling.
+      """/* This code was initialised by Kalix tooling.
         | * As long as this file exists it will not be re-generated.
         | * You are free to make changes to this file.
         | */

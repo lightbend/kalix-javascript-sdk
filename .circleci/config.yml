@@ -263,7 +263,7 @@ jobs:
             echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/.npmrc
             pushd sdk && npm ci && npm publish --access public && popd
             git reset --hard HEAD
-            pushd npm-js/create-akkasls-entity && npm publish --access public && popd
+            pushd npm-js/create-kalix-entity && npm publish --access public && popd
             git reset --hard HEAD
             pushd npm-js/kalix-scripts && npm publish --access public && popd
 
@@ -312,7 +312,7 @@ jobs:
       - run:
           name: "install codegen"
           command: |
-            cd npm-js/create-akkasls-entity
+            cd npm-js/create-kalix-entity
             npm ci && npm pack
       - run:
           name: "install kalix-scripts"
@@ -332,7 +332,7 @@ jobs:
             export AKKASLS_NPMJS_SCRIPTS_VERSION="file:${HOME}/project/npm-js/kalix-scripts/lightbend-kalix-scripts-1.0.0.tgz"
             export AKKASLS_NPMJS_SDK_VERSION="file:${HOME}/project/sdk/lightbend-kalix-javascript-sdk-0.0.0.tgz"
             export KALIX_NPMJS_CODEGEN_BINARY="${HOME}/project/codegen/js-gen-cli/target/native-image/kalix-codegen-js"
-            node "${HOME}/project/npm-js/create-akkasls-entity/create-akkasls-entity.js" generated-project
+            node "${HOME}/project/npm-js/create-kalix-entity/create-kalix-entity.js" generated-project
             cd generated-project
             npm install && \
               npm run build && \
@@ -352,7 +352,7 @@ jobs:
           command: sbt kalix-codegen-js-cli/nativeImage
       - run:
           name: "install codegen"
-          working_directory: "~/project/npm-js/create-akkasls-entity"
+          working_directory: "~/project/npm-js/create-kalix-entity"
           command: |
             source /opt/circleci/.nvm/nvm.sh
             nvm install
@@ -380,7 +380,7 @@ jobs:
             nvm install v14
             export AKKASLS_NPMJS_SCRIPTS_VERSION="file:${HOME}/project/npm-js/kalix-scripts/lightbend-kalix-scripts-1.0.0.tgz"
             export AKKASLS_NPMJS_SDK_VERSION="file:${HOME}/project/sdk/lightbend-kalix-javascript-sdk-0.0.0.tgz"
-            node "${HOME}/project/npm-js/create-akkasls-entity/create-akkasls-entity.js" generated-project --template event-sourced-entity
+            node "${HOME}/project/npm-js/create-kalix-entity/create-kalix-entity.js" generated-project --template event-sourced-entity
       - run:
           name: "test up to unit tests"
           working_directory: "~/tmp/generated-project"

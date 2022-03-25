@@ -1,14 +1,14 @@
 {
   "name": "ts-replicated-entity-example",
   "version": "0.0.0",
-  "description": "Akka Serverless TypeScript SDK example for replicated entities",
+  "description": "Kalix TypeScript SDK example for replicated entities",
   "homepage": "https://github.com/lightbend/kalix-javascript-sdk",
   "bugs": {
     "url": "https://github.com/lightbend/kalix-javascript-sdk/issues"
   },
   "license": "Apache-2.0",
   "author": {
-    "name": "Akka Serverless Team",
+    "name": "Kalix Team",
     "email": "info@lightbend.com",
     "url": "https://lightbend.com"
   },

@@ -243,13 +243,13 @@ object SourceGenerator extends PrettyPrinter {
   private[js] def blockComment(lines: Doc*) = "/**" <> line <> ssep(lines.map(" *" <+> _), line) <> line <> " */"
 
   private[js] val initialisedCodeComment: Doc =
-    "/*" <+> "This code was initialised by Akka Serverless tooling." <> line <>
+    "/*" <+> "This code was initialised by Kalix tooling." <> line <>
     " *" <+> "As long as this file exists it will not be re-generated." <> line <>
     " *" <+> "You are free to make changes to this file." <> line <>
     " */"
 
   private[js] val managedCodeComment: Doc =
-    "/*" <+> "This code is managed by Akka Serverless tooling." <> line <>
+    "/*" <+> "This code is managed by Kalix tooling." <> line <>
     " *" <+> "It will be re-generated to reflect any changes to your protobuf definitions." <> line <>
     " *" <+> "DO NOT EDIT" <> line <>
     " */"

@@ -16,11 +16,11 @@ npm install
 npm link
 popd
 
-pushd create-akkasls-entity
-# Install create-akkasls-entity globally within the container
+pushd create-kalix-entity
+# Install create-kalix-entity globally within the container
 npm install
 npm pack
-npm i -g lightbend-create-akkasls-entity-1.0.0.tgz
+npm i -g lightbend-create-kalix-entity-1.0.0.tgz
 popd
 
 popd
