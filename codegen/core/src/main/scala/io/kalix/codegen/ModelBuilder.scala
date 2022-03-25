@@ -94,7 +94,7 @@ object ModelBuilder {
       extends Service(fqn, commands)
 
   /**
-   * A Service backed by an Kalix Entity
+   * A Service backed by a Kalix Entity
    */
   case class EntityService(
       override val fqn: FullyQualifiedName,

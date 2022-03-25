@@ -12,6 +12,6 @@ See this project's [README](create-kalix-entity/README.md) for more information.
 
 ## kalix-scripts
 
-This npm module provides the default `build`, `package` and `deploy` scripts for an Kalix codebase in a single managed package.
+This npm module provides the default `build`, `package` and `deploy` scripts for a Kalix codebase in a single managed package.
 
 See this project's [README](kalix-scripts/README.md) for more information.

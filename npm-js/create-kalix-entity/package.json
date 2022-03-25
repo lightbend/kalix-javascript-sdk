@@ -1,7 +1,7 @@
 {
   "name": "@lightbend/create-kalix-entity",
   "version": "1.0.0",
-  "description": "Create an Kalix entity codebase with a single command.",
+  "description": "Create a Kalix entity codebase with a single command.",
   "main": "",
   "repository": "https://github.com/lightbend/akkaserverless-npm-js",
   "author": "Lightbend Inc",

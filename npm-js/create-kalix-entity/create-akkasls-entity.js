@@ -25,7 +25,7 @@ const yargs = require('yargs/yargs');
 const { hideBin } = require('yargs/helpers');
 
 /**
- * Generates a new initial codebase for an Kalix entity.
+ * Generates a new initial codebase for a Kalix entity.
  *
  * Renders the contents of the `./template/base` directory overlayed with a second
  * subdirectory selected by the user (via the --template flag) using the Mustache
@@ -38,7 +38,7 @@ const args = yargs(hideBin(process.argv))
   .env('AKKASLS_NPMJS')
   .usage(
     '$0 <entity-name>',
-    'Generates a new initial codebase for an Kalix entity.',
+    'Generates a new initial codebase for a Kalix entity.',
     (yargs) => {
       yargs.positional('entity-name', {
         describe:
