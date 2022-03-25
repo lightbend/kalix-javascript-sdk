@@ -47,7 +47,7 @@ lazy val `kalix-codegen-js-cli` =
     .settings(commonSettings, Defaults.itSettings)
     .settings(
       buildInfoKeys := Seq[BuildInfoKey](version),
-      buildInfoPackage := "com.lightbend.kalix.codegen.js",
+      buildInfoPackage := "io.kalix.codegen.js",
       name in NativeImage := "kalix-codegen-js",
       /**
        * Due to limitations of the Windows command prompt/PowerShell, with a the native-image command fails with a long
@@ -135,7 +135,7 @@ lazy val library =
 lazy val commonSettings =
   Seq(
     scalaVersion := "2.13.4",
-    organization := "com.lightbend",
+    organization := "io.kalix",
     organizationName := "Lightbend Inc",
     startYear := Some(2021),
     scalacOptions ++= Seq("-unchecked", "-deprecation", "-language:_", "-encoding", "UTF-8", "-Ywarn-unused:imports"),

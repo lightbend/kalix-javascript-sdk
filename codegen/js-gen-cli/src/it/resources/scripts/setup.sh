@@ -3,7 +3,7 @@ set -euo pipefail
 IFS=$'\n\t'
 
 # Set up and install our npm-js tooling
-pushd akkaserverless-npm-js
+pushd kalix-npm-js
 
 pushd kalix-scripts
 # Disable download of codegen CLI, and manually add our version

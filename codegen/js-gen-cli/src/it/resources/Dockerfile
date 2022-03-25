@@ -1,7 +1,7 @@
 FROM node:16.1-buster
 
 WORKDIR /home
-ADD ./akkaserverless-npm-js akkaserverless-npm-js
+ADD ./kalix-npm-js kalix-npm-js
 ADD ./kalix-codegen-js kalix-codegen-js
 ADD ./scripts scripts
 
