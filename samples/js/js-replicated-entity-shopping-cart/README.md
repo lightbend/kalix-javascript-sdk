@@ -64,13 +64,13 @@ npm run build && npm run start
 With both the proxy and your application running, any defined endpoints should be available at `http://localhost:9000`. In addition to the defined gRPC interface, each method has a corresponding HTTP endpoint. Unless configured otherwise (see [Transcoding HTTP](https://docs.kalix.io/javascript/proto.html#_transcoding_http)), this endpoint accepts POST requests at the path `/[package].[entity name]/[method]`. For example, using `curl`:
 
 ```shell
-curl -XPOST -H "Content-Type: application/json" -d '{"product_id": "akka-tshirt", "name": "Akka T-shirt", "quantity": 3}' localhost:9000/cart/cart1/items/add
+curl -XPOST -H "Content-Type: application/json" -d '{"product_id": "kalix-tshirt", "name": "Kalix T-shirt", "quantity": 3}' localhost:9000/cart/cart1/items/add
 ```
 
 Send an `AddItem` command:
 
 ```shell
-grpcurl --plaintext -d '{"cart_id": "cart1", "product_id": "akka-tshirt", "name": "Akka T-shirt", "quantity": 3}' localhost:9000 com.example.shoppingcart.ShoppingCartService/AddItem
+grpcurl --plaintext -d '{"cart_id": "cart1", "product_id": "kalix-tshirt", "name": "Kalix T-shirt", "quantity": 3}' localhost:9000 com.example.shoppingcart.ShoppingCartService/AddItem
 ```
 
 Send a `GetCart` command:
@@ -82,7 +82,7 @@ grpcurl --plaintext -d '{"cart_id": "cart1"}' localhost:9000 com.example.shoppin
 Send a `RemoveItem` command:
 
 ```shell
-grpcurl --plaintext -d '{"cart_id": "cart1", "product_id": "akka-tshirt", "name": "Akka T-shirt"}' localhost:9000 com.example.shoppingcart.ShoppingCartService/RemoveItem
+grpcurl --plaintext -d '{"cart_id": "cart1", "product_id": "kalix-tshirt", "name": "Kalix T-shirt"}' localhost:9000 com.example.shoppingcart.ShoppingCartService/RemoveItem
 ```
 
 Send a `RemoveCart` command:

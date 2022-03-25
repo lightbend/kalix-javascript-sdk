@@ -66,7 +66,7 @@ With both the proxy and your application running, any defined endpoints should b
 Send an `AddItem` command:
 
 ```shell
-grpcurl --plaintext -d '{"cart_id": "cart1", "product_id": "akka-tshirt", "name": "Akka T-shirt", "quantity": 3}' localhost:9000 com.example.shoppingcart.ShoppingCartService/AddItem
+grpcurl --plaintext -d '{"cart_id": "cart1", "product_id": "kalix-tshirt", "name": "Kalix T-shirt", "quantity": 3}' localhost:9000 com.example.shoppingcart.ShoppingCartService/AddItem
 ```
 
 Send a `GetCart` command:
@@ -78,7 +78,7 @@ grpcurl --plaintext -d '{"cart_id": "cart1"}' localhost:9000 com.example.shoppin
 Send a `RemoveItem` command:
 
 ```shell
-grpcurl --plaintext -d '{"cart_id": "cart1", "product_id": "akka-tshirt"}' localhost:9000 com.example.shoppingcart.ShoppingCartService/RemoveItem
+grpcurl --plaintext -d '{"cart_id": "cart1", "product_id": "kalix-tshirt"}' localhost:9000 com.example.shoppingcart.ShoppingCartService/RemoveItem
 ```
 
 Send a `RemoveCart` command:
