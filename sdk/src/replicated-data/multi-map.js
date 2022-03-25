@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-const debug = require('debug')('akkaserverless-replicated-entity');
+const debug = require('debug')('kalix-replicated-entity');
 const ReplicatedSet = require('./set');
 const AnySupport = require('../protobuf-any');
 const iterators = require('./iterators');
@@ -25,8 +25,8 @@ const util = require('util');
  *
  * A replicated map that maps keys to values, where each key may be associated with multiple values.
  *
- * @constructor module:akkaserverless.replicatedentity.ReplicatedMultiMap
- * @implements module:akkaserverless.replicatedentity.ReplicatedData
+ * @constructor module:kalix.replicatedentity.ReplicatedMultiMap
+ * @implements module:kalix.replicatedentity.ReplicatedData
  */
 function ReplicatedMultiMap() {
   const entries = new Map();
@@ -38,9 +38,9 @@ function ReplicatedMultiMap() {
   /**
    * Get the values for the given key.
    *
-   * @function module:akkaserverless.replicatedentity.ReplicatedMultiMap#get
-   * @param {module:akkaserverless.Serializable} key The key of the entry.
-   * @returns {Set<module:akkaserverless.Serializable>} The current values at the given key, or an empty Set.
+   * @function module:kalix.replicatedentity.ReplicatedMultiMap#get
+   * @param {module:kalix.Serializable} key The key of the entry.
+   * @returns {Set<module:kalix.Serializable>} The current values at the given key, or an empty Set.
    */
   this.get = (key) => {
     const entry = entries.get(AnySupport.toComparable(key));
@@ -50,10 +50,10 @@ function ReplicatedMultiMap() {
   /**
    * Store a key-value pair.
    *
-   * @function module:akkaserverless.replicatedentity.ReplicatedMultiMap#put
-   * @param {module:akkaserverless.Serializable} key The key of the entry.
-   * @param {module:akkaserverless.Serializable} value The value to add to the entry.
-   * @returns {module:akkaserverless.replicatedentity.ReplicatedMultiMap} This multimap.
+   * @function module:kalix.replicatedentity.ReplicatedMultiMap#put
+   * @param {module:kalix.Serializable} key The key of the entry.
+   * @param {module:kalix.Serializable} value The value to add to the entry.
+   * @returns {module:kalix.replicatedentity.ReplicatedMultiMap} This multimap.
    */
   this.put = function (key, value) {
     this.getOrCreateValues(key).add(value);
@@ -63,10 +63,10 @@ function ReplicatedMultiMap() {
   /**
    * Store multiple values for a key.
    *
-   * @function module:akkaserverless.replicatedentity.ReplicatedMultiMap#putAll
-   * @param {module:akkaserverless.Serializable} key The key of the entry.
-   * @param {Iterator<module:akkaserverless.Serializable>} values The values to add to the entry.
-   * @returns {module:akkaserverless.replicatedentity.ReplicatedMultiMap} This multimap.
+   * @function module:kalix.replicatedentity.ReplicatedMultiMap#putAll
+   * @param {module:kalix.Serializable} key The key of the entry.
+   * @param {Iterator<module:kalix.Serializable>} values The values to add to the entry.
+   * @returns {module:kalix.replicatedentity.ReplicatedMultiMap} This multimap.
    */
   this.putAll = function (key, values) {
     this.getOrCreateValues(key).addAll(values);
@@ -76,10 +76,10 @@ function ReplicatedMultiMap() {
   /**
    * Delete a single key-value pair for the given key and value.
    *
-   * @function module:akkaserverless.replicatedentity.ReplicatedMultiMap#delete
-   * @param {module:akkaserverless.Serializable} key The key of the entry.
-   * @param {module:akkaserverless.Serializable} value The value to remove from the entry.
-   * @return {module:akkaserverless.replicatedentity.ReplicatedMultiMap} This multimap.
+   * @function module:kalix.replicatedentity.ReplicatedMultiMap#delete
+   * @param {module:kalix.Serializable} key The key of the entry.
+   * @param {module:kalix.Serializable} value The value to remove from the entry.
+   * @return {module:kalix.replicatedentity.ReplicatedMultiMap} This multimap.
    */
   this.delete = function (key, value) {
     const comparableKey = AnySupport.toComparable(key);
@@ -94,9 +94,9 @@ function ReplicatedMultiMap() {
   /**
    * Delete all values associated with the given key.
    *
-   * @function module:akkaserverless.replicatedentity.ReplicatedMultiMap#deleteAll
-   * @param {module:akkaserverless.Serializable} key The key of the entry.
-   * @return {module:akkaserverless.replicatedentity.ReplicatedMultiMap} This multimap.
+   * @function module:kalix.replicatedentity.ReplicatedMultiMap#deleteAll
+   * @param {module:kalix.Serializable} key The key of the entry.
+   * @return {module:kalix.replicatedentity.ReplicatedMultiMap} This multimap.
    */
   this.deleteAll = function (key) {
     const comparableKey = AnySupport.toComparable(key);
@@ -110,8 +110,8 @@ function ReplicatedMultiMap() {
   /**
    * Check whether this multimap contains at least one value for the given key.
    *
-   * @function module:akkaserverless.replicatedentity.ReplicatedMultiMap#has
-   * @param {module:akkaserverless.Serializable} key The key to check.
+   * @function module:kalix.replicatedentity.ReplicatedMultiMap#has
+   * @param {module:kalix.Serializable} key The key to check.
    * @returns {boolean} True if this multimap contains any values for the given key.
    */
   this.has = function (key) {
@@ -121,9 +121,9 @@ function ReplicatedMultiMap() {
   /**
    * Check whether this multimap contains the given value associated with the given key.
    *
-   * @function module:akkaserverless.replicatedentity.ReplicatedMultiMap#hasValue
-   * @param {module:akkaserverless.Serializable} key The key to check.
-   * @param {module:akkaserverless.Serializable} value The value to check.
+   * @function module:kalix.replicatedentity.ReplicatedMultiMap#hasValue
+   * @param {module:kalix.Serializable} key The key to check.
+   * @param {module:kalix.Serializable} value The value to check.
    * @returns {boolean} True if the key-value pair is in this multimap.
    */
   this.hasValue = function (key, value) {
@@ -135,7 +135,7 @@ function ReplicatedMultiMap() {
   /**
    * The total number of values stored in the multimap.
    *
-   * @name module:akkaserverless.replicatedentity.ReplicatedMultiMap#size
+   * @name module:kalix.replicatedentity.ReplicatedMultiMap#size
    * @type {number}
    * @readonly
    */
@@ -151,7 +151,7 @@ function ReplicatedMultiMap() {
   /**
    * The number of keys with values stored in the multimap.
    *
-   * @name module:akkaserverless.replicatedentity.ReplicatedMultiMap#keysSize
+   * @name module:kalix.replicatedentity.ReplicatedMultiMap#keysSize
    * @type {number}
    * @readonly
    */
@@ -164,8 +164,8 @@ function ReplicatedMultiMap() {
   /**
    * Return an iterator of the keys of this multimap.
    *
-   * @function module:akkaserverless.replicatedentity.ReplicatedMultiMap#keys
-   * @returns {IterableIterator<module:akkaserverless.Serializable>}
+   * @function module:kalix.replicatedentity.ReplicatedMultiMap#keys
+   * @returns {IterableIterator<module:kalix.Serializable>}
    */
   this.keys = function () {
     return iterators.map(entries.values(), (entry) => entry.key);
@@ -174,8 +174,8 @@ function ReplicatedMultiMap() {
   /**
    * Clear all entries from this multimap.
    *
-   * @function module:akkaserverless.replicatedentity.ReplicatedMultiMap#clear
-   * @return {module:akkaserverless.replicatedentity.ReplicatedMultiMap} This multimap.
+   * @function module:kalix.replicatedentity.ReplicatedMultiMap#clear
+   * @return {module:kalix.replicatedentity.ReplicatedMultiMap} This multimap.
    */
   this.clear = function () {
     if (entries.size > 0) {

@@ -15,10 +15,10 @@
  */
 
 // tag::register[]
-import { AkkaServerless } from "@lightbend/akkaserverless-javascript-sdk";
+import { Kalix } from "@lightbend/akkaserverless-javascript-sdk";
 import shoppingcart from "./shoppingcart.js";
 
-new AkkaServerless() // <1>
+new Kalix() // <1>
   .addComponent(shoppingcart) // <2>
   .start(); // <3>
 // end::register[]

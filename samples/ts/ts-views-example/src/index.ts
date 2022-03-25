@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import { AkkaServerless } from "@lightbend/akkaserverless-javascript-sdk";
+import { Kalix } from "@lightbend/akkaserverless-javascript-sdk";
 import usersEntity from "./users";
 import usersByMailView from "./users-by-email";
 import usersMailCountView from "./user-email-count";
 
-new AkkaServerless()
+new Kalix()
   .addComponent(usersEntity)
   .addComponent(usersByMailView)
   .addComponent(usersMailCountView)

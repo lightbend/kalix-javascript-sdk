@@ -17,28 +17,28 @@
 /**
  * gRPC client.
  *
- * @interface module:akkaserverless.GrpcClient
+ * @interface module:kalix.GrpcClient
  * @extends grpc.Client
  */
 
 /**
  * gRPC client creator for a service.
  * 
- * @interface module:akkaserverless.GrpcClientCreator
+ * @interface module:kalix.GrpcClientCreator
  */
 
 /**
  * Create a new client for service.
  *
- * @function module:akkaserverless.GrpcClientCreator#createClient
+ * @function module:kalix.GrpcClientCreator#createClient
  * @param {string} address the address for the service
  * @param {grpc.ChannelCredentials} [credentials] the credentials for the connection
- * @returns {module:akkaserverless.GrpcClient} a new gRPC client for the service
+ * @returns {module:kalix.GrpcClient} a new gRPC client for the service
  */
 
 /**
  * gRPC client lookup, using fully qualified name for service.
  * 
- * @typedef module:akkaserverless.GrpcClientLookup
- * @type {Object.<string, (module:akkaserverless.GrpcClientLookup | module:akkaserverless.GrpcClientCreator)>}
+ * @typedef module:kalix.GrpcClientLookup
+ * @type {Object.<string, (module:kalix.GrpcClientLookup | module:kalix.GrpcClientCreator)>}
  */

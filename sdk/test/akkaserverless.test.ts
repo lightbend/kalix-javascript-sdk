@@ -15,7 +15,7 @@
  */
 
 import {
-  AkkaServerless,
+  Kalix,
   ComponentOptions,
   EntityOptions,
 } from '../src/akkaserverless';
@@ -26,7 +26,7 @@ should();
 describe('Akkaserverless', () => {
   it('should generate working links based on error codes', () => {
     // Arrange
-    const akkasls = new AkkaServerless({
+    const akkasls = new Kalix({
       descriptorSetPath: 'test/user-function-test.desc',
     });
 
@@ -47,7 +47,7 @@ describe('Akkaserverless', () => {
 
   it('format correctly the source code for errors', () => {
     // Arrange
-    const akkasls = new AkkaServerless({
+    const akkasls = new Kalix({
       descriptorSetPath: 'test/user-function-test.desc',
     });
     const location = new discovery.UserFunctionError.SourceLocation();
@@ -81,7 +81,7 @@ describe('Akkaserverless', () => {
 
   it('report correctly errors', () => {
     // Arrange
-    const akkasls = new AkkaServerless({
+    const akkasls = new Kalix({
       descriptorSetPath: 'test/user-function-test.desc',
     });
     const location = new discovery.UserFunctionError.SourceLocation();
@@ -131,7 +131,7 @@ At package.test.json:2:4:
 
   it('discovery service should return correct service info', () => {
     // Arrange
-    const akkasls = new AkkaServerless({
+    const akkasls = new Kalix({
       descriptorSetPath: 'test/user-function-test.desc',
       serviceName: 'my-service',
       serviceVersion: '1.2.3',
@@ -158,7 +158,7 @@ At package.test.json:2:4:
 
   it('discovery service should return correct components', () => {
     // Arrange
-    const akkasls = new AkkaServerless({
+    const akkasls = new Kalix({
       descriptorSetPath: 'test/user-function-test.desc',
     });
     const proxyInfo = new discovery.ProxyInfo();
@@ -218,7 +218,7 @@ At package.test.json:2:4:
 
   it('discovery service should return correct components with passivation', () => {
     // Arrange
-    const akkasls = new AkkaServerless({
+    const akkasls = new Kalix({
       descriptorSetPath: 'test/user-function-test.desc',
     });
     const proxyInfo = new discovery.ProxyInfo();

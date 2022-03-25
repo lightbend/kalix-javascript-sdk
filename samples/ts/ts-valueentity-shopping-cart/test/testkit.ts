@@ -20,7 +20,7 @@ import {
 } from "@lightbend/akkaserverless-javascript-sdk";
 
 /**
- * Mocks the behaviour of a single Akka Serverless Value entity.
+ * Mocks the behaviour of a single Kalix Value entity.
  *
  * Handles any commands, internally maintaining the state.
  *
@@ -76,7 +76,7 @@ export class MockValueEntity<S> {
 }
 
 /**
- * Generic mock CommandContext for any Akka Serverless entity
+ * Generic mock CommandContext for any Kalix entity
  * @type { import("../lib/akkaserverless").CommandContext }
  */
 export class MockCommandContext {
@@ -108,9 +108,9 @@ export class MockCommandContext {
 }
 
 /**
- * Mocks the behaviour of the command context object within Akka Serverless.
+ * Mocks the behaviour of the command context object within Kalix.
  *
- * By default, calls to [AkkaServerlessTestKitEntity~handleCommand] will
+ * By default, calls to [KalixTestKitEntity~handleCommand] will
  * construct their own instance of this class, however for making assertions on
  * forwarding or emmitted effects you may provide your own.
  *

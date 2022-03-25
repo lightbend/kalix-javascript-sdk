@@ -19,7 +19,7 @@ const protobufHelper = require('./protobuf-helper');
 const grpc = require('@grpc/grpc-js');
 const protoLoader = require('@grpc/proto-loader');
 const ActionSupport = require('./action-support');
-const AkkaServerless = require('./akkaserverless');
+const Kalix = require('./kalix');
 const { GrpcUtil } = require('./grpc-util');
 
 const actionServices = new ActionSupport();
@@ -27,7 +27,7 @@ const actionServices = new ActionSupport();
 /**
  * Options for an action.
  *
- * @typedef module:akkaserverless.Action~options
+ * @typedef module:kalix.Action~options
  * @property {array<string>} [includeDirs=["."]] The directories to include when looking up imported protobuf files.
  * @property {array<string>} [forwardHeaders=[]] request headers to be forwarded as metadata to the action
  */
@@ -35,18 +35,18 @@ const actionServices = new ActionSupport();
 /**
  * A unary action command handler.
  *
- * @callback module:akkaserverless.Action~unaryCommandHandler
+ * @callback module:kalix.Action~unaryCommandHandler
  * @param {Object} command The command message, this will be of the type of the gRPC service call input type.
- * @param {module:akkaserverless.Action.UnaryCommandContext} context The command context.
- * @returns {undefined|Object|Promise.<any>|module:akkaserverless.replies.Reply} The message to reply with, it must match the gRPC service call output type for
+ * @param {module:kalix.Action.UnaryCommandContext} context The command context.
+ * @returns {undefined|Object|Promise.<any>|module:kalix.replies.Reply} The message to reply with, it must match the gRPC service call output type for
  *                                     this command. If replying by using context.write, undefined must be returned.
  */
 
 /**
  * A streamed in action command handler.
  *
- * @callback module:akkaserverless.Action~streamedInCommandHandler
- * @param {module:akkaserverless.Action.StreamedInCommandContext} context The command context.
+ * @callback module:kalix.Action~streamedInCommandHandler
+ * @param {module:kalix.Action.StreamedInCommandContext} context The command context.
  * @returns {undefined|Object|Promise.<any>} The message to reply with, it must match the gRPC service call output type for
  *                                     this command. If replying by using context.write, undefined must be returned.
  */
@@ -54,30 +54,30 @@ const actionServices = new ActionSupport();
 /**
  * A streamed out command handler.
  *
- * @callback module:akkaserverless.Action~streamedOutCommandHandler
+ * @callback module:kalix.Action~streamedOutCommandHandler
  * @param {Object} command The command message, this will be of the type of the gRPC service call input type.
- * @param {module:akkaserverless.Action.StreamedOutCommandContext} context The command context.
+ * @param {module:kalix.Action.StreamedOutCommandContext} context The command context.
  */
 
 /**
  * A streamed command handler.
  *
- * @callback module:akkaserverless.Action~streamedCommandHandler
- * @param {module:akkaserverless.Action.StreamedCommandContext} context The command context.
+ * @callback module:kalix.Action~streamedCommandHandler
+ * @param {module:kalix.Action.StreamedCommandContext} context The command context.
  */
 
 /**
  * An action command handler.
  *
- * @typedef module:akkaserverless.Action.ActionCommandHandler
- * @type {module:akkaserverless.Action~unaryCommandHandler|module:akkaserverless.Action~streamedInCommandHandler|module:akkaserverless.Action~streamedOutCommandHandler|module:akkaserverless.Action~streamedCommandHandler}
+ * @typedef module:kalix.Action.ActionCommandHandler
+ * @type {module:kalix.Action~unaryCommandHandler|module:kalix.Action~streamedInCommandHandler|module:kalix.Action~streamedOutCommandHandler|module:kalix.Action~streamedCommandHandler}
  */
 
 /**
  * An action.
  *
- * @memberOf module:akkaserverless
- * @implements module:akkaserverless.Component
+ * @memberOf module:kalix
+ * @implements module:kalix.Component
  */
 class Action {
   /**
@@ -86,11 +86,11 @@ class Action {
    * @constructs
    * @param {string|string[]} desc A descriptor or list of descriptors to parse, containing the service to serve.
    * @param {string} serviceName The fully qualified name of the service that provides this interface.
-   * @param {module:akkaserverless.Action~options=} options The options for this action
+   * @param {module:kalix.Action~options=} options The options for this action
    */
   constructor(desc, serviceName, options) {
     /**
-     * @type {module:akkaserverless.Action~options}
+     * @type {module:kalix.Action~options}
      */
     this.options = {
       ...{
@@ -124,7 +124,7 @@ class Action {
     /**
      * Access to gRPC clients (with promisified unary methods).
      *
-     * @type module:akkaserverless.GrpcClientLookup
+     * @type module:kalix.GrpcClientLookup
      */
     this.clients = GrpcUtil.clientCreators(this.root, this.grpc);
 
@@ -133,7 +133,7 @@ class Action {
      *
      * The names of the properties must match the names of the service calls specified in the gRPC descriptor
      *
-     * @type {Object.<string, module:akkaserverless.Action.ActionCommandHandler>}
+     * @type {Object.<string, module:kalix.Action.ActionCommandHandler>}
      */
     this.commandHandlers = {};
   }
@@ -160,8 +160,8 @@ class Action {
   /**
    * Set the command handlers for this action.
    *
-   * @param {Object.<string, module:akkaserverless.Action.ActionCommandHandler>} handlers The command handlers.
-   * @return {module:akkaserverless.Action} This action.
+   * @param {Object.<string, module:kalix.Action.ActionCommandHandler>} handlers The command handlers.
+   * @return {module:kalix.Action} This action.
    */
   setCommandHandlers(commandHandlers) {
     this.commandHandlers = commandHandlers;

@@ -18,14 +18,14 @@ const protobufHelper = require('./protobuf-helper');
 const grpc = require('@grpc/grpc-js');
 const protoLoader = require('@grpc/proto-loader');
 const ViewServices = require('./view-support');
-const AkkaServerless = require('./akkaserverless');
+const Kalix = require('./kalix');
 
 const viewServices = new ViewServices();
 
 /**
  * Options for a view.
  *
- * @typedef module:akkaserverless.View~options
+ * @typedef module:kalix.View~options
  * @property {string} [viewId=serviceName] The id for the view, used for persisting the view.
  * @property {array<string>} [includeDirs=["."]] The directories to include when looking up imported protobuf files.
  */
@@ -35,25 +35,25 @@ const viewServices = new ViewServices();
  * The names of the properties must match the names of all the view methods specified in the gRPC
  * descriptor.
  *
- * @typedef module:akkaserverless.View~handlers
- * @type {Object<string, module:akkaserverless.View~handler>}
+ * @typedef module:kalix.View~handlers
+ * @type {Object<string, module:kalix.View~handler>}
  */
 
 /**
  * A handler for transforming an incoming event and the previous view state into a new state
  *
- * @callback module:akkaserverless.View~handler
+ * @callback module:kalix.View~handler
  * @param {Object} event The event, this will be of the type of the gRPC event handler input type.
- * @param {undefined|module:akkaserverless.Serializable} state The previous view state or 'undefined' if no previous state was stored.
- * @param {module:akkaserverless.View.UpdateHandlerContext} context The view handler context.
- * @returns {undefined|module:akkaserverless.Serializable} The state to store in the view or undefined to not update/store state for the event
+ * @param {undefined|module:kalix.Serializable} state The previous view state or 'undefined' if no previous state was stored.
+ * @param {module:kalix.View.UpdateHandlerContext} context The view handler context.
+ * @returns {undefined|module:kalix.Serializable} The state to store in the view or undefined to not update/store state for the event
  */
 
 /**
  * A view.
  *
- * @memberOf module:akkaserverless
- * @implements module:akkaserverless.Component
+ * @memberOf module:kalix
+ * @implements module:kalix.Component
  */
 class View {
   /**
@@ -62,11 +62,11 @@ class View {
    * @constructs
    * @param {string|string[]} desc A descriptor or list of descriptors to parse, containing the service to serve.
    * @param {string} serviceName The fully qualified name of the service that provides this interface.
-   * @param {module:akkaserverless.View~options=} options The options for this view
+   * @param {module:kalix.View~options=} options The options for this view
    */
   constructor(desc, serviceName, options) {
     /**
-     * @type {module:akkaserverless.View~options}
+     * @type {module:kalix.View~options}
      */
     this.options = {
       ...{
@@ -124,8 +124,8 @@ class View {
    * Set the update handlers of the view. Only used for updates where event transformation is enabled through
    * "transform_updates: true" in the grpc descriptor.
    *
-   * @param {module:akkaserverless.View~handlers} handlers The handler callbacks.
-   * @return {module:akkaserverless.View} This view.
+   * @param {module:kalix.View~handlers} handlers The handler callbacks.
+   * @return {module:kalix.View} This view.
    */
   setUpdateHandlers(handlers) {
     this.updateHandlers = handlers;

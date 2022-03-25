@@ -18,7 +18,7 @@ import * as grpc from '@grpc/grpc-js';
 import * as settings from '../settings';
 import { GrpcUtil } from './grpc-util';
 
-import { AkkaServerless, Component } from './akkaserverless';
+import { Kalix, Component } from './kalix';
 import { GenericContainer, TestContainers, Wait } from 'testcontainers';
 
 const defaultDockerImage = `gcr.io/akkaserverless-public/akkaserverless-proxy:${settings.frameworkVersion}`;
@@ -29,7 +29,7 @@ const defaultDockerImage = `gcr.io/akkaserverless-public/akkaserverless-proxy:${
 export class IntegrationTestkit {
   private options: any = { dockerImage: defaultDockerImage };
   private clients: any;
-  private akkaServerless: AkkaServerless;
+  private kalix: Kalix;
   private proxyContainer: any;
 
   constructor(options?: any) {
@@ -41,7 +41,7 @@ export class IntegrationTestkit {
     }
 
     this.clients = {};
-    this.akkaServerless = new AkkaServerless(options);
+    this.kalix = new Kalix(options);
   }
 
   /**
@@ -51,7 +51,7 @@ export class IntegrationTestkit {
    * @returns this testkit
    */
   addComponent(component: Component): IntegrationTestkit {
-    this.akkaServerless.addComponent(component);
+    this.kalix.addComponent(component);
     return this;
   }
 
@@ -74,7 +74,7 @@ export class IntegrationTestkit {
 
   private async asyncStart() {
     // First start this user function
-    const boundPort = await this.akkaServerless.start({ port: 0 });
+    const boundPort = await this.kalix.start({ port: 0 });
 
     await TestContainers.exposeHostPorts(boundPort);
 
@@ -95,7 +95,7 @@ export class IntegrationTestkit {
     const proxyPort = proxyContainer.getMappedPort(9000);
 
     // Create clients
-    this.akkaServerless.getComponents().forEach((entity: Component) => {
+    this.kalix.getComponents().forEach((entity: Component) => {
       const parts = entity.serviceName ? entity.serviceName.split('.') : [];
       if (entity.grpc) {
         let stub: any = entity.grpc;
@@ -133,8 +133,8 @@ export class IntegrationTestkit {
       proxyContainerStopped = Promise.resolve();
     }
     proxyContainerStopped.then(
-      () => this.akkaServerless.tryShutdown(callback),
-      (err) => this.akkaServerless.tryShutdown(() => callback(err)),
+      () => this.kalix.tryShutdown(callback),
+      (err) => this.kalix.tryShutdown(() => callback(err)),
     );
   }
 }

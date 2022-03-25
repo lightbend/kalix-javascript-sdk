@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 // tag::entity-class[]
-import akkaserverless from "@lightbend/akkaserverless-javascript-sdk";
-const ValueEntity = akkaserverless.ValueEntity;
+import kalix from "@lightbend/akkaserverless-javascript-sdk";
+const ValueEntity = kalix.ValueEntity;
 
 /**
  * Type definitions.

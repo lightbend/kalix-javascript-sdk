@@ -1,7 +1,7 @@
 {
   "name": "js-customer-registry",
   "version": "0.0.0",
-  "description": "Akka Serverless JavaScript SDK sample application for customer registry",
+  "description": "Kalix JavaScript SDK sample application for customer registry",
   "engineStrict": true,
   "engines": {
     "node": "~14"

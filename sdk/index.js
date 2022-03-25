@@ -20,7 +20,7 @@
  * @module akkaserverless
  */
 
-module.exports.AkkaServerless = require('./src/akkaserverless').AkkaServerless;
+module.exports.Kalix = require('./src/akkaserverless').Kalix;
 module.exports.EventSourcedEntity = require('./src/event-sourced-entity');
 module.exports.ValueEntity = require('./src/value-entity');
 module.exports.replicatedentity = require('./src/replicated-entity');

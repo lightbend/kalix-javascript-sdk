@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import akkaserverless from "@lightbend/akkaserverless-javascript-sdk";
+import kalix from "@lightbend/akkaserverless-javascript-sdk";
 import { expect } from "chai";
 import counter from "../src/counter.js";
 
-const testkit = new akkaserverless.IntegrationTestkit();
+const testkit = new kalix.IntegrationTestkit();
 testkit.addComponent(counter);
 
 function client() {

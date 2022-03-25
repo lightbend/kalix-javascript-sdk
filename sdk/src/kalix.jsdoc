@@ -15,75 +15,75 @@
  */
 
 /**
- * Akka Serverless Component.
+ * Kalix Component.
  *
- * @interface module:akkaserverless.Component
+ * @interface module:kalix.Component
  */
 
 /**
- * Akka Serverless Entity.
+ * Kalix Entity.
  *
- * @interface module:akkaserverless.Entity
- * @extends module:akkaserverless.Component
+ * @interface module:kalix.Entity
+ * @extends module:kalix.Component
  */
 
 /**
- * Akka Serverless service.
+ * Kalix service.
  *
- * @class module:akkaserverless.AkkaServerless
- * @param {module:akkaserverless.AkkaServerlessOptions} [options] The options for starting the service.
+ * @class module:kalix.Kalix
+ * @param {module:kalix.AkkaOptions} [options] The options for starting the service.
  */
 
 /**
- * @interface module:akkaserverless.AkkaServerlessOptions
+ * @interface module:kalix.AkkaOptions
  * @property {string} [serviceName] The name of this service (defaults to name from package.json).
  * @property {string} [serviceVersion] The version of this service (defaults to version from package.json).
  * @property {string} [descriptorSetPath="user-function.desc"] Path to a Protobuf FileDescriptor
  *     set, as output by protoc --descriptor_set_out=somefile.desc. This file must contain all of the component services
- *     that this Akka Serverless service serves. See the `compile-descriptor` command for creating this file.
+ *     that this Kalix service serves. See the `compile-descriptor` command for creating this file.
  */
 
 /**
- * Add one or more components to this AkkaServerless service.
+ * Add one or more components to this Kalix service.
  *
- * @function module:akkaserverless.AkkaServerless#addComponent
- * @param {...module:akkaserverless~Component} components The components to add.
- * @returns {module:akkaserverless.AkkaServerless} this AkkaServerless service.
+ * @function module:kalix.Kalix#addComponent
+ * @param {...module:kalix~Component} components The components to add.
+ * @returns {module:kalix.Kalix} this Kalix service.
  */
 
 /**
  * Service binding with address and port.
  *
- * @interface module:akkaserverless.ServiceBinding
- * @property {string} [address] The address to bind the Akka Serverless service to.
- * @property {number} [port] The port to bind the Akka Serverless service to.
+ * @interface module:kalix.ServiceBinding
+ * @property {string} [address] The address to bind the Kalix service to.
+ * @property {number} [port] The port to bind the Kalix service to.
  */
 
 /**
- * Start the Akka Serverless service.
+ * Start the Kalix service.
  *
- * @function module:akkaserverless.AkkaServerless#start
- * @param {module:akkaserverless.ServiceBinding} [binding] optional address/port binding to start the service on.
+ * @function module:kalix.Kalix#start
+ * @param {module:kalix.ServiceBinding} [binding] optional address/port binding to start the service on.
  * @returns {Promise.<number>} A Promise of the bound port for this service.
  */
 
 /**
- * Shut down the Akka Serverless service.
+ * Shut down the Kalix service.
  *
- * @function module:akkaserverless.AkkaServerless#shutdown
+ * @function module:kalix.Kalix#shutdown
  */
 
 /**
- * Shut down the Akka Serverless service.
+ * Shut down the Kalix service.
  *
- * @function module:akkaserverless.AkkaServerless#tryShutdown
- * @param {module:akkaserverless.AkkaServerless~shutdownCallback} callback - shutdown callback, accepting possible error
+ * @function module:kalix.Kalix#tryShutdown
+ * @param {module:kalix.Kalix~shutdownCallback} callback - shutdown callback, accepting possible error
  */
 
 /**
  * Callback for tryShutdown, accepting possible error.
  *
- * @callback module:akkaserverless.AkkaServerless~shutdownCallback
+ * @callback module:kalix.Kalix~shutdownCallback
  * @param {Error} [error] Error on shutting down the service.
  */
 
@@ -91,7 +91,7 @@
  * Replicated write consistency setting for replicated entities.
  *
  * @readonly
- * @name module:akkaserverless.ReplicatedWriteConsistency
+ * @name module:kalix.ReplicatedWriteConsistency
  * @enum {number}
  * @property {number} LOCAL Updates will only be written to the local replica immediately, and then asynchronously
  *                          distributed to other replicas in the background.

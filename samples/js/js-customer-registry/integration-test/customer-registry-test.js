@@ -15,10 +15,10 @@
  */
 
 // tag::client[]
-const akkaserverless = require("@lightbend/akkaserverless-javascript-sdk");
+const kalix = require("@lightbend/akkaserverless-javascript-sdk");
 const should = require("chai").should();
 
-const testkit = new akkaserverless.IntegrationTestkit();
+const testkit = new kalix.IntegrationTestkit();
 testkit.addComponent(require("../customer-value-entity"))
 testkit.addComponent(require("../customer-value-entity-view"))
 

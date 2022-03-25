@@ -18,7 +18,7 @@ const path = require('path');
 const grpc = require('@grpc/grpc-js');
 const protoLoader = require('@grpc/proto-loader');
 
-const debug = require('debug')('akkaserverless-event-sourced-entity');
+const debug = require('debug')('kalix-event-sourced-entity');
 // Bind to stdout
 debug.log = console.log.bind(console);
 const AnySupport = require('./protobuf-any');
@@ -121,9 +121,9 @@ class EventSourcedEntityHandler {
           /**
            * Context for an event sourced command.
            *
-           * @interface module:akkaserverless.EventSourcedEntity.EventSourcedEntityCommandContext
-           * @extends module:akkaserverless.CommandContext
-           * @extends module:akkaserverless.EntityContext
+           * @interface module:kalix.EventSourcedEntity.EventSourcedEntityCommandContext
+           * @extends module:kalix.CommandContext
+           * @extends module:kalix.EntityContext
            */
 
           ctx.events = [];
@@ -134,8 +134,8 @@ class EventSourcedEntityHandler {
            * The event won't be persisted until the reply is sent to the proxy. Then, the event will be persisted
            * before the reply is sent back to the client.
            *
-           * @function module:akkaserverless.EventSourcedEntity.EventSourcedEntityCommandContext#emit
-           * @param {module:akkaserverless.Serializable} event The event to emit.
+           * @function module:kalix.EventSourcedEntity.EventSourcedEntityCommandContext#emit
+           * @param {module:kalix.Serializable} event The event to emit.
            */
           ctx.context.emit = (event) => {
             ctx.ensureActive();

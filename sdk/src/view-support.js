@@ -18,7 +18,7 @@ const path = require('path');
 const grpc = require('@grpc/grpc-js');
 const protoLoader = require('@grpc/proto-loader');
 
-const debug = require('debug')('akkaserverless-view');
+const debug = require('debug')('kalix-view');
 // Bind to stdout
 debug.log = console.log.bind(console);
 const AnySupport = require('./protobuf-any');
@@ -100,8 +100,8 @@ module.exports = class ViewServices {
                 /**
                  * Context for a view update event.
                  *
-                 * @interface module:akkaserverless.View.UpdateHandlerContext
-                 * @property {module:akkaserverless.Metadata} metadata for the event
+                 * @interface module:kalix.View.UpdateHandlerContext
+                 * @property {module:kalix.Metadata} metadata for the event
                  * @property {string} commandName
                  */
                 context = {

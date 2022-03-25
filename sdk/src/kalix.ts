@@ -29,7 +29,7 @@ function loadJson(filename: string) {
 
 const userPkgJson = path.join(process.cwd(), 'package.json');
 
-export interface AkkaServerlessOptions {
+export interface KalixOptions {
   /**
    * The name of this service (defaults to name from package.json).
    */
@@ -40,7 +40,7 @@ export interface AkkaServerlessOptions {
   serviceVersion?: string;
   /**
    * Path to a Protobuf FileDescriptor set, as output by protoc --descriptor_set_out=somefile.desc.
-   * This file must contain all of the component services that this Akka Serverless service serves.
+   * This file must contain all of the component services that this Kalix service serves.
    * See the `compile-descriptor` command for creating this file.
    */
   descriptorSetPath?: string;
@@ -69,11 +69,11 @@ class ServiceInfo {
 
 interface ServiceBinding {
   /**
-   * The address to bind the Akka Serverless service to.
+   * The address to bind the Kalix service to.
    */
   address?: string;
   /**
-   * The port to bind the Akka Serverless service to.
+   * The port to bind the Kalix service to.
    */
   port?: number;
 }
@@ -217,11 +217,11 @@ class SourceFormatter {
 }
 
 /**
- * Akka Serverless service.
+ * Kalix service.
  *
  * @param options - the options for starting the service
  */
-export class AkkaServerless {
+export class Kalix {
   private address: string = process.env.HOST || '127.0.0.1';
   private port: number =
     (process.env.PORT ? parseInt(process.env.PORT) : undefined) || 8080;
@@ -245,7 +245,7 @@ export class AkkaServerless {
   private waitingForProxyTermination: boolean = false;
   private devMode: boolean = false;
 
-  constructor(options?: AkkaServerlessOptions) {
+  constructor(options?: KalixOptions) {
     if (options?.descriptorSetPath) {
       this.descriptorSetPath = options.descriptorSetPath;
     }
@@ -272,7 +272,7 @@ export class AkkaServerless {
    * @param components - the components to add
    * @returns this AkkaServerless service
    */
-  addComponent(...components: Array<Component>): AkkaServerless {
+  addComponent(...components: Array<Component>): Kalix {
     this.components = this.components.concat(components);
     return this;
   }
@@ -283,7 +283,7 @@ export class AkkaServerless {
 
   afterStart(port: number) {
     console.log(
-      'Akka Serverless service started on ' + this.address + ':' + port,
+      'Kalix service started on ' + this.address + ':' + port,
     );
 
     process.on('SIGTERM', () => {
@@ -301,7 +301,7 @@ export class AkkaServerless {
   }
 
   /**
-   * Start the Akka Serverless service.
+   * Start the Kalix service.
    * @param binding - optional address/port binding to start the service on
    * @returns a Promise of the bound port for this service
    */
@@ -416,16 +416,16 @@ export class AkkaServerless {
   }
 
   /**
-   * Shut down the Akka Serverless service.
+   * Shut down the Kalix service.
    */
   shutdown(): void {
     this.tryShutdown(() => {
-      console.log('Akka Serverless service has shutdown.');
+      console.log('Kalix service has shutdown.');
     });
   }
 
   /**
-   * Shut down the Akka Serverless service.
+   * Shut down the Kalix service.
    *
    * @param callback - shutdown callback, accepting possible error
    */
@@ -444,7 +444,7 @@ export class AkkaServerless {
     detail: string | undefined,
     locations: Array<discovery.UserFunctionError.SourceLocation> | undefined,
   ) {
-    let msg = `Error reported from Akka Serverless system: ${code} ${message}`;
+    let msg = `Error reported from Kalix system: ${code} ${message}`;
     if (detail) {
       msg += `\n\n${detail}`;
     }

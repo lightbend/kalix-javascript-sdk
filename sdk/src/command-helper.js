@@ -337,55 +337,55 @@ class CommandHelper {
     /**
      * Context for an entity.
      *
-     * @interface module:akkaserverless.EntityContext
+     * @interface module:kalix.EntityContext
      * @property {string} entityId The id of the entity that the command is for.
      * @property {Long} commandId The id of the command.
-     * @property {module:akkaserverless.Metadata} replyMetadata The metadata to send with a reply.
+     * @property {module:kalix.Metadata} replyMetadata The metadata to send with a reply.
      */
 
     /**
      * Effect context.
      *
-     * @interface module:akkaserverless.EffectContext
-     * @property {module:akkaserverless.Metadata} metadata The metadata associated with the command.
+     * @interface module:kalix.EffectContext
+     * @property {module:kalix.Metadata} metadata The metadata associated with the command.
      */
 
     /**
      * Context for a command.
      *
-     * @interface module:akkaserverless.CommandContext
-     * @extends module:akkaserverless.EffectContext
+     * @interface module:kalix.CommandContext
+     * @extends module:kalix.EffectContext
      */
     accessor.context = {
       /**
-       * @name module:akkaserverless.EntityContext#entityId
+       * @name module:kalix.EntityContext#entityId
        * @type {string}
        */
       entityId: this.entityId,
       /**
-       * @name module:akkaserverless.EntityContext#commandId
+       * @name module:kalix.EntityContext#commandId
        * @type {Long}
        */
       commandId: commandId,
       /**
-       * @name module:akkaserverless.EffectContext#metadata
-       * @type {module:akkaserverless.Metadata}
+       * @name module:kalix.EffectContext#metadata
+       * @type {module:kalix.Metadata}
        */
       metadata: metadata,
       /**
-       * @name module:akkaserverless.EntityContext#replyMetadata
-       * @type {module:akkaserverless.Metadata}
+       * @name module:kalix.EntityContext#replyMetadata
+       * @type {module:kalix.Metadata}
        */
       replyMetadata: accessor.replyMetadata,
 
       /**
        * DEPRECATED. Emit an effect after processing this command.
        *
-       * @function module:akkaserverless.EffectContext#effect
+       * @function module:kalix.EffectContext#effect
        * @param {any} method The entity service method to invoke.
        * @param {object} message The message to send to that service.
        * @param {boolean} [synchronous] Whether the effect should be execute synchronously or not.
-       * @param {module:akkaserverless.Metadata} [metadata] Metadata to send with the effect.
+       * @param {module:kalix.Metadata} [metadata] Metadata to send with the effect.
        * @param {boolean} [internalCall] For internal calls to this deprecated function.
        */
       effect: (
@@ -416,10 +416,10 @@ class CommandHelper {
        *
        * @deprecated Since version 0.7. Will be deleted in version 0.8. Use 'forward' instead.
        *
-       * @function module:akkaserverless.CommandContext#thenForward
+       * @function module:kalix.CommandContext#thenForward
        * @param {any} method The service component method to invoke.
        * @param {object} message The message to send to that service component.
-       * @param {module:akkaserverless.Metadata} metadata Metadata to send with the forward.
+       * @param {module:kalix.Metadata} metadata Metadata to send with the forward.
        */
       thenForward: (method, message, metadata) => {
         accessor.context.forward(method, message, metadata);
@@ -428,10 +428,10 @@ class CommandHelper {
       /**
        * DEPRECATED. Forward this command to another service component call, use 'ReplyFactory.forward' instead.
        *
-       * @function module:akkaserverless.CommandContext#forward
+       * @function module:kalix.CommandContext#forward
        * @param {any} method The service component method to invoke.
        * @param {object} message The message to send to that service component.
-       * @param {module:akkaserverless.Metadata} [metadata] Metadata to send with the forward.
+       * @param {module:kalix.Metadata} [metadata] Metadata to send with the forward.
        * @param {boolean} [internalCall] For internal calls to this deprecated function.
        */
       forward: (method, message, metadata, internalCall) => {
@@ -452,7 +452,7 @@ class CommandHelper {
        *
        * An alternative to using this is to return a failed Reply created with 'ReplyFactory.failed'.
        *
-       * @function module:akkaserverless.EffectContext#fail
+       * @function module:kalix.EffectContext#fail
        * @param {string} msg The failure message.
        * @param {number} [grpcStatus] The grpcStatus.
        * @throws An error that captures the failure message. Note that even if you catch the error thrown by this

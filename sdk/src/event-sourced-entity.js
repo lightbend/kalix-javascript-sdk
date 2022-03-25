@@ -19,7 +19,7 @@ const protobufHelper = require('./protobuf-helper');
 const grpc = require('@grpc/grpc-js');
 const protoLoader = require('@grpc/proto-loader');
 const EventSourcedEntityServices = require('./event-sourced-entity-support');
-const AkkaServerless = require('./akkaserverless');
+const Kalix = require('./kalix');
 const { GrpcUtil } = require('./grpc-util');
 
 const eventSourcedEntityServices = new EventSourcedEntityServices();
@@ -27,32 +27,32 @@ const eventSourcedEntityServices = new EventSourcedEntityServices();
 /**
  * An event sourced entity command handler.
  *
- * @callback module:akkaserverless.EventSourcedEntity~commandHandler
+ * @callback module:kalix.EventSourcedEntity~commandHandler
  * @param {Object} command The command message, this will be of the type of the gRPC service call input type.
- * @param {module:akkaserverless.Serializable} state The entity state.
- * @param {module:akkaserverless.EventSourcedEntity.EventSourcedEntityCommandContext} context The command context.
- * @returns {undefined|Object|module:akkaserverless.replies.Reply} The message to reply with, it must match the gRPC service call output type for this
+ * @param {module:kalix.Serializable} state The entity state.
+ * @param {module:kalix.EventSourcedEntity.EventSourcedEntityCommandContext} context The command context.
+ * @returns {undefined|Object|module:kalix.replies.Reply} The message to reply with, it must match the gRPC service call output type for this
  * command, or if a Reply is returned, contain an object that matches the output type.
  */
 
 /**
  * An event sourced entity event handler.
  *
- * @callback module:akkaserverless.EventSourcedEntity~eventHandler
- * @param {module:akkaserverless.Serializable} event The event.
- * @param {module:akkaserverless.Serializable} state The entity state.
- * @returns {module:akkaserverless.Serializable} The new entity state.
+ * @callback module:kalix.EventSourcedEntity~eventHandler
+ * @param {module:kalix.Serializable} event The event.
+ * @param {module:kalix.Serializable} state The entity state.
+ * @returns {module:kalix.Serializable} The new entity state.
  */
 
 /**
  * An event sourced entity behavior.
  *
- * @typedef module:akkaserverless.EventSourcedEntity~behavior
- * @property {Object<string, module:akkaserverless.EventSourcedEntity~commandHandler>} commandHandlers The command handlers.
+ * @typedef module:kalix.EventSourcedEntity~behavior
+ * @property {Object<string, module:kalix.EventSourcedEntity~commandHandler>} commandHandlers The command handlers.
  *
  * The names of the properties must match the names of the service calls specified in the gRPC descriptor for this
  * event sourced entities service.
- * @property {Object<string, module:akkaserverless.EventSourcedEntity~eventHandler>} eventHandlers The event handlers.
+ * @property {Object<string, module:kalix.EventSourcedEntity~eventHandler>} eventHandlers The event handlers.
  *
  * The names of the properties must match the short names of the events.
  */
@@ -62,9 +62,9 @@ const eventSourcedEntityServices = new EventSourcedEntityServices();
  *
  * This callback takes the current entity state, and returns a set of handlers to handle commands and events for it.
  *
- * @callback module:akkaserverless.EventSourcedEntity~behaviorCallback
- * @param {module:akkaserverless.Serializable} state The entity state.
- * @returns {module:akkaserverless.EventSourcedEntity~behavior} The new entity state.
+ * @callback module:kalix.EventSourcedEntity~behaviorCallback
+ * @param {module:kalix.Serializable} state The entity state.
+ * @returns {module:kalix.EventSourcedEntity~behavior} The new entity state.
  */
 
 /**
@@ -72,15 +72,15 @@ const eventSourcedEntityServices = new EventSourcedEntityServices();
  *
  * This is invoked if the entity is started with no snapshot.
  *
- * @callback module:akkaserverless.EventSourcedEntity~initialCallback
+ * @callback module:kalix.EventSourcedEntity~initialCallback
  * @param {string} entityId The entity id.
- * @returns {module:akkaserverless.Serializable} The entity state.
+ * @returns {module:kalix.Serializable} The entity state.
  */
 
 /**
  * Options for an event sourced entity.
  *
- * @typedef module:akkaserverless.EventSourcedEntity~options
+ * @typedef module:kalix.EventSourcedEntity~options
  * @property {number} [snapshotEvery=100] A snapshot will be persisted every time this many events are emitted.
  *                                        It is strongly recommended to not disable snapshotting unless it is known that
  *                                        event sourced entities will never have more than 100 events (in which case
@@ -91,21 +91,21 @@ const eventSourcedEntityServices = new EventSourcedEntityServices();
  * @property {boolean} [serializeFallbackToJson=false] Whether serialization should fallback to using JSON if an event
  * or snapshot can't be serialized as a protobuf.
  * @property {array<string>} [forwardHeaders=[]] request headers to be forwarded as metadata to the event sourced entity
- * @property {module:akkaserverless.EventSourcedEntity~entityPassivationStrategy} [entityPassivationStrategy] Entity passivation strategy to use.
+ * @property {module:kalix.EventSourcedEntity~entityPassivationStrategy} [entityPassivationStrategy] Entity passivation strategy to use.
  */
 
 /**
  * Entity passivation strategy for an event sourced entity.
  *
- * @typedef module:akkaserverless.EventSourcedEntity~entityPassivationStrategy
+ * @typedef module:kalix.EventSourcedEntity~entityPassivationStrategy
  * @property {number} [timeout] Passivation timeout (in milliseconds).
  */
 
 /**
  * An event sourced entity.
  *
- * @memberOf module:akkaserverless
- * @implements module:akkaserverless.Entity
+ * @memberOf module:kalix
+ * @implements module:kalix.Entity
  */
 class EventSourcedEntity {
   /**
@@ -118,11 +118,11 @@ class EventSourcedEntity {
    *                            onto the entityId when storing the events for this entity. Be aware that the
    *                            chosen name must be stable through the entity lifecycle.  Never change it after deploying
    *                            a service that stored data of this type
-   * @param {module:akkaserverless.EventSourcedEntity~options=} options The options for this event sourced entity
+   * @param {module:kalix.EventSourcedEntity~options=} options The options for this event sourced entity
    */
   constructor(desc, serviceName, entityType, options) {
     /**
-     * @type {module:akkaserverless.EventSourcedEntity~options}
+     * @type {module:kalix.EventSourcedEntity~options}
      */
     this.options = {
       ...{
@@ -161,7 +161,7 @@ class EventSourcedEntity {
     /**
      * Access to gRPC clients (with promisified unary methods).
      *
-     * @type module:akkaserverless.GrpcClientLookup
+     * @type module:kalix.GrpcClientLookup
      */
     this.clients = GrpcUtil.clientCreators(this.root, this.grpc);
   }
@@ -188,15 +188,15 @@ class EventSourcedEntity {
   /**
    * The initial state callback.
    *
-   * @member module:akkaserverless.EventSourcedEntity#initial
-   * @type module:akkaserverless.EventSourcedEntity~initialCallback
+   * @member module:kalix.EventSourcedEntity#initial
+   * @type module:kalix.EventSourcedEntity~initialCallback
    */
 
   /**
    * Set the initial state callback.
    *
-   * @param {module:akkaserverless.EventSourcedEntity~initialCallback} callback The initial state callback.
-   * @return {module:akkaserverless.EventSourcedEntity} This entity.
+   * @param {module:kalix.EventSourcedEntity~initialCallback} callback The initial state callback.
+   * @return {module:kalix.EventSourcedEntity} This entity.
    */
   setInitial(callback) {
     this.initial = callback;
@@ -206,15 +206,15 @@ class EventSourcedEntity {
   /**
    * The behavior callback.
    *
-   * @member module:akkaserverless.EventSourcedEntity#behavior
-   * @type module:akkaserverless.EventSourcedEntity~behaviorCallback
+   * @member module:kalix.EventSourcedEntity#behavior
+   * @type module:kalix.EventSourcedEntity~behaviorCallback
    */
 
   /**
    * Set the behavior callback.
    *
-   * @param {module:akkaserverless.EventSourcedEntity~behaviorCallback} callback The behavior callback.
-   * @return {module:akkaserverless.EventSourcedEntity} This entity.
+   * @param {module:kalix.EventSourcedEntity~behaviorCallback} callback The behavior callback.
+   * @return {module:kalix.EventSourcedEntity} This entity.
    */
   setBehavior(callback) {
     this.behavior = callback;
