@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Action, replies } from "@lightbend/akkaserverless-javascript-sdk";
+import { Action, replies } from "@lightbend/kalix-javascript-sdk";
 import * as proto from "../lib/generated/proto";
 
 type Request = proto.akkaserverless.tck.model.action.Request;

@@ -18,7 +18,7 @@ import {
   replicatedentity,
   ReplicatedWriteConsistency,
   Serializable,
-} from '@lightbend/akkaserverless-javascript-sdk';
+} from '@lightbend/kalix-javascript-sdk';
 import protocol from '../generated/tck';
 
 type Request = protocol.akkaserverless.tck.model.replicatedentity.Request;

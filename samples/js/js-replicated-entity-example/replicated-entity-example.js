@@ -15,7 +15,7 @@
  */
 
 
-const replicatedentity = require("@lightbend/akkaserverless-javascript-sdk").replicatedentity;
+const replicatedentity = require("@lightbend/kalix-javascript-sdk").replicatedentity;
 
 const entity = new replicatedentity.ReplicatedEntity(
   "replicated_entity_example.proto",

@@ -15,7 +15,7 @@
  */
 
 // tag::client[]
-import { IntegrationTestkit } from "@lightbend/akkaserverless-javascript-sdk";
+import { IntegrationTestkit } from "@lightbend/kalix-javascript-sdk";
 import { expect } from "chai";
 import customerValueEntity from "../src/customer-value-entity";
 import customerValueEntityView from "../src/customer-value-entity-view";

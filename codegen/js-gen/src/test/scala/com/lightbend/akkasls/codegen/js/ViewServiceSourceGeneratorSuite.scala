@@ -33,7 +33,7 @@ class ViewServiceSourceGeneratorSuite extends munit.FunSuite {
         | * You are free to make changes to this file.
         | */
         |
-        |import { View } from "@lightbend/akkaserverless-javascript-sdk";
+        |import { View } from "@lightbend/kalix-javascript-sdk";
         |
         |/**
         | * Type definitions.
@@ -96,7 +96,7 @@ class ViewServiceSourceGeneratorSuite extends munit.FunSuite {
         | * You are free to make changes to this file.
         | */
         |
-        |import { View } from "@lightbend/akkaserverless-javascript-sdk";
+        |import { View } from "@lightbend/kalix-javascript-sdk";
         |
         |/**
         | * Type definitions.

@@ -152,7 +152,7 @@ At package.test.json:2:4:
     serviceInfo?.getServiceRuntime().should.contains('node v');
     serviceInfo
       ?.getSupportLibraryName()
-      .should.equal('@lightbend/akkaserverless-javascript-sdk');
+      .should.equal('@lightbend/kalix-javascript-sdk');
     serviceInfo?.getSupportLibraryVersion().should.equal('0.0.0');
   });
 

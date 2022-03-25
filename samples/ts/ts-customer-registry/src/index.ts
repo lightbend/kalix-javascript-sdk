@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Kalix } from "@lightbend/akkaserverless-javascript-sdk";
+import { Kalix } from "@lightbend/kalix-javascript-sdk";
 import customerValueEntity from "./customer-value-entity";
 import customerValueEntityView from "./customer-value-entity-view";
 import customerEventSourcedEntity from "./customer-event-sourced-entity";

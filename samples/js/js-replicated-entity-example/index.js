@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-const Kalix = require("@lightbend/akkaserverless-javascript-sdk").Kalix;
+const Kalix = require("@lightbend/kalix-javascript-sdk").Kalix;
 
 const server = new Kalix();
 

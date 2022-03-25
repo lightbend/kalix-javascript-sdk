@@ -1,4 +1,4 @@
-const EventSourcedEntity = require("@lightbend/akkaserverless-javascript-sdk").EventSourcedEntity;
+const EventSourcedEntity = require("@lightbend/kalix-javascript-sdk").EventSourcedEntity;
 const entity = new EventSourcedEntity("shoppingcart.proto", "example.ShoppingCartService");
 entity.setInitial(() => {});
 entity.setBehavior(() => {

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { View } from "@lightbend/akkaserverless-javascript-sdk";
+import { View } from "@lightbend/kalix-javascript-sdk";
 import * as proto from "../lib/generated/proto";
 
 type State = proto.example.users.User;

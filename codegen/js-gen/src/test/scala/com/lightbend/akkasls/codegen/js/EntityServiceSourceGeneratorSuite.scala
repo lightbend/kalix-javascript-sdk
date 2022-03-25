@@ -35,7 +35,7 @@ class EntityServiceSourceGeneratorSuite extends munit.FunSuite {
         | * You are free to make changes to this file.
         | */
         |
-        |import akkaserverless from "@lightbend/akkaserverless-javascript-sdk";
+        |import akkaserverless from "@lightbend/kalix-javascript-sdk";
         |const EventSourcedEntity = akkaserverless.EventSourcedEntity;
         |
         |/**
@@ -116,7 +116,7 @@ class EntityServiceSourceGeneratorSuite extends munit.FunSuite {
         | * You are free to make changes to this file.
         | */
         |
-        |import akkaserverless from "@lightbend/akkaserverless-javascript-sdk";
+        |import akkaserverless from "@lightbend/kalix-javascript-sdk";
         |const ValueEntity = akkaserverless.ValueEntity;
         |
         |/**
@@ -376,7 +376,7 @@ class EntityServiceSourceGeneratorSuite extends munit.FunSuite {
         | * You are free to make changes to this file.
         | */
         |
-        |import akkaserverless from "@lightbend/akkaserverless-javascript-sdk";
+        |import akkaserverless from "@lightbend/kalix-javascript-sdk";
         |import { expect } from "chai";
         |import myvalueentity from "../../src/js/myvalueentity.js";
         |

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Kalix } from "@lightbend/akkaserverless-javascript-sdk";
+import { Kalix } from "@lightbend/kalix-javascript-sdk";
 import generatedComponents from "../lib/generated/index.js";
 
 const server = new Kalix();

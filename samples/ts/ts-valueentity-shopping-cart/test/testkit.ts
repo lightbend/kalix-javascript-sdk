@@ -17,7 +17,7 @@
 import {
   Metadata,
   ValueEntity
-} from "@lightbend/akkaserverless-javascript-sdk";
+} from "@lightbend/kalix-javascript-sdk";
 
 /**
  * Mocks the behaviour of a single Kalix Value entity.

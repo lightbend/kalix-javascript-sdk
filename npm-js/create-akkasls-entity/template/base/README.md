@@ -21,7 +21,7 @@ To understand Akka Serverless services, `protobuf` descriptors, and Entities, se
 ## Developing
 
 This project has a bare-bones service ready for you to adapt and
-extend. To see the range of functionality available for you to use with the Akka Serverless JavaScript SDK, see the documentation [JavaScript section](https://developer.lightbend.com/docs/akka-serverless/javascript/index.html). After you have modified any source files, build and the tools will preserve your changes as well as generate stubs for you to implement.
+extend. To see the range of functionality available for you to use with the Kalix JavaScript SDK SDK, see the documentation [JavaScript section](https://developer.lightbend.com/docs/akka-serverless/javascript/index.html). After you have modified any source files, build and the tools will preserve your changes as well as generate stubs for you to implement.
 
 ## Building
 

@@ -1,5 +1,5 @@
-# Akka Serverless JavaScript SDK
+# Kalix JavaScript SDK SDK
 
-Source code for the [@lightbend/akkaserverless-javascript-sdk](https://www.npmjs.com/package/@lightbend/akkaserverless-javascript-sdk) package.
+Source code for the [@lightbend/kalix-javascript-sdk](https://www.npmjs.com/package/@lightbend/kalix-javascript-sdk) package.
 
 For more information see the documentation for [implementing Akka Serverless services in JavaScript](https://developer.lightbend.com/docs/akka-serverless/javascript/).

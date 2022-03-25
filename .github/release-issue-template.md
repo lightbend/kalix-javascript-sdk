@@ -1,21 +1,21 @@
 ### Prepare
 
 - [ ] Make sure all important PRs have been merged
-- [ ] Check that the [latest build](https://app.circleci.com/pipelines/github/lightbend/akkaserverless-javascript-sdk) successfully finished
+- [ ] Check that the [latest build](https://app.circleci.com/pipelines/github/lightbend/kalix-javascript-sdk) successfully finished
 - [ ] Make sure a version of the proxy that supports the protocol version the SDK expects has been deployed to production
 
 You can see the proxy version on prod [on grafana](https://lightbendcloud.grafana.net/d/ebzw4ARnz/prod-akka-serverless-operations-dashboard?orgId=1) or using [various other methods](https://github.com/lightbend/akkaserverless/wiki/Versioning-and-how-to-determine-what-version-is-running).
 
 ### Cutting the release
 
-- [ ] Edit the [draft release notes](https://github.com/lightbend/akkaserverless-javascript-sdk/releases) and create the appropriate tag
-    - CircleCI will automatically publish the [@lightbend/akkaserverless-javascript-sdk package](https://www.npmjs.com/package/@lightbend/akkaserverless-javascript-sdk) to the npm registry based on the tag
+- [ ] Edit the [draft release notes](https://github.com/lightbend/kalix-javascript-sdk/releases) and create the appropriate tag
+    - CircleCI will automatically publish the [@lightbend/kalix-javascript-sdk package](https://www.npmjs.com/package/@lightbend/kalix-javascript-sdk) to the npm registry based on the tag
     - CI will update the docs/current branch
 
 ### Check availability
 
-- [ ] Check that [`docs/current`](https://github.com/lightbend/akkaserverless-javascript-sdk/commits/docs/current) has been updated
-- [ ] Check the release in the [npm registry](https://www.npmjs.com/package/@lightbend/akkaserverless-javascript-sdk)
+- [ ] Check that [`docs/current`](https://github.com/lightbend/kalix-javascript-sdk/commits/docs/current) has been updated
+- [ ] Check the release in the [npm registry](https://www.npmjs.com/package/@lightbend/kalix-javascript-sdk)
 
 ### Fix and publish docs
 

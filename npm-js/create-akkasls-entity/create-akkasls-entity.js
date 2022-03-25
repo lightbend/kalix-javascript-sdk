@@ -61,7 +61,7 @@ const args = yargs(hideBin(process.argv))
   .option('sdkVersion', {
     alias: 'sdk-version',
     type: 'string',
-    description: 'Specify the akkaserverless-javascript-sdk version string',
+    description: 'Specify the kalix-javascript-sdk version string',
     default: `^${package.version}`,
   }).argv;
 

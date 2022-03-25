@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import kalix from "@lightbend/akkaserverless-javascript-sdk";
+import kalix from "@lightbend/kalix-javascript-sdk";
 import chai from "chai";
 import chaiAsPromised from "chai-as-promised";
 import shoppingcart from "../src/shoppingcart.js";

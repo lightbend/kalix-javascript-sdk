@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import kalix from "@lightbend/akkaserverless-javascript-sdk";
+import kalix from "@lightbend/kalix-javascript-sdk";
 import { expect } from "chai";
 import counter from "../src/counter.js";
 

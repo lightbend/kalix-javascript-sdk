@@ -38,11 +38,11 @@ If you are starting from scratch, you will need to add configuration and code to
 
 == Add SDK libraries
 
-Once you have the prerequisites, you need to add the `@lightbend/akkaserverless-javascript-sdk` package to your service development project, which can be done by running:
+Once you have the prerequisites, you need to add the `@lightbend/kalix-javascript-sdk` package to your service development project, which can be done by running:
 
 [source,sh,subs="attributes+"]
 ----
-npm install @lightbend/akkaserverless-javascript-sdk@{akkaserverless-javascript-sdk-version} --save-exact
+npm install @lightbend/kalix-javascript-sdk@{kalix-javascript-sdk-version} --save-exact
 ----
 
 To create a basic service, you need to include the `akkaserverless` package dependencies in your project, define gRPC descriptors in `.proto` files and reference them in your project, compile the `.proto` files, and have logic to start the gRPC server in your source code.
@@ -56,7 +56,7 @@ The following shows a minimal `package.json` configuration for a shopping cart s
   "name": "shopping-cart",
   "version": "0.1.0",
   "dependencies": {
-    "@lightbend/akkaserverless-javascript-sdk": "{akkaserverless-javascript-sdk-version}"
+    "@lightbend/kalix-javascript-sdk": "{kalix-javascript-sdk-version}"
   },
   "scripts": {
     "prestart": "compile-descriptor shoppingcart.proto",
@@ -73,7 +73,7 @@ Descriptors for gRPC are defined in `protobuf` files. You can place `protobuf` f
 
 The gRPC descriptor is serialized to binary using the Protobuf https://developers.google.com/protocol-buffers/docs/techniques#self-description[`FileDescriptorSet` message type]. Kalix requires that you precompile this descriptor using `protoc`. We provide a utility that does this for you. It downloads the `protoc` binary for your platform, and runs it with the necessary arguments and include paths. You can run the utility manually, or we recommend adding it as a script to the build.
 
-To run the utility manually, invoke `node_modules/@lightbend/akkaserverless-javascript-sdk/bin/compile-descriptor.js`.
+To run the utility manually, invoke `node_modules/@lightbend/kalix-javascript-sdk/bin/compile-descriptor.js`.
 
 
 Or, add a `prestart` script to your `npm` build:

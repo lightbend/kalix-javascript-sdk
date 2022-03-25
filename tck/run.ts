@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import sdk from '@lightbend/akkaserverless-javascript-sdk';
+import sdk from '@lightbend/kalix-javascript-sdk';
 import { GenericContainer, TestContainers } from 'testcontainers';
 import tckImplementation from './index';
 

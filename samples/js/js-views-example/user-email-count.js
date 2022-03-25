@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-const View = require("@lightbend/akkaserverless-javascript-sdk").View;
+const View = require("@lightbend/kalix-javascript-sdk").View;
 
 const view = new View(
     ["users.proto"],

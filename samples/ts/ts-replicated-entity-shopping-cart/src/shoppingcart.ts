@@ -15,11 +15,11 @@
  */
 
 // tag::import-replicatedentity[]
-import { replicatedentity } from "@lightbend/akkaserverless-javascript-sdk";
+import { replicatedentity } from "@lightbend/kalix-javascript-sdk";
 
 // end::import-replicatedentity[]
 // tag::import-replies[]
-import { replies } from "@lightbend/akkaserverless-javascript-sdk";
+import { replies } from "@lightbend/kalix-javascript-sdk";
 
 // end::import-replies[]
 // tag::types[]

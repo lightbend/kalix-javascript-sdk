@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { EventSourcedEntity } from '@lightbend/akkaserverless-javascript-sdk';
-import { replies } from '@lightbend/akkaserverless-javascript-sdk';
+import { EventSourcedEntity } from '@lightbend/kalix-javascript-sdk';
+import { replies } from '@lightbend/kalix-javascript-sdk';
 import protocol from '../generated/tck';
 
 type Request = protocol.akkaserverless.tck.model.eventsourcedentity.Request;

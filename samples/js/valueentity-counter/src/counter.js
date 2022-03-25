@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 // tag::entity-class[]
-import kalix from "@lightbend/akkaserverless-javascript-sdk";
+import kalix from "@lightbend/kalix-javascript-sdk";
 const ValueEntity = kalix.ValueEntity;
 
 /**

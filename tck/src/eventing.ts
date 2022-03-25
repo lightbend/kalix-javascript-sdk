@@ -18,7 +18,7 @@ import {
   Action,
   EventSourcedEntity,
   ValueEntity,
-} from '@lightbend/akkaserverless-javascript-sdk';
+} from '@lightbend/kalix-javascript-sdk';
 import protocol from '../generated/tck';
 
 type EmitEventRequest =

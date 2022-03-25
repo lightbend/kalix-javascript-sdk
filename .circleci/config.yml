@@ -195,12 +195,12 @@ jobs:
           name: "run tests"
           command: |
             pushd sdk && npm ci && npm test && npm pack && popd
-            pushd samples/js/valueentity-counter && npm install ../../../sdk/lightbend-akkaserverless-javascript-sdk-0.0.0.tgz && npm install && npm run build && npm test && popd
-            pushd samples/js/js-valueentity-shopping-cart && npm install ../../../sdk/lightbend-akkaserverless-javascript-sdk-0.0.0.tgz && npm install && npm run build && npm test && popd
-            pushd samples/js/js-eventsourced-shopping-cart && npm install ../../../sdk/lightbend-akkaserverless-javascript-sdk-0.0.0.tgz && npm install && npm run build && npm test && popd
-            pushd samples/ts/ts-valueentity-counter && npm install ../../../sdk/lightbend-akkaserverless-javascript-sdk-0.0.0.tgz && npm install && npm run build && npm test && popd
-            pushd samples/ts/ts-valueentity-shopping-cart && npm install ../../../sdk/lightbend-akkaserverless-javascript-sdk-0.0.0.tgz && npm install && npm run build && npm test && popd
-            pushd samples/ts/ts-eventsourced-shopping-cart && npm install ../../../sdk/lightbend-akkaserverless-javascript-sdk-0.0.0.tgz && npm install && npm run build && npm test && popd
+            pushd samples/js/valueentity-counter && npm install ../../../sdk/lightbend-kalix-javascript-sdk-0.0.0.tgz && npm install && npm run build && npm test && popd
+            pushd samples/js/js-valueentity-shopping-cart && npm install ../../../sdk/lightbend-kalix-javascript-sdk-0.0.0.tgz && npm install && npm run build && npm test && popd
+            pushd samples/js/js-eventsourced-shopping-cart && npm install ../../../sdk/lightbend-kalix-javascript-sdk-0.0.0.tgz && npm install && npm run build && npm test && popd
+            pushd samples/ts/ts-valueentity-counter && npm install ../../../sdk/lightbend-kalix-javascript-sdk-0.0.0.tgz && npm install && npm run build && npm test && popd
+            pushd samples/ts/ts-valueentity-shopping-cart && npm install ../../../sdk/lightbend-kalix-javascript-sdk-0.0.0.tgz && npm install && npm run build && npm test && popd
+            pushd samples/ts/ts-eventsourced-shopping-cart && npm install ../../../sdk/lightbend-kalix-javascript-sdk-0.0.0.tgz && npm install && npm run build && npm test && popd
 
   integration-tests:
     machine:
@@ -214,16 +214,16 @@ jobs:
             export VERSION_CHECK_ON_STARTUP=false
             source /opt/circleci/.nvm/nvm.sh
             pushd sdk && nvm install && npm ci && DEBUG='testcontainers*' npm run integration-test && npm pack && popd
-            pushd samples/js/js-customer-registry && npm install ../../../sdk/lightbend-akkaserverless-javascript-sdk-0.0.0.tgz && npm ci && npm run integration-test && popd
-            pushd samples/js/valueentity-counter && npm install ../../../sdk/lightbend-akkaserverless-javascript-sdk-0.0.0.tgz && npm install && npm run build && npm run integration-test && popd
-            pushd samples/js/js-valueentity-shopping-cart && npm install ../../../sdk/lightbend-akkaserverless-javascript-sdk-0.0.0.tgz && npm install && npm run build && npm run integration-test && popd
-            pushd samples/js/js-eventsourced-shopping-cart && npm install ../../../sdk/lightbend-akkaserverless-javascript-sdk-0.0.0.tgz && npm install && npm run build && npm run integration-test && popd
-            pushd samples/js/js-replicated-entity-shopping-cart && npm install ../../../sdk/lightbend-akkaserverless-javascript-sdk-0.0.0.tgz && npm install && npm run build && npm run integration-test && popd
-            pushd samples/ts/ts-customer-registry && npm install ../../../sdk/lightbend-akkaserverless-javascript-sdk-0.0.0.tgz && npm ci && npm run integration-test && popd
-            pushd samples/ts/ts-valueentity-counter && npm install ../../../sdk/lightbend-akkaserverless-javascript-sdk-0.0.0.tgz && npm install && npm run build && npm run integration-test && popd
-            pushd samples/ts/ts-valueentity-shopping-cart && npm install ../../../sdk/lightbend-akkaserverless-javascript-sdk-0.0.0.tgz && npm install && npm run build && npm run integration-test && popd
-            pushd samples/ts/ts-eventsourced-shopping-cart && npm install ../../../sdk/lightbend-akkaserverless-javascript-sdk-0.0.0.tgz && npm install && npm run build && npm run integration-test && popd
-            pushd samples/ts/ts-replicated-entity-shopping-cart && npm install ../../../sdk/lightbend-akkaserverless-javascript-sdk-0.0.0.tgz && npm install && npm run build && npm run integration-test && popd
+            pushd samples/js/js-customer-registry && npm install ../../../sdk/lightbend-kalix-javascript-sdk-0.0.0.tgz && npm ci && npm run integration-test && popd
+            pushd samples/js/valueentity-counter && npm install ../../../sdk/lightbend-kalix-javascript-sdk-0.0.0.tgz && npm install && npm run build && npm run integration-test && popd
+            pushd samples/js/js-valueentity-shopping-cart && npm install ../../../sdk/lightbend-kalix-javascript-sdk-0.0.0.tgz && npm install && npm run build && npm run integration-test && popd
+            pushd samples/js/js-eventsourced-shopping-cart && npm install ../../../sdk/lightbend-kalix-javascript-sdk-0.0.0.tgz && npm install && npm run build && npm run integration-test && popd
+            pushd samples/js/js-replicated-entity-shopping-cart && npm install ../../../sdk/lightbend-kalix-javascript-sdk-0.0.0.tgz && npm install && npm run build && npm run integration-test && popd
+            pushd samples/ts/ts-customer-registry && npm install ../../../sdk/lightbend-kalix-javascript-sdk-0.0.0.tgz && npm ci && npm run integration-test && popd
+            pushd samples/ts/ts-valueentity-counter && npm install ../../../sdk/lightbend-kalix-javascript-sdk-0.0.0.tgz && npm install && npm run build && npm run integration-test && popd
+            pushd samples/ts/ts-valueentity-shopping-cart && npm install ../../../sdk/lightbend-kalix-javascript-sdk-0.0.0.tgz && npm install && npm run build && npm run integration-test && popd
+            pushd samples/ts/ts-eventsourced-shopping-cart && npm install ../../../sdk/lightbend-kalix-javascript-sdk-0.0.0.tgz && npm install && npm run build && npm run integration-test && popd
+            pushd samples/ts/ts-replicated-entity-shopping-cart && npm install ../../../sdk/lightbend-kalix-javascript-sdk-0.0.0.tgz && npm install && npm run build && npm run integration-test && popd
 
   tck-tests:
     machine:
@@ -330,7 +330,7 @@ jobs:
           working_directory: "~/tmp"
           command: |
             export AKKASLS_NPMJS_SCRIPTS_VERSION="file:${HOME}/project/npm-js/akkasls-scripts/lightbend-akkasls-scripts-1.0.0.tgz"
-            export AKKASLS_NPMJS_SDK_VERSION="file:${HOME}/project/sdk/lightbend-akkaserverless-javascript-sdk-0.0.0.tgz"
+            export AKKASLS_NPMJS_SDK_VERSION="file:${HOME}/project/sdk/lightbend-kalix-javascript-sdk-0.0.0.tgz"
             export AKKASLS_NPMJS_CODEGEN_BINARY="${HOME}/project/codegen/js-gen-cli/target/native-image/akkasls-codegen-js"
             node "${HOME}/project/npm-js/create-akkasls-entity/create-akkasls-entity.js" generated-project
             cd generated-project
@@ -379,7 +379,7 @@ jobs:
             source /opt/circleci/.nvm/nvm.sh
             nvm install v14
             export AKKASLS_NPMJS_SCRIPTS_VERSION="file:${HOME}/project/npm-js/akkasls-scripts/lightbend-akkasls-scripts-1.0.0.tgz"
-            export AKKASLS_NPMJS_SDK_VERSION="file:${HOME}/project/sdk/lightbend-akkaserverless-javascript-sdk-0.0.0.tgz"
+            export AKKASLS_NPMJS_SDK_VERSION="file:${HOME}/project/sdk/lightbend-kalix-javascript-sdk-0.0.0.tgz"
             node "${HOME}/project/npm-js/create-akkasls-entity/create-akkasls-entity.js" generated-project --template event-sourced-entity
       - run:
           name: "test up to unit tests"

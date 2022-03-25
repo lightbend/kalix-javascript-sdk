@@ -7,7 +7,7 @@
     "npm": ">=6.0.0"
   },
   "dependencies": {
-    "@lightbend/akkaserverless-javascript-sdk": "{{sdkVersion}}"
+    "@lightbend/kalix-javascript-sdk": "{{sdkVersion}}"
   },
   "devDependencies": {
     "@lightbend/akkasls-scripts": "{{scriptsVersion}}",

@@ -16,10 +16,10 @@
 
 
 import * as proto from "../lib/generated/proto";
-import { replies } from "@lightbend/akkaserverless-javascript-sdk";
+import { replies } from "@lightbend/kalix-javascript-sdk";
 
 // tag::entity-class[]
-import { EventSourcedEntity } from "@lightbend/akkaserverless-javascript-sdk";
+import { EventSourcedEntity } from "@lightbend/kalix-javascript-sdk";
 
 const entity: EventSourcedEntity = new EventSourcedEntity(
     ["shoppingcart.proto", "domain.proto"],
@@ -193,7 +193,7 @@ entity.behavior = cart => {
 // end::multiple-behaviors[]
 
 // tag::add-entity[]
-import { Kalix } from "@lightbend/akkaserverless-javascript-sdk";
+import { Kalix } from "@lightbend/kalix-javascript-sdk";
 import shoppingcartEntity from "./shoppingcart";
 
 new Kalix().addComponent(shoppingcartEntity).start();

@@ -141,7 +141,7 @@ object SourceGenerator extends PrettyPrinter {
     pretty(
       initialisedCodeComment <> line <> line <>
       "import" <+> braces(" AkkaServerless ") <+> "from" <+> dquotes(
-        "@lightbend/akkaserverless-javascript-sdk") <> semi <> line <>
+        "@lightbend/kalix-javascript-sdk") <> semi <> line <>
       "import" <+> generatedComponentArray <+> "from" <+> dquotes(generatedComponentIndexFilename) <> semi
       <> line <> line <>
       "const" <+> "server" <+> equal <+> "new" <+> "AkkaServerless" <> parens(emptyDoc) <> semi <> line <> line <>

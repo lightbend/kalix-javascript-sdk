@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import kalix from "@lightbend/akkaserverless-javascript-sdk";
+import kalix from "@lightbend/kalix-javascript-sdk";
 
 const testkit = new kalix.IntegrationTestkit();
 

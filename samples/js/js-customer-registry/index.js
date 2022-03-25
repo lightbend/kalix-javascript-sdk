@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-const Kalix = require("@lightbend/akkaserverless-javascript-sdk").Kalix
+const Kalix = require("@lightbend/kalix-javascript-sdk").Kalix
 
 if (!process.argv || process.argv.length === 2) { // node file.js - 2 args means no extra arg
   console.log("Starting Value Entity")

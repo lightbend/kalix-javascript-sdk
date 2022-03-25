@@ -1,15 +1,15 @@
 {
-  "name": "@lightbend/akkaserverless-javascript-sdk",
+  "name": "@lightbend/kalix-javascript-sdk",
   "version": "0.0.0",
-  "description": "Akka Serverless JavaScript SDK",
+  "description": "Kalix JavaScript SDK SDK",
   "keywords": [
     "akka",
     "serverless",
     "akka serverless"
   ],
-  "homepage": "https://github.com/lightbend/akkaserverless-javascript-sdk",
+  "homepage": "https://github.com/lightbend/kalix-javascript-sdk",
   "bugs": {
-    "url": "https://github.com/lightbend/akkaserverless-javascript-sdk"
+    "url": "https://github.com/lightbend/kalix-javascript-sdk"
   },
   "license": "Apache-2.0",
   "author": {
@@ -19,7 +19,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/lightbend/akkaserverless-javascript-sdk"
+    "url": "https://github.com/lightbend/kalix-javascript-sdk"
   },
   "engineStrict": true,
   "engines": {

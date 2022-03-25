@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Kalix } from "@lightbend/akkaserverless-javascript-sdk";
+import { Kalix } from "@lightbend/kalix-javascript-sdk";
 import usersEntity from "./users";
 import usersByMailView from "./users-by-email";
 import usersMailCountView from "./user-email-count";

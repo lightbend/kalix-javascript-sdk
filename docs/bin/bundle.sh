@@ -39,8 +39,8 @@ function _set_sdk_version {
   local -r dir="$1"
   # install json command once in a local dir
   [ -f "$json" ] || npm install --prefix "$npm_dir" -g json
-  if [ -n "$("$json" -q -f "$dir/package.json" "dependencies['@lightbend/akkaserverless-javascript-sdk']")" ] ; then
-    "$json" -q -I -f "$dir/package.json" -e "this.dependencies['@lightbend/akkaserverless-javascript-sdk'] = '$sdk_version'"
+  if [ -n "$("$json" -q -f "$dir/package.json" "dependencies['@lightbend/kalix-javascript-sdk']")" ] ; then
+    "$json" -q -I -f "$dir/package.json" -e "this.dependencies['@lightbend/kalix-javascript-sdk'] = '$sdk_version'"
   fi
   if [ -n "$("$json" -q -f "$dir/package.json" "devDependencies['@lightbend/akkasls-scripts']")" ] ; then
     "$json" -q -I -f "$dir/package.json" -e "this.devDependencies['@lightbend/akkasls-scripts'] = '$sdk_version'"

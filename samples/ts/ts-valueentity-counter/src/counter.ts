@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 // tag::entity-class[]
-import { ValueEntity, replies } from "@lightbend/akkaserverless-javascript-sdk";
+import { ValueEntity, replies } from "@lightbend/kalix-javascript-sdk";
 import * as proto from "../lib/generated/proto";
 
 /**
