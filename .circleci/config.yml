@@ -191,7 +191,7 @@ jobs:
           name: "check vulnerabilities in transitive dependencies"
           command: |
             pushd sdk && npm audit --production && popd
-      # build/run these sample tests with local verison of scripts
+      # build/run these sample tests with local version of kalix-scripts
       - setup_sbt
       - restore_deps_cache
       - run:
@@ -223,22 +223,37 @@ jobs:
     description: "integration tests"
     steps:
       - checkout-and-merge-to-main
+      # build/run these sample tests with local version of kalix-scripts
+      - setup_sbt
+      - restore_deps_cache
+      - run:
+          name: "compile codegen binary"
+          working_directory: "~/project/codegen"
+          command: sbt kalix-codegen-js-cli/nativeImage
+      - run:
+          name: "install kalix-scripts"
+          working_directory: "~/project/npm-js/kalix-scripts"
+          command: |
+            source /opt/circleci/.nvm/nvm.sh
+            nvm install
+            export KALIX_NPMJS_CODEGEN_BINARY="${HOME}/project/codegen/js-gen-cli/target/native-image/kalix-codegen-js"
+            npm ci && npm pack
       - run:
           name: "run integration tests"
           command: |
             export VERSION_CHECK_ON_STARTUP=false
             source /opt/circleci/.nvm/nvm.sh
             pushd sdk && nvm install && npm ci && DEBUG='testcontainers*' npm run integration-test && npm pack && popd
-            pushd samples/js/js-customer-registry && npm install ../../../sdk/lightbend-kalix-javascript-sdk-0.0.0.tgz && npm ci && npm run integration-test && popd
-            pushd samples/js/valueentity-counter && npm install ../../../sdk/lightbend-kalix-javascript-sdk-0.0.0.tgz && npm install && npm run build && npm run integration-test && popd
-            pushd samples/js/js-valueentity-shopping-cart && npm install ../../../sdk/lightbend-kalix-javascript-sdk-0.0.0.tgz && npm install && npm run build && npm run integration-test && popd
-            pushd samples/js/js-eventsourced-shopping-cart && npm install ../../../sdk/lightbend-kalix-javascript-sdk-0.0.0.tgz && npm install && npm run build && npm run integration-test && popd
-            pushd samples/js/js-replicated-entity-shopping-cart && npm install ../../../sdk/lightbend-kalix-javascript-sdk-0.0.0.tgz && npm install && npm run build && npm run integration-test && popd
-            pushd samples/ts/ts-customer-registry && npm install ../../../sdk/lightbend-kalix-javascript-sdk-0.0.0.tgz && npm ci && npm run integration-test && popd
-            pushd samples/ts/ts-valueentity-counter && npm install ../../../sdk/lightbend-kalix-javascript-sdk-0.0.0.tgz && npm install && npm run build && npm run integration-test && popd
-            pushd samples/ts/ts-valueentity-shopping-cart && npm install ../../../sdk/lightbend-kalix-javascript-sdk-0.0.0.tgz && npm install && npm run build && npm run integration-test && popd
-            pushd samples/ts/ts-eventsourced-shopping-cart && npm install ../../../sdk/lightbend-kalix-javascript-sdk-0.0.0.tgz && npm install && npm run build && npm run integration-test && popd
-            pushd samples/ts/ts-replicated-entity-shopping-cart && npm install ../../../sdk/lightbend-kalix-javascript-sdk-0.0.0.tgz && npm install && npm run build && npm run integration-test && popd
+            pushd samples/js/js-customer-registry && npm install ../../../sdk/lightbend-kalix-javascript-sdk-0.0.0.tgz && npm install --save-dev ../../../npm-js/kalix-scripts/lightbend-kalix-scripts-1.0.0.tgz && npm ci && npm run integration-test && popd
+            pushd samples/js/valueentity-counter && npm install ../../../sdk/lightbend-kalix-javascript-sdk-0.0.0.tgz && npm install --save-dev ../../../npm-js/kalix-scripts/lightbend-kalix-scripts-1.0.0.tgz && npm install && npm run build && npm run integration-test && popd
+            pushd samples/js/js-valueentity-shopping-cart && npm install ../../../sdk/lightbend-kalix-javascript-sdk-0.0.0.tgz && npm install --save-dev ../../../npm-js/kalix-scripts/lightbend-kalix-scripts-1.0.0.tgz && npm install && npm run build && npm run integration-test && popd
+            pushd samples/js/js-eventsourced-shopping-cart && npm install ../../../sdk/lightbend-kalix-javascript-sdk-0.0.0.tgz && npm install --save-dev ../../../npm-js/kalix-scripts/lightbend-kalix-scripts-1.0.0.tgz && npm install && npm run build && npm run integration-test && popd
+            pushd samples/js/js-replicated-entity-shopping-cart && npm install ../../../sdk/lightbend-kalix-javascript-sdk-0.0.0.tgz && npm install --save-dev ../../../npm-js/kalix-scripts/lightbend-kalix-scripts-1.0.0.tgz && npm install && npm run build && npm run integration-test && popd
+            pushd samples/ts/ts-customer-registry && npm install ../../../sdk/lightbend-kalix-javascript-sdk-0.0.0.tgz && npm install --save-dev ../../../npm-js/kalix-scripts/lightbend-kalix-scripts-1.0.0.tgz && npm ci && npm run integration-test && popd
+            pushd samples/ts/ts-valueentity-counter && npm install ../../../sdk/lightbend-kalix-javascript-sdk-0.0.0.tgz && npm install --save-dev ../../../npm-js/kalix-scripts/lightbend-kalix-scripts-1.0.0.tgz && npm install && npm run build && npm run integration-test && popd
+            pushd samples/ts/ts-valueentity-shopping-cart && npm install ../../../sdk/lightbend-kalix-javascript-sdk-0.0.0.tgz && npm install --save-dev ../../../npm-js/kalix-scripts/lightbend-kalix-scripts-1.0.0.tgz && npm install && npm run build && npm run integration-test && popd
+            pushd samples/ts/ts-eventsourced-shopping-cart && npm install ../../../sdk/lightbend-kalix-javascript-sdk-0.0.0.tgz && npm install --save-dev ../../../npm-js/kalix-scripts/lightbend-kalix-scripts-1.0.0.tgz && npm install && npm run build && npm run integration-test && popd
+            pushd samples/ts/ts-replicated-entity-shopping-cart && npm install ../../../sdk/lightbend-kalix-javascript-sdk-0.0.0.tgz && npm install --save-dev ../../../npm-js/kalix-scripts/lightbend-kalix-scripts-1.0.0.tgz && npm install && npm run build && npm run integration-test && popd
 
   tck-tests:
     machine:
