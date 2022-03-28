@@ -191,12 +191,26 @@ jobs:
           name: "check vulnerabilities in transitive dependencies"
           command: |
             pushd sdk && npm audit --production && popd
+      # build/run these sample tests with local verison of scripts
+      - setup_sbt
+      - restore_deps_cache
+      - run:
+          name: "compile codegen binary"
+          working_directory: "~/project/codegen"
+          command: sbt kalix-codegen-js-cli/nativeImage
+      - run:
+          name: "install kalix-scripts"
+          working_directory: "~/project/npm-js/kalix-scripts"
+          command: |
+            source /opt/circleci/.nvm/nvm.sh
+            nvm install
+            export KALIX_NPMJS_CODEGEN_BINARY="${HOME}/project/codegen/js-gen-cli/target/native-image/kalix-codegen-js"
+            npm ci && npm pack
       - run:
           name: "run tests"
           command: |
             pushd sdk && npm ci && npm test && npm pack && popd
-            pushd npm-js/kalix-scripts && npm ci && npm pack && popd
-            pushd samples/js/valueentity-counter && npm install ../../../sdk/lightbend-kalix-javascript-sdk-0.0.0.tgz && npm install ../../../npm-js/kalix-scripts/lightbend-kalix-scripts-1.0.0.tgz && npm install && npm run build && npm test && popd
+            pushd samples/js/valueentity-counter && npm install ../../../sdk/lightbend-kalix-javascript-sdk-0.0.0.tgz && npm install && npm run build && npm test && popd
             pushd samples/js/js-valueentity-shopping-cart && npm install ../../../sdk/lightbend-kalix-javascript-sdk-0.0.0.tgz && npm install && npm run build && npm test && popd
             pushd samples/js/js-eventsourced-shopping-cart && npm install ../../../sdk/lightbend-kalix-javascript-sdk-0.0.0.tgz && npm install && npm run build && npm test && popd
             pushd samples/ts/ts-valueentity-counter && npm install ../../../sdk/lightbend-kalix-javascript-sdk-0.0.0.tgz && npm install && npm run build && npm test && popd
