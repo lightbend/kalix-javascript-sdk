@@ -35,7 +35,7 @@ const { hideBin } = require('yargs/helpers');
  * see https://create-react-app.dev/docs/custom-templates
  */
 const args = yargs(hideBin(process.argv))
-  .env('AKKASLS_NPMJS')
+  .env('KALIX_NPMJS')
   .usage(
     '$0 <entity-name>',
     'Generates a new initial codebase for a Kalix entity.',

@@ -329,8 +329,8 @@ jobs:
           name: "test everything"
           working_directory: "~/tmp"
           command: |
-            export AKKASLS_NPMJS_SCRIPTS_VERSION="file:${HOME}/project/npm-js/kalix-scripts/lightbend-kalix-scripts-1.0.0.tgz"
-            export AKKASLS_NPMJS_SDK_VERSION="file:${HOME}/project/sdk/lightbend-kalix-javascript-sdk-0.0.0.tgz"
+            export KALIX_NPMJS_SCRIPTS_VERSION="file:${HOME}/project/npm-js/kalix-scripts/lightbend-kalix-scripts-1.0.0.tgz"
+            export KALIX_NPMJS_SDK_VERSION="file:${HOME}/project/sdk/lightbend-kalix-javascript-sdk-0.0.0.tgz"
             export KALIX_NPMJS_CODEGEN_BINARY="${HOME}/project/codegen/js-gen-cli/target/native-image/kalix-codegen-js"
             node "${HOME}/project/npm-js/create-kalix-entity/create-kalix-entity.js" generated-project
             cd generated-project
@@ -378,8 +378,8 @@ jobs:
           command: |
             source /opt/circleci/.nvm/nvm.sh
             nvm install v14
-            export AKKASLS_NPMJS_SCRIPTS_VERSION="file:${HOME}/project/npm-js/kalix-scripts/lightbend-kalix-scripts-1.0.0.tgz"
-            export AKKASLS_NPMJS_SDK_VERSION="file:${HOME}/project/sdk/lightbend-kalix-javascript-sdk-0.0.0.tgz"
+            export KALIX_NPMJS_SCRIPTS_VERSION="file:${HOME}/project/npm-js/kalix-scripts/lightbend-kalix-scripts-1.0.0.tgz"
+            export KALIX_NPMJS_SDK_VERSION="file:${HOME}/project/sdk/lightbend-kalix-javascript-sdk-0.0.0.tgz"
             node "${HOME}/project/npm-js/create-kalix-entity/create-kalix-entity.js" generated-project --template event-sourced-entity
       - run:
           name: "test up to unit tests"
