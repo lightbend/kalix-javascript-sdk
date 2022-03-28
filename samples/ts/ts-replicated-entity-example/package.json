@@ -42,10 +42,10 @@
     "uglify-js": "^3.7.7"
   },
   "scripts": {
-    "-disabled-lint-check": "eslint src --ext .ts && prettier --check src/**/*.ts",
+    "lint-check": "eslint src --ext .ts && prettier --check src/**/*.ts",
     "lint-fix": "eslint src --ext .ts --fix && prettier --write src/**/*.ts",
     "compile-proto": "mkdirp lib/generated && pbjs -t static-module -w commonjs --no-encode --no-decode --no-verify --no-convert --no-delimited replicated_entity_example.proto -o lib/generated/proto.js && pbts --no-comments -o lib/generated/proto.d.ts lib/generated/proto.js",
-    "build": "compile-descriptor replicated_entity_example.proto && npm run compile-proto && npm run lint-check && tsc",
+    "build": "compile-descriptor replicated_entity_example.proto && npm run compile-proto && tsc",
     "pretest": "npm run build",
     "test": "ts-mocha",
     "prestart": "npm run build",
