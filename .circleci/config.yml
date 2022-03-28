@@ -211,7 +211,7 @@ jobs:
           command: |
             pushd sdk && npm ci && npm test && npm pack && popd
       - run:
-          name: "test Value Entity Counter sample"
+          name: "Test JS Value Entity Counter sample"
           command: |
             cd samples/js/valueentity-counter
             # don't download, used the one we built
@@ -221,13 +221,55 @@ jobs:
             npm run build  
             npm test
       - run:
-          name: "run tests"
+          name: "Test JS Value Entity Shopping Cart sample"
           command: |
-            pushd samples/js/js-valueentity-shopping-cart && npm install ../../../sdk/lightbend-kalix-javascript-sdk-0.0.0.tgz && npm install --save-dev ../../../npm-js/kalix-scripts/lightbend-kalix-scripts-1.0.0.tgz && npm install && npm run build && npm test && popd
-            pushd samples/js/js-eventsourced-shopping-cart && npm install ../../../sdk/lightbend-kalix-javascript-sdk-0.0.0.tgz && npm install --save-dev ../../../npm-js/kalix-scripts/lightbend-kalix-scripts-1.0.0.tgz && npm install && npm run build && npm test && popd
-            pushd samples/ts/ts-valueentity-counter && npm install ../../../sdk/lightbend-kalix-javascript-sdk-0.0.0.tgz && npm install --save-dev ../../../npm-js/kalix-scripts/lightbend-kalix-scripts-1.0.0.tgz && npm install && npm run build && npm test && popd
-            pushd samples/ts/ts-valueentity-shopping-cart && npm install ../../../sdk/lightbend-kalix-javascript-sdk-0.0.0.tgz && npm install --save-dev ../../../npm-js/kalix-scripts/lightbend-kalix-scripts-1.0.0.tgz && npm install && npm run build && npm test && popd
-            pushd samples/ts/ts-eventsourced-shopping-cart && npm install ../../../sdk/lightbend-kalix-javascript-sdk-0.0.0.tgz && npm install --save-dev ../../../npm-js/kalix-scripts/lightbend-kalix-scripts-1.0.0.tgz && npm install && npm run build && npm test && popd
+            cd samples/js/js-valueentity-shopping-cart
+            # don't download, used the one we built
+            export KALIX_NPMJS_CODEGEN_BINARY="${HOME}/project/codegen/js-gen-cli/target/native-image/kalix-codegen-js"
+            npm install --save ../../../sdk/lightbend-kalix-javascript-sdk-0.0.0.tgz ../../../npm-js/kalix-scripts/lightbend-kalix-scripts-1.0.0.tgz
+            npm install 
+            npm run build  
+            npm test
+      - run:
+          name: "Test JS Event Sourced Entity Shopping Cart sample"
+          command: |
+            cd samples/js/js-eventsourced-shopping-cart
+            # don't download, used the one we built
+            export KALIX_NPMJS_CODEGEN_BINARY="${HOME}/project/codegen/js-gen-cli/target/native-image/kalix-codegen-js"
+            npm install --save ../../../sdk/lightbend-kalix-javascript-sdk-0.0.0.tgz ../../../npm-js/kalix-scripts/lightbend-kalix-scripts-1.0.0.tgz
+            npm install 
+            npm run build  
+            npm test
+      - run:
+          name: "Test TS Value Entity Counter sample"
+          command: |
+            cd samples/ts/ts-valueentity-counter
+            # don't download, used the one we built
+            export KALIX_NPMJS_CODEGEN_BINARY="${HOME}/project/codegen/js-gen-cli/target/native-image/kalix-codegen-js"
+            npm install --save ../../../sdk/lightbend-kalix-javascript-sdk-0.0.0.tgz ../../../npm-js/kalix-scripts/lightbend-kalix-scripts-1.0.0.tgz
+            npm install 
+            npm run build  
+            npm test
+      - run:
+          name: "Test TS Value Entity Shopping Cart sample"
+          command: |
+            cd samples/ts/ts-valueentity-shopping-cart
+            # don't download, used the one we built
+            export KALIX_NPMJS_CODEGEN_BINARY="${HOME}/project/codegen/js-gen-cli/target/native-image/kalix-codegen-js"
+            npm install --save ../../../sdk/lightbend-kalix-javascript-sdk-0.0.0.tgz ../../../npm-js/kalix-scripts/lightbend-kalix-scripts-1.0.0.tgz
+            npm install 
+            npm run build  
+            npm test
+      - run:
+          name: "Test TS Event Sourced Entity Shopping Cart sample"
+          command: |
+            cd samples/ts/ts-eventsourced-shopping-cart
+            # don't download, used the one we built
+            export KALIX_NPMJS_CODEGEN_BINARY="${HOME}/project/codegen/js-gen-cli/target/native-image/kalix-codegen-js"
+            npm install --save ../../../sdk/lightbend-kalix-javascript-sdk-0.0.0.tgz ../../../npm-js/kalix-scripts/lightbend-kalix-scripts-1.0.0.tgz
+            npm install 
+            npm run build  
+            npm test
 
   integration-tests:
     machine:
@@ -256,16 +298,18 @@ jobs:
             export VERSION_CHECK_ON_STARTUP=false
             source /opt/circleci/.nvm/nvm.sh
             pushd sdk && nvm install && npm ci && DEBUG='testcontainers*' npm run integration-test && npm pack && popd
-            pushd samples/js/js-customer-registry && npm install ../../../sdk/lightbend-kalix-javascript-sdk-0.0.0.tgz && npm install --save-dev ../../../npm-js/kalix-scripts/lightbend-kalix-scripts-1.0.0.tgz && npm ci && npm run integration-test && popd
-            pushd samples/js/valueentity-counter && npm install ../../../sdk/lightbend-kalix-javascript-sdk-0.0.0.tgz && npm install --save-dev ../../../npm-js/kalix-scripts/lightbend-kalix-scripts-1.0.0.tgz && npm install && npm run build && npm run integration-test && popd
-            pushd samples/js/js-valueentity-shopping-cart && npm install ../../../sdk/lightbend-kalix-javascript-sdk-0.0.0.tgz && npm install --save-dev ../../../npm-js/kalix-scripts/lightbend-kalix-scripts-1.0.0.tgz && npm install && npm run build && npm run integration-test && popd
-            pushd samples/js/js-eventsourced-shopping-cart && npm install ../../../sdk/lightbend-kalix-javascript-sdk-0.0.0.tgz && npm install --save-dev ../../../npm-js/kalix-scripts/lightbend-kalix-scripts-1.0.0.tgz && npm install && npm run build && npm run integration-test && popd
-            pushd samples/js/js-replicated-entity-shopping-cart && npm install ../../../sdk/lightbend-kalix-javascript-sdk-0.0.0.tgz && npm install --save-dev ../../../npm-js/kalix-scripts/lightbend-kalix-scripts-1.0.0.tgz && npm install && npm run build && npm run integration-test && popd
-            pushd samples/ts/ts-customer-registry && npm install ../../../sdk/lightbend-kalix-javascript-sdk-0.0.0.tgz && npm install --save-dev ../../../npm-js/kalix-scripts/lightbend-kalix-scripts-1.0.0.tgz && npm ci && npm run integration-test && popd
-            pushd samples/ts/ts-valueentity-counter && npm install ../../../sdk/lightbend-kalix-javascript-sdk-0.0.0.tgz && npm install --save-dev ../../../npm-js/kalix-scripts/lightbend-kalix-scripts-1.0.0.tgz && npm install && npm run build && npm run integration-test && popd
-            pushd samples/ts/ts-valueentity-shopping-cart && npm install ../../../sdk/lightbend-kalix-javascript-sdk-0.0.0.tgz && npm install --save-dev ../../../npm-js/kalix-scripts/lightbend-kalix-scripts-1.0.0.tgz && npm install && npm run build && npm run integration-test && popd
-            pushd samples/ts/ts-eventsourced-shopping-cart && npm install ../../../sdk/lightbend-kalix-javascript-sdk-0.0.0.tgz && npm install --save-dev ../../../npm-js/kalix-scripts/lightbend-kalix-scripts-1.0.0.tgz && npm install && npm run build && npm run integration-test && popd
-            pushd samples/ts/ts-replicated-entity-shopping-cart && npm install ../../../sdk/lightbend-kalix-javascript-sdk-0.0.0.tgz && npm install --save-dev ../../../npm-js/kalix-scripts/lightbend-kalix-scripts-1.0.0.tgz && npm install && npm run build && npm run integration-test && popd
+            # don't download, used the one we built
+            export KALIX_NPMJS_CODEGEN_BINARY="${HOME}/project/codegen/js-gen-cli/target/native-image/kalix-codegen-js"
+            pushd samples/js/js-customer-registry && npm install --save ../../../sdk/lightbend-kalix-javascript-sdk-0.0.0.tgz ../../../npm-js/kalix-scripts/lightbend-kalix-scripts-1.0.0.tgz && npm ci && npm run integration-test && popd
+            pushd samples/js/valueentity-counter && npm install --save ../../../sdk/lightbend-kalix-javascript-sdk-0.0.0.tgz ../../../npm-js/kalix-scripts/lightbend-kalix-scripts-1.0.0.tgz && npm install && npm run build && npm run integration-test && popd
+            pushd samples/js/js-valueentity-shopping-cart && npm install --save ../../../sdk/lightbend-kalix-javascript-sdk-0.0.0.tgz ../../../npm-js/kalix-scripts/lightbend-kalix-scripts-1.0.0.tgz && npm install && npm run build && npm run integration-test && popd
+            pushd samples/js/js-eventsourced-shopping-cart && npm install --save ../../../sdk/lightbend-kalix-javascript-sdk-0.0.0.tgz ../../../npm-js/kalix-scripts/lightbend-kalix-scripts-1.0.0.tgz && npm install && npm run build && npm run integration-test && popd
+            pushd samples/js/js-replicated-entity-shopping-cart && npm install --save ../../../sdk/lightbend-kalix-javascript-sdk-0.0.0.tgz ../../../npm-js/kalix-scripts/lightbend-kalix-scripts-1.0.0.tgz && npm install && npm run build && npm run integration-test && popd
+            pushd samples/ts/ts-customer-registry && npm install --save ../../../sdk/lightbend-kalix-javascript-sdk-0.0.0.tgz ../../../npm-js/kalix-scripts/lightbend-kalix-scripts-1.0.0.tgz && npm ci && npm run integration-test && popd
+            pushd samples/ts/ts-valueentity-counter && npm install --save ../../../sdk/lightbend-kalix-javascript-sdk-0.0.0.tgz ../../../npm-js/kalix-scripts/lightbend-kalix-scripts-1.0.0.tgz && npm install && npm run build && npm run integration-test && popd
+            pushd samples/ts/ts-valueentity-shopping-cart && npm install --save ../../../sdk/lightbend-kalix-javascript-sdk-0.0.0.tgz ../../../npm-js/kalix-scripts/lightbend-kalix-scripts-1.0.0.tgz && npm install && npm run build && npm run integration-test && popd
+            pushd samples/ts/ts-eventsourced-shopping-cart && npm install --save ../../../sdk/lightbend-kalix-javascript-sdk-0.0.0.tgz ../../../npm-js/kalix-scripts/lightbend-kalix-scripts-1.0.0.tgz && npm install && npm run build && npm run integration-test && popd
+            pushd samples/ts/ts-replicated-entity-shopping-cart && npm install --save ../../../sdk/lightbend-kalix-javascript-sdk-0.0.0.tgz ../../../npm-js/kalix-scripts/lightbend-kalix-scripts-1.0.0.tgz && npm install && npm run build && npm run integration-test && popd
 
   tck-tests:
     machine:
