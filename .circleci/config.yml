@@ -121,11 +121,11 @@ commands:
           id=$(curl \
             --upload-file <<parameters.filePath>> \
             -u "${CLOUDSMITH_API_USERNAME}:${CLOUDSMITH_API_PASSWORD}" \
-            https://upload.cloudsmith.io/lightbend/akkaserverless/<<parameters.fileName>> | jq -r '.identifier')
+            https://upload.cloudsmith.io/lightbend/kalix/<<parameters.fileName>> | jq -r '.identifier')
           curl -X POST -H "Content-Type: application/json" \
             -u "${CLOUDSMITH_API_USERNAME}:${CLOUDSMITH_API_PASSWORD}" \
             -d "{\"package_file\": \"$id\", \"version\": \"<<parameters.version>>\"}" \
-            https://api-prd.cloudsmith.io/v1/packages/lightbend/akkaserverless/upload/raw/
+            https://api-prd.cloudsmith.io/v1/packages/lightbend/kalix/upload/raw/
 
   publish_to_cloudsmith_win:
     parameters:
@@ -143,11 +143,11 @@ commands:
             id=$(curl \
               --upload-file "<<parameters.filePath>>" \
               -u "${CLOUDSMITH_API_USERNAME}:${CLOUDSMITH_API_PASSWORD}" \
-              https://upload.cloudsmith.io/lightbend/akkaserverless/<<parameters.fileName>> | jq -r '.identifier')
+              https://upload.cloudsmith.io/lightbend/kalix/<<parameters.fileName>> | jq -r '.identifier')
             curl -X POST -H "Content-Type: application/json" \
               -u "${CLOUDSMITH_API_USERNAME}:${CLOUDSMITH_API_PASSWORD}" \
               -d "{\"package_file\": \"$id\", \"version\": \"<<parameters.version>>\"}" \
-              https://api-prd.cloudsmith.io/v1/packages/lightbend/akkaserverless/upload/raw/
+              https://api-prd.cloudsmith.io/v1/packages/lightbend/kalix/upload/raw/
 
 jobs:
 
@@ -207,11 +207,21 @@ jobs:
             export KALIX_NPMJS_CODEGEN_BINARY="${HOME}/project/codegen/js-gen-cli/target/native-image/kalix-codegen-js"
             npm ci && npm pack
       - run:
-          name: "run tests"
+          name: "build sdk"
           command: |
             pushd sdk && npm ci && npm test && npm pack && popd
-            export KALIX_NPMJS_CODEGEN_BINARY="${HOME}/project/codegen/js-gen-cli/target/native-image/kalix-codegen-js"
-            pushd samples/js/valueentity-counter && npm install ../../../sdk/lightbend-kalix-javascript-sdk-0.0.0.tgz && npm install --save-dev ../../../npm-js/kalix-scripts/lightbend-kalix-scripts-1.0.0.tgz && npm install && npm run build && npm test && popd
+      - run:
+          name: "test Value Entity Counter sample"
+          command: |
+            cd samples/js/valueentity-counter
+            npm install ../../../sdk/lightbend-kalix-javascript-sdk-0.0.0.tgz 
+            npm install --save-dev ../../../npm-js/kalix-scripts/lightbend-kalix-scripts-1.0.0.tgz 
+            npm install 
+            npm run build 
+            npm test
+      - run:
+          name: "run tests"
+          command: |
             pushd samples/js/js-valueentity-shopping-cart && npm install ../../../sdk/lightbend-kalix-javascript-sdk-0.0.0.tgz && npm install --save-dev ../../../npm-js/kalix-scripts/lightbend-kalix-scripts-1.0.0.tgz && npm install && npm run build && npm test && popd
             pushd samples/js/js-eventsourced-shopping-cart && npm install ../../../sdk/lightbend-kalix-javascript-sdk-0.0.0.tgz && npm install --save-dev ../../../npm-js/kalix-scripts/lightbend-kalix-scripts-1.0.0.tgz && npm install && npm run build && npm test && popd
             pushd samples/ts/ts-valueentity-counter && npm install ../../../sdk/lightbend-kalix-javascript-sdk-0.0.0.tgz && npm install --save-dev ../../../npm-js/kalix-scripts/lightbend-kalix-scripts-1.0.0.tgz && npm install && npm run build && npm test && popd
@@ -245,7 +255,6 @@ jobs:
             export VERSION_CHECK_ON_STARTUP=false
             source /opt/circleci/.nvm/nvm.sh
             pushd sdk && nvm install && npm ci && DEBUG='testcontainers*' npm run integration-test && npm pack && popd
-            export KALIX_NPMJS_CODEGEN_BINARY="${HOME}/project/codegen/js-gen-cli/target/native-image/kalix-codegen-js"
             pushd samples/js/js-customer-registry && npm install ../../../sdk/lightbend-kalix-javascript-sdk-0.0.0.tgz && npm install --save-dev ../../../npm-js/kalix-scripts/lightbend-kalix-scripts-1.0.0.tgz && npm ci && npm run integration-test && popd
             pushd samples/js/valueentity-counter && npm install ../../../sdk/lightbend-kalix-javascript-sdk-0.0.0.tgz && npm install --save-dev ../../../npm-js/kalix-scripts/lightbend-kalix-scripts-1.0.0.tgz && npm install && npm run build && npm run integration-test && popd
             pushd samples/js/js-valueentity-shopping-cart && npm install ../../../sdk/lightbend-kalix-javascript-sdk-0.0.0.tgz && npm install --save-dev ../../../npm-js/kalix-scripts/lightbend-kalix-scripts-1.0.0.tgz && npm install && npm run build && npm run integration-test && popd

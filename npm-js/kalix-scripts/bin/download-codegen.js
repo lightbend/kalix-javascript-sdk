@@ -35,8 +35,8 @@ if (localBinary) {
 } else if (releases[release]) {
   const url =
     process.platform == 'win32'
-      ? `https://repo.lightbend.com/raw/akkaserverless/versions/${kalixCodegenVersion}/${releases[release]}.exe`
-      : `https://repo.lightbend.com/raw/akkaserverless/versions/${kalixCodegenVersion}/${releases[release]}`;
+      ? `https://repo.lightbend.com/raw/kalix/versions/${kalixCodegenVersion}/${releases[release]}.exe`
+      : `https://repo.lightbend.com/raw/kalix/versions/${kalixCodegenVersion}/${releases[release]}`;
   console.info(`Fetching kalix-codegen-js from ${url}`);
   fetch(url).then((response) => {
     if (!response.ok) {
