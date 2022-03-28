@@ -214,10 +214,11 @@ jobs:
           name: "test Value Entity Counter sample"
           command: |
             cd samples/js/valueentity-counter
-            npm install ../../../sdk/lightbend-kalix-javascript-sdk-0.0.0.tgz 
-            npm install --save-dev ../../../npm-js/kalix-scripts/lightbend-kalix-scripts-1.0.0.tgz 
-            npm install 
-            npm run build 
+            rm package-lock.json
+            npm install --verbose ../../../sdk/lightbend-kalix-javascript-sdk-0.0.0.tgz 
+            npm install --verbose  --save-dev ../../../npm-js/kalix-scripts/lightbend-kalix-scripts-1.0.0.tgz 
+            npm install --verbose 
+            npm run build --verbose 
             npm test
       - run:
           name: "run tests"
