@@ -179,6 +179,7 @@ function runOrFail(actionDescription, process, args, opts) {
   const { status } = run(actionDescription, process, args, opts);
 
   if (status !== 0) {
+    console.error(actionDescription);
     throw `${actionDescription} failed.`;
   }
 }
