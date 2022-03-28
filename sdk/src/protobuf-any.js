@@ -29,13 +29,10 @@ const Any = protobufHelper.moduleRoot.google.protobuf.Any;
 const KalixPrimitive = 'p.akkaserverless.com/';
 // Chosen because it reduces the likelihood of clashing with something else.
 const KalixPrimitiveFieldNumber = 1;
-const KalixPrimitiveFieldNumberEncoded =
-  KalixPrimitiveFieldNumber << 3; // 8
+const KalixPrimitiveFieldNumberEncoded = KalixPrimitiveFieldNumber << 3; // 8
 const KalixSupportedPrimitiveTypes = new Set();
 ['string', 'bytes', 'int64', 'bool', 'double'].forEach(
-  KalixSupportedPrimitiveTypes.add.bind(
-    KalixSupportedPrimitiveTypes,
-  ),
+  KalixSupportedPrimitiveTypes.add.bind(KalixSupportedPrimitiveTypes),
 );
 const EmptyArray = Object.freeze([]);
 
@@ -107,9 +104,7 @@ class AnySupport {
     // First write the field key.
     // Field index is always 15, which gets shifted left by 3 bits (ie, 120).
     writer.uint32(
-      (KalixPrimitiveFieldNumberEncoded |
-        protobuf.types.basic[type]) >>>
-        0,
+      (KalixPrimitiveFieldNumberEncoded | protobuf.types.basic[type]) >>> 0,
     );
     // Now write the primitive
     writer[type](obj);

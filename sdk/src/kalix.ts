@@ -145,9 +145,7 @@ class DocLink {
     ['AS-006', 'javascript/proto.html#_transcoding_http'], // all HTTP API errors
   ]);
 
-  constructor(
-    private baseUrl: string = 'https://docs.kalix.io/',
-  ) {
+  constructor(private baseUrl: string = 'https://docs.kalix.io/') {
     this.specificCodes.forEach((value, key) => key.length >= 6);
   }
 
@@ -282,9 +280,7 @@ export class Kalix {
   }
 
   afterStart(port: number) {
-    console.log(
-      'Kalix service started on ' + this.address + ':' + port,
-    );
+    console.log('Kalix service started on ' + this.address + ':' + port);
 
     process.on('SIGTERM', () => {
       if (!this.proxySeen || this.proxyHasTerminated || this.devMode) {

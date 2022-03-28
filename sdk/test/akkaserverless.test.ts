@@ -14,11 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  Kalix,
-  ComponentOptions,
-  EntityOptions,
-} from '../src/kalix';
+import { Kalix, ComponentOptions, EntityOptions } from '../src/kalix';
 import discovery from '../proto/akkaserverless/protocol/discovery_pb';
 import { should } from 'chai';
 should();
@@ -39,9 +35,7 @@ describe('Akkaserverless', () => {
     specificLink.should.equal(
       'https://docs.kalix.io/javascript/views.html#changing',
     );
-    componentLink.should.equal(
-      'https://docs.kalix.io/javascript/views.html',
-    );
+    componentLink.should.equal('https://docs.kalix.io/javascript/views.html');
     unknownLink.should.equal('');
   });
 
