@@ -35,7 +35,7 @@
     "compileDescriptorArgs": []
   },
   "scripts": {
-    "lint-check": "eslint src --ext .ts && prettier --check {test,src,integration-test}/**/*.ts",
+    "-disabled-lint-check": "eslint src --ext .ts && prettier --check {test,src,integration-test}/**/*.ts",
     "lint-fix": "eslint src --ext .ts --fix && prettier --write {test,src,integration-test}/**/*.ts",
     "start": "node dist/index.js",
     "test": "ts-mocha test/**/*.test.ts",
