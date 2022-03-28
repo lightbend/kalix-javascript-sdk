@@ -178,8 +178,8 @@ jobs:
       - save_deps_cache
 
   tests:
-    docker:
-      - image: cimg/node:14.16.1
+    machine:
+      image: ubuntu-2004:202104-01
     description: "tests"
     steps:
       - checkout-and-merge-to-main
