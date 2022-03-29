@@ -29,7 +29,7 @@ include::example$valueentity-counter/proto/counter_domain.proto[]
 
 <1> Any classes generated from this protobuf file will be nested in the package heirarchy of: `com.example.domain`.
 <2> Import the Kalix protobuf annotations, or options.
-<3> The protobuf option `(akkaserverless.file).value_entity` is specific to code-generation as provided by the Kalix plugin.
+<3> The protobuf option `(kalix.file).value_entity` is specific to code-generation as provided by the Kalix plugin.
 <4> `name` denotes the base name for the Value entity, the code-generation will create initial sources `CounterImpl`, `CounterTest` and `CounterIntegrationTest`. Once these files exist, they are not overwritten, so you can freely add logic to them.
 <5> `enity_type` is a unique identifier of the "state storage". The entity name may be changed even after data has been created, the `entity_type` can't. This value shows in the `@ValueEnity` annotation of your entity implementation.
 <6> `state` points to the protobuf message representing the Value entity's state which is kept by Kalix
@@ -44,14 +44,14 @@ include::example$valueentity-counter/proto/counter_api.proto[]
 <1> Import the Kalix protobuf annotations, or options.
 <2> Any classes generated from this protobuf file will be be nested in the package heirarchy: `com.example`.
 <3> Protobuf messages describe the Commands that the service handles. They may contain other messages to represent structured data.
-<4> Every Command must contain a `string` field that contains the entity ID and is marked with the `(akkaserverless.field).entity_key` option.
+<4> Every Command must contain a `string` field that contains the entity ID and is marked with the `(kalix.field).entity_key` option.
 <5> Messages describe the return value for the API. For methods that don't have return values, you should use `google.protobuf.Empty`.
 <6> The service descriptor shows the API of the entity. It lists the methods a client can use to issue Commands to the entity.
-<7> The protobuf option `(akkaserverless.service)` is specific to code-generation as provided by Kalix and points to the protobuf definition `Counter` shown above (in `com.example.domain`).
+<7> The protobuf option `(kalix.service)` is specific to code-generation as provided by Kalix and points to the protobuf definition `Counter` shown above (in `com.example.domain`).
 
 == Creating an Entity
 
-The following code creates the Value Entity with the link:{attachmentsdir}/api/module-akkaserverless.ValueEntity.html[`ValueEntity`{tab-icon}, window="new"] class. It passes in:
+The following code creates the Value Entity with the link:{attachmentsdir}/api/module-kalix.ValueEntity.html[`ValueEntity`{tab-icon}, window="new"] class. It passes in:
 
 * The protobuf files, `counter_api.proto` and `counter_domain.proto`, define the service and the domain protocol. Kalix uses the service protobuf file to load and read the service. It uses the definitions in `counter_domain.proto` to serialize state it receives from the https://docs.kalix.io/reference/glossary.html#proxy[proxy].
 
@@ -77,7 +77,7 @@ include::example$ts-valueentity-counter/src/counter.ts[tag=entity-class]
 
 When passing state to Kalix  the persisted data must be serialized and accessable.  To request state types, lookup the protobuf type then use the `create` method.
 
-Use the `ValueEntity` link:{attachmentsdir}/api/module-akkaserverless.ValueEntity.html#lookupType[`lookupType`{tab-icon}, window="new"] helper to look up these types so we can use them later.
+Use the `ValueEntity` link:{attachmentsdir}/api/module-kalix.ValueEntity.html#lookupType[`lookupType`{tab-icon}, window="new"] helper to look up these types so we can use them later.
 
 [.tabset]
 JavaScript::
@@ -98,7 +98,7 @@ include::example$ts-valueentity-counter/src/counter.ts[tag=lookup-type]
 
 An Entity must have an initial state when it is created and no state has been persisted for it yet. Value Entities are not explicitly created, they are implicitly created when a command arrives for them. Nothing is persisted on creation. So, if user "X" opens their counter for the first time, an entity will be created, but it will have no state stored yet, and just be in the initial state.
 
-To create the initial state, set the link:{attachmentsdir}/api/module-akkaserverless.ValueEntity.html#initial[`initial`{tab-icon}, window="new"] callback. This takes the ID of the entity being created, and returns a new empty state, in this case, an empty counter state:
+To create the initial state, set the link:{attachmentsdir}/api/module-kalix.ValueEntity.html#initial[`initial`{tab-icon}, window="new"] callback. This takes the ID of the entity being created, and returns a new empty state, in this case, an empty counter state:
 
 [.tabset]
 JavaScript::
@@ -119,7 +119,7 @@ NOTE: The `CounterState.create()` method creates a protobuf message using the `C
 
 == Behavior
 
-Value Entity behavior is defined in command handlers. A link:{attachmentsdir}/api/module-akkaserverless.ValueEntity.html#~commandHandler[command handler{tab-icon}, window="new"] is a function that takes a command, the current state, and a link:{attachmentsdir}/api/module-akkaserverless.ValueEntity.ValueEntityCommandContext.html[`ValueEntityCommandContext`{tab-icon}, window="new"]. The function executes a service call on the Entity gRPC interface.
+Value Entity behavior is defined in command handlers. A link:{attachmentsdir}/api/module-kalix.ValueEntity.html#~commandHandler[command handler{tab-icon}, window="new"] is a function that takes a command, the current state, and a link:{attachmentsdir}/api/module-kalix.ValueEntity.ValueEntityCommandContext.html[`ValueEntityCommandContext`{tab-icon}, window="new"]. The function executes a service call on the Entity gRPC interface.
 
 The command is the input message type for the gRPC service call. For example, the `GetCurrentCounter` service call has an input type of `GetCounter`, while the `Increase` service call has an input type of `IncreaseValue`. The command will be an object that matches the structure of these protobuf types.
 
@@ -146,9 +146,9 @@ include::example$ts-valueentity-counter/src/counter.ts[tag=get-current]
 
 === Updating state
 
-When updating the state, a command handler MUST persist that change by calling the link:{attachmentsdir}/api/module-akkaserverless.ValueEntity.ValueEntityCommandContext.html#updateState[`updateState`{tab-icon}, window="new"] method on the `ValueEntityCommandContext`. If it does not, any change to the state will be *lost* when the next command arrives.
+When updating the state, a command handler MUST persist that change by calling the link:{attachmentsdir}/api/module-kalix.ValueEntity.ValueEntityCommandContext.html#updateState[`updateState`{tab-icon}, window="new"] method on the `ValueEntityCommandContext`. If it does not, any change to the state will be *lost* when the next command arrives.
 
-The following command handler updates the state. It also validates the command, ensuring the quantity of items added is greater than zero. Invoking link:{attachmentsdir}/api/module-akkaserverless.ValueEntity.ValueEntityCommandContext.html#fail[`fail`{tab-icon}, window="new"] fails the command. This method throws, so there's no need to explicitly throw an exception.
+The following command handler updates the state. It also validates the command, ensuring the quantity of items added is greater than zero. Invoking link:{attachmentsdir}/api/module-kalix.ValueEntity.ValueEntityCommandContext.html#fail[`fail`{tab-icon}, window="new"] fails the command. This method throws, so there's no need to explicitly throw an exception.
 
 [.tabset]
 JavaScript::

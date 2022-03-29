@@ -21,9 +21,9 @@ Before running the code generation tools, make sure that you have the following:
 * Node >= {minimum_node_version}
 * `npm` or `yarn`
 * Docker >= {minimum_docker_version} (to run locally)
-* The https://docs.kalix.io/getting-started/set-up-development-env.html#_akka_serverless_cli[`akkasls` CLI downloaded]
+* The https://docs.kalix.io/getting-started/set-up-development-env.html#_kalix_cli[`kalix` CLI downloaded]
 * A https://docs.kalix.io/projects/container-registries.html[configured Docker Registry]
-* An https://docs.kalix.io/setting-up/index.html#_akka_serverless_account[Kalix account]
+* An https://docs.kalix.io/setting-up/index.html#_kalix_account[Kalix account]
 * An https://docs.kalix.io/projects/index.html[Kalix project]
 
 :sectnums:
@@ -232,7 +232,7 @@ Refer to https://docs.kalix.io/projects/container-registries.html[Configuring re
 +
 [source, command window]
 ----
-akkasls config set project <project-name>
+kalix config set project <project-name>
 ----
 
 . Run the deployment scripts:
@@ -259,5 +259,3 @@ yarn deploy
 == Summary
 
 The code generation tools created a project and supporting resources to kickstart your development. Modify the `.proto` and implementations or replace them with your own and take advantage of the generated resources. To learn more about the generated Counter Service, see xref:javascript:value-entity.adoc[].
-
-

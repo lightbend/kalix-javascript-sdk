@@ -52,9 +52,9 @@ include::example$js-customer-registry/customer_view.proto[tags=declarations;serv
 
 <1> The `UpdateCustomer` method defines how Kalix will update the view.
 <2> The source of the View is the `"customers"` Value Entity. This identifier is defined in the `@ValueEntity(entityType = "customers")` annotation of the Value Entity.
-<3> The `(akkaserverless.method).view.update` annotation defines that this method is used for updating the View. You must define the `table` attribute for the table to be used in the query. Pick any name and use it in the query `SELECT` statement.
+<3> The `(kalix.method).view.update` annotation defines that this method is used for updating the View. You must define the `table` attribute for the table to be used in the query. Pick any name and use it in the query `SELECT` statement.
 <4> The `GetCustomers` method defines the query to retrieve a stream of customers.
-<5> The `(akkaserverless.method).view.query` annotation defines that this method is used as a query of the View.
+<5> The `(kalix.method).view.query` annotation defines that this method is used as a query of the View.
 
 [NOTE]
 ====

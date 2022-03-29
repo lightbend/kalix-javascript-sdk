@@ -4,7 +4,7 @@ The Javascript tooling is published to the npm registry under the https://www.np
 
 == Kickstart
 
-Entity initialization is provided via the _create-kalix-entity_ command line tool. This tool requires only a name for the new entity, and creates a new npm project directory with the Akka Serverless SDK and associated development support tooling set up.
+Entity initialization is provided via the _create-kalix-entity_ command line tool. This tool requires only a name for the new entity, and creates a new npm project directory with the Kalix SDK and associated development support tooling set up.
 
 An initial codebase for a new entity can be created using either npm or Yarn:
 
@@ -37,9 +37,9 @@ The _kalix-scripts_ script is expected to be invoked with a single argument, spe
 
 * `build`; generates implementation stubs for your entity/service and corresponding tests, as well as a refined Typescript interface for your implementation to implement. This interface is referenced in the generated implementation using JsDoc, such that any Typescript-aware editor (such as VS Code) can leverage it.  If you make further updates to your Protobuf specification after the initial generation, existing implementation is left unchanged but the interface is updated to align. This allows you to leverage native developer tooling to guide the desired changes.
 * `package`; invokes the Docker CLI to build a deployable image, based on a Dockerfile expected to exist in the root directory of your project. The Kickstart tool generates a suitable Dockerfile, however you can modify or replace this to suit your needs.
-* `deploy`; invokes the `akkasls` command line tool to deploy the service to Akka Serverless. This relies on an existing installation of the CLI and uses configuration and credentials from that installation.
+* `deploy`; invokes the `kalix` command line tool to deploy the service to Kalix. This relies on an existing installation of the CLI and uses configuration and credentials from that installation.
 
-NOTE: The deploy command requires the Akka Serverless CLI to be installed on your system.
+NOTE: The deploy command requires the Kalix CLI to be installed on your system.
 
 === Installation
 The package can be added to your project via npm:

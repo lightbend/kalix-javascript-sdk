@@ -17,14 +17,14 @@
 import { Action, replies } from "@lightbend/kalix-javascript-sdk";
 import * as proto from "../lib/generated/proto";
 
-type Request = proto.akkaserverless.tck.model.action.Request;
-type ProcessGroup = proto.akkaserverless.tck.model.action.ProcessGroup;
+type Request = proto.kalix.tck.model.action.Request;
+type ProcessGroup = proto.kalix.tck.model.action.ProcessGroup;
 
-const { Response, ProcessGroup } = proto.akkaserverless.tck.model.action;
+const { Response, ProcessGroup } = proto.kalix.tck.model.action;
 
 export const tckModel: Action = new Action(
     "proto/action.proto",
-    "akkaserverless.tck.model.action.ActionTckModel"
+    "kalix.tck.model.action.ActionTckModel"
 ).setCommandHandlers({
   ProcessUnary: processUnary,
   ProcessStreamedIn: processStreamedIn,
@@ -108,7 +108,7 @@ function createReplyForGroup(group: ProcessGroup): replies.Reply {
 
 export const two: Action = new Action(
     "proto/action.proto",
-    "akkaserverless.tck.model.action.ActionTwo"
+    "kalix.tck.model.action.ActionTwo"
 ).setCommandHandlers({
   Call: () => Response.create()
 });
