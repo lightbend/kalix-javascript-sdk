@@ -14,8 +14,8 @@
 
 # deploy author
 
-readonly deploy_name="Akka Serverless Bot"
-readonly deploy_email="bot@akkaserverless.com"
+readonly deploy_name="Kalix Bot"
+readonly deploy_email="bot@kalix.io"
 
 # locations
 
