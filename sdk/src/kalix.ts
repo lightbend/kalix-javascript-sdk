@@ -107,6 +107,7 @@ export enum ReplicatedWriteConsistency {
 export interface ComponentOptions {
   includeDirs?: Array<string>;
   forwardHeaders?: Array<string>;
+  entityType?: string;
 }
 
 export interface EntityOptions {
@@ -547,6 +548,10 @@ export class Kalix {
             componentSettings.setForwardHeadersList(
               componentOptions.forwardHeaders,
             );
+          }
+          if (componentOptions.entityType) {
+            const entity = new discovery.EntitySettings().setEntityType(componentOptions.entityType);
+            res.setEntity(entity);
           }
           res.setComponent(componentSettings);
         }
