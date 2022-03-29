@@ -6,10 +6,10 @@ const Action = require("@lightbend/kalix-javascript-sdk").Action
 
 const tckModel = new Action(
   "proto/action.proto",
-  "akkaserverless.tck.model.action.ActionTckModel"
+  "kalix.tck.model.action.ActionTckModel"
 );
 
-const Response = tckModel.lookupType("akkaserverless.tck.model.action.Response");
+const Response = tckModel.lookupType("kalix.tck.model.action.Response");
 
 tckModel.commandHandlers = {
   ProcessUnary: processUnary,
@@ -83,7 +83,7 @@ function singleResponse(responses) {
 
 const two = new Action(
   "proto/action.proto",
-  "akkaserverless.tck.model.action.ActionTwo"
+  "kalix.tck.model.action.ActionTwo"
 );
 
 two.commandHandlers = {

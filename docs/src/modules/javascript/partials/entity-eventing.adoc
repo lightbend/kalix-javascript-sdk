@@ -32,5 +32,3 @@ There is nothing specific required in the implementation of these methods. The i
 
 The approach described above works within a service. To subscribe to
 events from a different service, you would use xref:topic-eventing.adoc[Publishing and subscribing].
-
-

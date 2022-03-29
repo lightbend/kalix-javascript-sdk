@@ -89,7 +89,7 @@ rpc CreateCart(CreateCartRequest) returns (CreateCartResponse) {
 
 This will generate a version 4 (random) UUID for the Entity. Only version 4 UUIDs are currently supported for generated Entity keys.
 
-It will often be necessary to access the generated entity key from inside the entities code. This can be done using the link:{attachmentsdir}/api/module-akkaserverless.EntityContext.html#entityId[entityId{tab-icon}, window="new"] property on the passed in context.
+It will often be necessary to access the generated entity key from inside the entities code. This can be done using the link:{attachmentsdir}/api/module-kalix.EntityContext.html#entityId[entityId{tab-icon}, window="new"] property on the passed in context.
 
 === Service
 

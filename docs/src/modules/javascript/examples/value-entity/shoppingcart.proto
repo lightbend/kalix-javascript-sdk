@@ -2,7 +2,7 @@ syntax = "proto3";
 
 import "google/protobuf/empty.proto";
 import "kalix/annotations.proto";
-import "akkaserverless/eventing.proto";
+import "kalix/eventing.proto";
 import "google/api/annotations.proto";
 import "google/api/http.proto";
 import "google/api/httpbody.proto";
