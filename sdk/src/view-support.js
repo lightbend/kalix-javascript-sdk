@@ -104,7 +104,7 @@ module.exports = class ViewServices {
                  * @property {string} commandName
                  */
                 context = {
-                  viewId: service.viewId,
+                  viewId: service.options.viewId,
                   eventSubject: receiveEvent.metadata['ce-subject'],
                   metadata: metadata,
                   commandName: receiveEvent.commandName,
