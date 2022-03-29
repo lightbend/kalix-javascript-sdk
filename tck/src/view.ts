@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ValueEntity, View } from '@lightbend/akkaserverless-javascript-sdk';
+import { ValueEntity, View } from '@lightbend/kalix-javascript-sdk';
 import protocol from '../generated/tck';
 
 type Event = protocol.akkaserverless.tck.model.view.Event;

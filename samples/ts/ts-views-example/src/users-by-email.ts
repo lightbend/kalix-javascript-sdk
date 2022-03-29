@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { View } from "@lightbend/akkaserverless-javascript-sdk";
+import { View } from "@lightbend/kalix-javascript-sdk";
 
 const view: View = new View(["users.proto"], "example.users.UsersByEmail", {
   viewId: "users-by-email"

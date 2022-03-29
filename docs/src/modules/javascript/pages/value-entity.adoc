@@ -3,7 +3,7 @@
 
 include::ROOT:partial$include.adoc[]
 
-https://developer.lightbend.com/docs/akka-serverless/reference/glossary.html#value_entity[Value Entities] persist their state on every change, and Akka Serverless needs to serialize their data to send it to the underlying data store. The most straight forward way to persist the state is to use `protobuf` types. Akka Serverless will automatically detect if an updated state is `protobuf`, and serialize it using `protobufjs`. See https://www.npmjs.com/package/protobufjs for more information on `protobufjs`. For other serialization options, including JSON, see xref:javascript:serialization.adoc[Serialization].
+https://docs.kalix.io/reference/glossary.html#value_entity[Value Entities] persist their state on every change, and Kalix needs to serialize their data to send it to the underlying data store. The most straight forward way to persist the state is to use `protobuf` types. Kalix will automatically detect if an updated state is `protobuf`, and serialize it using `protobufjs`. See https://www.npmjs.com/package/protobufjs for more information on `protobufjs`. For other serialization options, including JSON, see xref:javascript:serialization.adoc[Serialization].
 
 While protocol buffers are the recommended format for persisting state, we recommend that you do not persist your service's protobuf messages. While this may introduce some overhead to convert from one type to the other, it will allow the service's public interface to evolve independent of the data storage format, which should be private.
 
@@ -28,12 +28,12 @@ include::example$valueentity-counter/proto/counter_domain.proto[]
 ----
 
 <1> Any classes generated from this protobuf file will be nested in the package heirarchy of: `com.example.domain`.
-<2> Import the Akka Serverless protobuf annotations, or options.
-<3> The protobuf option `(akkaserverless.file).value_entity` is specific to code-generation as provided by the Akka Serverless plugin.
+<2> Import the Kalix protobuf annotations, or options.
+<3> The protobuf option `(akkaserverless.file).value_entity` is specific to code-generation as provided by the Kalix plugin.
 <4> `name` denotes the base name for the Value entity, the code-generation will create initial sources `CounterImpl`, `CounterTest` and `CounterIntegrationTest`. Once these files exist, they are not overwritten, so you can freely add logic to them.
 <5> `enity_type` is a unique identifier of the "state storage". The entity name may be changed even after data has been created, the `entity_type` can't. This value shows in the `@ValueEnity` annotation of your entity implementation.
-<6> `state` points to the protobuf message representing the Value entity's state which is kept by Akka Serverless
-<7> The `CounterState` protobuf message is what Akka Serverless stores for this entity.
+<6> `state` points to the protobuf message representing the Value entity's state which is kept by Kalix
+<7> The `CounterState` protobuf message is what Kalix stores for this entity.
 
 The `counter_api.proto` file defines the commands we can send to the Counter service to manipulate or access the Counter`s state. They make up the service API:
 
@@ -41,19 +41,19 @@ The `counter_api.proto` file defines the commands we can send to the Counter ser
 ----
 include::example$valueentity-counter/proto/counter_api.proto[]
 ----
-<1> Import the Akka Serverless protobuf annotations, or options.
+<1> Import the Kalix protobuf annotations, or options.
 <2> Any classes generated from this protobuf file will be be nested in the package heirarchy: `com.example`.
 <3> Protobuf messages describe the Commands that the service handles. They may contain other messages to represent structured data.
 <4> Every Command must contain a `string` field that contains the entity ID and is marked with the `(akkaserverless.field).entity_key` option.
 <5> Messages describe the return value for the API. For methods that don't have return values, you should use `google.protobuf.Empty`.
 <6> The service descriptor shows the API of the entity. It lists the methods a client can use to issue Commands to the entity.
-<7> The protobuf option `(akkaserverless.service)` is specific to code-generation as provided by Akka Serverless and points to the protobuf definition `Counter` shown above (in `com.example.domain`).
+<7> The protobuf option `(akkaserverless.service)` is specific to code-generation as provided by Kalix and points to the protobuf definition `Counter` shown above (in `com.example.domain`).
 
 == Creating an Entity
 
 The following code creates the Value Entity with the link:{attachmentsdir}/api/module-akkaserverless.ValueEntity.html[`ValueEntity`{tab-icon}, window="new"] class. It passes in:
 
-* The protobuf files, `counter_api.proto` and `counter_domain.proto`, define the service and the domain protocol. Akka Serverless uses the service protobuf file to load and read the service. It uses the definitions in `counter_domain.proto` to serialize state it receives from the https://developer.lightbend.com/docs/akka-serverless/reference/glossary.html#proxy[proxy].
+* The protobuf files, `counter_api.proto` and `counter_domain.proto`, define the service and the domain protocol. Kalix uses the service protobuf file to load and read the service. It uses the definitions in `counter_domain.proto` to serialize state it receives from the https://docs.kalix.io/reference/glossary.html#proxy[proxy].
 
 * The fully qualified name of the service the Value Entity implements, `com.example.CounterService`. The `entityType` is used to namespace the state in the journal.
 
@@ -75,7 +75,7 @@ include::example$ts-valueentity-counter/src/counter.ts[tag=entity-class]
 
 == Using protobuf types
 
-When passing state to Akka Serverless  the persisted data must be serialized and accessable.  To request state types, lookup the protobuf type then use the `create` method.
+When passing state to Kalix  the persisted data must be serialized and accessable.  To request state types, lookup the protobuf type then use the `create` method.
 
 Use the `ValueEntity` link:{attachmentsdir}/api/module-akkaserverless.ValueEntity.html#lookupType[`lookupType`{tab-icon}, window="new"] helper to look up these types so we can use them later.
 
@@ -123,7 +123,7 @@ Value Entity behavior is defined in command handlers. A link:{attachmentsdir}/ap
 
 The command is the input message type for the gRPC service call. For example, the `GetCurrentCounter` service call has an input type of `GetCounter`, while the `Increase` service call has an input type of `IncreaseValue`. The command will be an object that matches the structure of these protobuf types.
 
-The command handler must return a message of the same type as the output type of the gRPC service call, in the case of the `GetCurrentCounter` command, this must be a `CurrentCounter` message. In this case, the message does not need to be created using a looked up protobuf message type because Akka Serverless is already aware of the output type of the gRPC service call. Use a JavaScript object that matches the structure of the protobuf type.
+The command handler must return a message of the same type as the output type of the gRPC service call, in the case of the `GetCurrentCounter` command, this must be a `CurrentCounter` message. In this case, the message does not need to be created using a looked up protobuf message type because Kalix is already aware of the output type of the gRPC service call. Use a JavaScript object that matches the structure of the protobuf type.
 
 === Retrieving state
 

@@ -1,25 +1,25 @@
 {
-  "name": "@lightbend/akkaserverless-javascript-sdk",
+  "name": "@lightbend/kalix-javascript-sdk",
   "version": "0.0.0",
-  "description": "Akka Serverless JavaScript SDK",
+  "description": "Kalix JavaScript SDK SDK",
   "keywords": [
-    "akka",
+    "kalix",
     "serverless",
     "akka serverless"
   ],
-  "homepage": "https://github.com/lightbend/akkaserverless-javascript-sdk",
+  "homepage": "https://github.com/lightbend/kalix-javascript-sdk",
   "bugs": {
-    "url": "https://github.com/lightbend/akkaserverless-javascript-sdk"
+    "url": "https://github.com/lightbend/kalix-javascript-sdk"
   },
   "license": "Apache-2.0",
   "author": {
-    "name": "Akka Serverless Team",
+    "name": "Kalix Team",
     "email": "info@lightbend.com",
     "url": "https://lightbend.com"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/lightbend/akkaserverless-javascript-sdk"
+    "url": "https://github.com/lightbend/kalix-javascript-sdk"
   },
   "engineStrict": true,
   "engines": {
@@ -79,7 +79,7 @@
     }
   },
   "scripts": {
-    "clean": "rm -rf ./dist ./proto",
+    "clean": "rm -rf ./dist ./proto ./apidocs lightbend-kalix-javascript-sdk-0.0.0.tgz user-function.desc index.d.ts",
     "copy-files": "cp -r ./proto ./dist && cp index.d.ts ./dist",
     "compile": "tsc && npm run copy-files",
     "verify-types": "tsc dist/index.d.ts --noEmit",

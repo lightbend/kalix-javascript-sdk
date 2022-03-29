@@ -1,9 +1,9 @@
-# Releasing Akka Serverless JavaScript SDK
+# Releasing Kalix JavaScript SDK SDK
 
 Create a release issue (using the [GitHub CLI](https://cli.github.com/))
 
 ```
-gh issue create --title 'Release Akka Serverless JavaScript SDK' --label as-framework --body-file .github/release-issue-template.md -w
+gh issue create --title 'Release Kalix JavaScript SDK SDK' --label as-framework --body-file .github/release-issue-template.md -w
 ````
 
 and follow the instructions.

@@ -23,30 +23,27 @@ const stableJsonStringify = require('json-stable-stringify');
 
 const Any = protobufHelper.moduleRoot.google.protobuf.Any;
 
-// To allow primitive types to be stored, Akka Serverless defines a number of primitive type URLs, based on protobuf types.
+// To allow primitive types to be stored, Kalix defines a number of primitive type URLs, based on protobuf types.
 // The serialized values are valid protobuf messages that contain a value of that type as their single field at index
 // 15.
-const AkkaServerlessPrimitive = 'p.akkaserverless.com/';
+const KalixPrimitive = 'p.akkaserverless.com/';
 // Chosen because it reduces the likelihood of clashing with something else.
-const AkkaServerlessPrimitiveFieldNumber = 1;
-const AkkaServerlessPrimitiveFieldNumberEncoded =
-  AkkaServerlessPrimitiveFieldNumber << 3; // 8
-const AkkaServerlessSupportedPrimitiveTypes = new Set();
+const KalixPrimitiveFieldNumber = 1;
+const KalixPrimitiveFieldNumberEncoded = KalixPrimitiveFieldNumber << 3; // 8
+const KalixSupportedPrimitiveTypes = new Set();
 ['string', 'bytes', 'int64', 'bool', 'double'].forEach(
-  AkkaServerlessSupportedPrimitiveTypes.add.bind(
-    AkkaServerlessSupportedPrimitiveTypes,
-  ),
+  KalixSupportedPrimitiveTypes.add.bind(KalixSupportedPrimitiveTypes),
 );
 const EmptyArray = Object.freeze([]);
 
-const AkkaServerlessJson = 'json.akkaserverless.com/';
+const KalixJson = 'json.akkaserverless.com/';
 
 /**
  * This is any type that has been returned by the protobufjs Message.create method.
  *
  * It should have a encode() method on it.
  *
- * @typedef module:akkaserverless.SerializableProtobufMessage
+ * @typedef module:kalix.SerializableProtobufMessage
  * @type {Object}
  */
 
@@ -54,7 +51,7 @@ const AkkaServerlessJson = 'json.akkaserverless.com/';
  * Any type that has a type property on it can be serialized as JSON, with the value of the type property describing
  * the type of the value.
  *
- * @typedef module:akkaserverless.TypedJson
+ * @typedef module:kalix.TypedJson
  * @type {Object}
  * @property {string} type The type of the object.
  */
@@ -62,8 +59,8 @@ const AkkaServerlessJson = 'json.akkaserverless.com/';
 /**
  * A type that is serializable.
  *
- * @typedef module:akkaserverless.Serializable
- * @type {module:akkaserverless.SerializableProtobufMessage|module:akkaserverless.TypedJson|Object|string|number|boolean|Long|Buffer}
+ * @typedef module:kalix.Serializable
+ * @type {module:kalix.SerializableProtobufMessage|module:kalix.TypedJson|Object|string|number|boolean|Long|Buffer}
  */
 
 /**
@@ -107,9 +104,7 @@ class AnySupport {
     // First write the field key.
     // Field index is always 15, which gets shifted left by 3 bits (ie, 120).
     writer.uint32(
-      (AkkaServerlessPrimitiveFieldNumberEncoded |
-        protobuf.types.basic[type]) >>>
-        0,
+      (KalixPrimitiveFieldNumberEncoded | protobuf.types.basic[type]) >>> 0,
     );
     // Now write the primitive
     writer[type](obj);
@@ -119,7 +114,7 @@ class AnySupport {
   static serializePrimitive(obj, type) {
     return Any.create({
       // I have *no* idea why it's type_url and not typeUrl, but it is.
-      type_url: AkkaServerlessPrimitive + type,
+      type_url: KalixPrimitive + type,
       value: this.serializePrimitiveValue(obj, type),
     });
   }
@@ -225,7 +220,7 @@ class AnySupport {
         }
       }
       return Any.create({
-        type_url: AkkaServerlessJson + type,
+        type_url: KalixJson + type,
         value: this.serializePrimitiveValue(stableJsonStringify(obj), 'string'),
       });
     } else {
@@ -257,11 +252,11 @@ class AnySupport {
 
     let bytes = any.value || EmptyArray;
 
-    if (hostName === AkkaServerlessPrimitive) {
+    if (hostName === KalixPrimitive) {
       return AnySupport.deserializePrimitive(bytes, type);
     }
 
-    if (hostName === AkkaServerlessJson) {
+    if (hostName === KalixJson) {
       const json = AnySupport.deserializePrimitive(bytes, 'string');
       return JSON.parse(json);
     }
@@ -277,8 +272,8 @@ class AnySupport {
   }
 
   static deserializePrimitive(bytes, type) {
-    if (!AkkaServerlessSupportedPrimitiveTypes.has(type)) {
-      throw new Error('Unsupported AkkaServerless primitive Any type: ' + type);
+    if (!KalixSupportedPrimitiveTypes.has(type)) {
+      throw new Error('Unsupported Kalix primitive Any type: ' + type);
     }
 
     if (!bytes.length) return this.primitiveDefaultValue(type);
@@ -291,7 +286,7 @@ class AnySupport {
       const key = reader.uint32();
       pType = key & 7;
       fieldNumber = key >>> 3;
-      if (fieldNumber !== AkkaServerlessPrimitiveFieldNumber) {
+      if (fieldNumber !== KalixPrimitiveFieldNumber) {
         reader.skipType(pType);
       } else {
         if (pType !== protobuf.types.basic[type]) {

@@ -17,7 +17,7 @@
 const path = require('path');
 const grpc = require('@grpc/grpc-js');
 const protoLoader = require('@grpc/proto-loader');
-const debug = require('debug')('akkaserverless-action');
+const debug = require('debug')('kalix-action');
 // Bind to stdout
 debug.log = console.log.bind(console);
 const AnySupport = require('./protobuf-any');
@@ -74,18 +74,18 @@ class ActionHandler {
   /**
    * Context for an action command.
    *
-   * @interface module:akkaserverless.Action.ActionCommandContext
-   * @extends module:akkaserverless.CommandContext
+   * @interface module:kalix.Action.ActionCommandContext
+   * @extends module:kalix.CommandContext
    * @property {boolean} cancelled Whether the client is still connected.
-   * @property {module:akkaserverless.Metadata} metadata The metadata associated with the command.
+   * @property {module:kalix.Metadata} metadata The metadata associated with the command.
    */
   createContext(metadata) {
     /**
      * Write a message.
      *
-     * @function module:akkaserverless.Action.ActionCommandContext#write
+     * @function module:kalix.Action.ActionCommandContext#write
      * @param {Object} message The protobuf message to write.
-     * @param {module:akkaserverless.Metadata} [metadata] The metadata associated with the message.
+     * @param {module:kalix.Metadata} [metadata] The metadata associated with the message.
      */
 
     const call = this.call;
@@ -105,7 +105,7 @@ class ActionHandler {
     /**
      * Register an event handler.
      *
-     * @function module:akkaserverless.Action.ActionCommandContext#on
+     * @function module:kalix.Action.ActionCommandContext#on
      * @param {string} eventType The type of the event.
      * @param {function} callback The callback to handle the event.
      */
@@ -141,8 +141,8 @@ class ActionHandler {
   }
 
   /**
-   * @param {module:akkaserverless.Action.ActionCommandContext} ctx
-   * @param {module:akkaserverless.replies.Reply} reply
+   * @param {module:kalix.Action.ActionCommandContext} ctx
+   * @param {module:kalix.replies.Reply} reply
    */
   passReplyThroughContext(ctx, reply) {
     // effects need to go first to end up in reply
@@ -195,8 +195,8 @@ class ActionHandler {
   /**
    * Context for a unary action command.
    *
-   * @interface module:akkaserverless.Action.UnaryCommandContext
-   * @extends module:akkaserverless.Action.ActionCommandContext
+   * @interface module:kalix.Action.UnaryCommandContext
+   * @extends module:kalix.Action.ActionCommandContext
    */
   handleUnary() {
     this.setupUnaryOutContext();
@@ -215,9 +215,9 @@ class ActionHandler {
   /**
    * Context for a streamed in action command.
    *
-   * @interface module:akkaserverless.Action.StreamedInCommandContext
-   * @extends module:akkaserverless.Action.StreamedInContext
-   * @extends module:akkaserverless.Action.ActionCommandContext
+   * @interface module:kalix.Action.StreamedInCommandContext
+   * @extends module:kalix.Action.StreamedInContext
+   * @extends module:kalix.Action.ActionCommandContext
    */
   handleStreamedIn() {
     this.setupUnaryOutContext();
@@ -247,8 +247,8 @@ class ActionHandler {
   /**
    * Context for a streamed out action command.
    *
-   * @interface module:akkaserverless.Action.StreamedOutCommandContext
-   * @extends module:akkaserverless.Action.StreamedOutContext
+   * @interface module:kalix.Action.StreamedOutCommandContext
+   * @extends module:kalix.Action.StreamedOutContext
    */
   handleStreamedOut() {
     this.setupStreamedOutContext();
@@ -266,9 +266,9 @@ class ActionHandler {
   /**
    * Context for a streamed action command.
    *
-   * @interface module:akkaserverless.Action.StreamedCommandContext
-   * @extends module:akkaserverless.Action.StreamedInContext
-   * @extends module:akkaserverless.Action.StreamedOutContext
+   * @interface module:kalix.Action.StreamedCommandContext
+   * @extends module:kalix.Action.StreamedInContext
+   * @extends module:kalix.Action.StreamedOutContext
    */
   handleStreamed() {
     this.setupStreamedInContext();
@@ -290,10 +290,10 @@ class ActionHandler {
     /**
      * DEPRECATED. Forward this command to another service component call, use 'ReplyFactory.forward' instead.
      *
-     * @function module:akkaserverless.Action.UnaryCommandContext#forward
+     * @function module:kalix.Action.UnaryCommandContext#forward
      * @param method The service component method to invoke.
      * @param {object} message The message to send to that service component.
-     * @param {module:akkaserverless.Metadata} metadata Metadata to send with the forward.
+     * @param {module:kalix.Metadata} metadata Metadata to send with the forward.
      */
     this.ctx.forward = (method, message, metadata, internalCall) => {
       this.ensureNotCancelled();
@@ -389,8 +389,8 @@ class ActionHandler {
   /**
    * Context for an action command that returns a streamed message out.
    *
-   * @interface module:akkaserverless.Action.StreamedOutContext
-   * @extends module:akkaserverless.Action.ActionCommandContext
+   * @interface module:kalix.Action.StreamedOutContext
+   * @extends module:kalix.Action.ActionCommandContext
    */
   setupStreamedOutContext() {
     let effects = [];
@@ -398,7 +398,7 @@ class ActionHandler {
     /**
      * A cancelled event.
      *
-     * @event module:akkaserverless.Action.StreamedOutContext#cancelled
+     * @event module:kalix.Action.StreamedOutContext#cancelled
      */
     this.supportedEvents.push('cancelled');
 
@@ -410,8 +410,8 @@ class ActionHandler {
     /**
      * Send a reply
      *
-     * @function module:akkaserverless.Action.StreamedOutContext#reply
-     * @param {module:akkaserverless.replies.Reply} reply The reply to send
+     * @function module:kalix.Action.StreamedOutContext#reply
+     * @param {module:kalix.replies.Reply} reply The reply to send
      */
     this.ctx.reply = (reply) => {
       this.passReplyThroughContext(this.ctx, reply);
@@ -420,7 +420,7 @@ class ActionHandler {
     /**
      * Terminate the outgoing stream of messages.
      *
-     * @function module:akkaserverless.Action.StreamedOutContext#end
+     * @function module:kalix.Action.StreamedOutContext#end
      */
     this.ctx.end = () => {
       if (this.call.cancelled) {
@@ -520,8 +520,8 @@ class ActionHandler {
   /**
    * Context for an action command that handles streamed messages in.
    *
-   * @interface module:akkaserverless.Action.StreamedInContext
-   * @extends module:akkaserverless.Action.ActionCommandContext
+   * @interface module:kalix.Action.StreamedInContext
+   * @extends module:kalix.Action.ActionCommandContext
    */
   setupStreamedInContext() {
     /**
@@ -529,7 +529,7 @@ class ActionHandler {
      *
      * Emitted when a new message arrives.
      *
-     * @event module:akkaserverless.Action.StreamedInContext#data
+     * @event module:kalix.Action.StreamedInContext#data
      * @type {Object}
      */
     this.supportedEvents.push('data');
@@ -541,7 +541,7 @@ class ActionHandler {
      *
      * If a callback is registered and that returns a Reply, then that is returned as a response from the action
      *
-     * @event module:akkaserverless.Action.StreamedInContext#end
+     * @event module:kalix.Action.StreamedInContext#end
      */
     this.supportedEvents.push('end');
 
@@ -568,7 +568,7 @@ class ActionHandler {
     /**
      * Cancel the incoming stream of messages.
      *
-     * @function module:akkaserverless.Action.StreamedInContext#cancel
+     * @function module:kalix.Action.StreamedInContext#cancel
      */
     this.ctx.cancel = () => {
       if (this.call.cancelled) {

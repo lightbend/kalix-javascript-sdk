@@ -128,7 +128,7 @@ class MetadataMapProxyHandler implements ProxyHandler<MetadataMap> {
 }
 
 /**
- * Akka Serverless metadata.
+ * Kalix metadata.
  *
  * Metadata is treated as case insensitive on lookup, and case sensitive on set. Multiple values per key are supported,
  * setting a value will add it to the current values for that key. You should delete first if you wish to replace a

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 // tag::imports[]
-import {EventSourcedEntity} from "@lightbend/akkaserverless-javascript-sdk";
+import {EventSourcedEntity} from "@lightbend/kalix-javascript-sdk";
 // end::imports[]
 /**
  * Type definitions.

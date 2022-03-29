@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import akkaserverless from "@lightbend/akkaserverless-javascript-sdk";
+import kalix from "@lightbend/kalix-javascript-sdk";
 
-const testkit = new akkaserverless.IntegrationTestkit();
+const testkit = new kalix.IntegrationTestkit();
 
 import {expect} from "chai"
 

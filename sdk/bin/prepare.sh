@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Prepare script for the akkaserverless-javascript-sdk package
+# Prepare script for the kalix-javascript-sdk package
 
 # get the framework version from config.json
 readonly framework_version=$(node --print 'require("./config.json").frameworkVersion')
@@ -36,12 +36,14 @@ fi
 ./bin/compile-protobuf.sh
 
 # Generate TS type definitions based on the JSDocs
+echo "Generating TS type definitions based on JSDocs"
 cp index.d.preamble.ts index.d.ts
 jsdoc -t ./node_modules/@lightbend/tsd-jsdoc/dist -c ./jsdoc.json -d .
 cat types.d.ts >> index.d.ts && rm -f types.d.ts
+echo "Applying search-replace no generated TS to fix 'module:' entries"
 # There replacements are quite dirty, but even the patched tsd-jsdoc generator can't deal with these (mostly module related) issues currently
-perl -i -pe 's/declare module \"akkaserverless\"/declare module \"\@lightbend\/akkaserverless-javascript-sdk\"/g' index.d.ts
-perl -i -pe 's/module:akkaserverless\.//g' index.d.ts
-perl -i -pe 's/import\("akkaserverless"\).([a-zA-Z]*)/$1/g' index.d.ts
-perl -i -pe 's/import\("akkaserverless\.([a-zA-Z.|]*)\"\).(?!default\W)([a-zA-Z]*)/$1.$2/g' index.d.ts
-perl -i -pe 's/import\("akkaserverless\.([a-zA-Z.|]*)\"\).default/$1/g' index.d.ts
+perl -i -pe 's/declare module \"kalix\"/declare module \"\@lightbend\/kalix-javascript-sdk\"/g' index.d.ts
+perl -i -pe 's/module:kalix\.//g' index.d.ts
+perl -i -pe 's/import\("kalix"\).([a-zA-Z]*)/$1/g' index.d.ts
+perl -i -pe 's/import\("kalix\.([a-zA-Z.|]*)\"\).(?!default\W)([a-zA-Z]*)/$1.$2/g' index.d.ts
+perl -i -pe 's/import\("kalix\.([a-zA-Z.|]*)\"\).default/$1/g' index.d.ts

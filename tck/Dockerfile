@@ -18,6 +18,6 @@ WORKDIR /home/node/tck
 USER node
 ENV HOST 0.0.0.0
 ENV NODE_ENV production
-ENV DEBUG akkaserverless*
+ENV DEBUG kalix*
 EXPOSE 8080
 CMD ["node", "dist/index.js"]

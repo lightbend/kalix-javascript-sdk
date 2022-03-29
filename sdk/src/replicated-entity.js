@@ -18,7 +18,7 @@ const fs = require('fs');
 const protobufHelper = require('./protobuf-helper');
 const grpc = require('@grpc/grpc-js');
 const protoLoader = require('@grpc/proto-loader');
-const AkkaServerless = require('./akkaserverless');
+const Kalix = require('./kalix');
 const replicatedData = require('./replicated-data');
 const support = require('./replicated-entity-support');
 const { GrpcUtil } = require('./grpc-util');
@@ -28,25 +28,25 @@ const replicatedEntityServices = new support.ReplicatedEntityServices();
 /**
  * Options for creating a Replicated Entity.
  *
- * @typedef module:akkaserverless.replicatedentity.ReplicatedEntity~options
+ * @typedef module:kalix.replicatedentity.ReplicatedEntity~options
  * @property {array<string>} [includeDirs=["."]] The directories to include when looking up imported protobuf files.
- * @property {module:akkaserverless.replicatedentity.ReplicatedEntity~entityPassivationStrategy} [entityPassivationStrategy] Entity passivation strategy to use.
- * @property {module:akkaserverless.ReplicatedWriteConsistency} [replicatedWriteConsistency] Write consistency to use for this replicated entity.
+ * @property {module:kalix.replicatedentity.ReplicatedEntity~entityPassivationStrategy} [entityPassivationStrategy] Entity passivation strategy to use.
+ * @property {module:kalix.ReplicatedWriteConsistency} [replicatedWriteConsistency] Write consistency to use for this replicated entity.
  */
 
 /**
  * Entity passivation strategy for a replicated entity.
  *
- * @typedef module:akkaserverless.replicatedentity.ReplicatedEntity~entityPassivationStrategy
+ * @typedef module:kalix.replicatedentity.ReplicatedEntity~entityPassivationStrategy
  * @property {number} [timeout] Passivation timeout (in milliseconds).
  */
 
 /**
  * A command handler callback.
  *
- * @callback module:akkaserverless.replicatedentity.ReplicatedEntity~commandHandler
+ * @callback module:kalix.replicatedentity.ReplicatedEntity~commandHandler
  * @param {Object} command The command message, this will be of the type of the gRPC service call input type.
- * @param {module:akkaserverless.replicatedentity.ReplicatedEntityCommandContext} context The command context.
+ * @param {module:kalix.replicatedentity.ReplicatedEntityCommandContext} context The command context.
  * @returns {undefined|Object} The message to reply with, it must match the gRPC service call output type for this
  * command.
  */
@@ -58,15 +58,15 @@ const replicatedEntityServices = new support.ReplicatedEntityServices();
  * specific properties and methods. This may be due to the state being set explicitly from a command handler on the
  * command context, or implicitly as the default value, or implicitly when a new state is received from the proxy.
  *
- * @callback module:akkaserverless.replicatedentity.ReplicatedEntity~onStateSetCallback
- * @param {module:akkaserverless.replicatedentity.ReplicatedData} state The Replicated Data state that was set.
+ * @callback module:kalix.replicatedentity.ReplicatedEntity~onStateSetCallback
+ * @param {module:kalix.replicatedentity.ReplicatedData} state The Replicated Data state that was set.
  * @param {string} entityId The id of the entity.
  */
 
 /**
- * A callback that is invoked to create a default value if the Akka Serverless proxy doesn't send an existing one.
+ * A callback that is invoked to create a default value if the Kalix proxy doesn't send an existing one.
  *
- * @callback module:akkaserverless.replicatedentity.ReplicatedEntity~defaultValueCallback
+ * @callback module:kalix.replicatedentity.ReplicatedEntity~defaultValueCallback
  * @param {string} entityId The id of the entity.
  * @returns {Object} The default value to use for this entity.
  */
@@ -84,32 +84,32 @@ const replicatedEntityServices = new support.ReplicatedEntityServices();
  * using default values, the get method should not be used in queries where an empty value for the Replicated Data
  * means the value is not present.
  *
- * @callback module:akkaserverless.replicatedentity.ReplicatedMap~defaultValueCallback
- * @param {module:akkaserverless.Serializable} key The key the default value is being generated for.
- * @returns {undefined|module:akkaserverless.replicatedentity.ReplicatedData} The default value, or undefined if no default value should be returned.
+ * @callback module:kalix.replicatedentity.ReplicatedMap~defaultValueCallback
+ * @param {module:kalix.Serializable} key The key the default value is being generated for.
+ * @returns {undefined|module:kalix.replicatedentity.ReplicatedData} The default value, or undefined if no default value should be returned.
  */
 
 /**
- * Callback for handling elements iterated through by {@link module:akkaserverless.replicatedentity.ReplicatedMap#forEach}.
+ * Callback for handling elements iterated through by {@link module:kalix.replicatedentity.ReplicatedMap#forEach}.
  *
- * @callback module:akkaserverless.replicatedentity.ReplicatedMap~forEachCallback
- * @param {module:akkaserverless.replicatedentity.ReplicatedData} value The Replicated Data value.
- * @param {module:akkaserverless.Serializable} key The key.
- * @param {module:akkaserverless.ReplicatedMap} This map.
+ * @callback module:kalix.replicatedentity.ReplicatedMap~forEachCallback
+ * @param {module:kalix.replicatedentity.ReplicatedData} value The Replicated Data value.
+ * @param {module:kalix.Serializable} key The key.
+ * @param {module:kalix.ReplicatedMap} This map.
  */
 
 /**
- * Callback for handling elements iterated through by {@link module:akkaserverless.replicatedentity.ReplicatedSet#forEach}.
+ * Callback for handling elements iterated through by {@link module:kalix.replicatedentity.ReplicatedSet#forEach}.
  *
- * @callback module:akkaserverless.replicatedentity.ReplicatedSet~forEachCallback
- * @param {module:akkaserverless.Serializable} element The element.
+ * @callback module:kalix.replicatedentity.ReplicatedSet~forEachCallback
+ * @param {module:kalix.Serializable} element The element.
  */
 
 /**
  * A Replicated Entity.
  *
- * @memberOf module:akkaserverless.replicatedentity
- * @implements module:akkaserverless.Entity
+ * @memberOf module:kalix.replicatedentity
+ * @implements module:kalix.Entity
  */
 class ReplicatedEntity {
   /**
@@ -121,11 +121,11 @@ class ReplicatedEntity {
    * @param {string} serviceName The fully qualified name of the gRPC service that this Replicated Entity implements.
    * @param {string} entityType The entity type name, used to namespace entities of different Replicated Data
    *                            types in the same service.
-   * @param {module:akkaserverless.replicatedentity.ReplicatedEntity~options=} options The options for this entity.
+   * @param {module:kalix.replicatedentity.ReplicatedEntity~options=} options The options for this entity.
    */
   constructor(desc, serviceName, entityType, options) {
     /**
-     * @type {module:akkaserverless.replicatedentity.ReplicatedEntity~options}
+     * @type {module:kalix.replicatedentity.ReplicatedEntity~options}
      */
     this.options = {
       ...{
@@ -161,7 +161,7 @@ class ReplicatedEntity {
     /**
      * Access to gRPC clients (with promisified unary methods).
      *
-     * @type module:akkaserverless.GrpcClientLookup
+     * @type module:kalix.GrpcClientLookup
      */
     this.clients = GrpcUtil.clientCreators(this.root, this.grpc);
 
@@ -171,7 +171,7 @@ class ReplicatedEntity {
      * The names of the properties must match the names of the service calls specified in the gRPC descriptor for this
      * Replicated Entity service.
      *
-     * @type {Object.<string, module:akkaserverless.replicatedentity.ReplicatedEntity~commandHandler>}
+     * @type {Object.<string, module:kalix.replicatedentity.ReplicatedEntity~commandHandler>}
      */
     this.commandHandlers = {};
 
@@ -183,14 +183,14 @@ class ReplicatedEntity {
      * command handler on the command context, or implicitly as the default value, or implicitly when a new state is
      * received from the proxy.
      *
-     * @member {module:akkaserverless.replicatedentity.ReplicatedEntity~onStateSetCallback} module:akkaserverless.replicatedentity.ReplicatedEntity#onStateSet
+     * @member {module:kalix.replicatedentity.ReplicatedEntity~onStateSetCallback} module:kalix.replicatedentity.ReplicatedEntity#onStateSet
      */
     this.onStateSet = (state, entityId) => undefined;
 
     /**
-     * A callback that is invoked to create a default value if the Akka Serverless proxy doesn't send an existing one.
+     * A callback that is invoked to create a default value if the Kalix proxy doesn't send an existing one.
      *
-     * @member {module:akkaserverless.replicatedentity.ReplicatedEntity~defaultValueCallback} module:akkaserverless.replicatedentity.ReplicatedEntity#defaultValue
+     * @member {module:kalix.replicatedentity.ReplicatedEntity~defaultValueCallback} module:kalix.replicatedentity.ReplicatedEntity#defaultValue
      */
     this.defaultValue = (entityId) => null;
   }

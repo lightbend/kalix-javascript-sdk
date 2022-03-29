@@ -2,11 +2,11 @@ include::ROOT:partial$include.adoc[]
 
 == Receiving CloudEvents
 
-Akka Serverless uses the https://cloudevents.io/[CloudEvents] standard when receiving from and publishing to topics. The CloudEvents specification standardizes message metadata so that systems can integrate more easily.
+Kalix uses the https://cloudevents.io/[CloudEvents] standard when receiving from and publishing to topics. The CloudEvents specification standardizes message metadata so that systems can integrate more easily.
 
-Describing the structure of the message payload is the CloudEvents feature most important to Akka Serverless.
+Describing the structure of the message payload is the CloudEvents feature most important to Kalix.
 
-An example of that is the capability to send serialized Protobuf messages and have Akka Serverless deserialize them accordingly.
+An example of that is the capability to send serialized Protobuf messages and have Kalix deserialize them accordingly.
 
 To allow proper reading of Protobuf messages from topics, the messages need to specify the message attributes:
 

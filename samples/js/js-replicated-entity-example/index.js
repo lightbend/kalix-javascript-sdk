@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-const AkkaServerless = require("@lightbend/akkaserverless-javascript-sdk").AkkaServerless;
+const Kalix = require("@lightbend/kalix-javascript-sdk").Kalix;
 
-const server = new AkkaServerless();
+const server = new Kalix();
 
 server.addComponent(require("./replicated-entity-example"));
 

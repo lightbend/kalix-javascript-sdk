@@ -4,10 +4,10 @@
 
 
 import * as proto from "../lib/generated/proto";
-import { replies } from "@lightbend/akkaserverless-javascript-sdk";
+import { replies } from "@lightbend/kalix-javascript-sdk";
 
 // tag::entity-class[]
-import { ValueEntity } from "@lightbend/akkaserverless-javascript-sdk";
+import { ValueEntity } from "@lightbend/kalix-javascript-sdk";
 
 const entity: ValueEntity = new ValueEntity(
   ["shoppingcart.proto", "domain.proto"],
@@ -111,8 +111,8 @@ export default entity;
 
 
 // tag::add-component[]
-import { AkkaServerless } from "@lightbend/akkaserverless-javascript-sdk";
+import { Kalix } from "@lightbend/kalix-javascript-sdk";
 import shoppingcartEntity from "./shoppingcart";
 
-new AkkaServerless().addComponent(shoppingcartEntity).start();
+new Kalix().addComponent(shoppingcartEntity).start();
 // end::add-component[]

@@ -1,5 +1,5 @@
 # Config for https://github.com/release-drafter/release-drafter
-name-template: 'Akka Serverless Javascript/Typescript SDK $NEXT_PATCH_VERSION'
+name-template: 'Kalix Javascript/Typescript SDK $NEXT_PATCH_VERSION'
 tag-template: 'v$NEXT_PATCH_VERSION'
 categories:
   - title: '🚀 Features'
@@ -15,7 +15,7 @@ categories:
 
 change-template: '- $TITLE #$NUMBER by @$AUTHOR'
 template: |
-  # :mega: Akka Serverless Javascript/Typescript SDK $NEXT_PATCH_VERSION
+  # :mega: Kalix Javascript/Typescript SDK $NEXT_PATCH_VERSION
 
   ## Changes
 

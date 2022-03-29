@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { ValueEntity } from '@lightbend/akkaserverless-javascript-sdk';
-import { replies } from '@lightbend/akkaserverless-javascript-sdk';
+import { ValueEntity } from '@lightbend/kalix-javascript-sdk';
+import { replies } from '@lightbend/kalix-javascript-sdk';
 import protocol from '../generated/tck';
 
 type Request = protocol.akkaserverless.tck.model.valueentity.Request;

@@ -17,19 +17,19 @@
 /**
  * A metadata value. Can either be a string or a buffer.
  *
- * @typedef module:akkaserverless.MetadataValue
+ * @typedef module:kalix.MetadataValue
  * @type {string|Buffer}
  */
 
 /**
- * @interface module:akkaserverless.MetadataEntry
+ * @interface module:kalix.MetadataEntry
  * @property {string} key The key for this metadata entry.
  * @property {Buffer|undefined} bytesValue The entry value as bytes.
  * @property {string|undefined} stringValue The entry value as a string.
  */
 
 /**
- * @classdesc Akka Serverless metadata.
+ * @classdesc Kalix metadata.
  *
  * Metadata is treated as case insensitive on lookup, and case sensitive on set. Multiple values per key are supported,
  * setting a value will add it to the current values for that key. You should delete first if you wish to replace a
@@ -38,32 +38,32 @@
  * Values can either be strings or byte buffers. If a non string or byte buffer value is set, it will be converted to
  * a string using toString.
  *
- * @class module:akkaserverless.Metadata
- * @param {module:akkaserverless.MetadataEntry[]} entries The list of entries
+ * @class module:kalix.Metadata
+ * @param {module:kalix.MetadataEntry[]} entries The list of entries
  */
 
 /**
- * @function module:akkaserverless.Metadata#getSubject
- * @returns {module:akkaserverless.MetadataValue|undefined} CloudEvent subject value.
+ * @function module:kalix.Metadata#getSubject
+ * @returns {module:kalix.MetadataValue|undefined} CloudEvent subject value.
  */
 
 /**
  * Create a new MetadataEntry.
  *
  * @private
- * @function module:akkaserverless.Metadata#createMetadataEntry
+ * @function module:kalix.Metadata#createMetadataEntry
  * @param {string} key The key for the entry.
  * @param {any} value The value for the entry.
- * @returns {module:akkaserverless.MetadataEntry} a new MetadataEntry
+ * @returns {module:kalix.MetadataEntry} a new MetadataEntry
  */
 
 /**
  * Get the value from a metadata entry.
  *
  * @private
- * @function module:akkaserverless.Metadata#getValue
- * @param {module:akkaserverless.MetadataEntry} entry The metadata entry.
- * @returns {module:akkaserverless.MetadataValue|undefined} the value for the given entry.
+ * @function module:kalix.Metadata#getValue
+ * @param {module:kalix.MetadataEntry} entry The metadata entry.
+ * @returns {module:kalix.MetadataValue|undefined} the value for the given entry.
  */
 
 /**
@@ -71,9 +71,9 @@
  *
  * The key is case insensitive.
  *
- * @function module:akkaserverless.Metadata#get
+ * @function module:kalix.Metadata#get
  * @param {string} key The key to get.
- * @returns {module:akkaserverless.MetadataValue[]} All the values, or an empty array if no values exist for the key.
+ * @returns {module:kalix.MetadataValue[]} All the values, or an empty array if no values exist for the key.
  */
 
 /**
@@ -81,10 +81,10 @@
  *
  * This will append the key value to the metadata, it won't replace any existing values for existing keys.
  *
- * @function module:akkaserverless.Metadata#set
+ * @function module:kalix.Metadata#set
  * @param {string} key The key to set.
  * @param {any} value The value to set.
- * @returns {module:akkaserverless.Metadata} This updated metadata.
+ * @returns {module:kalix.Metadata} This updated metadata.
  */
 
 /**
@@ -92,9 +92,9 @@
  *
  * The key is case insensitive.
  *
- * @function module:akkaserverless.Metadata#delete
+ * @function module:kalix.Metadata#delete
  * @param {string} key The key to delete.
- * @returns {module:akkaserverless.Metadata} This updated metadata.
+ * @returns {module:kalix.Metadata} This updated metadata.
  */
 
 /**
@@ -102,7 +102,7 @@
  *
  * The key is case insensitive.
  *
- * @function module:akkaserverless.Metadata#has
+ * @function module:kalix.Metadata#has
  * @param {string} key The key to check.
  * @returns {boolean} Whether values exist for the given key.
  */
@@ -110,6 +110,6 @@
 /**
  * Clear the metadata.
  *
- * @function module:akkaserverless.Metadata#clear
- * @returns {module:akkaserverless.Metadata} This updated metadata.
+ * @function module:kalix.Metadata#clear
+ * @returns {module:kalix.Metadata} This updated metadata.
  */

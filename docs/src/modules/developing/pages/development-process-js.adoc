@@ -14,11 +14,11 @@ The main steps in developing a service include:
 [#_specify_service_interface_and_domain_model]
 == Specify service interface and domain model
 
-The main components of an Akka Serverless service are:
+The main components of a Kalix service are:
 
-* Stateful https://developer.lightbend.com/docs/akka-serverless/reference/glossary.html#entity[Entities]
-* Stateless https://developer.lightbend.com/docs/akka-serverless/reference/glossary.html#action[Actions]
-* https://developer.lightbend.com/docs/akka-serverless/reference/glossary.html#view[Views], which return the state of multiple instances of a stateful entity.
+* Stateful https://docs.kalix.io/reference/glossary.html#entity[Entities]
+* Stateless https://docs.kalix.io/reference/glossary.html#action[Actions]
+* https://docs.kalix.io/reference/glossary.html#view[Views], which return the state of multiple instances of a stateful entity.
 
 The service interface and the domain data model (for Entities), are contained in individual `.proto` files, as https://grpc.io[gRPC] descriptors. Separating the service interface and data model in different files allows you to evolve them independently.
 
@@ -31,7 +31,7 @@ TIP: Kickstart a project using the xref:javascript:kickstart.adoc[JavaScript cod
 
 ifdef::todo[TODO: link to glossary for Replicated Entity in main docs]
 
-Stateful services can implement https://developer.lightbend.com/docs/akka-serverless/reference/glossary.html#value_entity[Value Entity], https://developer.lightbend.com/docs/akka-serverless/reference/glossary.html#event_sourced_entity[Event Sourced Entity], or Replicated Entity components. Stateless services implement Actions. Typically, a stateful service should only have one Entity type, but can also include Actions.
+Stateful services can implement https://docs.kalix.io/reference/glossary.html#value_entity[Value Entity], https://docs.kalix.io/reference/glossary.html#event_sourced_entity[Event Sourced Entity], or Replicated Entity components. Stateless services implement Actions. Typically, a stateful service should only have one Entity type, but can also include Actions.
 
 === Actions
 
@@ -41,7 +41,7 @@ Actions are stateless functions that can be triggered by gRPC or HTTP calls. The
 
 Stateful services encapsulate business logic in in Value Entities, Event Sourced Entities, or Replicated Entities. At runtime, command messages invoke operations on Entities. A command may only act on one Entity at a time.
 
-TIP: To learn more about Akka Serverless entities see xref:javascript:value-entity.adoc[Implement a Value Entity], xref:javascript:eventsourced.adoc[Implement an Event Sourced Entity], and xref:javascript:replicated-entity.adoc[Implement a Replicated Entity].
+TIP: To learn more about Kalix entities see xref:javascript:value-entity.adoc[Implement a Value Entity], xref:javascript:eventsourced.adoc[Implement an Event Sourced Entity], and xref:javascript:replicated-entity.adoc[Implement a Replicated Entity].
 
 To update multiple Entities from a single command use forwarding and effects. 
 
@@ -67,20 +67,20 @@ It is good practice to write unit tests as you implement your services. The Java
 
 Use a Docker image to package your service and any of its dependencies. See the following pages for more information:
 
-* https://developer.lightbend.com/docs/akka-serverless/setting-up/index.html#_containers[Installing Docker]
-* https://developer.lightbend.com/docs/akka-serverless/quickstart/cr-value-entity-javascript.html#_package_and_deploy_your_service[Packaging with Docker]
-* https://developer.lightbend.com/docs/akka-serverless/projects/container-registries.html[Configuring registries]
+* https://docs.kalix.io/setting-up/index.html#_containers[Installing Docker]
+* https://docs.kalix.io/quickstart/cr-value-entity-javascript.html#_package_and_deploy_your_service[Packaging with Docker]
+* https://docs.kalix.io/projects/container-registries.html[Configuring registries]
 
 [#_run_locally]
 == Run locally
 
 You can test and debug your services by
-https://developer.lightbend.com/docs/akka-serverless/services/running-locally.html[running them locally] before deploying to Akka Serverless.
+https://docs.kalix.io/services/running-locally.html[running them locally] before deploying to Kalix.
 
-== Deploy to Akka Serverless
+== Deploy to Kalix
 
-After testing locally, deploy your service to Akka Serverless using the CLI or the Console. The following pages provide information about deployment:
+After testing locally, deploy your service to Kalix using the CLI or the Console. The following pages provide information about deployment:
 
-* https://developer.lightbend.com/docs/akka-serverless/projects/index.html[Working with Akka Serverless projects]
-* https://developer.lightbend.com/docs/akka-serverless/services/deploy-service.html#_deploy[Deploying a packaged service]
-* https://developer.lightbend.com/docs/akka-serverless/quickstart/cr-value-entity-javascript.html#_package_and_deploy_your_service[Example of how to package and deploy a service]
+* https://docs.kalix.io/projects/index.html[Working with Kalix projects]
+* https://docs.kalix.io/services/deploy-service.html#_deploy[Deploying a packaged service]
+* https://docs.kalix.io/quickstart/cr-value-entity-javascript.html#_package_and_deploy_your_service[Example of how to package and deploy a service]

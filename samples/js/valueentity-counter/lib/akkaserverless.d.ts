@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import EventSourcedEntity from "@lightbend/akkaserverless-javascript-sdk/src/event-sourced-entity";
-import ValueEntity from "@lightbend/akkaserverless-javascript-sdk/src/value-entity";
-import Metadata from "@lightbend/akkaserverless-javascript-sdk/src/metadata";
+import EventSourcedEntity from "@lightbend/kalix-javascript-sdk/src/event-sourced-entity";
+import ValueEntity from "@lightbend/kalix-javascript-sdk/src/value-entity";
+import Metadata from "@lightbend/kalix-javascript-sdk/src/metadata";
 
 /**
  * A typed extension of the EventSourcedEntity type enforcing State, Event and Command types

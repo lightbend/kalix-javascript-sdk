@@ -7,10 +7,10 @@
     "npm": ">=6.0.0"
   },
   "dependencies": {
-    "@lightbend/akkaserverless-javascript-sdk": "0.33.5"
+    "@lightbend/kalix-javascript-sdk": "0.33.5"
   },
   "devDependencies": {
-    "@lightbend/akkasls-scripts": "0.33.5",
+    "@lightbend/kalix-scripts": "0.33.5",
     "chai": "^4.3.3",
     "chai-as-promised": "^7.1.1",
     "jsdoc": "^3.6.3",
@@ -29,8 +29,8 @@
     "start": "node src/index.js",
     "test": "mocha ./test",
     "integration-test": "mocha ./integration-test",
-    "build": "akkasls-scripts build",
-    "package": "akkasls-scripts package",
-    "deploy": "akkasls-scripts deploy"
+    "build": "kalix-scripts build",
+    "package": "kalix-scripts package",
+    "deploy": "kalix-scripts deploy"
   }
 }

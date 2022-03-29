@@ -121,11 +121,11 @@ commands:
           id=$(curl \
             --upload-file <<parameters.filePath>> \
             -u "${CLOUDSMITH_API_USERNAME}:${CLOUDSMITH_API_PASSWORD}" \
-            https://upload.cloudsmith.io/lightbend/akkaserverless/<<parameters.fileName>> | jq -r '.identifier')
+            https://upload.cloudsmith.io/lightbend/kalix/<<parameters.fileName>> | jq -r '.identifier')
           curl -X POST -H "Content-Type: application/json" \
             -u "${CLOUDSMITH_API_USERNAME}:${CLOUDSMITH_API_PASSWORD}" \
             -d "{\"package_file\": \"$id\", \"version\": \"<<parameters.version>>\"}" \
-            https://api-prd.cloudsmith.io/v1/packages/lightbend/akkaserverless/upload/raw/
+            https://api-prd.cloudsmith.io/v1/packages/lightbend/kalix/upload/raw/
 
   publish_to_cloudsmith_win:
     parameters:
@@ -143,11 +143,11 @@ commands:
             id=$(curl \
               --upload-file "<<parameters.filePath>>" \
               -u "${CLOUDSMITH_API_USERNAME}:${CLOUDSMITH_API_PASSWORD}" \
-              https://upload.cloudsmith.io/lightbend/akkaserverless/<<parameters.fileName>> | jq -r '.identifier')
+              https://upload.cloudsmith.io/lightbend/kalix/<<parameters.fileName>> | jq -r '.identifier')
             curl -X POST -H "Content-Type: application/json" \
               -u "${CLOUDSMITH_API_USERNAME}:${CLOUDSMITH_API_PASSWORD}" \
               -d "{\"package_file\": \"$id\", \"version\": \"<<parameters.version>>\"}" \
-              https://api-prd.cloudsmith.io/v1/packages/lightbend/akkaserverless/upload/raw/
+              https://api-prd.cloudsmith.io/v1/packages/lightbend/kalix/upload/raw/
 
 jobs:
 
@@ -178,8 +178,8 @@ jobs:
       - save_deps_cache
 
   tests:
-    docker:
-      - image: cimg/node:14.16.1
+    machine:
+      image: ubuntu-2004:202104-01
     description: "tests"
     steps:
       - checkout-and-merge-to-main
@@ -191,16 +191,85 @@ jobs:
           name: "check vulnerabilities in transitive dependencies"
           command: |
             pushd sdk && npm audit --production && popd
+      # build/run these sample tests with local version of kalix-scripts
+      - setup_sbt
+      - restore_deps_cache
       - run:
-          name: "run tests"
+          name: "compile codegen binary"
+          working_directory: "~/project/codegen"
+          command: sbt kalix-codegen-js-cli/nativeImage
+      - run:
+          name: "install kalix-scripts"
+          working_directory: "~/project/npm-js/kalix-scripts"
+          command: |
+            source /opt/circleci/.nvm/nvm.sh
+            nvm install
+            export KALIX_NPMJS_CODEGEN_BINARY="${HOME}/project/codegen/js-gen-cli/target/native-image/kalix-codegen-js"
+            npm ci && npm pack
+      - run:
+          name: "build sdk"
           command: |
             pushd sdk && npm ci && npm test && npm pack && popd
-            pushd samples/js/valueentity-counter && npm install ../../../sdk/lightbend-akkaserverless-javascript-sdk-0.0.0.tgz && npm install && npm run build && npm test && popd
-            pushd samples/js/js-valueentity-shopping-cart && npm install ../../../sdk/lightbend-akkaserverless-javascript-sdk-0.0.0.tgz && npm install && npm run build && npm test && popd
-            pushd samples/js/js-eventsourced-shopping-cart && npm install ../../../sdk/lightbend-akkaserverless-javascript-sdk-0.0.0.tgz && npm install && npm run build && npm test && popd
-            pushd samples/ts/ts-valueentity-counter && npm install ../../../sdk/lightbend-akkaserverless-javascript-sdk-0.0.0.tgz && npm install && npm run build && npm test && popd
-            pushd samples/ts/ts-valueentity-shopping-cart && npm install ../../../sdk/lightbend-akkaserverless-javascript-sdk-0.0.0.tgz && npm install && npm run build && npm test && popd
-            pushd samples/ts/ts-eventsourced-shopping-cart && npm install ../../../sdk/lightbend-akkaserverless-javascript-sdk-0.0.0.tgz && npm install && npm run build && npm test && popd
+      - run:
+          name: "Test JS Value Entity Counter sample"
+          command: |
+            cd samples/js/valueentity-counter
+            # don't download, used the one we built
+            export KALIX_NPMJS_CODEGEN_BINARY="${HOME}/project/codegen/js-gen-cli/target/native-image/kalix-codegen-js"
+            npm install --save ../../../sdk/lightbend-kalix-javascript-sdk-0.0.0.tgz ../../../npm-js/kalix-scripts/lightbend-kalix-scripts-1.0.0.tgz
+            npm install 
+            npm run build  
+            npm test
+      - run:
+          name: "Test JS Value Entity Shopping Cart sample"
+          command: |
+            cd samples/js/js-valueentity-shopping-cart
+            # don't download, used the one we built
+            export KALIX_NPMJS_CODEGEN_BINARY="${HOME}/project/codegen/js-gen-cli/target/native-image/kalix-codegen-js"
+            npm install --save ../../../sdk/lightbend-kalix-javascript-sdk-0.0.0.tgz ../../../npm-js/kalix-scripts/lightbend-kalix-scripts-1.0.0.tgz
+            npm install 
+            npm run build  
+            npm test
+      - run:
+          name: "Test JS Event Sourced Entity Shopping Cart sample"
+          command: |
+            cd samples/js/js-eventsourced-shopping-cart
+            # don't download, used the one we built
+            export KALIX_NPMJS_CODEGEN_BINARY="${HOME}/project/codegen/js-gen-cli/target/native-image/kalix-codegen-js"
+            npm install --save ../../../sdk/lightbend-kalix-javascript-sdk-0.0.0.tgz ../../../npm-js/kalix-scripts/lightbend-kalix-scripts-1.0.0.tgz
+            npm install 
+            npm run build  
+            npm test
+      - run:
+          name: "Test TS Value Entity Counter sample"
+          command: |
+            cd samples/ts/ts-valueentity-counter
+            # don't download, used the one we built
+            export KALIX_NPMJS_CODEGEN_BINARY="${HOME}/project/codegen/js-gen-cli/target/native-image/kalix-codegen-js"
+            npm install --save ../../../sdk/lightbend-kalix-javascript-sdk-0.0.0.tgz ../../../npm-js/kalix-scripts/lightbend-kalix-scripts-1.0.0.tgz
+            npm install 
+            npm run build  
+            npm test
+      - run:
+          name: "Test TS Value Entity Shopping Cart sample"
+          command: |
+            cd samples/ts/ts-valueentity-shopping-cart
+            # don't download, used the one we built
+            export KALIX_NPMJS_CODEGEN_BINARY="${HOME}/project/codegen/js-gen-cli/target/native-image/kalix-codegen-js"
+            npm install --save ../../../sdk/lightbend-kalix-javascript-sdk-0.0.0.tgz ../../../npm-js/kalix-scripts/lightbend-kalix-scripts-1.0.0.tgz
+            npm install 
+            npm run build  
+            npm test
+      - run:
+          name: "Test TS Event Sourced Entity Shopping Cart sample"
+          command: |
+            cd samples/ts/ts-eventsourced-shopping-cart
+            # don't download, used the one we built
+            export KALIX_NPMJS_CODEGEN_BINARY="${HOME}/project/codegen/js-gen-cli/target/native-image/kalix-codegen-js"
+            npm install --save ../../../sdk/lightbend-kalix-javascript-sdk-0.0.0.tgz ../../../npm-js/kalix-scripts/lightbend-kalix-scripts-1.0.0.tgz
+            npm install 
+            npm run build  
+            npm test
 
   integration-tests:
     machine:
@@ -208,22 +277,39 @@ jobs:
     description: "integration tests"
     steps:
       - checkout-and-merge-to-main
+      # build/run these sample tests with local version of kalix-scripts
+      - setup_sbt
+      - restore_deps_cache
+      - run:
+          name: "compile codegen binary"
+          working_directory: "~/project/codegen"
+          command: sbt kalix-codegen-js-cli/nativeImage
+      - run:
+          name: "install kalix-scripts"
+          working_directory: "~/project/npm-js/kalix-scripts"
+          command: |
+            source /opt/circleci/.nvm/nvm.sh
+            nvm install
+            export KALIX_NPMJS_CODEGEN_BINARY="${HOME}/project/codegen/js-gen-cli/target/native-image/kalix-codegen-js"
+            npm ci && npm pack
       - run:
           name: "run integration tests"
           command: |
             export VERSION_CHECK_ON_STARTUP=false
             source /opt/circleci/.nvm/nvm.sh
             pushd sdk && nvm install && npm ci && DEBUG='testcontainers*' npm run integration-test && npm pack && popd
-            pushd samples/js/js-customer-registry && npm install ../../../sdk/lightbend-akkaserverless-javascript-sdk-0.0.0.tgz && npm ci && npm run integration-test && popd
-            pushd samples/js/valueentity-counter && npm install ../../../sdk/lightbend-akkaserverless-javascript-sdk-0.0.0.tgz && npm install && npm run build && npm run integration-test && popd
-            pushd samples/js/js-valueentity-shopping-cart && npm install ../../../sdk/lightbend-akkaserverless-javascript-sdk-0.0.0.tgz && npm install && npm run build && npm run integration-test && popd
-            pushd samples/js/js-eventsourced-shopping-cart && npm install ../../../sdk/lightbend-akkaserverless-javascript-sdk-0.0.0.tgz && npm install && npm run build && npm run integration-test && popd
-            pushd samples/js/js-replicated-entity-shopping-cart && npm install ../../../sdk/lightbend-akkaserverless-javascript-sdk-0.0.0.tgz && npm install && npm run build && npm run integration-test && popd
-            pushd samples/ts/ts-customer-registry && npm install ../../../sdk/lightbend-akkaserverless-javascript-sdk-0.0.0.tgz && npm ci && npm run integration-test && popd
-            pushd samples/ts/ts-valueentity-counter && npm install ../../../sdk/lightbend-akkaserverless-javascript-sdk-0.0.0.tgz && npm install && npm run build && npm run integration-test && popd
-            pushd samples/ts/ts-valueentity-shopping-cart && npm install ../../../sdk/lightbend-akkaserverless-javascript-sdk-0.0.0.tgz && npm install && npm run build && npm run integration-test && popd
-            pushd samples/ts/ts-eventsourced-shopping-cart && npm install ../../../sdk/lightbend-akkaserverless-javascript-sdk-0.0.0.tgz && npm install && npm run build && npm run integration-test && popd
-            pushd samples/ts/ts-replicated-entity-shopping-cart && npm install ../../../sdk/lightbend-akkaserverless-javascript-sdk-0.0.0.tgz && npm install && npm run build && npm run integration-test && popd
+            # don't download, used the one we built
+            export KALIX_NPMJS_CODEGEN_BINARY="${HOME}/project/codegen/js-gen-cli/target/native-image/kalix-codegen-js"
+            pushd samples/js/js-customer-registry && npm install --save ../../../sdk/lightbend-kalix-javascript-sdk-0.0.0.tgz ../../../npm-js/kalix-scripts/lightbend-kalix-scripts-1.0.0.tgz && npm ci && npm run integration-test && popd
+            pushd samples/js/valueentity-counter && npm install --save ../../../sdk/lightbend-kalix-javascript-sdk-0.0.0.tgz ../../../npm-js/kalix-scripts/lightbend-kalix-scripts-1.0.0.tgz && npm install && npm run build && npm run integration-test && popd
+            pushd samples/js/js-valueentity-shopping-cart && npm install --save ../../../sdk/lightbend-kalix-javascript-sdk-0.0.0.tgz ../../../npm-js/kalix-scripts/lightbend-kalix-scripts-1.0.0.tgz && npm install && npm run build && npm run integration-test && popd
+            pushd samples/js/js-eventsourced-shopping-cart && npm install --save ../../../sdk/lightbend-kalix-javascript-sdk-0.0.0.tgz ../../../npm-js/kalix-scripts/lightbend-kalix-scripts-1.0.0.tgz && npm install && npm run build && npm run integration-test && popd
+            pushd samples/js/js-replicated-entity-shopping-cart && npm install --save ../../../sdk/lightbend-kalix-javascript-sdk-0.0.0.tgz ../../../npm-js/kalix-scripts/lightbend-kalix-scripts-1.0.0.tgz && npm install && npm run build && npm run integration-test && popd
+            pushd samples/ts/ts-customer-registry && npm install --save ../../../sdk/lightbend-kalix-javascript-sdk-0.0.0.tgz ../../../npm-js/kalix-scripts/lightbend-kalix-scripts-1.0.0.tgz && npm ci && npm run integration-test && popd
+            pushd samples/ts/ts-valueentity-counter && npm install --save ../../../sdk/lightbend-kalix-javascript-sdk-0.0.0.tgz ../../../npm-js/kalix-scripts/lightbend-kalix-scripts-1.0.0.tgz && npm install && npm run build && npm run integration-test && popd
+            pushd samples/ts/ts-valueentity-shopping-cart && npm install --save ../../../sdk/lightbend-kalix-javascript-sdk-0.0.0.tgz ../../../npm-js/kalix-scripts/lightbend-kalix-scripts-1.0.0.tgz && npm install && npm run build && npm run integration-test && popd
+            pushd samples/ts/ts-eventsourced-shopping-cart && npm install --save ../../../sdk/lightbend-kalix-javascript-sdk-0.0.0.tgz ../../../npm-js/kalix-scripts/lightbend-kalix-scripts-1.0.0.tgz && npm install && npm run build && npm run integration-test && popd
+            pushd samples/ts/ts-replicated-entity-shopping-cart && npm install --save ../../../sdk/lightbend-kalix-javascript-sdk-0.0.0.tgz ../../../npm-js/kalix-scripts/lightbend-kalix-scripts-1.0.0.tgz && npm install && npm run build && npm run integration-test && popd
 
   tck-tests:
     machine:
@@ -263,9 +349,9 @@ jobs:
             echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/.npmrc
             pushd sdk && npm ci && npm publish --access public && popd
             git reset --hard HEAD
-            pushd npm-js/create-akkasls-entity && npm publish --access public && popd
+            pushd npm-js/create-kalix-entity && npm publish --access public && popd
             git reset --hard HEAD
-            pushd npm-js/akkasls-scripts && npm publish --access public && popd
+            pushd npm-js/kalix-scripts && npm publish --access public && popd
 
   publish-tck:
     machine:
@@ -308,17 +394,17 @@ jobs:
       - run:
           name: "compile codegen binary"
           working_directory: "~/project/codegen"
-          command: sbt akkasls-codegen-js-cli/nativeImage
+          command: sbt kalix-codegen-js-cli/nativeImage
       - run:
           name: "install codegen"
           command: |
-            cd npm-js/create-akkasls-entity
+            cd npm-js/create-kalix-entity
             npm ci && npm pack
       - run:
-          name: "install akkasls-scripts"
+          name: "install kalix-scripts"
           command: |
-            cd npm-js/akkasls-scripts
-            export AKKASLS_NPMJS_CODEGEN_BINARY="${HOME}/project/codegen/js-gen-cli/target/native-image/akkasls-codegen-js"
+            cd npm-js/kalix-scripts
+            export KALIX_NPMJS_CODEGEN_BINARY="${HOME}/project/codegen/js-gen-cli/target/native-image/kalix-codegen-js"
             npm ci && npm pack
       - run:
           name: "install sdk"
@@ -329,10 +415,10 @@ jobs:
           name: "test everything"
           working_directory: "~/tmp"
           command: |
-            export AKKASLS_NPMJS_SCRIPTS_VERSION="file:${HOME}/project/npm-js/akkasls-scripts/lightbend-akkasls-scripts-1.0.0.tgz"
-            export AKKASLS_NPMJS_SDK_VERSION="file:${HOME}/project/sdk/lightbend-akkaserverless-javascript-sdk-0.0.0.tgz"
-            export AKKASLS_NPMJS_CODEGEN_BINARY="${HOME}/project/codegen/js-gen-cli/target/native-image/akkasls-codegen-js"
-            node "${HOME}/project/npm-js/create-akkasls-entity/create-akkasls-entity.js" generated-project
+            export KALIX_NPMJS_SCRIPTS_VERSION="file:${HOME}/project/npm-js/kalix-scripts/lightbend-kalix-scripts-1.0.0.tgz"
+            export KALIX_NPMJS_SDK_VERSION="file:${HOME}/project/sdk/lightbend-kalix-javascript-sdk-0.0.0.tgz"
+            export KALIX_NPMJS_CODEGEN_BINARY="${HOME}/project/codegen/js-gen-cli/target/native-image/kalix-codegen-js"
+            node "${HOME}/project/npm-js/create-kalix-entity/create-kalix-entity.js" generated-project
             cd generated-project
             npm install && \
               npm run build && \
@@ -349,21 +435,21 @@ jobs:
       - run:
           name: "compile codegen binary"
           working_directory: "~/project/codegen"
-          command: sbt akkasls-codegen-js-cli/nativeImage
+          command: sbt kalix-codegen-js-cli/nativeImage
       - run:
           name: "install codegen"
-          working_directory: "~/project/npm-js/create-akkasls-entity"
+          working_directory: "~/project/npm-js/create-kalix-entity"
           command: |
             source /opt/circleci/.nvm/nvm.sh
             nvm install
             npm ci && npm pack
       - run:
-          name: "install akkasls-scripts"
-          working_directory: "~/project/npm-js/akkasls-scripts"
+          name: "install kalix-scripts"
+          working_directory: "~/project/npm-js/kalix-scripts"
           command: |
             source /opt/circleci/.nvm/nvm.sh
             nvm install
-            export AKKASLS_NPMJS_CODEGEN_BINARY="${HOME}/project/codegen/js-gen-cli/target/native-image/akkasls-codegen-js"
+            export KALIX_NPMJS_CODEGEN_BINARY="${HOME}/project/codegen/js-gen-cli/target/native-image/kalix-codegen-js"
             npm ci && npm pack
       - run:
           name: "install sdk"
@@ -378,15 +464,15 @@ jobs:
           command: |
             source /opt/circleci/.nvm/nvm.sh
             nvm install v14
-            export AKKASLS_NPMJS_SCRIPTS_VERSION="file:${HOME}/project/npm-js/akkasls-scripts/lightbend-akkasls-scripts-1.0.0.tgz"
-            export AKKASLS_NPMJS_SDK_VERSION="file:${HOME}/project/sdk/lightbend-akkaserverless-javascript-sdk-0.0.0.tgz"
-            node "${HOME}/project/npm-js/create-akkasls-entity/create-akkasls-entity.js" generated-project --template event-sourced-entity
+            export KALIX_NPMJS_SCRIPTS_VERSION="file:${HOME}/project/npm-js/kalix-scripts/lightbend-kalix-scripts-1.0.0.tgz"
+            export KALIX_NPMJS_SDK_VERSION="file:${HOME}/project/sdk/lightbend-kalix-javascript-sdk-0.0.0.tgz"
+            node "${HOME}/project/npm-js/create-kalix-entity/create-kalix-entity.js" generated-project --template event-sourced-entity
       - run:
           name: "test up to unit tests"
           working_directory: "~/tmp/generated-project"
           command: |
             source /opt/circleci/.nvm/nvm.sh
-            export AKKASLS_NPMJS_CODEGEN_BINARY="${HOME}/project/codegen/js-gen-cli/target/native-image/akkasls-codegen-js"
+            export KALIX_NPMJS_CODEGEN_BINARY="${HOME}/project/codegen/js-gen-cli/target/native-image/kalix-codegen-js"
             nvm install v14
             npm install && \
               npm run build && \
@@ -424,11 +510,11 @@ jobs:
           working_directory: "~/project/codegen"
           command: |
             ./set-version.sh
-            sbt test akkasls-codegen-js-cli/nativeImage
-            mv "js-gen-cli/target/native-image/akkasls-codegen-js" "akkasls-codegen-js-x86_64-unknown-linux-gnu"
+            sbt test kalix-codegen-js-cli/nativeImage
+            mv "js-gen-cli/target/native-image/kalix-codegen-js" "kalix-codegen-js-x86_64-unknown-linux-gnu"
       - publish_to_cloudsmith:
-          filePath: "~/project/codegen/akkasls-codegen-js-x86_64-unknown-linux-gnu"
-          fileName: "akkasls-codegen-js-x86_64-unknown-linux-gnu"
+          filePath: "~/project/codegen/kalix-codegen-js-x86_64-unknown-linux-gnu"
+          fileName: "kalix-codegen-js-x86_64-unknown-linux-gnu"
           version: $(sdk/bin/version.sh)
       - save_deps_cache
 
@@ -444,11 +530,11 @@ jobs:
           working_directory: "~/project/codegen"
           command: |
             ./set-version.sh
-            sbt test akkasls-codegen-js-cli/nativeImage
-            mv "js-gen-cli/target/native-image/akkasls-codegen-js" "akkasls-codegen-js-x86_64-apple-darwin"
+            sbt test kalix-codegen-js-cli/nativeImage
+            mv "js-gen-cli/target/native-image/kalix-codegen-js" "kalix-codegen-js-x86_64-apple-darwin"
       - publish_to_cloudsmith:
-          filePath: "~/project/codegen/akkasls-codegen-js-x86_64-apple-darwin"
-          fileName: "akkasls-codegen-js-x86_64-apple-darwin"
+          filePath: "~/project/codegen/kalix-codegen-js-x86_64-apple-darwin"
+          fileName: "kalix-codegen-js-x86_64-apple-darwin"
           version: $(sdk/bin/version.sh)
 
   publish_native_win:
@@ -470,11 +556,11 @@ jobs:
               }
             }
             bash set-version.sh
-            sbt test akkasls-codegen-js-cli/nativeImage
-            mv.exe "js-gen-cli\target\native-image\akkasls-codegen-js.exe" "akkasls-codegen-js-x86_64-pc-windows-gnu.exe"
+            sbt test kalix-codegen-js-cli/nativeImage
+            mv.exe "js-gen-cli\target\native-image\kalix-codegen-js.exe" "kalix-codegen-js-x86_64-pc-windows-gnu.exe"
       - publish_to_cloudsmith_win:
-          filePath: 'C:\\Users\\circleci\\project\\codegen\\akkasls-codegen-js-x86_64-pc-windows-gnu.exe'
-          fileName: "akkasls-codegen-js-x86_64-pc-windows-gnu.exe"
+          filePath: 'C:\\Users\\circleci\\project\\codegen\\kalix-codegen-js-x86_64-pc-windows-gnu.exe'
+          fileName: "kalix-codegen-js-x86_64-pc-windows-gnu.exe"
           version: $(sdk/bin/version.sh)
 
 workflows:

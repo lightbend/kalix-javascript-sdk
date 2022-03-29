@@ -1,4 +1,4 @@
-# akkasls-codegen-js-cli
+# kalix-codegen-js-cli
 
 This is a CLI suitable for invoking JavaScript code generation from JavaScript tooling.
 
@@ -7,7 +7,7 @@ This is a CLI suitable for invoking JavaScript code generation from JavaScript t
 We use GraalVM's native-image command to build a native image via the `sbt-native-image` plugin. To build:
 
 ```
-sbt 'akkasls-codegen-js-cli/nativeImage'
+sbt 'kalix-codegen-js-cli/nativeImage'
 ```
 
 The above command will automatically download the native-image tool by detecting the operating system
@@ -25,7 +25,7 @@ prompt:
 > options to provide greater coverage.
 
 ```
-akkasls-codegen-js-cli/nativeImageRunAgent " --descriptor-set-output-dir=/Users/myuser/Projects/lightbend/akkasls-codegen/core/src/test/resources/test-files/descriptor-sets --descriptor-set-file=hello-1.0-SNAPSHOT.protobin"
+kalix-codegen-js-cli/nativeImageRunAgent " --descriptor-set-output-dir=/Users/myuser/Projects/lightbend/kalix-codegen/core/src/test/resources/test-files/descriptor-sets --descriptor-set-file=hello-1.0-SNAPSHOT.protobin"
 ```
 
 This will run the CLI via the GraalVM JVM and record various configuration. The output of this configuration can be found
@@ -36,13 +36,13 @@ in the target folder and then copied directly into the src/main/resources folder
 On macOS, binaries generally downloaded from the internet are untrusted. To trust and run the codegen CLI:
 
 ```
-xattr -d com.apple.quarantine <PATH-TO-IMAGE>/akkasls-codegen-js-x86_64-apple-darwin
+xattr -d com.apple.quarantine <PATH-TO-IMAGE>/kalix-codegen-js-x86_64-apple-darwin
 ```
 
 ## Accommodating other code generation libraries
 
 The recommended approach is to produce a CLI for each code generation required. For example,
-this project provides a CLI for generating JavaScript and names it `akkasls-codegen-js`. 
+this project provides a CLI for generating JavaScript and names it `kalix-codegen-js`. 
 An alternative project should be used to, say, generate a Rust-based one. This keeps the CLI 
 options and commands to a minimum, while also reducing images to including only what is required 
 for a given target.

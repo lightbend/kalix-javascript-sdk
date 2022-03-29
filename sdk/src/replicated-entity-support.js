@@ -15,7 +15,7 @@
  */
 
 const path = require('path');
-const debug = require('debug')('akkaserverless-replicated-entity');
+const debug = require('debug')('kalix-replicated-entity');
 const util = require('util');
 const grpc = require('@grpc/grpc-js');
 const protoLoader = require('@grpc/proto-loader');
@@ -195,10 +195,10 @@ class ReplicatedEntityHandler {
         /**
          * Context for a Replicated Entity command handler.
          *
-         * @interface module:akkaserverless.replicatedentity.ReplicatedEntityCommandContext
-         * @extends module:akkaserverless.replicatedentity.StateManagementContext
-         * @extends module:akkaserverless.CommandContext
-         * @extends module:akkaserverless.EntityContext
+         * @interface module:kalix.replicatedentity.ReplicatedEntityCommandContext
+         * @extends module:kalix.replicatedentity.StateManagementContext
+         * @extends module:kalix.CommandContext
+         * @extends module:kalix.EntityContext
          */
 
         this.addStateManagementToContext(ctx);
@@ -250,13 +250,13 @@ class ReplicatedEntityHandler {
     /**
      * Context that allows managing a Replicated Entity's state.
      *
-     * @interface module:akkaserverless.replicatedentity.StateManagementContext
+     * @interface module:kalix.replicatedentity.StateManagementContext
      */
 
     /**
      * Delete this Replicated Entity.
      *
-     * @function module:akkaserverless.replicatedentity.StateManagementContext#delete
+     * @function module:kalix.replicatedentity.StateManagementContext#delete
      */
     ctx.context.delete = () => {
       ctx.ensureActive();
@@ -273,8 +273,8 @@ class ReplicatedEntityHandler {
      * The Replicated Data state for a Replicated Entity.
      * It may only be set once, if it's already set, an error will be thrown.
      *
-     * @name module:akkaserverless.replicatedentity.StateManagementContext#state
-     * @type {module:akkaserverless.replicatedentity.ReplicatedData}
+     * @name module:kalix.replicatedentity.StateManagementContext#state
+     * @type {module:kalix.replicatedentity.ReplicatedData}
      */
     Object.defineProperty(ctx.context, 'state', {
       get: () => {

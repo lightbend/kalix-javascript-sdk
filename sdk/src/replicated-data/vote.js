@@ -21,8 +21,8 @@ const util = require('util');
  *
  * A Vote Replicated Data type allows all nodes an a cluster to vote on a condition, such as whether a user is online.
  *
- * @constructor module:akkaserverless.replicatedentity.Vote
- * @implements module:akkaserverless.replicatedentity.ReplicatedData
+ * @constructor module:kalix.replicatedentity.Vote
+ * @implements module:kalix.replicatedentity.ReplicatedData
  */
 function Vote() {
   let currentSelfVote = false;
@@ -33,7 +33,7 @@ function Vote() {
   /**
    * The number of nodes that have voted for this condition.
    *
-   * @name module:akkaserverless.replicatedentity.Vote#votesFor
+   * @name module:kalix.replicatedentity.Vote#votesFor
    * @type {number}
    * @readonly
    */
@@ -46,7 +46,7 @@ function Vote() {
   /**
    * The total number of nodes that have voted.
    *
-   * @name module:akkaserverless.replicatedentity.Vote#totalVoters
+   * @name module:kalix.replicatedentity.Vote#totalVoters
    * @type {number}
    * @readonly
    */
@@ -59,7 +59,7 @@ function Vote() {
   /**
    * Whether at least one node has voted for this condition.
    *
-   * @name module:akkaserverless.replicatedentity.Vote#atLeastOne
+   * @name module:kalix.replicatedentity.Vote#atLeastOne
    * @type {boolean}
    * @readonly
    */
@@ -72,7 +72,7 @@ function Vote() {
   /**
    * Whether a majority of nodes have voted for this condition.
    *
-   * @name module:akkaserverless.replicatedentity.Vote#majority
+   * @name module:kalix.replicatedentity.Vote#majority
    * @type {boolean}
    * @readonly
    */
@@ -85,7 +85,7 @@ function Vote() {
   /**
    * Whether all of nodes have voted for this condition.
    *
-   * @name module:akkaserverless.replicatedentity.Vote#all
+   * @name module:kalix.replicatedentity.Vote#all
    * @type {boolean}
    * @readonly
    */
@@ -100,7 +100,7 @@ function Vote() {
    *
    * Setting this will update the current nodes vote accordingly.
    *
-   * @name module:akkaserverless.replicatedentity.Vote#vote
+   * @name module:kalix.replicatedentity.Vote#vote
    * @type {boolean}
    */
   Object.defineProperty(this, 'vote', {

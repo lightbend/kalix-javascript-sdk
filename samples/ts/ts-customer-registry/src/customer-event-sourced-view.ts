@@ -18,7 +18,7 @@ import { customer as customerDomain } from "../lib/generated/customer_domain";
 import { customer as customerView } from "../lib/generated/customer_view";
 
 // tag::register[]
-import { View } from "@lightbend/akkaserverless-javascript-sdk";
+import { View } from "@lightbend/kalix-javascript-sdk";
 
 const view: View = new View(
   ["customer_view.proto", "customer_domain.proto"],

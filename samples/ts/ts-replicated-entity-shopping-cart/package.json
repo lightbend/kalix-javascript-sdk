@@ -7,10 +7,10 @@
   },
   "main": "dist/index.js",
   "dependencies": {
-    "@lightbend/akkaserverless-javascript-sdk": "0.33.5"
+    "@lightbend/kalix-javascript-sdk": "0.33.5"
   },
   "devDependencies": {
-    "@lightbend/akkasls-scripts": "0.33.5",
+    "@lightbend/kalix-scripts": "0.33.5",
     "@types/chai": "^4.2.21",
     "@types/chai-as-promised": "^7.1.4",
     "@types/mocha": "^8.2.3",
@@ -42,8 +42,8 @@
     "lint-fix": "eslint src --ext .ts --fix && prettier --write {src,integration-test}/**/*.ts",
     "start": "node dist/index.js",
     "integration-test": "ts-mocha integration-test/**/*.integration-test.ts",
-    "build": "akkasls-scripts build && npm run lint-check && tsc",
-    "package": "akkasls-scripts package",
-    "deploy": "akkasls-scripts deploy"
+    "build": "kalix-scripts build && tsc",
+    "package": "kalix-scripts package",
+    "deploy": "kalix-scripts deploy"
   }
 }

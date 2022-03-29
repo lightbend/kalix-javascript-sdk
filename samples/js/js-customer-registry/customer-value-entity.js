@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-const ValueEntity = require("@lightbend/akkaserverless-javascript-sdk").ValueEntity;
-const { replies } = require("@lightbend/akkaserverless-javascript-sdk");
+const ValueEntity = require("@lightbend/kalix-javascript-sdk").ValueEntity;
+const { replies } = require("@lightbend/kalix-javascript-sdk");
 
 const entity = new ValueEntity(
   ["customer_api.proto", "customer_domain.proto"],

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { AkkaServerless } from "@lightbend/akkaserverless-javascript-sdk";
+import { Kalix } from "@lightbend/kalix-javascript-sdk";
 import replicatedEntity from "./replicated-entity-example";
 
-new AkkaServerless().addComponent(replicatedEntity).start();
+new Kalix().addComponent(replicatedEntity).start();

@@ -1,14 +1,14 @@
 {
   "name": "js-replicated-entity-example",
   "version": "0.0.0",
-  "description": "Akka Serverless JavaScript SDK example for replicated entities",
-  "homepage": "https://github.com/lightbend/akkaserverless-javascript-sdk",
+  "description": "Kalix JavaScript SDK SDK example for replicated entities",
+  "homepage": "https://github.com/lightbend/kalix-javascript-sdk",
   "bugs": {
-    "url": "https://github.com/lightbend/akkaserverless-javascript-sdk/issues"
+    "url": "https://github.com/lightbend/kalix-javascript-sdk/issues"
   },
   "license": "Apache-2.0",
   "author": {
-    "name": "Akka Serverless Team",
+    "name": "Kalix Team",
     "email": "info@lightbend.com",
     "url": "https://lightbend.com"
   },
@@ -18,11 +18,11 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/lightbend/akkaserverless-javascript-sdk",
+    "url": "https://github.com/lightbend/kalix-javascript-sdk",
     "directory": "samples/js/js-replicated-entity-example"
   },
   "dependencies": {
-    "@lightbend/akkaserverless-javascript-sdk": "0.33.5"
+    "@lightbend/kalix-javascript-sdk": "0.33.5"
   },
   "devDependencies": {
     "chai": "4.2.0",

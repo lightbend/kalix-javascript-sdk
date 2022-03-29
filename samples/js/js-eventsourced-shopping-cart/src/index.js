@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 // tag::imports[]
-import { AkkaServerless } from "@lightbend/akkaserverless-javascript-sdk";
+import { Kalix } from "@lightbend/kalix-javascript-sdk";
 import generatedComponents from "../lib/generated/index.js";
 // end::imports[]
 // tag::server[]
-const server = new AkkaServerless();
+const server = new Kalix();
 
 generatedComponents.forEach((component) => {
   server.addComponent(component);

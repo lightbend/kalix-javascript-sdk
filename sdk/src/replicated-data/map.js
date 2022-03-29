@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-const debug = require('debug')('akkaserverless-replicated-entity');
+const debug = require('debug')('kalix-replicated-entity');
 const util = require('util');
 const AnySupport = require('../protobuf-any');
 const iterators = require('./iterators');
@@ -22,7 +22,7 @@ const iterators = require('./iterators');
 /**
  * @classdesc A Replicated Map data type.
  *
- * ReplicatedMaps are a mapping of keys (which can be any {@link module:akkaserverless.Serializable}) to
+ * ReplicatedMaps are a mapping of keys (which can be any {@link module:kalix.Serializable}) to
  * Replicated Data types. Values of the map are merged together. Elements can be added and removed, however, when an
  * element is removed and then added again, it's possible that the old value will be merged with the new, depending on
  * whether the remove was replicated to all nodes before the add was.
@@ -31,8 +31,8 @@ const iterators = require('./iterators');
  * its type, and doing so will likely result in the Replicated Data entering a non mergable state, from which it can't
  * recover.
  *
- * @constructor module:akkaserverless.replicatedentity.ReplicatedMap
- * @implements module:akkaserverless.replicatedentity.ReplicatedData
+ * @constructor module:kalix.replicatedentity.ReplicatedMap
+ * @implements module:kalix.replicatedentity.ReplicatedData
  * @implements Iterable<Array<any>>
  */
 function ReplicatedMap() {
@@ -56,16 +56,16 @@ function ReplicatedMap() {
    * using default values, the get method should not be used in queries where an empty value for the Replicated Data
    * means the value is not present.
    *
-   * @name module:akkaserverless.replicatedentity.ReplicatedMap#defaultValue
-   * @type {module:akkaserverless.replicatedentity.ReplicatedMap~defaultValueCallback}
+   * @name module:kalix.replicatedentity.ReplicatedMap#defaultValue
+   * @type {module:kalix.replicatedentity.ReplicatedMap~defaultValueCallback}
    */
   this.defaultValue = (key) => undefined;
 
   /**
    * Check whether this map contains a value of the given key.
    *
-   * @function module:akkaserverless.replicatedentity.ReplicatedMap#has
-   * @param {module:akkaserverless.Serializable} key The key to check.
+   * @function module:kalix.replicatedentity.ReplicatedMap#has
+   * @param {module:kalix.Serializable} key The key to check.
    * @returns {boolean} True if this map contains a value of the given key.
    */
   this.has = function (key) {
@@ -75,7 +75,7 @@ function ReplicatedMap() {
   /**
    * The number of elements in this map.
    *
-   * @name module:akkaserverless.replicatedentity.ReplicatedMap#size
+   * @name module:kalix.replicatedentity.ReplicatedMap#size
    * @type {number}
    * @readonly
    */
@@ -88,8 +88,8 @@ function ReplicatedMap() {
   /**
    * Execute the given callback for each element.
    *
-   * @function module:akkaserverless.replicatedentity.ReplicatedMap#forEach
-   * @param {module:akkaserverless.replicatedentity.ReplicatedMap~forEachCallback} callback The callback to handle each element.
+   * @function module:kalix.replicatedentity.ReplicatedMap#forEach
+   * @param {module:kalix.replicatedentity.ReplicatedMap~forEachCallback} callback The callback to handle each element.
    */
   this.forEach = function (callback) {
     return currentValue.forEach((value, key) =>
@@ -100,7 +100,7 @@ function ReplicatedMap() {
   /**
    * Return an iterator of the entries of this map.
    *
-   * @function module:akkaserverless.replicatedentity.ReplicatedMap#entries
+   * @function module:kalix.replicatedentity.ReplicatedMap#entries
    * @returns {Iterator<Array>}
    */
   this.entries = function () {
@@ -114,7 +114,7 @@ function ReplicatedMap() {
   /**
    * Return an iterator of the entries of this map.
    *
-   * @function module:akkaserverless.replicatedentity.ReplicatedMap#iterator
+   * @function module:kalix.replicatedentity.ReplicatedMap#iterator
    * @returns {Iterator<Array>}
    */
   this[Symbol.iterator] = function () {
@@ -124,8 +124,8 @@ function ReplicatedMap() {
   /**
    * Return an iterator of the values of this map.
    *
-   * @function module:akkaserverless.replicatedentity.ReplicatedMap#values
-   * @returns {Iterator<module:akkaserverless.replicatedentity.ReplicatedData>}
+   * @function module:kalix.replicatedentity.ReplicatedMap#values
+   * @returns {Iterator<module:kalix.replicatedentity.ReplicatedData>}
    */
   this.values = function () {
     return iterators.map(currentValue.values(), (value) => value.value);
@@ -134,8 +134,8 @@ function ReplicatedMap() {
   /**
    * Return an iterator of the keys of this map.
    *
-   * @function module:akkaserverless.replicatedentity.ReplicatedMap#keys
-   * @returns {Iterator<module:akkaserverless.Serializable>}
+   * @function module:kalix.replicatedentity.ReplicatedMap#keys
+   * @returns {Iterator<module:kalix.Serializable>}
    */
   this.keys = function () {
     return iterators.map(currentValue.values(), (value) => value.key);
@@ -144,9 +144,9 @@ function ReplicatedMap() {
   /**
    * Get the value at the given key.
    *
-   * @function module:akkaserverless.replicatedentity.ReplicatedMap#get
-   * @param {module:akkaserverless.Serializable} key The key to get.
-   * @returns {undefined|module:akkaserverless.replicatedentity.ReplicatedData} The Replicated Data value, or undefined if no value is defined at that key.
+   * @function module:kalix.replicatedentity.ReplicatedMap#get
+   * @param {module:kalix.Serializable} key The key to get.
+   * @returns {undefined|module:kalix.replicatedentity.ReplicatedData} The Replicated Data value, or undefined if no value is defined at that key.
    */
   this.get = (key) => {
     const value = currentValue.get(AnySupport.toComparable(key));
@@ -202,8 +202,8 @@ function ReplicatedMap() {
    * All entries whose keys are strings will be properties of this object, and setting any property of the object will
    * insert that property as a key into the map.
    *
-   * @name module:akkaserverless.replicatedentity.ReplicatedMap#asObject
-   * @type {Object<string, module:akkaserverless.replicatedentity.ReplicatedData>}
+   * @name module:kalix.replicatedentity.ReplicatedMap#asObject
+   * @type {Object<string, module:kalix.replicatedentity.ReplicatedData>}
    */
   Object.defineProperty(this, 'asObject', {
     get: () => asObject,
@@ -212,10 +212,10 @@ function ReplicatedMap() {
   /**
    * Set the given value for the given key.
    *
-   * @function module:akkaserverless.replicatedentity.ReplicatedMap#set
-   * @param {module:akkaserverless.Serializable} key The key to set.
-   * @param {module:akkaserverless.replicatedentity.ReplicatedData} value The value to set.
-   * @return {module:akkaserverless.replicatedentity.ReplicatedMap} This map.
+   * @function module:kalix.replicatedentity.ReplicatedMap#set
+   * @param {module:kalix.Serializable} key The key to set.
+   * @param {module:kalix.replicatedentity.ReplicatedData} value The value to set.
+   * @return {module:kalix.replicatedentity.ReplicatedMap} This map.
    */
   this.set = function (key, value) {
     if (!value.hasOwnProperty('getAndResetDelta')) {
@@ -255,9 +255,9 @@ function ReplicatedMap() {
   /**
    * Delete the value at the given key.
    *
-   * @function module:akkaserverless.replicatedentity.ReplicatedMap#delete
-   * @param {module:akkaserverless.Serializable} key The key to delete.
-   * @return {module:akkaserverless.replicatedentity.ReplicatedMap} This map.
+   * @function module:kalix.replicatedentity.ReplicatedMap#delete
+   * @param {module:kalix.Serializable} key The key to delete.
+   * @return {module:kalix.replicatedentity.ReplicatedMap} This map.
    */
   this.delete = function (key) {
     const comparable = AnySupport.toComparable(key);
@@ -276,8 +276,8 @@ function ReplicatedMap() {
   /**
    * Clear all entries from this map.
    *
-   * @function module:akkaserverless.replicatedentity.ReplicatedMap#clear
-   * @return {module:akkaserverless.replicatedentity.ReplicatedMap} This map.
+   * @function module:kalix.replicatedentity.ReplicatedMap#clear
+   * @return {module:kalix.replicatedentity.ReplicatedMap} This map.
    */
   this.clear = function () {
     if (currentValue.size > 0) {

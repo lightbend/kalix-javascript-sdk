@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
-const debug = require('debug')('akkaserverless-replicated-entity');
+const debug = require('debug')('kalix-replicated-entity');
 const util = require('util');
 const AnySupport = require('../protobuf-any');
 
 /**
  * @classdesc A Replicated Set data type.
  *
- * A ReplicatedSet is a set of {@link module:akkaserverless.Serializable} values. Elements can be added and removed.
+ * A ReplicatedSet is a set of {@link module:kalix.Serializable} values. Elements can be added and removed.
  *
- * @constructor module:akkaserverless.replicatedentity.ReplicatedSet
- * @implements module:akkaserverless.replicatedentity.ReplicatedData
- * @implements Iterable<module:akkaserverless.Serializable>
+ * @constructor module:kalix.replicatedentity.ReplicatedSet
+ * @implements module:kalix.replicatedentity.ReplicatedData
+ * @implements Iterable<module:kalix.Serializable>
  */
 function ReplicatedSet() {
   // Map of a comparable form (that compares correctly using ===) of the elements to the elements
@@ -39,8 +39,8 @@ function ReplicatedSet() {
   /**
    * Does this set contain the given element?
    *
-   * @function module:akkaserverless.replicatedentity.ReplicatedSet#has
-   * @param {module:akkaserverless.Serializable} element The element to check.
+   * @function module:kalix.replicatedentity.ReplicatedSet#has
+   * @param {module:kalix.Serializable} element The element to check.
    * @returns {boolean} True if the set contains the element.
    */
   this.has = function (element) {
@@ -50,7 +50,7 @@ function ReplicatedSet() {
   /**
    * The number of elements in this set.
    *
-   * @name module:akkaserverless.replicatedentity.ReplicatedSet#size
+   * @name module:kalix.replicatedentity.ReplicatedSet#size
    * @type {number}
    * @readonly
    */
@@ -63,8 +63,8 @@ function ReplicatedSet() {
   /**
    * Execute the given callback for each element.
    *
-   * @function module:akkaserverless.replicatedentity.ReplicatedSet#forEach
-   * @param {module:akkaserverless.replicatedentity.ReplicatedSet~forEachCallback} callback The callback to handle each element.
+   * @function module:kalix.replicatedentity.ReplicatedSet#forEach
+   * @param {module:kalix.replicatedentity.ReplicatedSet~forEachCallback} callback The callback to handle each element.
    */
   this.forEach = function (callback) {
     return currentValue.forEach((value, key) => callback(value));
@@ -73,8 +73,8 @@ function ReplicatedSet() {
   /**
    * Create an iterator for this set.
    *
-   * @function module:akkaserverless.replicatedentity.ReplicatedSet#iterator
-   * @returns {Iterator<module:akkaserverless.Serializable>}
+   * @function module:kalix.replicatedentity.ReplicatedSet#iterator
+   * @returns {Iterator<module:kalix.Serializable>}
    */
   this[Symbol.iterator] = function () {
     return currentValue.values();
@@ -83,8 +83,8 @@ function ReplicatedSet() {
   /**
    * Get a copy of the current elements as a Set.
    *
-   * @function module:akkaserverless.replicatedentity.ReplicatedSet#elements
-   * @return {Set<module:akkaserverless.Serializable>}
+   * @function module:kalix.replicatedentity.ReplicatedSet#elements
+   * @return {Set<module:kalix.Serializable>}
    */
   this.elements = function () {
     return new Set(currentValue.values());
@@ -93,9 +93,9 @@ function ReplicatedSet() {
   /**
    * Add an element to this set.
    *
-   * @function module:akkaserverless.replicatedentity.ReplicatedSet#add
-   * @param {module:akkaserverless.Serializable} element The element to add.
-   * @return {module:akkaserverless.replicatedentity.ReplicatedSet} This set.
+   * @function module:kalix.replicatedentity.ReplicatedSet#add
+   * @param {module:kalix.Serializable} element The element to add.
+   * @return {module:kalix.replicatedentity.ReplicatedSet} This set.
    */
   this.add = function (element) {
     const comparable = AnySupport.toComparable(element);
@@ -114,9 +114,9 @@ function ReplicatedSet() {
   /**
    * Add multiple elements to this set.
    *
-   * @function module:akkaserverless.replicatedentity.ReplicatedSet#addAll
-   * @param {Iterator<module:akkaserverless.Serializable>} elements The elements to add.
-   * @return {module:akkaserverless.replicatedentity.ReplicatedSet} This set.
+   * @function module:kalix.replicatedentity.ReplicatedSet#addAll
+   * @param {Iterator<module:kalix.Serializable>} elements The elements to add.
+   * @return {module:kalix.replicatedentity.ReplicatedSet} This set.
    */
   this.addAll = function (elements) {
     for (const element of elements) {
@@ -128,9 +128,9 @@ function ReplicatedSet() {
   /**
    * Remove an element from this set.
    *
-   * @function module:akkaserverless.replicatedentity.ReplicatedSet#delete
-   * @param {module:akkaserverless.Serializable} element The element to delete.
-   * @return {module:akkaserverless.replicatedentity.ReplicatedSet} This set.
+   * @function module:kalix.replicatedentity.ReplicatedSet#delete
+   * @param {module:kalix.Serializable} element The element to delete.
+   * @return {module:kalix.replicatedentity.ReplicatedSet} This set.
    */
   this.delete = function (element) {
     const comparable = AnySupport.toComparable(element);
@@ -153,8 +153,8 @@ function ReplicatedSet() {
   /**
    * Remove all elements from this set.
    *
-   * @function module:akkaserverless.replicatedentity.ReplicatedSet#clear
-   * @return {module:akkaserverless.replicatedentity.ReplicatedSet} This set.
+   * @function module:kalix.replicatedentity.ReplicatedSet#clear
+   * @return {module:kalix.replicatedentity.ReplicatedSet} This set.
    */
   this.clear = function () {
     if (currentValue.size > 0) {

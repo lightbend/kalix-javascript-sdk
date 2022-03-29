@@ -14,11 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  AkkaServerless,
-  ComponentOptions,
-  EntityOptions,
-} from '../src/akkaserverless';
+import { Kalix, ComponentOptions, EntityOptions } from '../src/kalix';
 import discovery from '../proto/akkaserverless/protocol/discovery_pb';
 import { should } from 'chai';
 should();
@@ -26,7 +22,7 @@ should();
 describe('Akkaserverless', () => {
   it('should generate working links based on error codes', () => {
     // Arrange
-    const akkasls = new AkkaServerless({
+    const akkasls = new Kalix({
       descriptorSetPath: 'test/user-function-test.desc',
     });
 
@@ -37,17 +33,15 @@ describe('Akkaserverless', () => {
 
     // Assert
     specificLink.should.equal(
-      'https://developer.lightbend.com/docs/akka-serverless/javascript/views.html#changing',
+      'https://docs.kalix.io/javascript/views.html#changing',
     );
-    componentLink.should.equal(
-      'https://developer.lightbend.com/docs/akka-serverless/javascript/views.html',
-    );
+    componentLink.should.equal('https://docs.kalix.io/javascript/views.html');
     unknownLink.should.equal('');
   });
 
   it('format correctly the source code for errors', () => {
     // Arrange
-    const akkasls = new AkkaServerless({
+    const akkasls = new Kalix({
       descriptorSetPath: 'test/user-function-test.desc',
     });
     const location = new discovery.UserFunctionError.SourceLocation();
@@ -81,7 +75,7 @@ describe('Akkaserverless', () => {
 
   it('report correctly errors', () => {
     // Arrange
-    const akkasls = new AkkaServerless({
+    const akkasls = new Kalix({
       descriptorSetPath: 'test/user-function-test.desc',
     });
     const location = new discovery.UserFunctionError.SourceLocation();
@@ -118,10 +112,10 @@ describe('Akkaserverless', () => {
     );
 
     // Assert
-    const result = `Error reported from Akka Serverless system: AS-00112 test message
+    const result = `Error reported from Kalix system: AS-00112 test message
 
 test details
-See documentation: https://developer.lightbend.com/docs/akka-serverless/javascript/views.html#changing
+See documentation: https://docs.kalix.io/javascript/views.html#changing
 
 At package.test.json:2:4:
   "name": "some-name",
@@ -131,7 +125,7 @@ At package.test.json:2:4:
 
   it('discovery service should return correct service info', () => {
     // Arrange
-    const akkasls = new AkkaServerless({
+    const akkasls = new Kalix({
       descriptorSetPath: 'test/user-function-test.desc',
       serviceName: 'my-service',
       serviceVersion: '1.2.3',
@@ -152,13 +146,13 @@ At package.test.json:2:4:
     serviceInfo?.getServiceRuntime().should.contains('node v');
     serviceInfo
       ?.getSupportLibraryName()
-      .should.equal('@lightbend/akkaserverless-javascript-sdk');
+      .should.equal('@lightbend/kalix-javascript-sdk');
     serviceInfo?.getSupportLibraryVersion().should.equal('0.0.0');
   });
 
   it('discovery service should return correct components', () => {
     // Arrange
-    const akkasls = new AkkaServerless({
+    const akkasls = new Kalix({
       descriptorSetPath: 'test/user-function-test.desc',
     });
     const proxyInfo = new discovery.ProxyInfo();
@@ -218,7 +212,7 @@ At package.test.json:2:4:
 
   it('discovery service should return correct components with passivation', () => {
     // Arrange
-    const akkasls = new AkkaServerless({
+    const akkasls = new Kalix({
       descriptorSetPath: 'test/user-function-test.desc',
     });
     const proxyInfo = new discovery.ProxyInfo();

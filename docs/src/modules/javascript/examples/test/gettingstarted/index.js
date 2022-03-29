@@ -1,14 +1,14 @@
 
 const should = require('chai').should();
 
-describe("The AkkaServerless class", () => {
+describe("The Kalix class", () => {
 
     it("should allow creating and starting a server", () => {
 
         // tag::start[]
-        const AkkaServerless = require("@lightbend/akkaserverless-javascript-sdk").AkkaServerless;
+        const Kalix = require("@lightbend/kalix-javascript-sdk").Kalix;
 
-        const server = new AkkaServerless();
+        const server = new Kalix();
         server.addComponent(require("./shoppingcart"));
         
         server.start();
@@ -18,10 +18,10 @@ describe("The AkkaServerless class", () => {
     });
 
     it("should allow using a custom descriptor name", () => {
-        const AkkaServerless = require("@lightbend/akkaserverless-javascript-sdk").AkkaServerless;
+        const Kalix = require("@lightbend/kalix-javascript-sdk").Kalix;
 
         // tag::custom-desc[]
-        const server = new AkkaServerless({
+        const server = new Kalix({
             descriptorSetPath: "my-descriptor.desc"
         });
         // end::custom-desc[]
