@@ -8,7 +8,7 @@ The main steps in developing a service include:
 . <<_create_unit_tests>>
 . <<_package_service>>
 . <<_run_locally>>
-. <<_deploy_to_kafka>>
+. <<_deploy_to_kalix>>
 
 
 [#_specify_service_interface_and_domain_model]
