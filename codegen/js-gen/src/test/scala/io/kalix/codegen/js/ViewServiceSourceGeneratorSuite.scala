@@ -141,7 +141,7 @@ class ViewServiceSourceGeneratorSuite extends munit.FunSuite {
         |import {
         |  TypedView,
         |  ViewUpdateHandlerContext
-        |} from "../akkaserverless";
+        |} from "../kalix";
         |import proto from "./proto";
         |
         |export type UpdateHandlers = {

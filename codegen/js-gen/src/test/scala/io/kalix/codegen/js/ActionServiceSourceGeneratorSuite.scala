@@ -94,7 +94,7 @@ class ActionServiceSourceGeneratorSuite extends munit.FunSuite {
         |  ActionCommandContext,
         |  StreamedInCommandContext,
         |  StreamedOutCommandContext
-        |} from "../akkaserverless";
+        |} from "../kalix";
         |import proto from "./proto";
         |
         |export type CommandHandlers = {
