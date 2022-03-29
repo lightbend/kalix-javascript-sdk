@@ -19,7 +19,7 @@ const Vote = require('../../src/replicated-data/vote');
 const protobufHelper = require('../../src/protobuf-helper');
 
 const ReplicatedEntityDelta =
-  protobufHelper.moduleRoot.akkaserverless.component.replicatedentity
+  protobufHelper.moduleRoot.kalix.component.replicatedentity
     .ReplicatedEntityDelta;
 
 function roundTripDelta(delta) {

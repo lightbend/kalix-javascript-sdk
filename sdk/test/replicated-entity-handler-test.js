@@ -33,13 +33,13 @@ const Out = root.lookupType('com.example.Out');
 const ExampleService = root.lookupService('com.example.ExampleService');
 
 const ReplicatedEntityStreamIn =
-  protobufHelper.moduleRoot.akkaserverless.component.replicatedentity
+  protobufHelper.moduleRoot.kalix.component.replicatedentity
     .ReplicatedEntityStreamIn;
 const ReplicatedEntityStreamOut =
-  protobufHelper.moduleRoot.akkaserverless.component.replicatedentity
+  protobufHelper.moduleRoot.kalix.component.replicatedentity
     .ReplicatedEntityStreamOut;
 const ReplicatedEntityInit =
-  protobufHelper.moduleRoot.akkaserverless.component.replicatedentity
+  protobufHelper.moduleRoot.kalix.component.replicatedentity
     .ReplicatedEntityInit;
 
 const outMsg = {

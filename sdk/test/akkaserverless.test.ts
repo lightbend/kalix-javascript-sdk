@@ -165,7 +165,7 @@ At package.test.json:2:4:
         forwardHeaders: ['x-my-header'],
       },
       componentType: () => {
-        return 'akkaserverless.component.valueentity.ValueEntities';
+        return 'kalix.component.valueentity.ValueEntities';
       },
     };
     const action = {
@@ -175,7 +175,7 @@ At package.test.json:2:4:
         forwardHeaders: ['x-my-header'],
       },
       componentType: () => {
-        return 'akkaserverless.component.action.Actions';
+        return 'kalix.component.action.Actions';
       },
     };
 
@@ -190,7 +190,7 @@ At package.test.json:2:4:
     entityResult.getServiceName().should.equal('my-service');
     entityResult
       .getComponentType()
-      .should.equal('akkaserverless.component.valueentity.ValueEntities');
+      .should.equal('kalix.component.valueentity.ValueEntities');
     entityResult.getEntity()?.should.not.be.undefined;
     entityResult.getEntity()?.getEntityType().should.equal('my-entity-type');
     entityResult.getEntity()?.getPassivationStrategy()?.should.be.undefined;
@@ -202,7 +202,7 @@ At package.test.json:2:4:
     actionResult.getServiceName().should.equal('my-action');
     actionResult
       .getComponentType()
-      .should.equal('akkaserverless.component.action.Actions');
+      .should.equal('kalix.component.action.Actions');
     entityResult.getComponent()?.should.not.be.undefined;
     entityResult
       .getComponent()
@@ -225,7 +225,7 @@ At package.test.json:2:4:
         entityPassivationStrategy: { timeout: 10 },
       },
       componentType: () => {
-        return 'akkaserverless.component.valueentity.ValueEntities';
+        return 'kalix.component.valueentity.ValueEntities';
       },
     };
 
