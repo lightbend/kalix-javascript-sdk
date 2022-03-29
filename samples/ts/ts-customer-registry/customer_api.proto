@@ -17,7 +17,7 @@ syntax = "proto3";
 package customer.api;
 
 import "google/protobuf/empty.proto";
-import "akkaserverless/annotations.proto";
+import "kalix/annotations.proto";
 
 message Customer {
   string customer_id = 1 [(akkaserverless.field).entity_key = true];

@@ -20,7 +20,7 @@ package com.example.shoppingcart;
 
 import "google/api/annotations.proto";
 import "google/protobuf/empty.proto";
-import "akkaserverless/annotations.proto";
+import "kalix/annotations.proto";
 
 message AddLineItem {
   string cart_id = 1 [(akkaserverless.field).entity_key = true];

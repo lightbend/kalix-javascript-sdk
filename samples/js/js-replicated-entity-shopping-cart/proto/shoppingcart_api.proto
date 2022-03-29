@@ -20,7 +20,7 @@ syntax = "proto3";
 package com.example.shoppingcart;  // <1>
 
 import "google/protobuf/empty.proto";
-import "akkaserverless/annotations.proto"; // <2>
+import "kalix/annotations.proto"; // <2>
 import "google/api/annotations.proto";
 
 message AddLineItem { // <3>

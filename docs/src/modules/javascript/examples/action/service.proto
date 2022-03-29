@@ -8,7 +8,7 @@ import "perf_domain.proto";
 import "perf_api.proto";
 import "google/protobuf/empty.proto";
 import "google/api/annotations.proto";
-import "akkaserverless/annotations.proto";
+import "kalix/annotations.proto";
 
 message PingRequest {}
 

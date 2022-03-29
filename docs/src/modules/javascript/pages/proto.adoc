@@ -118,7 +118,7 @@ The `shoppingcart_domain.proto` file specifies the state and messages for an Eve
 include::example$js-valueentity-shopping-cart/proto/shoppingcart_domain.proto[tag=proto_syntax]
 ----
 
-It only needs to include the import for `akkaserverless/annotations.proto`:
+It only needs to include the import for `kalix/annotations.proto`:
 
 .proto/shoppingcart_domain.proto
 [source,proto]

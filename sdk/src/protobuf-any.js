@@ -36,7 +36,7 @@ const KalixSupportedPrimitiveTypes = new Set();
 );
 const EmptyArray = Object.freeze([]);
 
-const KalixJson = 'json.akkaserverless.com/';
+const KalixJson = 'json.kalix.io/';
 
 /**
  * This is any type that has been returned by the protobufjs Message.create method.

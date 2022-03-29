@@ -18,7 +18,7 @@ package com.example.shoppingcart.view;
 
 option java_outer_classname = "ShoppingCartViewModel";
 
-import "akkaserverless/annotations.proto";
+import "kalix/annotations.proto";
 import "com/example/shoppingcart/domain/shoppingcart_domain.proto";
 
 service ShoppingCartViewService {

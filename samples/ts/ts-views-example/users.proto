@@ -16,7 +16,7 @@ syntax = "proto3";
 
 import "google/protobuf/empty.proto";
 import "google/api/annotations.proto";
-import "akkaserverless/annotations.proto";
+import "kalix/annotations.proto";
 
 package example.users;
 

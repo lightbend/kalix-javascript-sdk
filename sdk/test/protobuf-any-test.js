@@ -29,13 +29,13 @@ const PrimitiveLike = root.lookupType('com.example.PrimitiveLike');
 describe('AnySupport', () => {
   it('should support serializing strings', () => {
     const serialized = AnySupport.serialize('foo', true, false);
-    serialized.type_url.should.equal('p.akkaserverless.com/string');
+    serialized.type_url.should.equal('p.kalix.io/string');
     anySupport.deserialize(serialized).should.equal('foo');
   });
 
   it('should support serializing empty string (default)', () => {
     const serialized = AnySupport.serialize('', true, false);
-    serialized.type_url.should.equal('p.akkaserverless.com/string');
+    serialized.type_url.should.equal('p.kalix.io/string');
     serialized.value.should.have.lengthOf(0); // empty bytes
     anySupport.deserialize(serialized).should.equal('');
   });
@@ -43,13 +43,13 @@ describe('AnySupport', () => {
   it('should support serializing long', () => {
     const value = Long.fromNumber(2789);
     const serialized = AnySupport.serialize(value, true, false);
-    serialized.type_url.should.equal('p.akkaserverless.com/int64');
+    serialized.type_url.should.equal('p.kalix.io/int64');
     anySupport.deserialize(serialized).should.eql(value);
   });
 
   it('should support serializing zero long (default)', () => {
     const serialized = AnySupport.serialize(Long.fromNumber(0), true, false);
-    serialized.type_url.should.equal('p.akkaserverless.com/int64');
+    serialized.type_url.should.equal('p.kalix.io/int64');
     serialized.value.should.have.lengthOf(0); // empty bytes
     anySupport.deserialize(serialized).should.eql(Long.ZERO);
   });
@@ -57,40 +57,40 @@ describe('AnySupport', () => {
   it('should support serializing bytes', () => {
     const bytes = Buffer.from('foo');
     const serialized = AnySupport.serialize(bytes, true, false);
-    serialized.type_url.should.equal('p.akkaserverless.com/bytes');
+    serialized.type_url.should.equal('p.kalix.io/bytes');
     anySupport.deserialize(serialized).should.eql(bytes);
   });
 
   it('should support serializing empty bytes (default)', () => {
     const bytes = Buffer.alloc(0);
     const serialized = AnySupport.serialize(bytes, true, false);
-    serialized.type_url.should.equal('p.akkaserverless.com/bytes');
+    serialized.type_url.should.equal('p.kalix.io/bytes');
     serialized.value.should.have.lengthOf(0); // empty bytes
     anySupport.deserialize(serialized).should.eql(bytes);
   });
 
   it('should support serializing booleans', () => {
     const serialized = AnySupport.serialize(true, true, false);
-    serialized.type_url.should.equal('p.akkaserverless.com/bool');
+    serialized.type_url.should.equal('p.kalix.io/bool');
     anySupport.deserialize(serialized).should.equal(true);
   });
 
   it('should support serializing false booleans (default)', () => {
     const serialized = AnySupport.serialize(false, true, false);
-    serialized.type_url.should.equal('p.akkaserverless.com/bool');
+    serialized.type_url.should.equal('p.kalix.io/bool');
     serialized.value.should.have.lengthOf(0); // empty bytes
     anySupport.deserialize(serialized).should.equal(false);
   });
 
   it('should support serializing numbers', () => {
     const serialized = AnySupport.serialize(1.2345, true, false);
-    serialized.type_url.should.equal('p.akkaserverless.com/double');
+    serialized.type_url.should.equal('p.kalix.io/double');
     anySupport.deserialize(serialized).should.equal(1.2345);
   });
 
   it('should support serializing zero numbers (default)', () => {
     const serialized = AnySupport.serialize(0, true, false);
-    serialized.type_url.should.equal('p.akkaserverless.com/double');
+    serialized.type_url.should.equal('p.kalix.io/double');
     serialized.value.should.have.lengthOf(0); // empty bytes
     anySupport.deserialize(serialized).should.equal(0);
   });
@@ -126,7 +126,7 @@ describe('AnySupport', () => {
   it('should support deserializing primitives when the field in not present', () => {
     anySupport
       .deserialize({
-        type_url: 'p.akkaserverless.com/string',
+        type_url: 'p.kalix.io/string',
         value: PrimitiveLike.encode({}).finish(),
       })
       .should.equal('');
@@ -135,7 +135,7 @@ describe('AnySupport', () => {
   it('should support deserializing primitives when other fields are present', () => {
     anySupport
       .deserialize({
-        type_url: 'p.akkaserverless.com/string',
+        type_url: 'p.kalix.io/string',
         value: PrimitiveLike.encode({
           field1: 'one',
           field2: 'two',
@@ -152,7 +152,7 @@ describe('AnySupport', () => {
       field2: 'bar',
     };
     const serialized = AnySupport.serialize(obj, false, true);
-    serialized.type_url.should.equal('json.akkaserverless.com/MyType');
+    serialized.type_url.should.equal('json.kalix.io/MyType');
     anySupport.deserialize(serialized).should.include(obj);
   });
 
@@ -162,7 +162,7 @@ describe('AnySupport', () => {
       field2: 'bar',
     };
     const serialized = AnySupport.serialize(obj, false, true);
-    serialized.type_url.should.equal('json.akkaserverless.com/object');
+    serialized.type_url.should.equal('json.kalix.io/object');
     anySupport.deserialize(serialized).should.include(obj);
   });
 

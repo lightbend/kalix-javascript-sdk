@@ -18,7 +18,7 @@ syntax = "proto3";
 package customer.view;
 
 import "customer_domain.proto";
-import "akkaserverless/annotations.proto";
+import "kalix/annotations.proto";
 
 // end::declarations[]
 

@@ -2,7 +2,7 @@
 syntax = "proto3";
 
 import "google/protobuf/empty.proto";
-import "akkaserverless/annotations.proto"; // <1>
+import "kalix/annotations.proto"; // <1>
 import "google/api/annotations.proto";
 
 package com.example; // <2>
