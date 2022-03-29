@@ -26,7 +26,7 @@ import "kalix/annotations.proto";
 
 // tag::proto_state[]
 // Describes how this domain relates to a value entity
-option (akkaserverless.file).value_entity = {
+option (kalix.file).value_entity = {
   name: "ShoppingCart"
   entity_type: "shopping-cart"
   state: "Cart"

@@ -4,7 +4,7 @@ package com.example.domain;
 
 import "kalix/annotations.proto";
 
-option (akkaserverless.file).value_entity = {
+option (kalix.file).value_entity = {
     name: "Counter"
     entity_type: "counter"
     state: "CounterState"

@@ -21,7 +21,7 @@ import "kalix/annotations.proto";
 option java_outer_classname = "ShoppingCartDomain"; 
 
 // Describes how this domain relates to a replicated entity
-option (akkaserverless.file).replicated_entity = { 
+option (kalix.file).replicated_entity = {
   name: "ShoppingCart" 
   entity_type: "shopping-cart" 
   replicated_counter_map: { 

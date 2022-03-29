@@ -6,7 +6,7 @@ import "kalix/annotations.proto";
 
 option java_outer_classname = "MyEntityDomain";
 
-option (akkaserverless.file).value_entity = {
+option (kalix.file).value_entity = {
     name: "MyEntity"
     entity_type: "my-entity-persistence"
     state: "MyState"

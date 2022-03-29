@@ -8,13 +8,13 @@ NOTE: It is your responsibility to create the topics in Google Cloud Pub/Sub bef
 
 == Subscribing to a topic's messages
 
-To receive messages from a Pub/Sub topic, annotate a service method in the Protobuf service definition with the `(akkaserverless.method).eventing` annotation. Specify the topic name in the `in` section of the annotation:
+To receive messages from a Pub/Sub topic, annotate a service method in the Protobuf service definition with the `(kalix.method).eventing` annotation. Specify the topic name in the `in` section of the annotation:
 
 [source,protobuf,indent=0]
 ----
 include::example$eventing-shopping-cart/proto/cart/shopping_cart_analytics.proto[tag=subscribing]
 ----
-<1> annotate the Protobuf rpc method with `(akkaserverless.method).eventing`
+<1> annotate the Protobuf rpc method with `(kalix.method).eventing`
 <2> use `in` and `topic` to subscribe to a topic
 
 There is nothing specific required in the implementation of `ProcessAdded`. The implementation will in most cases be an Action and forward a converted message to a different component (eg. an Event Sourced Entity).
@@ -37,7 +37,7 @@ package shopping.cart.actions;
 
 service ShoppingCartTopicService {
     rpc JsonFromTopic(google.protobuf.Any) returns (google.protobuf.Empty) {
-        option (akkaserverless.method).eventing.in = {
+        option (kalix.method).eventing.in = {
             topic:  "shopping-cart-json"
         };
     }
@@ -59,7 +59,7 @@ To publish JSON messages to a topic, mark the return type of the message as `goo
 include::example$js-doc-snippets/proto/com/example/json/json_api.proto[tag=service]
 ----
 <1> return `google.protobuf.Any` from the method
-<2> annotate the Protobuf rpc method with `(akkaserverless.method).eventing`
+<2> annotate the Protobuf rpc method with `(kalix.method).eventing`
 <3> use `out` and `topic` to publish to a topic
 
 In the service implementation, return an arbitrary object, it will be serialized to JSON for the topic:

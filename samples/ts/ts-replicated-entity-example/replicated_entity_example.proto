@@ -20,7 +20,7 @@ import "kalix/annotations.proto";
 import "google/protobuf/empty.proto";
 
 message UpdateCounter {
-  string key = 1 [(akkaserverless.field).entity_key = true];
+  string key = 1 [(kalix.field).entity_key = true];
   int64 value = 2;
 }
 
@@ -29,7 +29,7 @@ message CounterValue {
 }
 
 message Get {
-  string key = 1 [(akkaserverless.field).entity_key = true];
+  string key = 1 [(kalix.field).entity_key = true];
 }
 
 message SomeValue {
@@ -38,7 +38,7 @@ message SomeValue {
 }
 
 message MutateSet {
-  string key = 1 [(akkaserverless.field).entity_key = true];
+  string key = 1 [(kalix.field).entity_key = true];
   bool clear = 2;
   repeated SomeValue remove = 3;
   repeated SomeValue add = 4;
@@ -53,7 +53,7 @@ message SetValue {
 }
 
 message User {
-  string name = 1 [(akkaserverless.field).entity_key = true];
+  string name = 1 [(kalix.field).entity_key = true];
 }
 
 message OnlineStatus {

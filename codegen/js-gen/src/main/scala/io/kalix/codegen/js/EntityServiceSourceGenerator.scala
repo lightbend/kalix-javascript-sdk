@@ -109,7 +109,7 @@ object EntityServiceSourceGenerator {
     pretty(
       initialisedCodeComment <> line <> line <>
       "import" <+> "akkaserverless" <+> "from" <+> dquotes("@lightbend/kalix-javascript-sdk") <> semi <> line <>
-      "const" <+> entityType <+> equal <+> "akkaserverless." <> entityType
+      "const" <+> entityType <+> equal <+> "kalix." <> entityType
       <> semi <> line <>
       line <>
       blockComment(Seq[Doc](
@@ -320,7 +320,7 @@ object EntityServiceSourceGenerator {
         .resolve(s"$entityName.js")
         .toString) <> semi <> line <>
       line <>
-      "const" <+> "testkit" <+> equal <+> "new" <+> "akkaserverless.IntegrationTestkit" <> parens(
+      "const" <+> "testkit" <+> equal <+> "new" <+> "kalix.IntegrationTestKit" <> parens(
         emptyDoc) <> semi <> line <>
       "testkit" <> dot <> "addComponent" <> parens(entityName) <> semi <> line <>
       line <>

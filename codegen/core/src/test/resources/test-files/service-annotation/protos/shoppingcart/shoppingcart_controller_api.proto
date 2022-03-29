@@ -30,7 +30,7 @@ message NewCartCreated {
 }
 
 service ShoppingCartAction {
-  option (akkaserverless.service) = {
+  option (kalix.service) = {
     type : SERVICE_TYPE_ACTION
   };
 

@@ -4,7 +4,7 @@ package com.example.domain;
 
 import "kalix/annotations.proto";
 
-option (akkaserverless.file).event_sourced_entity = {
+option (kalix.file).event_sourced_entity = {
     name: "MyEntity"
     entity_type: "MyEntity"
     state: "MyState"
@@ -16,5 +16,5 @@ message MyState {
 }
 
 message ValueSet {
-    string entity_id = 1 [(akkaserverless.field).entity_key = true];
+    string entity_id = 1 [(kalix.field).entity_key = true];
 }

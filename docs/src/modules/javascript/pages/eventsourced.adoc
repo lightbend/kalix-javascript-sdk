@@ -21,7 +21,7 @@ In this file, the `Cart` message represents the state snapshot, while `ItemAdded
 
 == Creating an entity
 
-Create an Event Sourced Entity with the link:{attachmentsdir}/api/module-akkaserverless.EventSourcedEntity.html[EventSourcedEntity{tab-icon}, window="new"] class.
+Create an Event Sourced Entity with the link:{attachmentsdir}/api/module-kalix.EventSourcedEntity.html[EventSourcedEntity{tab-icon}, window="new"] class.
 
 ifdef::todo[TODO: update with new SDK names.]
 
@@ -55,7 +55,7 @@ include::example$test/eventsourced/shoppingcart.ts[tag=entity-class]
 
 When you pass an event or snapshot to persist, Kalix needs to know how to serialize it. Simply passing a regular object does not provide enough information to know how `protobuf` should serialize the objects. To emit an event or snapshot, you first must lookup the `protobuf` types, and then use the `create` method to create them.
 
-The `EventSourced` class provides a helper method called link:{attachmentsdir}/api/module-akkaserverless.EventSourcedEntity.html#lookupType[`lookupType`{tab-icon}, window="new"]. So before implementing, we'll use `lookupType` to get these types to use later.
+The `EventSourced` class provides a helper method called link:{attachmentsdir}/api/module-kalix.EventSourcedEntity.html#lookupType[`lookupType`{tab-icon}, window="new"]. So before implementing, we'll use `lookupType` to get these types to use later.
 
 [.tabset]
 JavaScript::
@@ -76,7 +76,7 @@ include::example$test/eventsourced/shoppingcart.ts[tag=lookup-type]
 
 When there are no snapshots persisted for an entity (such as when the entity is first created), the entity needs to have an initial state. Note that Event Sourced Entities are not explicitly created, they are implicitly created when a command arrives for them. And, nothing is persisted until an event is created for that Entity. So, if user "X" opens their shopping cart for the first time, an Entity will be created for them, with no events in the log. It will just be in the initial state.
 
-To create the initial state, we set the link:{attachmentsdir}/api/module-akkaserverless.EventSourcedEntity.html#initial[`initial`{tab-icon}, window="new"] callback. This takes the id of the entity being created, and returns a new empty state, in this case, an empty shopping cart:
+To create the initial state, we set the link:{attachmentsdir}/api/module-kalix.EventSourcedEntity.html#initial[`initial`{tab-icon}, window="new"] callback. This takes the id of the entity being created, and returns a new empty state, in this case, an empty shopping cart:
 
 [.tabset]
 JavaScript::
@@ -101,7 +101,7 @@ Now we need to define the behavior for our entity. The behavior consists of two 
 
 === Command handlers
 
-A link:{attachmentsdir}/api/module-akkaserverless.EventSourcedEntity.html#~commandHandler[command handler{tab-icon}, window="new"] is a function that takes a command, the current state, and an link:{attachmentsdir}/api/module-akkaserverless.EventSourcedEntity.EventSourcedEntityCommandContext.html[`EventSourcedEntityCommandContext`{tab-icon}, window="new"]. It implements a service call on the Entity's gRPC interface.
+A link:{attachmentsdir}/api/module-kalix.EventSourcedEntity.html#~commandHandler[command handler{tab-icon}, window="new"] is a function that takes a command, the current state, and an link:{attachmentsdir}/api/module-kalix.EventSourcedEntity.EventSourcedEntityCommandContext.html[`EventSourcedEntityCommandContext`{tab-icon}, window="new"]. It implements a service call on the Entity's gRPC interface.
 
 The command is the input message type for the gRPC service call. For example, the `GetCart` service call has an input type of `GetShoppingCart`, while the `AddItem` service call has an input type of `AddLineItem`. The command will be an object that matches the structure of these protobuf types.
 
@@ -130,7 +130,7 @@ Commands that modify the state MUST do so by emitting events.
 
 WARNING: The **only** way a command handler may modify its state is by emitting an event. Any modifications made directly to the state from the command handler will not be persisted, and will be lost as soon as the command handler finishes executing.
 
-A command handler may emit an event by using the link:{attachmentsdir}/api/module-akkaserverless.EventSourcedEntity.EventSourcedEntityCommandContext.html#emit[`emit`{tab-icon}, window="new"] method on the `EventSourcedEntityCommandContext`.
+A command handler may emit an event by using the link:{attachmentsdir}/api/module-kalix.EventSourcedEntity.EventSourcedEntityCommandContext.html#emit[`emit`{tab-icon}, window="new"] method on the `EventSourcedEntityCommandContext`.
 
 The following command handler example emits an event:
 
@@ -149,11 +149,11 @@ TypeScript::
 include::example$test/eventsourced/shoppingcart.ts[tag=add-item]
 ----
 
-This command handler also validates the command by ensuring that the quantity of items added is greater than zero. Invoking link:{attachmentsdir}/api/module-akkaserverless.EventSourcedEntity.EventSourcedEntityCommandContext.html#fail[`fail`{tab-icon}, window="new"] fails the command - this method throws so there's no need to explicitly throw an exception.
+This command handler also validates the command by ensuring that the quantity of items added is greater than zero. Invoking link:{attachmentsdir}/api/module-kalix.EventSourcedEntity.EventSourcedEntityCommandContext.html#fail[`fail`{tab-icon}, window="new"] fails the command - this method throws so there's no need to explicitly throw an exception.
 
 === Event handlers
 
-An link:{attachmentsdir}/api/module-akkaserverless.EventSourcedEntity.html#~eventHandler[event handler{tab-icon}, window="new"] is invoked at two points:
+An link:{attachmentsdir}/api/module-kalix.EventSourcedEntity.html#~eventHandler[event handler{tab-icon}, window="new"] is invoked at two points:
 
 * When restoring Entities from the journal, before any commands are handled
 * Each time a new event is emitted
@@ -183,9 +183,9 @@ include::example$test/eventsourced/shoppingcart.ts[tag=item-added]
 
 === Setting the behavior
 
-Once you have command handler and event handler functions implemented, you can set your behavior. The link:{attachmentsdir}/api/module-akkaserverless.EventSourcedEntity.html#~behaviorCallback[behavior callback{tab-icon}, window="new"] takes the current state of the entity, and returns an object with two properties: `commandHandlers` and `eventHandlers`. The callback may return different sets of handlers according to the current state, this will be explored more later, for now we'll just implement an entity with one set of handlers.
+Once you have command handler and event handler functions implemented, you can set your behavior. The link:{attachmentsdir}/api/module-kalix.EventSourcedEntity.html#~behaviorCallback[behavior callback{tab-icon}, window="new"] takes the current state of the entity, and returns an object with two properties: `commandHandlers` and `eventHandlers`. The callback may return different sets of handlers according to the current state, this will be explored more later, for now we'll just implement an entity with one set of handlers.
 
-The behavior callback can be set by setting the link:{attachmentsdir}/api/module-akkaserverless.EventSourcedEntity.html#behavior[`behavior`{tab-icon}, window="new"] property on the entity:
+The behavior callback can be set by setting the link:{attachmentsdir}/api/module-kalix.EventSourcedEntity.html#behavior[`behavior`{tab-icon}, window="new"] property on the entity:
 
 [.tabset]
 JavaScript::

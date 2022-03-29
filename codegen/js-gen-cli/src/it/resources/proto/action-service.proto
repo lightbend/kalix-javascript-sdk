@@ -16,7 +16,7 @@ message Response {
 }
 
 service MyActionService {
-    option (akkaserverless.service) = {
+    option (kalix.service) = {
         type : SERVICE_TYPE_ACTION
     };
 

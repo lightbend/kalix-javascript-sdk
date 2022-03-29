@@ -25,16 +25,16 @@ import "kalix/annotations.proto";
 // tag::service[]
 service CustomerByName {
   rpc UpdateCustomer(domain.CustomerState) returns (domain.CustomerState) { // <1>
-    option (akkaserverless.method).eventing.in = { // <2>
+    option (kalix.method).eventing.in = { // <2>
       value_entity: "customers"
     };
-    option (akkaserverless.method).view.update = { // <3>
+    option (kalix.method).view.update = { // <3>
       table: "customers"
     };
   }
 
   rpc GetCustomers(ByNameRequest) returns (stream domain.CustomerState) { // <4>
-    option (akkaserverless.method).view.query = { // <5>
+    option (kalix.method).view.query = { // <5>
       query: "SELECT * FROM customers WHERE name = :customer_name"
     };
   }
@@ -47,17 +47,17 @@ message ByNameRequest {
 
 service CustomerByEmail {
   rpc UpdateCustomer(domain.CustomerState) returns (domain.CustomerState) {
-    option (akkaserverless.method).eventing.in = {
+    option (kalix.method).eventing.in = {
       value_entity: "customers"
     };
-    option (akkaserverless.method).view.update = {
+    option (kalix.method).view.update = {
       table: "customers"
     };
   }
 
   // tag::unary[]
   rpc GetCustomer(ByEmailRequest) returns (domain.CustomerState) { // <1>
-    option (akkaserverless.method).view.query = {
+    option (kalix.method).view.query = {
       query: "SELECT * FROM customers WHERE email = :email"
     };
   }
@@ -76,16 +76,16 @@ message CustomerSummary {
 
 service CustomerSummaryByName {
   rpc GetCustomers(ByNameRequest) returns (stream CustomerSummary) {
-    option (akkaserverless.method).view.query = {
+    option (kalix.method).view.query = {
       query: "SELECT customer_id AS id, name FROM customers WHERE name = :customer_name"
     };
   }
 
   rpc UpdateCustomer(domain.CustomerState) returns (domain.CustomerState) {
-    option (akkaserverless.method).eventing.in = {
+    option (kalix.method).eventing.in = {
       value_entity: "customers"
     };
-    option (akkaserverless.method).view.update = {
+    option (kalix.method).view.update = {
       table: "customers"
     };
   }
@@ -104,16 +104,16 @@ message Any {
 
 service CustomersResponseByName {
   rpc GetCustomers(ByNameRequest) returns (CustomersResponse) { // <2>
-    option (akkaserverless.method).view.query = {
+    option (kalix.method).view.query = {
       query: "SELECT * AS results FROM customers WHERE name = :customer_name" // <3>
     };
   }
 
   rpc UpdateCustomer(domain.CustomerState) returns (domain.CustomerState) {
-    option (akkaserverless.method).eventing.in = {
+    option (kalix.method).eventing.in = {
       value_entity: "customers"
     };
-    option (akkaserverless.method).view.update = {
+    option (kalix.method).view.update = {
       table: "customers"
     };
   }
@@ -123,37 +123,37 @@ service CustomersResponseByName {
 // tag::service-event-sourced[]
 service CustomerByNameView {
   rpc ProcessCustomerCreated(domain.CustomerCreated) returns (domain.CustomerState) { // <1>
-    option (akkaserverless.method).eventing.in = {
+    option (kalix.method).eventing.in = {
       event_sourced_entity: "customers" // <2>
     };
-    option (akkaserverless.method).view.update = {
+    option (kalix.method).view.update = {
       table: "customers"
       transform_updates: true // <3>
     };
   }
 
   rpc ProcessCustomerNameChanged(domain.CustomerNameChanged) returns (domain.CustomerState) { // <4>
-    option (akkaserverless.method).eventing.in = {
+    option (kalix.method).eventing.in = {
       event_sourced_entity: "customers" // <5>
     };
-    option (akkaserverless.method).view.update = {
+    option (kalix.method).view.update = {
       table: "customers"
       transform_updates: true // <6>
     };
   }
 
   rpc IgnoreOtherEvents(Any) returns (domain.CustomerState) { // <7>
-    option (akkaserverless.method).eventing.in = {
+    option (kalix.method).eventing.in = {
       event_sourced_entity: "customers"
      };
-     option (akkaserverless.method).view.update = {
+     option (kalix.method).view.update = {
        table: "customers"
        transform_updates: true
      };
   };
 
   rpc GetCustomers(ByNameRequest) returns (stream domain.CustomerState) {
-    option (akkaserverless.method).view.query = {
+    option (kalix.method).view.query = {
       query: "SELECT * FROM customers WHERE name = :customer_name"
     };
   }
@@ -163,37 +163,37 @@ service CustomerByNameView {
 // tag::service-topic[]
 service CustomerByNameViewFromTopic {
   rpc ProcessCustomerCreated(domain.CustomerCreated) returns (domain.CustomerState) {
-    option (akkaserverless.method).eventing.in = {
+    option (kalix.method).eventing.in = {
       topic: "customers" // <1>
     };
-    option (akkaserverless.method).view.update = {
+    option (kalix.method).view.update = {
       table: "customers"
       transform_updates: true
     };
   }
 
   rpc ProcessCustomerNameChanged(domain.CustomerNameChanged) returns (domain.CustomerState) {
-    option (akkaserverless.method).eventing.in = {
+    option (kalix.method).eventing.in = {
       topic: "customers"
     };
-    option (akkaserverless.method).view.update = {
+    option (kalix.method).view.update = {
       table: "customers"
       transform_updates: true
     };
   }
 
   rpc IgnoreOtherEvents(Any) returns (domain.CustomerState) {
-    option (akkaserverless.method).eventing.in = {
+    option (kalix.method).eventing.in = {
       event_sourced_entity: "customers"
      };
-     option (akkaserverless.method).view.update = {
+     option (kalix.method).view.update = {
        table: "customers"
        transform_updates: true
      };
   };
 
   rpc GetCustomers(ByNameRequest) returns (stream domain.CustomerState) {
-    option (akkaserverless.method).view.query = {
+    option (kalix.method).view.query = {
       query: "SELECT * FROM customers WHERE name = :customer_name"
     };
   }

@@ -45,7 +45,7 @@ include::example$js-replicated-entity-shopping-cart/proto/shoppingcart_api.proto
 <1> Define the protobuf package for the service and API messages.
 <2> Import the Kalix protobuf annotations, or options.
 <3> We use protobuf messages to describe the Commands that our service handles. They may contain other messages to represent structured data.
-<4> Every Command must contain a `string` field that contains the entity ID and is marked with the `(akkaserverless.field).entity_key` option.
+<4> Every Command must contain a `string` field that contains the entity ID and is marked with the `(kalix.field).entity_key` option.
 <5> Messages describe the return value for our API. For methods that don't have return values, we use `google.protobuf.Empty`.
 <6> The service descriptor shows the API of the entity. It lists the methods a client can use to issue Commands to the entity.
 

@@ -27,7 +27,7 @@ message NewCartCreated {
 }
 
 service ShoppingCartAction {
-  option (akkaserverless.codegen) = {
+  option (kalix.codegen) = {
     action: { }
   };
 
