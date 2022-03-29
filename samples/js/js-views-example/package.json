@@ -39,8 +39,8 @@
     "prestart": "npm run build",
     "start": "node index.js",
     "start-no-prestart": "node index.js",
-    "docker-build": "docker build -f Dockerfile -t ${DOCKER_PUBLISH_TO:-akkaserverless}/js-views-example:$(../../../sdk/bin/version.sh) ../../..",
-    "docker-push": "docker push ${DOCKER_PUBLISH_TO:-akkaserverless}/js-views-example:$(../../../sdk/bin/version.sh)",
+    "docker-build": "docker build -f Dockerfile -t ${DOCKER_PUBLISH_TO:-kalix}/js-views-example:$(../../../sdk/bin/version.sh) ../../..",
+    "docker-push": "docker push ${DOCKER_PUBLISH_TO:-kalix}/js-views-example:$(../../../sdk/bin/version.sh)",
     "docker-build-push": "npm run docker-build && npm run docker-push"
   }
 }

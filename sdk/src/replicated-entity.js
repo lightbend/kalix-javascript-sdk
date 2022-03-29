@@ -71,7 +71,7 @@ const replicatedEntityServices = new support.ReplicatedEntityServices();
  * @returns {Object} The default value to use for this entity.
  */
 
-// Callback definitions for akkaserverless.replicatedentity.*
+// Callback definitions for kalix.replicatedentity.*
 
 /**
  * Generator for default values.

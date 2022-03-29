@@ -634,7 +634,7 @@ module.exports = class ActionServices {
   }
 
   componentType() {
-    return 'akkaserverless.component.action.Actions';
+    return 'kalix.component.action.Actions';
   }
 
   register(server) {
@@ -645,7 +645,7 @@ module.exports = class ActionServices {
       path.join(__dirname, '..', '..', 'protoc', 'include'),
     ];
     const packageDefinition = protoLoader.loadSync(
-      path.join('akkaserverless', 'component', 'action', 'action.proto'),
+      path.join('kalix', 'component', 'action', 'action.proto'),
       {
         includeDirs: includeDirs,
       },
@@ -653,7 +653,7 @@ module.exports = class ActionServices {
     const grpcDescriptor = grpc.loadPackageDefinition(packageDefinition);
 
     const actionService =
-      grpcDescriptor.akkaserverless.component.action.Actions.service;
+      grpcDescriptor.kalix.component.action.Actions.service;
 
     server.addService(actionService, {
       handleUnary: this.handleUnary.bind(this),

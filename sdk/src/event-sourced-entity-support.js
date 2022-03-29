@@ -309,7 +309,7 @@ module.exports = class EventSourcedEntityServices {
   }
 
   componentType() {
-    return 'akkaserverless.component.eventsourcedentity.EventSourcedEntities';
+    return 'kalix.component.eventsourcedentity.EventSourcedEntities';
   }
 
   register(server) {
@@ -321,7 +321,7 @@ module.exports = class EventSourcedEntityServices {
     ];
     const packageDefinition = protoLoader.loadSync(
       path.join(
-        'akkaserverless',
+        'kalix',
         'component',
         'eventsourcedentity',
         'event_sourced_entity.proto',
@@ -333,7 +333,7 @@ module.exports = class EventSourcedEntityServices {
     const grpcDescriptor = grpc.loadPackageDefinition(packageDefinition);
 
     const entityService =
-      grpcDescriptor.akkaserverless.component.eventsourcedentity
+      grpcDescriptor.kalix.component.eventsourcedentity
         .EventSourcedEntities.service;
 
     server.addService(entityService, {

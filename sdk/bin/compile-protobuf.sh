@@ -1,15 +1,15 @@
 # Generate the protobuf bundle and typescript definitions
 pbjs -t static-module -w commonjs -o ./proto/protobuf-bundle.js -p ./proto -p ./protoc/include \
-  ./proto/akkaserverless/*.proto \
-  ./proto/akkaserverless/protocol/*.proto \
-  ./proto/akkaserverless/component/*.proto \
-  ./proto/akkaserverless/component/*/*.proto
+  ./proto/kalix/*.proto \
+  ./proto/kalix/protocol/*.proto \
+  ./proto/kalix/component/*.proto \
+  ./proto/kalix/component/*/*.proto
 
 pbjs -t static-module -p ./proto -p ./protoc/include \
-  ./proto/akkaserverless/*.proto \
-  ./proto/akkaserverless/protocol/*.proto \
-  ./proto/akkaserverless/component/*.proto \
-  ./proto/akkaserverless/component/*/*.proto \
+  ./proto/kalix/*.proto \
+  ./proto/kalix/protocol/*.proto \
+  ./proto/kalix/component/*.proto \
+  ./proto/kalix/component/*/*.proto \
   | pbts -o ./proto/protobuf-bundle.d.ts -
 
 # Statically generates code from proto files
@@ -28,10 +28,10 @@ $PROTOC \
     --grpc_out=grpc_js:$OUT_DIR \
     --ts_out=grpc_js:$TS_OUT_DIR \
     ${PWD}/proto/google/api/*.proto \
-    ${PWD}/proto/akkaserverless/*.proto \
-    ${PWD}/proto/akkaserverless/protocol/*.proto \
-    ${PWD}/proto/akkaserverless/component/*.proto \
-    ${PWD}/proto/akkaserverless/component/*/*.proto
+    ${PWD}/proto/kalix/*.proto \
+    ${PWD}/proto/kalix/protocol/*.proto \
+    ${PWD}/proto/kalix/component/*.proto \
+    ${PWD}/proto/kalix/component/*/*.proto
 
 # Compile test protos
 rm -rf test/proto

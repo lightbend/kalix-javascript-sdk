@@ -21,7 +21,7 @@ import { GrpcUtil } from './grpc-util';
 import { Kalix, Component } from './kalix';
 import { GenericContainer, TestContainers, Wait } from 'testcontainers';
 
-const defaultDockerImage = `gcr.io/akkaserverless-public/akkaserverless-proxy:${settings.frameworkVersion}`;
+const defaultDockerImage = `gcr.io/kalix-public/kalix-proxy:${settings.frameworkVersion}`;
 
 /**
  * Integration Testkit.

@@ -17,7 +17,7 @@
     "uglify-js": "^3.7.7"
   },
   "config": {
-    "dockerImage": "gcr.io/akkaserverless-public/samples-js-event-sourced-shopping-cart",
+    "dockerImage": "gcr.io/kalix-public/samples-js-event-sourced-shopping-cart",
     "sourceDir": "./src",
     "testSourceDir": "./test",
     "protoSourceDir": "./proto",

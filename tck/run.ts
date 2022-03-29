@@ -25,7 +25,7 @@ class Result {
 (async () => {
   TestContainers.exposeHostPorts(8080);
 
-  const tckImage = `gcr.io/akkaserverless-public/akkaserverless-tck:${sdk.settings.frameworkVersion}`;
+  const tckImage = `gcr.io/kalix-public/kalix-tck:${sdk.settings.frameworkVersion}`;
 
   const container = await new GenericContainer(tckImage)
     .withEnv('TCK_SERVICE_HOST', 'host.testcontainers.internal')

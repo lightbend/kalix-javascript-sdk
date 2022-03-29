@@ -34,7 +34,7 @@ module.exports = class ViewServices {
   }
 
   componentType() {
-    return 'akkaserverless.component.view.Views';
+    return 'kalix.component.view.Views';
   }
 
   register(server) {
@@ -46,7 +46,7 @@ module.exports = class ViewServices {
       path.join(__dirname, '..', '..', 'protoc', 'include'),
     ];
     const packageDefinition = protoLoader.loadSync(
-      path.join('akkaserverless', 'component', 'view', 'view.proto'),
+      path.join('kalix', 'component', 'view', 'view.proto'),
       {
         includeDirs: includeDirs,
       },
@@ -54,7 +54,7 @@ module.exports = class ViewServices {
     const grpcDescriptor = grpc.loadPackageDefinition(packageDefinition);
 
     const viewService =
-      grpcDescriptor.akkaserverless.component.view.Views.service;
+      grpcDescriptor.kalix.component.view.Views.service;
 
     server.addService(viewService, {
       handle: this.handle.bind(this),

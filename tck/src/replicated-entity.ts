@@ -21,18 +21,18 @@ import {
 } from '@lightbend/kalix-javascript-sdk';
 import protocol from '../generated/tck';
 
-type Request = protocol.akkaserverless.tck.model.replicatedentity.Request;
-type IUpdate = protocol.akkaserverless.tck.model.replicatedentity.IUpdate;
-type IState = protocol.akkaserverless.tck.model.replicatedentity.IState;
+type Request = protocol.kalix.tck.model.replicatedentity.Request;
+type IUpdate = protocol.kalix.tck.model.replicatedentity.IUpdate;
+type IState = protocol.kalix.tck.model.replicatedentity.IState;
 
 const { Request, Response } =
-  protocol.akkaserverless.tck.model.replicatedentity;
+  protocol.kalix.tck.model.replicatedentity;
 const { ReplicatedRegisterClockType } =
-  protocol.akkaserverless.tck.model.replicatedentity;
+  protocol.kalix.tck.model.replicatedentity;
 
 export const tckModel = new replicatedentity.ReplicatedEntity(
   'proto/replicated_entity.proto',
-  'akkaserverless.tck.model.replicatedentity.ReplicatedEntityTckModel',
+  'kalix.tck.model.replicatedentity.ReplicatedEntityTckModel',
   'replicated-entity-tck-one',
 );
 
@@ -302,7 +302,7 @@ function sortedEntriesFromKeys(
 
 export const two = new replicatedentity.ReplicatedEntity(
   'proto/replicated_entity.proto',
-  'akkaserverless.tck.model.replicatedentity.ReplicatedEntityTwo',
+  'kalix.tck.model.replicatedentity.ReplicatedEntityTwo',
   'replicated-entity-tck-two',
 );
 
@@ -325,7 +325,7 @@ function call(
 
 export const configured = new replicatedentity.ReplicatedEntity(
   'proto/replicated_entity.proto',
-  'akkaserverless.tck.model.replicatedentity.ReplicatedEntityConfigured',
+  'kalix.tck.model.replicatedentity.ReplicatedEntityConfigured',
   'replicated-entity-configured',
   {
     entityPassivationStrategy: {

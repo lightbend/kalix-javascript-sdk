@@ -55,7 +55,7 @@ const counterClient = action.clients.com.example.CounterService.createClient( //
 {
 // tag::public-grpc[]
 const counterClient = action.clients.com.example.CounterService.createClient( // <2>
-  "still-queen-1447.us-east1.apps.akkaserverless.dev", // <3>
+  "still-queen-1447.us-east1.apps.kalix.dev", // <3>
   grpc.credentials.createSsl() // <4>
 );
 // end::public-grpc[]

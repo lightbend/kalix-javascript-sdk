@@ -17,7 +17,7 @@
     "uglify-js": "^3.7.7"
   },
   "config": {
-    "dockerImage": "gcr.io/akkaserverless-public/samples-js-doc-snippets",
+    "dockerImage": "gcr.io/kalix-public/samples-js-doc-snippets",
     "sourceDir": "./src",
     "testSourceDir": "./test",
     "protoSourceDir": "./proto",

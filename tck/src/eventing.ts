@@ -22,23 +22,23 @@ import {
 import protocol from '../generated/tck';
 
 type EmitEventRequest =
-  protocol.akkaserverless.tck.model.eventing.EmitEventRequest;
-type JsonEvent = protocol.akkaserverless.tck.model.eventing.JsonEvent;
+  protocol.kalix.tck.model.eventing.EmitEventRequest;
+type JsonEvent = protocol.kalix.tck.model.eventing.JsonEvent;
 type UpdateValueRequest =
-  protocol.akkaserverless.tck.model.eventing.UpdateValueRequest;
-type JsonValue = protocol.akkaserverless.tck.model.eventing.JsonValue;
-type EventOne = protocol.akkaserverless.tck.model.eventing.EventOne;
-type EventTwo = protocol.akkaserverless.tck.model.eventing.EventTwo;
-type ValueOne = protocol.akkaserverless.tck.model.eventing.ValueOne;
-type ValueTwo = protocol.akkaserverless.tck.model.eventing.ValueTwo;
-type EffectRequest = protocol.akkaserverless.tck.model.eventing.EffectRequest;
-type IProcessStep = protocol.akkaserverless.tck.model.eventing.IProcessStep;
+  protocol.kalix.tck.model.eventing.UpdateValueRequest;
+type JsonValue = protocol.kalix.tck.model.eventing.JsonValue;
+type EventOne = protocol.kalix.tck.model.eventing.EventOne;
+type EventTwo = protocol.kalix.tck.model.eventing.EventTwo;
+type ValueOne = protocol.kalix.tck.model.eventing.ValueOne;
+type ValueTwo = protocol.kalix.tck.model.eventing.ValueTwo;
+type EffectRequest = protocol.kalix.tck.model.eventing.EffectRequest;
+type IProcessStep = protocol.kalix.tck.model.eventing.IProcessStep;
 
-const { Response } = protocol.akkaserverless.tck.model.eventing;
+const { Response } = protocol.kalix.tck.model.eventing;
 
 export const eventSourcedEntityOne = new EventSourcedEntity(
   ['proto/local_persistence_eventing.proto'],
-  'akkaserverless.tck.model.eventing.EventSourcedEntityOne',
+  'kalix.tck.model.eventing.EventSourcedEntityOne',
   'eventlogeventing-one',
 );
 
@@ -69,7 +69,7 @@ function emitEvent(
 
 export const eventSourcedEntityTwo = new EventSourcedEntity(
   ['proto/local_persistence_eventing.proto'],
-  'akkaserverless.tck.model.eventing.EventSourcedEntityTwo',
+  'kalix.tck.model.eventing.EventSourcedEntityTwo',
   'eventlogeventing-two',
   {
     serializeFallbackToJson: true,
@@ -101,7 +101,7 @@ function emitJsonEvent(
 
 export const valueEntityOne = new ValueEntity(
   ['proto/local_persistence_eventing.proto'],
-  'akkaserverless.tck.model.eventing.ValueEntityOne',
+  'kalix.tck.model.eventing.ValueEntityOne',
   'valuechangeseventing-one',
 );
 
@@ -122,7 +122,7 @@ function updateValue(
 
 export const valueEntityTwo = new ValueEntity(
   ['proto/local_persistence_eventing.proto'],
-  'akkaserverless.tck.model.eventing.ValueEntityTwo',
+  'kalix.tck.model.eventing.ValueEntityTwo',
   'valuechangeseventing-two',
   {
     serializeFallbackToJson: true,
@@ -149,7 +149,7 @@ function updateJsonValue(
 
 export const localPersistenceSubscriber = new Action(
   ['proto/local_persistence_eventing.proto'],
-  'akkaserverless.tck.model.eventing.LocalPersistenceSubscriberModel',
+  'kalix.tck.model.eventing.LocalPersistenceSubscriberModel',
 );
 
 localPersistenceSubscriber.commandHandlers = {

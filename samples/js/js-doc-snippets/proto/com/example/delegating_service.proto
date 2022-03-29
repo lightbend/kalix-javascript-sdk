@@ -4,7 +4,7 @@ syntax = "proto3";
 package com.example;
 
 // tag::service[]
-import "akkaserverless/annotations.proto";
+import "kalix/annotations.proto";
 
 message Request {
   string counter_id = 1;
@@ -15,7 +15,7 @@ message Result {
 }
 
 service DelegatingService {
-  option (akkaserverless.service) = {
+  option (kalix.service) = {
     type : SERVICE_TYPE_ACTION
   };
 

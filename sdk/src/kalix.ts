@@ -18,8 +18,8 @@ import * as path from 'path';
 import * as grpc from '@grpc/grpc-js';
 import * as settings from '../settings';
 
-import * as discovery from '../proto/akkaserverless/protocol/discovery_pb';
-import * as discovery_grpc from '../proto/akkaserverless/protocol/discovery_grpc_pb';
+import * as discovery from '../proto/kalix/protocol/discovery_pb';
+import * as discovery_grpc from '../proto/kalix/protocol/discovery_grpc_pb';
 import * as google_protobuf_empty_pb from 'google-protobuf/google/protobuf/empty_pb';
 import { PackageInfo } from './package-info';
 

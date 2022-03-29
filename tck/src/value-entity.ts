@@ -18,21 +18,21 @@ import { ValueEntity } from '@lightbend/kalix-javascript-sdk';
 import { replies } from '@lightbend/kalix-javascript-sdk';
 import protocol from '../generated/tck';
 
-type Request = protocol.akkaserverless.tck.model.valueentity.Request;
+type Request = protocol.kalix.tck.model.valueentity.Request;
 
-const { Request, Response } = protocol.akkaserverless.tck.model.valueentity;
+const { Request, Response } = protocol.kalix.tck.model.valueentity;
 
 export const tckModel = new ValueEntity(
   ['proto/value_entity.proto'],
-  'akkaserverless.tck.model.valueentity.ValueEntityTckModel',
+  'kalix.tck.model.valueentity.ValueEntityTckModel',
   'value-entity-tck-model',
 );
 
 // We need to use the reflective types for state
-type IPersisted = protocol.akkaserverless.tck.model.valueentity.IPersisted;
+type IPersisted = protocol.kalix.tck.model.valueentity.IPersisted;
 type Persisted = protobuf.Message & IPersisted;
 const Persisted = tckModel.lookupType(
-  'akkaserverless.tck.model.valueentity.Persisted',
+  'kalix.tck.model.valueentity.Persisted',
 );
 
 tckModel
@@ -81,7 +81,7 @@ function process(
 
 export const two = new ValueEntity(
   ['proto/value_entity.proto'],
-  'akkaserverless.tck.model.valueentity.ValueEntityTwo',
+  'kalix.tck.model.valueentity.ValueEntityTwo',
   'value-entity-tck-model-two',
 )
   .setInitial(() => Persisted.create())
@@ -91,7 +91,7 @@ export const two = new ValueEntity(
 
 export const configured = new ValueEntity(
   ['proto/value_entity.proto'],
-  'akkaserverless.tck.model.valueentity.ValueEntityConfigured',
+  'kalix.tck.model.valueentity.ValueEntityConfigured',
   'value-entity-configured',
   {
     entityPassivationStrategy: {

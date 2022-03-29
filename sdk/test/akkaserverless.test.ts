@@ -15,11 +15,11 @@
  */
 
 import { Kalix, ComponentOptions, EntityOptions } from '../src/kalix';
-import discovery from '../proto/akkaserverless/protocol/discovery_pb';
+import discovery from '../proto/kalix/protocol/discovery_pb';
 import { should } from 'chai';
 should();
 
-describe('Akkaserverless', () => {
+describe('Kalix', () => {
   it('should generate working links based on error codes', () => {
     // Arrange
     const akkasls = new Kalix({
