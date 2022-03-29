@@ -320,8 +320,7 @@ object EntityServiceSourceGenerator {
         .resolve(s"$entityName.js")
         .toString) <> semi <> line <>
       line <>
-      "const" <+> "testkit" <+> equal <+> "new" <+> "kalix.IntegrationTestKit" <> parens(
-        emptyDoc) <> semi <> line <>
+      "const" <+> "testkit" <+> equal <+> "new" <+> "kalix.IntegrationTestKit" <> parens(emptyDoc) <> semi <> line <>
       "testkit" <> dot <> "addComponent" <> parens(entityName) <> semi <> line <>
       line <>
       "const" <+> "client" <+> equal <+> parens(
