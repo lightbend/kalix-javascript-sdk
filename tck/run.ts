@@ -25,7 +25,7 @@ class Result {
 (async () => {
   TestContainers.exposeHostPorts(8080);
 
-  const tckImage = `gcr.io/akkaserverless-public/kalix-tck:${sdk.settings.frameworkVersion.replace(
+  const tckImage = `gcr.io/kalix-public/kalix-tck:${sdk.settings.frameworkVersion.replace(
     '-SNAPSHOT',
     '',
   )}`;

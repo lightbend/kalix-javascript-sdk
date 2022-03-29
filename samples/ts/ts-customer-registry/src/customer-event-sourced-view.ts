@@ -24,7 +24,7 @@ const view: View = new View(
   ["customer_view.proto", "customer_domain.proto"],
   "customer.view.CustomerByNameView", // or CustomerByNameViewFromTopic
   {
-    viewId: "customer-event-sourced-view"
+    viewId: "by-name"
   }
 );
 // end::register[]

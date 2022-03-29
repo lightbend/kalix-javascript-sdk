@@ -21,7 +21,7 @@
     "build": "npm run compile && cp -r generated dist",
     "start": "node dist/index.js",
     "tck": "(cd ../sdk && npm pack) && npm install ../sdk/lightbend-kalix-javascript-sdk-0.0.0.tgz && npm run build && node dist/run.js",
-    "docker-build": "docker build -f Dockerfile -t gcr.io/akkaserverless-public/kalix-tck-javascript-sdk:$(../sdk/bin/version.sh) ..",
-    "docker-push": "docker push gcr.io/akkaserverless-public/kalix-tck-javascript-sdk:$(../sdk/bin/version.sh)"
+    "docker-build": "docker build -f Dockerfile -t gcr.io/kalix-public/kalix-tck-javascript-sdk:$(../sdk/bin/version.sh) ..",
+    "docker-push": "docker push gcr.io/kalix-public/kalix-tck-javascript-sdk:$(../sdk/bin/version.sh)"
   }
 }

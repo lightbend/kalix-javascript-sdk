@@ -21,7 +21,7 @@ const view = new View(
   ["customer_view.proto", "customer_domain.proto"],
   "customer.view.CustomersResponseByName",
   {
-    viewId: "customer-value-entity-view"
+    viewId: "response-by-name"
   }
 );
 
