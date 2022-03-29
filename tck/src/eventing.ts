@@ -21,11 +21,9 @@ import {
 } from '@lightbend/kalix-javascript-sdk';
 import protocol from '../generated/tck';
 
-type EmitEventRequest =
-  protocol.kalix.tck.model.eventing.EmitEventRequest;
+type EmitEventRequest = protocol.kalix.tck.model.eventing.EmitEventRequest;
 type JsonEvent = protocol.kalix.tck.model.eventing.JsonEvent;
-type UpdateValueRequest =
-  protocol.kalix.tck.model.eventing.UpdateValueRequest;
+type UpdateValueRequest = protocol.kalix.tck.model.eventing.UpdateValueRequest;
 type JsonValue = protocol.kalix.tck.model.eventing.JsonValue;
 type EventOne = protocol.kalix.tck.model.eventing.EventOne;
 type EventTwo = protocol.kalix.tck.model.eventing.EventTwo;

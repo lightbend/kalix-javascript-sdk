@@ -333,8 +333,8 @@ module.exports = class EventSourcedEntityServices {
     const grpcDescriptor = grpc.loadPackageDefinition(packageDefinition);
 
     const entityService =
-      grpcDescriptor.kalix.component.eventsourcedentity
-        .EventSourcedEntities.service;
+      grpcDescriptor.kalix.component.eventsourcedentity.EventSourcedEntities
+        .service;
 
     server.addService(entityService, {
       handle: this.handle.bind(this),

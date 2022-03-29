@@ -652,8 +652,7 @@ module.exports = class ActionServices {
     );
     const grpcDescriptor = grpc.loadPackageDefinition(packageDefinition);
 
-    const actionService =
-      grpcDescriptor.kalix.component.action.Actions.service;
+    const actionService = grpcDescriptor.kalix.component.action.Actions.service;
 
     server.addService(actionService, {
       handleUnary: this.handleUnary.bind(this),

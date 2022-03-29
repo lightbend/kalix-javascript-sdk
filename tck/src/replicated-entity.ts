@@ -25,8 +25,7 @@ type Request = protocol.kalix.tck.model.replicatedentity.Request;
 type IUpdate = protocol.kalix.tck.model.replicatedentity.IUpdate;
 type IState = protocol.kalix.tck.model.replicatedentity.IState;
 
-const { Request, Response } =
-  protocol.kalix.tck.model.replicatedentity;
+const { Request, Response } = protocol.kalix.tck.model.replicatedentity;
 const { ReplicatedRegisterClockType } =
   protocol.kalix.tck.model.replicatedentity;
 

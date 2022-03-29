@@ -31,9 +31,7 @@ export const tckModel = new ValueEntity(
 // We need to use the reflective types for state
 type IPersisted = protocol.kalix.tck.model.valueentity.IPersisted;
 type Persisted = protobuf.Message & IPersisted;
-const Persisted = tckModel.lookupType(
-  'kalix.tck.model.valueentity.Persisted',
-);
+const Persisted = tckModel.lookupType('kalix.tck.model.valueentity.Persisted');
 
 tckModel
   .setInitial(() => Persisted.create())

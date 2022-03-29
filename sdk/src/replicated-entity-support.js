@@ -68,8 +68,8 @@ class ReplicatedEntityServices {
     const grpcDescriptor = grpc.loadPackageDefinition(packageDefinition);
 
     const entityService =
-      grpcDescriptor.kalix.component.replicatedentity
-        .ReplicatedEntities.service;
+      grpcDescriptor.kalix.component.replicatedentity.ReplicatedEntities
+        .service;
 
     server.addService(entityService, {
       handle: this.handle.bind(this),

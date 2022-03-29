@@ -251,12 +251,7 @@ module.exports = class ValueEntityServices {
       path.join(__dirname, '..', '..', 'protoc', 'include'),
     ];
     const packageDefinition = protoLoader.loadSync(
-      path.join(
-        'kalix',
-        'component',
-        'valueentity',
-        'value_entity.proto',
-      ),
+      path.join('kalix', 'component', 'valueentity', 'value_entity.proto'),
       {
         includeDirs: includeDirs,
       },

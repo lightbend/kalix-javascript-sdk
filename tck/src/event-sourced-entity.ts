@@ -20,8 +20,7 @@ import protocol from '../generated/tck';
 
 type Request = protocol.kalix.tck.model.eventsourcedentity.Request;
 
-const { Request, Response } =
-  protocol.kalix.tck.model.eventsourcedentity;
+const { Request, Response } = protocol.kalix.tck.model.eventsourcedentity;
 
 export const tckModel = new EventSourcedEntity(
   ['proto/event_sourced_entity.proto'],
@@ -33,8 +32,7 @@ export const tckModel = new EventSourcedEntity(
 );
 
 // We need to use the reflective types for state
-type IPersisted =
-  protocol.kalix.tck.model.eventsourcedentity.IPersisted;
+type IPersisted = protocol.kalix.tck.model.eventsourcedentity.IPersisted;
 type Persisted = protobuf.Message & IPersisted;
 const Persisted = tckModel.lookupType(
   'kalix.tck.model.eventsourcedentity.Persisted',

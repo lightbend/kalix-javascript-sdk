@@ -53,8 +53,7 @@ module.exports = class ViewServices {
     );
     const grpcDescriptor = grpc.loadPackageDefinition(packageDefinition);
 
-    const viewService =
-      grpcDescriptor.kalix.component.view.Views.service;
+    const viewService = grpcDescriptor.kalix.component.view.Views.service;
 
     server.addService(viewService, {
       handle: this.handle.bind(this),
