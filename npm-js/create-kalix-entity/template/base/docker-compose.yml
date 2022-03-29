@@ -1,7 +1,7 @@
 version: "3"
 services:
   kalix-proxy:
-    image: gcr.io/akkaserverless-public/kalix-proxy:0.9.0-12-3385d96e-dev
+    image: gcr.io/akkaserverless-public/kalix-proxy:0.10.0-M2
     command: -Dconfig.resource=dev-mode.conf -Dakkaserverless.proxy.eventing.support=google-pubsub-emulator
     ports:
       - "9000:9000"

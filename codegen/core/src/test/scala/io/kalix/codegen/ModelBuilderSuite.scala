@@ -28,8 +28,8 @@ object ModelBuilderSuite {
 
     def registry: ExtensionRegistry = {
       val reg = ExtensionRegistry.newInstance()
-      reg.add(com.akkaserverless.Annotations.method)
-      reg.add(com.akkaserverless.Annotations.codegen)
+      reg.add(kalix.Annotations.method)
+      reg.add(kalix.Annotations.codegen)
       reg
     }
 
@@ -40,9 +40,9 @@ object ModelBuilderSuite {
 
     def registry: ExtensionRegistry = {
       val reg = ExtensionRegistry.newInstance()
-      reg.add(com.akkaserverless.Annotations.service)
-      reg.add(com.akkaserverless.Annotations.file)
-      reg.add(com.akkaserverless.Annotations.method)
+      reg.add(kalix.Annotations.service)
+      reg.add(kalix.Annotations.file)
+      reg.add(kalix.Annotations.method)
       reg
     }
   }

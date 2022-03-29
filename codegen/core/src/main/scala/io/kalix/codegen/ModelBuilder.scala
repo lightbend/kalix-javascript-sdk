@@ -7,11 +7,11 @@ package io.kalix.codegen
 
 import scala.jdk.CollectionConverters._
 
-import com.akkaserverless.CodegenOptions
-import com.akkaserverless.EventSourcedEntityDef
+import kalix.CodegenOptions
+import kalix.EventSourcedEntityDef
 import com.google.protobuf.Descriptors
-import com.akkaserverless.ServiceOptions.ServiceType
-import com.akkaserverless.ValueEntityDef
+import kalix.ServiceOptions.ServiceType
+import kalix.ValueEntityDef
 import com.google.protobuf.Descriptors.ServiceDescriptor
 
 /**
@@ -149,10 +149,10 @@ object ModelBuilder {
     descriptorSeq.foldLeft(Model.empty) { case (accModel, fileDescriptor) =>
       val modelFromServices =
         fileDescriptor.getServices.asScala.foldLeft(accModel) { (model, serviceDescriptor) =>
-          if (serviceDescriptor.getOptions.hasExtension(com.akkaserverless.Annotations.codegen)) {
+          if (serviceDescriptor.getOptions.hasExtension(kalix.Annotations.codegen)) {
             model ++ modelFromCodegenOptions(serviceDescriptor, descriptorSeq)
 
-          } else if (serviceDescriptor.getOptions.hasExtension(com.akkaserverless.Annotations.service)) {
+          } else if (serviceDescriptor.getOptions.hasExtension(kalix.Annotations.service)) {
             // FIXME: old format, builds service model from old service annotation
             model ++ modelFromServiceOptions(serviceDescriptor)
           } else {
@@ -171,7 +171,7 @@ object ModelBuilder {
 
   private def modelFromServiceOptions(serviceDescriptor: Descriptors.ServiceDescriptor): Model = {
     val serviceOptions =
-      serviceDescriptor.getOptions.getExtension(com.akkaserverless.Annotations.service)
+      serviceDescriptor.getOptions.getExtension(kalix.Annotations.service)
     val serviceType = serviceOptions.getType
     val serviceName = FullyQualifiedName.from(serviceDescriptor)
 
@@ -193,7 +193,7 @@ object ModelBuilder {
 
       case ServiceType.SERVICE_TYPE_VIEW =>
         val methodDetails = methods.flatMap { method =>
-          Option(method.getOptions.getExtension(com.akkaserverless.Annotations.method).getView).map(viewOptions =>
+          Option(method.getOptions.getExtension(kalix.Annotations.method).getView).map(viewOptions =>
             (method, viewOptions))
         }
         Model.fromService(
@@ -217,7 +217,7 @@ object ModelBuilder {
       additionalDescriptors: Seq[Descriptors.FileDescriptor]): Model = {
 
     val codegenOptions =
-      serviceDescriptor.getOptions.getExtension(com.akkaserverless.Annotations.codegen)
+      serviceDescriptor.getOptions.getExtension(kalix.Annotations.codegen)
     val serviceName = FullyQualifiedName.from(serviceDescriptor)
 
     val methods = serviceDescriptor.getMethods.asScala
@@ -232,7 +232,7 @@ object ModelBuilder {
       case CodegenOptions.CodegenCase.VIEW =>
         val userDefinedName = buildUserDefinedName(codegenOptions.getView.getName, serviceName)
         val methodDetails = methods.flatMap { method =>
-          Option(method.getOptions.getExtension(com.akkaserverless.Annotations.method).getView).map(viewOptions =>
+          Option(method.getOptions.getExtension(kalix.Annotations.method).getView).map(viewOptions =>
             (method, viewOptions))
         }
         Model.fromService(
@@ -425,7 +425,7 @@ object ModelBuilder {
   private def extractEventSourcedEntityDefinitionFromFileOptions(descriptor: Descriptors.FileDescriptor): Model = {
 
     val entityDef = descriptor.getOptions
-      .getExtension(com.akkaserverless.Annotations.file)
+      .getExtension(kalix.Annotations.file)
       .getEventSourcedEntity
 
     val protoReference = PackageNaming.from(descriptor)
@@ -455,7 +455,7 @@ object ModelBuilder {
 
     val entityDef =
       descriptor.getOptions
-        .getExtension(com.akkaserverless.Annotations.file)
+        .getExtension(kalix.Annotations.file)
         .getValueEntity
 
     val protoReference = PackageNaming.from(descriptor)
