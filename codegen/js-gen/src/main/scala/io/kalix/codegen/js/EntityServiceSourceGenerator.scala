@@ -108,7 +108,7 @@ object EntityServiceSourceGenerator {
     }
     pretty(
       initialisedCodeComment <> line <> line <>
-      "import" <+> "akkaserverless" <+> "from" <+> dquotes("@lightbend/kalix-javascript-sdk") <> semi <> line <>
+      "import" <+> "kalix" <+> "from" <+> dquotes("@lightbend/kalix-javascript-sdk") <> semi <> line <>
       "const" <+> entityType <+> equal <+> "kalix." <> entityType
       <> semi <> line <>
       line <>
@@ -192,7 +192,7 @@ object EntityServiceSourceGenerator {
         case _: ModelBuilder.ValueEntity =>
           "TypedValueEntity" <> comma <> line <>
             "ValueEntityCommandContext"
-      })) <> line) <+> "from" <+> dquotes("../akkaserverless") <> semi <> line <>
+      })) <> line) <+> "from" <+> dquotes("../kalix") <> semi <> line <>
       "import" <+> ProtoNs <+> "from" <+> dquotes("./proto") <> semi <> line <>
       line <>
       (entity match {
@@ -313,7 +313,7 @@ object EntityServiceSourceGenerator {
 
     pretty(
       initialisedCodeComment <> line <> line <>
-      "import" <+> "akkaserverless" <+> "from" <+> dquotes("@lightbend/kalix-javascript-sdk") <> semi <> line <>
+      "import" <+> "kalix" <+> "from" <+> dquotes("@lightbend/kalix-javascript-sdk") <> semi <> line <>
       """import { expect } from "chai"""" <> semi <> line <>
       "import" <+> entityName <+> "from" <+> dquotes(testSourceDirectory.toAbsolutePath
         .relativize(sourceDirectory.toAbsolutePath)

@@ -111,7 +111,7 @@ object ActionServiceSourceGenerator {
       "TypedAction" <> comma <> line <>
       "ActionCommandContext" <> comma <> line <>
       "StreamedInCommandContext" <> comma <> line <>
-      "StreamedOutCommandContext") <> line) <+> "from" <+> dquotes("../akkaserverless") <> semi <> line <>
+      "StreamedOutCommandContext") <> line) <+> "from" <+> dquotes("../kalix") <> semi <> line <>
       "import" <+> ProtoNs <+> "from" <+> dquotes("./proto") <> semi <> line <>
       line <>
       "export type CommandHandlers" <+> equal <+> braces(nest(line <>
