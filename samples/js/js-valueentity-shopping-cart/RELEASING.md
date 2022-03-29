@@ -18,5 +18,5 @@ npm run package
 
 ```shell
 # push it to docker registry
-docker push gcr.io/kalix-public/samples-js-value-entity-shopping-cart:0.0.1
+docker push gcr.io/akkaserverless-public/samples-js-value-entity-shopping-cart:0.0.1
 ```
