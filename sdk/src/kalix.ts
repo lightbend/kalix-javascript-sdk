@@ -550,7 +550,9 @@ export class Kalix {
             );
           }
           if (componentOptions.entityType) {
-            const entity = new discovery.EntitySettings().setEntityType(componentOptions.entityType);
+            const entity = new discovery.EntitySettings().setEntityType(
+              componentOptions.entityType,
+            );
             res.setEntity(entity);
           }
           res.setComponent(componentSettings);
