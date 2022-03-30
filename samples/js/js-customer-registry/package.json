@@ -24,7 +24,7 @@
   "//": "https://npm.community/t/npm-install-does-not-install-transitive-dependencies-of-local-dependency/2264",
   "dependencies": {
     "@grpc/proto-loader": "^0.1.0",
-    "@kalix-io/kalix-javascript-sdk": "file:../../../sdk/lightbend-kalix-javascript-sdk-0.0.0.tgz",
+    "@kalix-io/kalix-javascript-sdk": "file:../../../sdk/kalix-io-kalix-javascript-sdk-0.0.0.tgz",
     "google-protobuf": "^3.11.4",
     "grpc": "^1.24.9"
   },

@@ -7,7 +7,7 @@
     "node": "~14"
   },
   "dependencies": {
-    "@kalix-io/kalix-javascript-sdk": "file:../sdk/lightbend-kalix-javascript-sdk-0.0.0.tgz"
+    "@kalix-io/kalix-javascript-sdk": "file:../sdk/kalix-io-kalix-javascript-sdk-0.0.0.tgz"
   },
   "devDependencies": {
     "testcontainers": "7.10.0",
@@ -20,7 +20,7 @@
     "compile": "tsc",
     "build": "npm run compile && cp -r generated dist",
     "start": "node dist/index.js",
-    "tck": "(cd ../sdk && npm pack) && npm install ../sdk/lightbend-kalix-javascript-sdk-0.0.0.tgz && npm run build && node dist/run.js",
+    "tck": "(cd ../sdk && npm pack) && npm install ../sdk/kalix-io-kalix-javascript-sdk-0.0.0.tgz && npm run build && node dist/run.js",
     "docker-build": "docker build -f Dockerfile -t gcr.io/kalix-public/kalix-tck-javascript-sdk:$(../sdk/bin/version.sh) ..",
     "docker-push": "docker push gcr.io/kalix-public/kalix-tck-javascript-sdk:$(../sdk/bin/version.sh)"
   }
