@@ -75,8 +75,8 @@ module.exports = class ViewServices {
 
     call.on('data', (viewStreamIn) => {
       // FIXME: It is currently only implemented to support one request (ReceiveEvent) with one response (Upsert).
-      // see https://github.com/lightbend/akkaserverless-framework/issues/186
-      // and https://github.com/lightbend/akkaserverless-framework/issues/187
+      // see https://github.com/lightbend/kalix-proxy/issues/186
+      // and https://github.com/lightbend/kalix-proxy/issues/187
       if (viewStreamIn.receive) {
         const receiveEvent = viewStreamIn.receive,
           service = this.services[receiveEvent.serviceName];

@@ -279,7 +279,7 @@ class ActionHandler {
   setupUnaryOutContext() {
     const effects = [];
 
-    // FIXME: remove for version 0.8 (https://github.com/lightbend/akkaserverless-framework/issues/410)
+    // FIXME: remove for version 0.8 (https://github.com/lightbend/kalix-proxy/issues/410)
     this.ctx.thenForward = (method, message, metadata) => {
       console.warn(
         "WARNING: Action context 'thenForward' is deprecated. Please use 'forward' instead.",
@@ -431,7 +431,7 @@ class ActionHandler {
       }
     };
 
-    // FIXME: remove for version 0.8 (https://github.com/lightbend/akkaserverless-framework/issues/410)
+    // FIXME: remove for version 0.8 (https://github.com/lightbend/kalix-proxy/issues/410)
     this.ctx.thenForward = (method, message, metadata) => {
       console.warn(
         "WARNING: Action context 'thenForward' is deprecated. Please use 'forward' instead.",
