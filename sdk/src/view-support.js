@@ -87,7 +87,7 @@ module.exports = class ViewServices {
             try {
               const anySupport = new AnySupport(service.root),
                 metadata = new Metadata(
-                  receiveEvent.metada ? receiveEvent.metadata.entries : [],
+                  receiveEvent.metadata ? receiveEvent.metadata.entries : [],
                 ),
                 payload = anySupport.deserialize(receiveEvent.payload),
                 existingState = receiveEvent.bySubjectLookupResult

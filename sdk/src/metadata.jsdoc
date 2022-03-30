@@ -39,7 +39,7 @@
  * a string using toString.
  *
  * @class module:kalix.Metadata
- * @param {module:kalix.MetadataEntry[]} entries The list of entries
+ * @param {module:kalix.MetadataEntry[]} [entries=[]] The list of entries
  */
 
 /**
