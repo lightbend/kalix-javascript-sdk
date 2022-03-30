@@ -15,7 +15,7 @@
  */
 
 // tag::register[]
-import { Kalix } from "@lightbend/kalix-javascript-sdk";
+import { Kalix } from "@kalix-io/kalix-javascript-sdk";
 import shoppingcart from "./shoppingcart.js";
 
 new Kalix() // <1>

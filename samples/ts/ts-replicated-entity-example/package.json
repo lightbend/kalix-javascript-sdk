@@ -2,9 +2,9 @@
   "name": "ts-replicated-entity-example",
   "version": "0.0.0",
   "description": "Kalix TypeScript SDK example for replicated entities",
-  "homepage": "https://github.com/lightbend/kalix-javascript-sdk",
+  "homepage": "https://github.com/kalix-io/kalix-javascript-sdk",
   "bugs": {
-    "url": "https://github.com/lightbend/kalix-javascript-sdk/issues"
+    "url": "https://github.com/kalix-io/kalix-javascript-sdk/issues"
   },
   "license": "Apache-2.0",
   "author": {
@@ -19,11 +19,11 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/lightbend/kalix-javascript-sdk",
+    "url": "https://github.com/kalix-io/kalix-javascript-sdk",
     "directory": "samples/ts/ts-replicated-entity-example"
   },
   "dependencies": {
-    "@lightbend/kalix-javascript-sdk": "0.33.5"
+    "@kalix-io/kalix-javascript-sdk": "0.33.5"
   },
   "devDependencies": {
     "@lightbend/kalix-scripts": "0.33.5",

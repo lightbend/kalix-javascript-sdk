@@ -67,7 +67,7 @@ object ActionServiceSourceGenerator {
 
     pretty(
       initialisedCodeComment <> line <> line <>
-      "import" <+> braces(" Action ") <+> "from" <+> dquotes("@lightbend/kalix-javascript-sdk") <> semi <> line <>
+      "import" <+> braces(" Action ") <+> "from" <+> dquotes("@kalix-io/kalix-javascript-sdk") <> semi <> line <>
       line <>
       blockComment(Seq[Doc](
         "Type definitions.",

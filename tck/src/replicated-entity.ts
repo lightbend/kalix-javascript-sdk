@@ -18,7 +18,7 @@ import {
   replicatedentity,
   ReplicatedWriteConsistency,
   Serializable,
-} from '@lightbend/kalix-javascript-sdk';
+} from '@kalix-io/kalix-javascript-sdk';
 import protocol from '../generated/tck';
 
 type Request = protocol.kalix.tck.model.replicatedentity.Request;

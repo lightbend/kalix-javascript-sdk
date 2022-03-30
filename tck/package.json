@@ -7,7 +7,7 @@
     "node": "~14"
   },
   "dependencies": {
-    "@lightbend/kalix-javascript-sdk": "file:../sdk/lightbend-kalix-javascript-sdk-0.0.0.tgz"
+    "@kalix-io/kalix-javascript-sdk": "file:../sdk/lightbend-kalix-javascript-sdk-0.0.0.tgz"
   },
   "devDependencies": {
     "testcontainers": "7.10.0",

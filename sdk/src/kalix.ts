@@ -134,7 +134,7 @@ class DocLink {
     ['AS-00402', 'javascript/topic-eventing.html'],
     ['AS-00406', 'javascript/topic-eventing.html'],
     ['AS-00414', 'javascript/entity-eventing.html'],
-    // TODO: docs for value entity eventing (https://github.com/lightbend/kalix-javascript-sdk/issues/103)
+    // TODO: docs for value entity eventing (https://github.com/kalix-io/kalix-javascript-sdk/issues/103)
     // ['AS-00415', 'javascript/entity-eventing.html'],
   ]);
   private codeCategories: Map<string, string> = new Map([

@@ -67,7 +67,7 @@ object ViewServiceSourceGenerator {
 
     pretty(
       initialisedCodeComment <> line <> line <>
-      "import" <+> braces(" View ") <+> "from" <+> dquotes("@lightbend/kalix-javascript-sdk") <> semi <> line <>
+      "import" <+> braces(" View ") <+> "from" <+> dquotes("@kalix-io/kalix-javascript-sdk") <> semi <> line <>
       line <>
       blockComment(Seq[Doc](
         "Type definitions.",

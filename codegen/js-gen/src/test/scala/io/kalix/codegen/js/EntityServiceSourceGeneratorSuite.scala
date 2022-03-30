@@ -34,7 +34,7 @@ class EntityServiceSourceGeneratorSuite extends munit.FunSuite {
         | * You are free to make changes to this file.
         | */
         |
-        |import kalix from "@lightbend/kalix-javascript-sdk";
+        |import kalix from "@kalix-io/kalix-javascript-sdk";
         |const EventSourcedEntity = kalix.EventSourcedEntity;
         |
         |/**
@@ -115,7 +115,7 @@ class EntityServiceSourceGeneratorSuite extends munit.FunSuite {
         | * You are free to make changes to this file.
         | */
         |
-        |import kalix from "@lightbend/kalix-javascript-sdk";
+        |import kalix from "@kalix-io/kalix-javascript-sdk";
         |const ValueEntity = kalix.ValueEntity;
         |
         |/**
@@ -375,7 +375,7 @@ class EntityServiceSourceGeneratorSuite extends munit.FunSuite {
         | * You are free to make changes to this file.
         | */
         |
-        |import kalix from "@lightbend/kalix-javascript-sdk";
+        |import kalix from "@kalix-io/kalix-javascript-sdk";
         |import { expect } from "chai";
         |import myvalueentity from "../../src/js/myvalueentity.js";
         |

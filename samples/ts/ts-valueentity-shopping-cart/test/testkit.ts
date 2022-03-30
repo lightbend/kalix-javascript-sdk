@@ -17,7 +17,7 @@
 import {
   Metadata,
   ValueEntity
-} from "@lightbend/kalix-javascript-sdk";
+} from "@kalix-io/kalix-javascript-sdk";
 
 /**
  * Mocks the behaviour of a single Kalix Value entity.

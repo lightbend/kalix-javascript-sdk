@@ -15,7 +15,7 @@
  */
 
 // tag::register[]
-const View = require("@lightbend/kalix-javascript-sdk").View;
+const View = require("@kalix-io/kalix-javascript-sdk").View;
 
 const view = new View(
   ["customer_view.proto", "customer_domain.proto"],

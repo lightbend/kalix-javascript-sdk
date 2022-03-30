@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Action, replies } from "@lightbend/kalix-javascript-sdk";
+import { Action, replies } from "@kalix-io/kalix-javascript-sdk";
 import * as proto from "../lib/generated/proto";
 
 type Request = proto.kalix.tck.model.action.Request;

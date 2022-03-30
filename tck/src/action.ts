@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { Action } from '@lightbend/kalix-javascript-sdk';
-import { replies } from '@lightbend/kalix-javascript-sdk';
+import { Action } from '@kalix-io/kalix-javascript-sdk';
+import { replies } from '@kalix-io/kalix-javascript-sdk';
 import protocol from '../generated/tck';
 
 type Request = protocol.kalix.tck.model.action.Request;

@@ -20,7 +20,7 @@ import { PackageInfo } from '../src/package-info';
 describe('PackageInfo', () => {
   it('should extract informations from package.json', () => {
     const pi = new PackageInfo();
-    expect(pi.name).to.be.equal('@lightbend/kalix-javascript-sdk');
+    expect(pi.name).to.be.equal('@kalix-io/kalix-javascript-sdk');
     expect(pi.version).to.be.equal('0.0.0');
   });
 });

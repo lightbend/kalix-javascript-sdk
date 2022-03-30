@@ -18,7 +18,7 @@ import {
   Action,
   EventSourcedEntity,
   ValueEntity,
-} from '@lightbend/kalix-javascript-sdk';
+} from '@kalix-io/kalix-javascript-sdk';
 import protocol from '../generated/tck';
 
 type EmitEventRequest = protocol.kalix.tck.model.eventing.EmitEventRequest;

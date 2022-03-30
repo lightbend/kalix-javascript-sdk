@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-const EventSourcedEntity = require("@lightbend/kalix-javascript-sdk").EventSourcedEntity;
-const { replies } = require("@lightbend/kalix-javascript-sdk");
+const EventSourcedEntity = require("@kalix-io/kalix-javascript-sdk").EventSourcedEntity;
+const { replies } = require("@kalix-io/kalix-javascript-sdk");
 
 const entity = new EventSourcedEntity(
   ["customer_api.proto", "customer_domain.proto"],

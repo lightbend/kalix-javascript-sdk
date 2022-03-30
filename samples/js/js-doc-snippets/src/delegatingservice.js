@@ -15,8 +15,8 @@
  */
 
 // tag::delegating-action[]
-import { Action } from "@lightbend/kalix-javascript-sdk";
-import { replies } from '@lightbend/kalix-javascript-sdk';
+import { Action } from "@kalix-io/kalix-javascript-sdk";
+import { replies } from '@kalix-io/kalix-javascript-sdk';
 // end::delegating-action[]
 // tag::public-grpc[]
 import * as grpc from '@grpc/grpc-js'; // <1>

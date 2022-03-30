@@ -108,7 +108,7 @@ object EntityServiceSourceGenerator {
     }
     pretty(
       initialisedCodeComment <> line <> line <>
-      "import" <+> "kalix" <+> "from" <+> dquotes("@lightbend/kalix-javascript-sdk") <> semi <> line <>
+      "import" <+> "kalix" <+> "from" <+> dquotes("@kalix-io/kalix-javascript-sdk") <> semi <> line <>
       "const" <+> entityType <+> equal <+> "kalix." <> entityType
       <> semi <> line <>
       line <>
@@ -313,7 +313,7 @@ object EntityServiceSourceGenerator {
 
     pretty(
       initialisedCodeComment <> line <> line <>
-      "import" <+> "kalix" <+> "from" <+> dquotes("@lightbend/kalix-javascript-sdk") <> semi <> line <>
+      "import" <+> "kalix" <+> "from" <+> dquotes("@kalix-io/kalix-javascript-sdk") <> semi <> line <>
       """import { expect } from "chai"""" <> semi <> line <>
       "import" <+> entityName <+> "from" <+> dquotes(testSourceDirectory.toAbsolutePath
         .relativize(sourceDirectory.toAbsolutePath)

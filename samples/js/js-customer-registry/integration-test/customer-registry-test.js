@@ -15,7 +15,7 @@
  */
 
 // tag::client[]
-const kalix = require("@lightbend/kalix-javascript-sdk");
+const kalix = require("@kalix-io/kalix-javascript-sdk");
 const should = require("chai").should();
 
 const testkit = new kalix.IntegrationTestkit();
