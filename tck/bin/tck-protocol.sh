@@ -39,7 +39,7 @@ else
     cp -f $PROXY_SNAPSHOT_DIRECTORY/protocols/tck/src/main/protobuf/kalix/tck/model/*/*.proto "$proto_dir"
   else
     # Download and unzip the TCK protocols to the proto directory
-    artifact_url="https://repo1.maven.org/maven2/com/akkaserverless/kalix-tck-protocol/$framework_version/kalix-tck-protocol-$framework_version.zip"
+    artifact_url="https://repo1.maven.org/maven2/io/kalix/kalix-tck-protocol/$framework_version/kalix-tck-protocol-$framework_version.zip"
     echo "Fetching TCK protocol module from: $artifact_url"
     curl -OL $artifact_url
     unzip -j -d "$proto_dir" "kalix-tck-protocol-$framework_version.zip"

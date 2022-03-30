@@ -8,7 +8,7 @@ readonly framework_version=$(node --print 'require("./config.json").frameworkVer
 function download_protocol {
   local module="$1"
   mkdir -p ./proto
-  artifact_url="https://repo1.maven.org/maven2/com/akkaserverless/kalix-$module-protocol/$framework_version/kalix-$module-protocol-$framework_version.zip"
+  artifact_url="https://repo1.maven.org/maven2/io/kalix/kalix-$module-protocol/$framework_version/kalix-$module-protocol-$framework_version.zip"
   echo "Fetching protocol module $module from: $artifact_url"
   curl -OL $artifact_url
   unzip "kalix-$module-protocol-$framework_version.zip"
