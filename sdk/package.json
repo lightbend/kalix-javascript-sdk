@@ -7,9 +7,9 @@
     "serverless",
     "akka serverless"
   ],
-  "homepage": "https://github.com/kalix-io/kalix-javascript-sdk",
+  "homepage": "https://github.com/lightbend/kalix-javascript-sdk",
   "bugs": {
-    "url": "https://github.com/kalix-io/kalix-javascript-sdk"
+    "url": "https://github.com/lightbend/kalix-javascript-sdk"
   },
   "license": "Apache-2.0",
   "author": {
@@ -19,7 +19,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/kalix-io/kalix-javascript-sdk"
+    "url": "https://github.com/lightbend/kalix-javascript-sdk"
   },
   "engineStrict": true,
   "engines": {
@@ -95,6 +95,6 @@
     "prepublishOnly": "npm version --no-git-tag-version $(bin/version.sh)"
   },
   "publishConfig": {
-    "@lightbend:registry": "https://registry.npmjs.org"
+    "@kalix-io:registry": "https://registry.npmjs.org"
   }
 }
