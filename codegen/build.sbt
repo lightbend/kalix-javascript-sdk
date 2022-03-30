@@ -16,7 +16,7 @@ lazy val `kalix-codegen-core` =
     .settings(commonSettings)
     .settings(
       libraryDependencies ++= Seq(
-        library.akkaserverless % "protobuf-src",
+        library.kalixSdkProtocol % "protobuf-src",
         library.scalapbRuntime % "protobuf",
         library.protobufJava,
         library.munit % Test,
@@ -101,7 +101,7 @@ lazy val `kalix-codegen-js-cli` =
 lazy val library =
   new {
     object Version {
-      val akkaserverless = "0.8.7"
+      val kalix = "0.10.0-M3"
       val commonsIo = "2.8.0"
       val kiama = "2.4.0"
       val logback = "1.2.3"
@@ -122,8 +122,8 @@ lazy val library =
     val scopt = "com.github.scopt" %% "scopt" % Version.scopt
     val testcontainers = "org.testcontainers" % "testcontainers" % Version.testcontainers
     val typesafeConfig = "com.typesafe" % "config" % Version.typesafeConfig
-    val akkaserverless =
-      "com.akkaserverless" % "akkaserverless-sdk-protocol" % Version.akkaserverless
+    val kalixSdkProtocol =
+      "com.akkaserverless" % "kalix-sdk-protocol" % Version.kalix
     val scalapbRuntime =
       "com.thesamet.scalapb" %% "scalapb-runtime" % scalapb.compiler.Version.scalapbVersion
   }

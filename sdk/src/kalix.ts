@@ -18,8 +18,8 @@ import * as path from 'path';
 import * as grpc from '@grpc/grpc-js';
 import * as settings from '../settings';
 
-import * as discovery from '../proto/akkaserverless/protocol/discovery_pb';
-import * as discovery_grpc from '../proto/akkaserverless/protocol/discovery_grpc_pb';
+import * as discovery from '../proto/kalix/protocol/discovery_pb';
+import * as discovery_grpc from '../proto/kalix/protocol/discovery_grpc_pb';
 import * as google_protobuf_empty_pb from 'google-protobuf/google/protobuf/empty_pb';
 import { PackageInfo } from './package-info';
 
@@ -107,6 +107,7 @@ export enum ReplicatedWriteConsistency {
 export interface ComponentOptions {
   includeDirs?: Array<string>;
   forwardHeaders?: Array<string>;
+  entityType?: string;
 }
 
 export interface EntityOptions {
@@ -133,7 +134,7 @@ class DocLink {
     ['AS-00402', 'javascript/topic-eventing.html'],
     ['AS-00406', 'javascript/topic-eventing.html'],
     ['AS-00414', 'javascript/entity-eventing.html'],
-    // TODO: docs for value entity eventing (https://github.com/lightbend/kalix-javascript-sdk/issues/103)
+    // TODO: docs for value entity eventing (https://github.com/kalix-io/kalix-javascript-sdk/issues/103)
     // ['AS-00415', 'javascript/entity-eventing.html'],
   ]);
   private codeCategories: Map<string, string> = new Map([
@@ -539,6 +540,19 @@ export class Kalix {
           }
 
           res.setEntity(entitySettings);
+        } else if (res.getComponentType().indexOf('View') > -1) {
+          // views need to use entity settings to be able to pass view id (as entity_id)
+          const componentOptions = component.options as ComponentOptions;
+          const entitySettings = new discovery.EntitySettings();
+          if (componentOptions.entityType) {
+            entitySettings.setEntityType(componentOptions.entityType);
+          }
+          if (componentOptions.forwardHeaders) {
+            entitySettings.setForwardHeadersList(
+              componentOptions.forwardHeaders,
+            );
+          }
+          res.setEntity(entitySettings);
         } else {
           // other components has ComponentOptions / GenericComponentSettings
           const componentOptions = component.options as ComponentOptions;
@@ -548,7 +562,6 @@ export class Kalix {
               componentOptions.forwardHeaders,
             );
           }
-          res.setComponent(componentSettings);
         }
 
         return res;

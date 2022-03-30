@@ -108,8 +108,8 @@ object EntityServiceSourceGenerator {
     }
     pretty(
       initialisedCodeComment <> line <> line <>
-      "import" <+> "akkaserverless" <+> "from" <+> dquotes("@lightbend/kalix-javascript-sdk") <> semi <> line <>
-      "const" <+> entityType <+> equal <+> "akkaserverless." <> entityType
+      "import" <+> "kalix" <+> "from" <+> dquotes("@kalix-io/kalix-javascript-sdk") <> semi <> line <>
+      "const" <+> entityType <+> equal <+> "kalix." <> entityType
       <> semi <> line <>
       line <>
       blockComment(Seq[Doc](
@@ -192,7 +192,7 @@ object EntityServiceSourceGenerator {
         case _: ModelBuilder.ValueEntity =>
           "TypedValueEntity" <> comma <> line <>
             "ValueEntityCommandContext"
-      })) <> line) <+> "from" <+> dquotes("../akkaserverless") <> semi <> line <>
+      })) <> line) <+> "from" <+> dquotes("../kalix") <> semi <> line <>
       "import" <+> ProtoNs <+> "from" <+> dquotes("./proto") <> semi <> line <>
       line <>
       (entity match {
@@ -313,15 +313,14 @@ object EntityServiceSourceGenerator {
 
     pretty(
       initialisedCodeComment <> line <> line <>
-      "import" <+> "akkaserverless" <+> "from" <+> dquotes("@lightbend/kalix-javascript-sdk") <> semi <> line <>
+      "import" <+> "kalix" <+> "from" <+> dquotes("@kalix-io/kalix-javascript-sdk") <> semi <> line <>
       """import { expect } from "chai"""" <> semi <> line <>
       "import" <+> entityName <+> "from" <+> dquotes(testSourceDirectory.toAbsolutePath
         .relativize(sourceDirectory.toAbsolutePath)
         .resolve(s"$entityName.js")
         .toString) <> semi <> line <>
       line <>
-      "const" <+> "testkit" <+> equal <+> "new" <+> "akkaserverless.IntegrationTestkit" <> parens(
-        emptyDoc) <> semi <> line <>
+      "const" <+> "testkit" <+> equal <+> "new" <+> "kalix.IntegrationTestKit" <> parens(emptyDoc) <> semi <> line <>
       "testkit" <> dot <> "addComponent" <> parens(entityName) <> semi <> line <>
       line <>
       "const" <+> "client" <+> equal <+> parens(

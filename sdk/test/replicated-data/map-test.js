@@ -23,7 +23,7 @@ const protobufHelper = require('../../src/protobuf-helper');
 const AnySupport = require('../../src/protobuf-any');
 
 const ReplicatedEntityDelta =
-  protobufHelper.moduleRoot.akkaserverless.component.replicatedentity
+  protobufHelper.moduleRoot.kalix.component.replicatedentity
     .ReplicatedEntityDelta;
 
 const root = new protobuf.Root();

@@ -7,7 +7,7 @@
   },
   "main": "dist/index.js",
   "dependencies": {
-    "@lightbend/kalix-javascript-sdk": "0.33.5"
+    "@kalix-io/kalix-javascript-sdk": "0.33.5"
   },
   "devDependencies": {
     "@lightbend/kalix-scripts": "0.33.5",
@@ -27,7 +27,7 @@
     "uglify-js": "^3.7.7"
   },
   "config": {
-    "dockerImage": "gcr.io/akkaserverless-public/samples-ts-event-sourced-shopping-cart",
+    "dockerImage": "gcr.io/kalix-public/samples-ts-event-sourced-shopping-cart",
     "sourceDir": "./src",
     "testSourceDir": "./test",
     "protoSourceDir": "./proto",

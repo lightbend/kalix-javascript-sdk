@@ -67,7 +67,7 @@ object ActionServiceSourceGenerator {
 
     pretty(
       initialisedCodeComment <> line <> line <>
-      "import" <+> braces(" Action ") <+> "from" <+> dquotes("@lightbend/kalix-javascript-sdk") <> semi <> line <>
+      "import" <+> braces(" Action ") <+> "from" <+> dquotes("@kalix-io/kalix-javascript-sdk") <> semi <> line <>
       line <>
       blockComment(Seq[Doc](
         "Type definitions.",
@@ -111,7 +111,7 @@ object ActionServiceSourceGenerator {
       "TypedAction" <> comma <> line <>
       "ActionCommandContext" <> comma <> line <>
       "StreamedInCommandContext" <> comma <> line <>
-      "StreamedOutCommandContext") <> line) <+> "from" <+> dquotes("../akkaserverless") <> semi <> line <>
+      "StreamedOutCommandContext") <> line) <+> "from" <+> dquotes("../kalix") <> semi <> line <>
       "import" <+> ProtoNs <+> "from" <+> dquotes("./proto") <> semi <> line <>
       line <>
       "export type CommandHandlers" <+> equal <+> braces(nest(line <>

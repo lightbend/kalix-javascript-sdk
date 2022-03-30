@@ -1,6 +1,6 @@
 # Publishing
 
-The samples are published as Docker images to `grc.io/akkaserverless-public`.
+The samples are published as Docker images to `grc.io/kalix-public`.
 
 To publish the images, ensure that you have the right permissions and configure `gcloud` to connect
 
@@ -18,5 +18,5 @@ npm run package
 
 ```shell
 # push it to docker registry
-docker push gcr.io/akkaserverless-public/samples-ts-event-sourced-entity-shopping-cart:0.0.1
+docker push gcr.io/kalix-public/samples-ts-event-sourced-entity-shopping-cart:0.0.1
 ```

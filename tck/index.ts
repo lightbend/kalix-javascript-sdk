@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Kalix } from '@lightbend/kalix-javascript-sdk';
+import { Kalix } from '@kalix-io/kalix-javascript-sdk';
 
 import * as action from './src/action';
 import * as valueEntity from './src/value-entity';

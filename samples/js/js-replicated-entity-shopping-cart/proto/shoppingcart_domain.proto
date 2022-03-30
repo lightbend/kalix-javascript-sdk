@@ -21,7 +21,7 @@ package com.example.shoppingcart.domain; // <1>
 
 // end::domain[]
 // TODO: codegen for Replicated Entities
-// option (akkaserverless.file).replicated_entity = {
+// option (kalix.file).replicated_entity = {
 //   name: "ShoppingCart"
 //   entity_type: "shopping-cart"
 //   replicated_counter_map: {

@@ -34,7 +34,7 @@ module.exports = class ViewServices {
   }
 
   componentType() {
-    return 'akkaserverless.component.view.Views';
+    return 'kalix.component.view.Views';
   }
 
   register(server) {
@@ -46,15 +46,14 @@ module.exports = class ViewServices {
       path.join(__dirname, '..', '..', 'protoc', 'include'),
     ];
     const packageDefinition = protoLoader.loadSync(
-      path.join('akkaserverless', 'component', 'view', 'view.proto'),
+      path.join('kalix', 'component', 'view', 'view.proto'),
       {
         includeDirs: includeDirs,
       },
     );
     const grpcDescriptor = grpc.loadPackageDefinition(packageDefinition);
 
-    const viewService =
-      grpcDescriptor.akkaserverless.component.view.Views.service;
+    const viewService = grpcDescriptor.kalix.component.view.Views.service;
 
     server.addService(viewService, {
       handle: this.handle.bind(this),
@@ -76,8 +75,8 @@ module.exports = class ViewServices {
 
     call.on('data', (viewStreamIn) => {
       // FIXME: It is currently only implemented to support one request (ReceiveEvent) with one response (Upsert).
-      // see https://github.com/lightbend/akkaserverless-framework/issues/186
-      // and https://github.com/lightbend/akkaserverless-framework/issues/187
+      // see https://github.com/lightbend/kalix-proxy/issues/186
+      // and https://github.com/lightbend/kalix-proxy/issues/187
       if (viewStreamIn.receive) {
         const receiveEvent = viewStreamIn.receive,
           service = this.services[receiveEvent.serviceName];
@@ -105,7 +104,7 @@ module.exports = class ViewServices {
                  * @property {string} commandName
                  */
                 context = {
-                  viewId: service.viewId,
+                  viewId: service.options.viewId,
                   eventSubject: receiveEvent.metadata['ce-subject'],
                   metadata: metadata,
                   commandName: receiveEvent.commandName,

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-const ValueEntity = require("@lightbend/kalix-javascript-sdk").ValueEntity;
+const ValueEntity = require("@kalix-io/kalix-javascript-sdk").ValueEntity;
 
 const entity = new ValueEntity(
   ["users.proto"],

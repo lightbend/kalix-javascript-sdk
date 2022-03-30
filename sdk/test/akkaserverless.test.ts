@@ -15,11 +15,11 @@
  */
 
 import { Kalix, ComponentOptions, EntityOptions } from '../src/kalix';
-import discovery from '../proto/akkaserverless/protocol/discovery_pb';
+import discovery from '../proto/kalix/protocol/discovery_pb';
 import { should } from 'chai';
 should();
 
-describe('Akkaserverless', () => {
+describe('Kalix', () => {
   it('should generate working links based on error codes', () => {
     // Arrange
     const akkasls = new Kalix({
@@ -140,13 +140,13 @@ At package.test.json:2:4:
     result.getProto().should.equal('');
     result.getComponentsList().length.should.equal(0);
     serviceInfo?.getProtocolMajorVersion().should.equal(0);
-    serviceInfo?.getProtocolMinorVersion().should.equal(8);
+    serviceInfo?.getProtocolMinorVersion().should.equal(10);
     serviceInfo?.getServiceName().should.equal('my-service');
     serviceInfo?.getServiceVersion().should.equal('1.2.3');
     serviceInfo?.getServiceRuntime().should.contains('node v');
     serviceInfo
       ?.getSupportLibraryName()
-      .should.equal('@lightbend/kalix-javascript-sdk');
+      .should.equal('@kalix-io/kalix-javascript-sdk');
     serviceInfo?.getSupportLibraryVersion().should.equal('0.0.0');
   });
 
@@ -165,7 +165,7 @@ At package.test.json:2:4:
         forwardHeaders: ['x-my-header'],
       },
       componentType: () => {
-        return 'akkaserverless.component.valueentity.ValueEntities';
+        return 'kalix.component.valueentity.ValueEntities';
       },
     };
     const action = {
@@ -175,7 +175,7 @@ At package.test.json:2:4:
         forwardHeaders: ['x-my-header'],
       },
       componentType: () => {
-        return 'akkaserverless.component.action.Actions';
+        return 'kalix.component.action.Actions';
       },
     };
 
@@ -190,7 +190,7 @@ At package.test.json:2:4:
     entityResult.getServiceName().should.equal('my-service');
     entityResult
       .getComponentType()
-      .should.equal('akkaserverless.component.valueentity.ValueEntities');
+      .should.equal('kalix.component.valueentity.ValueEntities');
     entityResult.getEntity()?.should.not.be.undefined;
     entityResult.getEntity()?.getEntityType().should.equal('my-entity-type');
     entityResult.getEntity()?.getPassivationStrategy()?.should.be.undefined;
@@ -202,7 +202,7 @@ At package.test.json:2:4:
     actionResult.getServiceName().should.equal('my-action');
     actionResult
       .getComponentType()
-      .should.equal('akkaserverless.component.action.Actions');
+      .should.equal('kalix.component.action.Actions');
     entityResult.getComponent()?.should.not.be.undefined;
     entityResult
       .getComponent()
@@ -225,7 +225,7 @@ At package.test.json:2:4:
         entityPassivationStrategy: { timeout: 10 },
       },
       componentType: () => {
-        return 'akkaserverless.component.valueentity.ValueEntities';
+        return 'kalix.component.valueentity.ValueEntities';
       },
     };
 

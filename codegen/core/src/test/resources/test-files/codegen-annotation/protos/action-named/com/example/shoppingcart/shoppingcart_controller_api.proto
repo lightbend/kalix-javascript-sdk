@@ -17,7 +17,7 @@ syntax = "proto3";
 package com.example.shoppingcart;
 
 option java_outer_classname = "ShoppingCartController";
-import "akkaserverless/annotations.proto";
+import "kalix/annotations.proto";
 
 message NewCart {
 }
@@ -27,7 +27,7 @@ message NewCartCreated {
 }
 
 service ShoppingCartAction {
-  option (akkaserverless.codegen) = {
+  option (kalix.codegen) = {
     action: {
       name: ".controllers.ShoppingCartController"
     }

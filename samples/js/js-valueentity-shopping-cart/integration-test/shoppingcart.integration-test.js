@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import kalix from "@lightbend/kalix-javascript-sdk";
+import kalix from "@kalix-io/kalix-javascript-sdk";
 const testkit = new kalix.IntegrationTestkit();
 
 import { expect } from "chai"

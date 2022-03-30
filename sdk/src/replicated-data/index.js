@@ -61,7 +61,7 @@ const Empty = protobufHelper.moduleRoot.google.protobuf.Empty;
  */
 const Clocks = (function () {
   const ReplicatedEntityClock =
-    protobufHelper.moduleRoot.akkaserverless.component.replicatedentity
+    protobufHelper.moduleRoot.kalix.component.replicatedentity
       .ReplicatedEntityClock;
   const values = {
     DEFAULT: ReplicatedEntityClock.REPLICATED_ENTITY_CLOCK_DEFAULT_UNSPECIFIED,

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { IntegrationTestkit } from "@lightbend/kalix-javascript-sdk";
+import { IntegrationTestkit } from "@kalix-io/kalix-javascript-sdk";
 import { expect } from "chai";
 import * as proto from "../lib/generated/proto";
 import counterEntity from "../src/counter";

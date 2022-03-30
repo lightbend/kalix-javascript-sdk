@@ -16,17 +16,17 @@ syntax = "proto3";
 
 import "google/protobuf/empty.proto";
 import "google/api/annotations.proto";
-import "akkaserverless/annotations.proto";
+import "kalix/annotations.proto";
 
 package example.users;
 
 message User {
-    string user_id = 1 [(akkaserverless.field).entity_key = true];
+    string user_id = 1 [(kalix.field).entity_key = true];
     repeated string emails = 2;
 }
 
 message GetUserRequest {
-    string user_id = 1 [(akkaserverless.field).entity_key = true];
+    string user_id = 1 [(kalix.field).entity_key = true];
 }
 
 service Users {
@@ -50,16 +50,16 @@ message UsersByEmailRequest {
 
 service UsersByEmail {
     rpc UpdateUser(User) returns (User) {
-        option (akkaserverless.method).eventing.in = {
+        option (kalix.method).eventing.in = {
           value_entity: "users"
         };
-        option (akkaserverless.method).view.update = {
+        option (kalix.method).view.update = {
           table: "users"
         };
     }
 
     rpc GetUsersByEmail(UsersByEmailRequest) returns (stream User) {
-        option (akkaserverless.method).view.query = {
+        option (kalix.method).view.query = {
           query: "select * from users where emails = :email"
         };
         option (google.api.http) = {
@@ -70,7 +70,7 @@ service UsersByEmail {
 
 // Somewhat superficial usecase for views just to show off event transformation
 message UserEmailCountState {
-  string user_id = 1 [(akkaserverless.field).entity_key = true];
+  string user_id = 1 [(kalix.field).entity_key = true];
   int32 email_count = 2;
 }
 
@@ -79,17 +79,17 @@ message NumberOfEmailsPerUserRequest {
 
 service UserEmailCount {
   rpc UpdateUser(User) returns (UserEmailCountState) {
-    option (akkaserverless.method).eventing.in = {
+    option (kalix.method).eventing.in = {
       value_entity: "users"
     };
-    option (akkaserverless.method).view.update = {
+    option (kalix.method).view.update = {
       table: "user_email_count"
       transform_updates: true
     };
   }
 
   rpc GetNumberOfEmailsPerUser(NumberOfEmailsPerUserRequest) returns (stream UserEmailCountState) {
-    option (akkaserverless.method).view.query = {
+    option (kalix.method).view.query = {
       query: "select * from user_email_count"
     };
     option (google.api.http) = {

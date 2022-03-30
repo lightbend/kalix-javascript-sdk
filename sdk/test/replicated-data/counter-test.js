@@ -20,7 +20,7 @@ const ReplicatedCounter = require('../../src/replicated-data/counter');
 const protobufHelper = require('../../src/protobuf-helper');
 
 const ReplicatedEntityDelta =
-  protobufHelper.moduleRoot.akkaserverless.component.replicatedentity
+  protobufHelper.moduleRoot.kalix.component.replicatedentity
     .ReplicatedEntityDelta;
 
 function roundTripDelta(delta) {

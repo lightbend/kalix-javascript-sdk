@@ -240,7 +240,7 @@ module.exports = class ValueEntityServices {
   }
 
   componentType() {
-    return 'akkaserverless.component.valueentity.ValueEntities';
+    return 'kalix.component.valueentity.ValueEntities';
   }
 
   register(server) {
@@ -251,12 +251,7 @@ module.exports = class ValueEntityServices {
       path.join(__dirname, '..', '..', 'protoc', 'include'),
     ];
     const packageDefinition = protoLoader.loadSync(
-      path.join(
-        'akkaserverless',
-        'component',
-        'valueentity',
-        'value_entity.proto',
-      ),
+      path.join('kalix', 'component', 'valueentity', 'value_entity.proto'),
       {
         includeDirs: includeDirs,
       },
@@ -264,7 +259,7 @@ module.exports = class ValueEntityServices {
     const grpcDescriptor = grpc.loadPackageDefinition(packageDefinition);
 
     const entityService =
-      grpcDescriptor.akkaserverless.component.valueentity.ValueEntities.service;
+      grpcDescriptor.kalix.component.valueentity.ValueEntities.service;
 
     server.addService(entityService, {
       handle: this.handle.bind(this),

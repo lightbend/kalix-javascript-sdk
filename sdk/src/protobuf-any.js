@@ -26,7 +26,7 @@ const Any = protobufHelper.moduleRoot.google.protobuf.Any;
 // To allow primitive types to be stored, Kalix defines a number of primitive type URLs, based on protobuf types.
 // The serialized values are valid protobuf messages that contain a value of that type as their single field at index
 // 15.
-const KalixPrimitive = 'p.akkaserverless.com/';
+const KalixPrimitive = 'p.kalix.io/';
 // Chosen because it reduces the likelihood of clashing with something else.
 const KalixPrimitiveFieldNumber = 1;
 const KalixPrimitiveFieldNumberEncoded = KalixPrimitiveFieldNumber << 3; // 8
@@ -36,7 +36,7 @@ const KalixSupportedPrimitiveTypes = new Set();
 );
 const EmptyArray = Object.freeze([]);
 
-const KalixJson = 'json.akkaserverless.com/';
+const KalixJson = 'json.kalix.io/';
 
 /**
  * This is any type that has been returned by the protobufjs Message.create method.

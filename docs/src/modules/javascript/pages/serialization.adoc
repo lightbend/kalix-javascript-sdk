@@ -16,7 +16,7 @@ JavaScript::
 +
 [source,javascript,indent=0]
 ----
-const EventSourcedEntity = require("@lightbend/kalix-javascript-sdk").EventSourcedEntity;
+const EventSourcedEntity = require("@kalix-io/kalix-javascript-sdk").EventSourcedEntity;
 
 const entity = new EventSourcedEntity(
   ["shoppingcart.proto", "domain.proto"],
@@ -34,7 +34,7 @@ TypeScript::
 +
 [source,typescript,indent=0]
 ----
-import { EventSourcedEntity } from "@lightbend/kalix-javascript-sdk";
+import { EventSourcedEntity } from "@kalix-io/kalix-javascript-sdk";
 
 const entity: EventSourcedEntity = new EventSourcedEntity(
   ["shoppingcart.proto", "domain.proto"],

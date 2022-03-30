@@ -22,7 +22,7 @@ const iterators = require('./iterators');
 const util = require('util');
 
 const Clocks =
-  protobufHelper.moduleRoot.akkaserverless.component.replicatedentity
+  protobufHelper.moduleRoot.kalix.component.replicatedentity
     .ReplicatedEntityClock;
 
 /**

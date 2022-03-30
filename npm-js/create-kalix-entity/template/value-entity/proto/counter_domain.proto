@@ -2,9 +2,9 @@ syntax = "proto3";
 
 package com.example.domain;
 
-import "akkaserverless/annotations.proto";
+import "kalix/annotations.proto";
 
-option (akkaserverless.file).value_entity = {
+option (kalix.file).value_entity = {
     name: "Counter"
     entity_type: "counter"
     state: "CounterState"

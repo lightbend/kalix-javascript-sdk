@@ -71,7 +71,8 @@ class View {
     this.options = {
       ...{
         includeDirs: ['.'],
-        viewId: serviceName,
+        // default view id, name without package from service name
+        viewId: serviceName.split('.').pop(),
       },
       ...options,
     };

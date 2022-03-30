@@ -67,7 +67,7 @@ object ViewServiceSourceGenerator {
 
     pretty(
       initialisedCodeComment <> line <> line <>
-      "import" <+> braces(" View ") <+> "from" <+> dquotes("@lightbend/kalix-javascript-sdk") <> semi <> line <>
+      "import" <+> braces(" View ") <+> "from" <+> dquotes("@kalix-io/kalix-javascript-sdk") <> semi <> line <>
       line <>
       blockComment(Seq[Doc](
         "Type definitions.",
@@ -110,7 +110,7 @@ object ViewServiceSourceGenerator {
       managedCodeComment <> line <> line <>
       "import" <+> braces(nest(line <>
       "TypedView" <> comma <> line <>
-      "ViewUpdateHandlerContext") <> line) <+> "from" <+> dquotes("../akkaserverless") <> semi <> line <>
+      "ViewUpdateHandlerContext") <> line) <+> "from" <+> dquotes("../kalix") <> semi <> line <>
       "import" <+> ProtoNs <+> "from" <+> dquotes("./proto") <> semi <> line <>
       line <>
       "export type UpdateHandlers" <+> equal <+> braces(nest(line <>

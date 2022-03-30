@@ -42,9 +42,9 @@ object DescriptorSet {
     Using[FileInputStream, Either[CannotOpen, Iterable[Either[ReadFailure, Descriptors.FileDescriptor]]]](
       new FileInputStream(file)) { fis =>
       val registry = ExtensionRegistry.newInstance()
-      registry.add(com.akkaserverless.Annotations.service)
-      registry.add(com.akkaserverless.Annotations.file)
-      registry.add(com.akkaserverless.Annotations.method)
+      registry.add(kalix.Annotations.service)
+      registry.add(kalix.Annotations.file)
+      registry.add(kalix.Annotations.method)
 
       Right(try {
         val descriptorProtos =

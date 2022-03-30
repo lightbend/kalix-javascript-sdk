@@ -14,18 +14,17 @@
  * limitations under the License.
  */
 
-import { EventSourcedEntity } from '@lightbend/kalix-javascript-sdk';
-import { replies } from '@lightbend/kalix-javascript-sdk';
+import { EventSourcedEntity } from '@kalix-io/kalix-javascript-sdk';
+import { replies } from '@kalix-io/kalix-javascript-sdk';
 import protocol from '../generated/tck';
 
-type Request = protocol.akkaserverless.tck.model.eventsourcedentity.Request;
+type Request = protocol.kalix.tck.model.eventsourcedentity.Request;
 
-const { Request, Response } =
-  protocol.akkaserverless.tck.model.eventsourcedentity;
+const { Request, Response } = protocol.kalix.tck.model.eventsourcedentity;
 
 export const tckModel = new EventSourcedEntity(
   ['proto/event_sourced_entity.proto'],
-  'akkaserverless.tck.model.eventsourcedentity.EventSourcedTckModel',
+  'kalix.tck.model.eventsourcedentity.EventSourcedTckModel',
   'event-sourced-tck-model',
   {
     snapshotEvery: 5,
@@ -33,11 +32,10 @@ export const tckModel = new EventSourcedEntity(
 );
 
 // We need to use the reflective types for state
-type IPersisted =
-  protocol.akkaserverless.tck.model.eventsourcedentity.IPersisted;
+type IPersisted = protocol.kalix.tck.model.eventsourcedentity.IPersisted;
 type Persisted = protobuf.Message & IPersisted;
 const Persisted = tckModel.lookupType(
-  'akkaserverless.tck.model.eventsourcedentity.Persisted',
+  'kalix.tck.model.eventsourcedentity.Persisted',
 );
 
 tckModel.initial = () => Persisted.create();
@@ -96,7 +94,7 @@ function persisted(event: Persisted, state: Persisted) {
 
 export const two = new EventSourcedEntity(
   ['proto/event_sourced_entity.proto'],
-  'akkaserverless.tck.model.eventsourcedentity.EventSourcedTwo',
+  'kalix.tck.model.eventsourcedentity.EventSourcedTwo',
   'event-sourced-tck-model-2',
 )
   .setInitial(() => Persisted.create())
@@ -109,7 +107,7 @@ export const two = new EventSourcedEntity(
 
 export const configured = new EventSourcedEntity(
   ['proto/event_sourced_entity.proto'],
-  'akkaserverless.tck.model.eventsourcedentity.EventSourcedConfigured',
+  'kalix.tck.model.eventsourcedentity.EventSourcedConfigured',
   'event-sourced-configured',
   {
     entityPassivationStrategy: {

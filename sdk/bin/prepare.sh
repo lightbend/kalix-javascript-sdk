@@ -8,10 +8,12 @@ readonly framework_version=$(node --print 'require("./config.json").frameworkVer
 function download_protocol {
   local module="$1"
   mkdir -p ./proto
-  curl -OL "https://repo1.maven.org/maven2/com/akkaserverless/akkaserverless-$module-protocol/$framework_version/akkaserverless-$module-protocol-$framework_version.zip"
-  unzip "akkaserverless-$module-protocol-$framework_version.zip"
-  cp -r "akkaserverless-$module-protocol-$framework_version"/* proto
-  rm -rf "akkaserverless-$module-protocol-$framework_version.zip" "akkaserverless-$module-protocol-$framework_version"
+  artifact_url="https://repo1.maven.org/maven2/com/akkaserverless/kalix-$module-protocol/$framework_version/kalix-$module-protocol-$framework_version.zip"
+  echo "Fetching protocol module $module from: $artifact_url"
+  curl -OL $artifact_url
+  unzip "kalix-$module-protocol-$framework_version.zip"
+  cp -r "kalix-$module-protocol-$framework_version"/* proto
+  rm -rf "kalix-$module-protocol-$framework_version.zip" "kalix-$module-protocol-$framework_version"
 }
 
 # Need to delete the proto directory and generated files to rebuild (including local snapshot versions)
@@ -42,7 +44,7 @@ jsdoc -t ./node_modules/@lightbend/tsd-jsdoc/dist -c ./jsdoc.json -d .
 cat types.d.ts >> index.d.ts && rm -f types.d.ts
 echo "Applying search-replace no generated TS to fix 'module:' entries"
 # There replacements are quite dirty, but even the patched tsd-jsdoc generator can't deal with these (mostly module related) issues currently
-perl -i -pe 's/declare module \"kalix\"/declare module \"\@lightbend\/kalix-javascript-sdk\"/g' index.d.ts
+perl -i -pe 's/declare module \"kalix\"/declare module \"\@kalix-io\/kalix-javascript-sdk\"/g' index.d.ts
 perl -i -pe 's/module:kalix\.//g' index.d.ts
 perl -i -pe 's/import\("kalix"\).([a-zA-Z]*)/$1/g' index.d.ts
 perl -i -pe 's/import\("kalix\.([a-zA-Z.|]*)\"\).(?!default\W)([a-zA-Z]*)/$1.$2/g' index.d.ts

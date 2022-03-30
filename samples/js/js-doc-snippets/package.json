@@ -7,7 +7,7 @@
     "npm": ">=6.0.0"
   },
   "dependencies": {
-    "@lightbend/kalix-javascript-sdk": "0.33.5"
+    "@kalix-io/kalix-javascript-sdk": "0.33.5"
   },
   "devDependencies": {
     "@lightbend/kalix-scripts": "0.33.5",
@@ -17,7 +17,7 @@
     "uglify-js": "^3.7.7"
   },
   "config": {
-    "dockerImage": "gcr.io/akkaserverless-public/samples-js-doc-snippets",
+    "dockerImage": "gcr.io/kalix-public/samples-js-doc-snippets",
     "sourceDir": "./src",
     "testSourceDir": "./test",
     "protoSourceDir": "./proto",

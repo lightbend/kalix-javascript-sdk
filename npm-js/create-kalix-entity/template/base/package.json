@@ -7,7 +7,7 @@
     "npm": ">=6.0.0"
   },
   "dependencies": {
-    "@lightbend/kalix-javascript-sdk": "{{sdkVersion}}"
+    "@kalix-io/kalix-javascript-sdk": "{{sdkVersion}}"
   },
   "devDependencies": {
     "@lightbend/kalix-scripts": "{{scriptsVersion}}",

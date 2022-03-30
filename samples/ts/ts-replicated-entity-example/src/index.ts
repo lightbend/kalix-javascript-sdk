@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Kalix } from "@lightbend/kalix-javascript-sdk";
+import { Kalix } from "@kalix-io/kalix-javascript-sdk";
 import replicatedEntity from "./replicated-entity-example";
 
 new Kalix().addComponent(replicatedEntity).start();

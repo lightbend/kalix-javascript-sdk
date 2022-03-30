@@ -15,7 +15,7 @@
  */
 
 /**
- * The AkkaServerless module.
+ * The Kalix module.
  *
  * @module kalix
  */

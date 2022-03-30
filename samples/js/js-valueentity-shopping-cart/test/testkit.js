@@ -133,7 +133,7 @@ export class MockValueEntity {
 
 /**
  * Generic mock CommandContext for any Kalix entity
- * @type { import("../lib/akkaserverless").CommandContext }
+ * @type { import("../lib/kalix").CommandContext }
  */
 export class MockCommandContext {
   effects = [];

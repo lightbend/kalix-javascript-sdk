@@ -410,7 +410,7 @@ class CommandHelper {
         );
       },
 
-      // FIXME: remove for version 0.8 (https://github.com/lightbend/akkaserverless-framework/issues/410)
+      // FIXME: remove for version 0.8 (https://github.com/lightbend/kalix-proxy/issues/410)
       /**
        * DEPRECATED. Forward this command to another service component call.
        *

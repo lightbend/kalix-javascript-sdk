@@ -19,7 +19,7 @@ const protobufHelper = require('../protobuf-helper');
 const AnySupport = require('../protobuf-any');
 
 const Clocks =
-  protobufHelper.moduleRoot.akkaserverless.component.replicatedentity
+  protobufHelper.moduleRoot.kalix.component.replicatedentity
     .ReplicatedEntityClock;
 
 /**

@@ -34,8 +34,8 @@ class EntityServiceSourceGeneratorSuite extends munit.FunSuite {
         | * You are free to make changes to this file.
         | */
         |
-        |import akkaserverless from "@lightbend/kalix-javascript-sdk";
-        |const EventSourcedEntity = akkaserverless.EventSourcedEntity;
+        |import kalix from "@kalix-io/kalix-javascript-sdk";
+        |const EventSourcedEntity = kalix.EventSourcedEntity;
         |
         |/**
         | * Type definitions.
@@ -115,8 +115,8 @@ class EntityServiceSourceGeneratorSuite extends munit.FunSuite {
         | * You are free to make changes to this file.
         | */
         |
-        |import akkaserverless from "@lightbend/kalix-javascript-sdk";
-        |const ValueEntity = akkaserverless.ValueEntity;
+        |import kalix from "@kalix-io/kalix-javascript-sdk";
+        |const ValueEntity = kalix.ValueEntity;
         |
         |/**
         | * Type definitions.
@@ -177,7 +177,7 @@ class EntityServiceSourceGeneratorSuite extends munit.FunSuite {
         |import {
         |  TypedEventSourcedEntity,
         |  EventSourcedCommandContext
-        |} from "../akkaserverless";
+        |} from "../kalix";
         |import proto from "./proto";
         |
         |export type State = proto.com.example.service.persistence.IMyState;
@@ -231,7 +231,7 @@ class EntityServiceSourceGeneratorSuite extends munit.FunSuite {
         |import {
         |  TypedValueEntity,
         |  ValueEntityCommandContext
-        |} from "../akkaserverless";
+        |} from "../kalix";
         |import proto from "./proto";
         |
         |export type State = proto.com.example.service.persistence.IMyState;
@@ -375,11 +375,11 @@ class EntityServiceSourceGeneratorSuite extends munit.FunSuite {
         | * You are free to make changes to this file.
         | */
         |
-        |import akkaserverless from "@lightbend/kalix-javascript-sdk";
+        |import kalix from "@kalix-io/kalix-javascript-sdk";
         |import { expect } from "chai";
         |import myvalueentity from "../../src/js/myvalueentity.js";
         |
-        |const testkit = new akkaserverless.IntegrationTestkit();
+        |const testkit = new kalix.IntegrationTestKit();
         |testkit.addComponent(myvalueentity);
         |
         |const client = () => testkit.clients.MyService1;

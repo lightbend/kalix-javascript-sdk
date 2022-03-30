@@ -50,13 +50,13 @@ class ReplicatedEntityServices {
   }
 
   componentType() {
-    return 'akkaserverless.component.replicatedentity.ReplicatedEntities';
+    return 'kalix.component.replicatedentity.ReplicatedEntities';
   }
 
   register(server) {
     const packageDefinition = protoLoader.loadSync(
       path.join(
-        'akkaserverless',
+        'kalix',
         'component',
         'replicatedentity',
         'replicated_entity.proto',
@@ -68,8 +68,8 @@ class ReplicatedEntityServices {
     const grpcDescriptor = grpc.loadPackageDefinition(packageDefinition);
 
     const entityService =
-      grpcDescriptor.akkaserverless.component.replicatedentity
-        .ReplicatedEntities.service;
+      grpcDescriptor.kalix.component.replicatedentity.ReplicatedEntities
+        .service;
 
     server.addService(entityService, {
       handle: this.handle.bind(this),
@@ -82,7 +82,7 @@ class ReplicatedEntityServices {
     call.on('data', (replicatedEntityStreamIn) => {
       // cycle through the ReplicatedEntityStreamIn type, this will ensure default values are initialised
       replicatedEntityStreamIn =
-        protoHelper.moduleRoot.akkaserverless.component.replicatedentity.ReplicatedEntityStreamIn.fromObject(
+        protoHelper.moduleRoot.kalix.component.replicatedentity.ReplicatedEntityStreamIn.fromObject(
           replicatedEntityStreamIn,
         );
 

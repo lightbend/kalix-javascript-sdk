@@ -588,10 +588,7 @@ describe('ActionHandler', () => {
     )
       .value.then((response) => {
         const payload = response.reply.payload;
-        payload.should.have.property(
-          'type_url',
-          'json.akkaserverless.com/object',
-        );
+        payload.should.have.property('type_url', 'json.kalix.io/object');
         return JSON.parse(
           AnySupport.deserializePrimitive(payload.value, 'string'),
         );

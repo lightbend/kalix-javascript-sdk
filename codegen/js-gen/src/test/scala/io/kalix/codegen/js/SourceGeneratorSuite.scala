@@ -183,7 +183,7 @@ class SourceGeneratorSuite extends munit.FunSuite {
         | * You are free to make changes to this file.
         | */
         |
-        |import { Kalix } from "@lightbend/kalix-javascript-sdk";
+        |import { Kalix } from "@kalix-io/kalix-javascript-sdk";
         |import generatedComponents from "../../generated/my-generated-index.js";
         |
         |const server = new Kalix();

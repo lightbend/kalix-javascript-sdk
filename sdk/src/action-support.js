@@ -279,7 +279,7 @@ class ActionHandler {
   setupUnaryOutContext() {
     const effects = [];
 
-    // FIXME: remove for version 0.8 (https://github.com/lightbend/akkaserverless-framework/issues/410)
+    // FIXME: remove for version 0.8 (https://github.com/lightbend/kalix-proxy/issues/410)
     this.ctx.thenForward = (method, message, metadata) => {
       console.warn(
         "WARNING: Action context 'thenForward' is deprecated. Please use 'forward' instead.",
@@ -431,7 +431,7 @@ class ActionHandler {
       }
     };
 
-    // FIXME: remove for version 0.8 (https://github.com/lightbend/akkaserverless-framework/issues/410)
+    // FIXME: remove for version 0.8 (https://github.com/lightbend/kalix-proxy/issues/410)
     this.ctx.thenForward = (method, message, metadata) => {
       console.warn(
         "WARNING: Action context 'thenForward' is deprecated. Please use 'forward' instead.",
@@ -634,7 +634,7 @@ module.exports = class ActionServices {
   }
 
   componentType() {
-    return 'akkaserverless.component.action.Actions';
+    return 'kalix.component.action.Actions';
   }
 
   register(server) {
@@ -645,15 +645,14 @@ module.exports = class ActionServices {
       path.join(__dirname, '..', '..', 'protoc', 'include'),
     ];
     const packageDefinition = protoLoader.loadSync(
-      path.join('akkaserverless', 'component', 'action', 'action.proto'),
+      path.join('kalix', 'component', 'action', 'action.proto'),
       {
         includeDirs: includeDirs,
       },
     );
     const grpcDescriptor = grpc.loadPackageDefinition(packageDefinition);
 
-    const actionService =
-      grpcDescriptor.akkaserverless.component.action.Actions.service;
+    const actionService = grpcDescriptor.kalix.component.action.Actions.service;
 
     server.addService(actionService, {
       handleUnary: this.handleUnary.bind(this),
