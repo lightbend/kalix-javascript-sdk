@@ -549,7 +549,7 @@ export class Kalix {
           }
           if (componentOptions.forwardHeaders) {
             entitySettings.setForwardHeadersList(
-                componentOptions.forwardHeaders,
+              componentOptions.forwardHeaders,
             );
           }
           res.setEntity(entitySettings);
