@@ -346,7 +346,7 @@ jobs:
       - run:
           name: "publish to npm"
           command: |
-            echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/.npmrc
+            echo "//registry.npmjs.org/:_authToken=$KALIX_IO_NPM_TOKEN" > ~/.npmrc
             pushd sdk && npm ci && npm publish --access public && popd
             git reset --hard HEAD
             pushd npm-js/create-kalix-entity && npm publish --access public && popd
