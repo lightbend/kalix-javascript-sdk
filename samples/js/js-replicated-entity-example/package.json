@@ -22,7 +22,7 @@
     "directory": "samples/js/js-replicated-entity-example"
   },
   "dependencies": {
-    "@lightbend/akkaserverless-javascript-sdk": "0.33.5"
+    "@lightbend/akkaserverless-javascript-sdk": "0.33.7"
   },
   "devDependencies": {
     "chai": "4.2.0",
