@@ -101,7 +101,7 @@ lazy val `kalix-codegen-js-cli` =
 lazy val library =
   new {
     object Version {
-      val kalix = "0.10.0-M3"
+      val kalix = "0.10.0-M4"
       val commonsIo = "2.8.0"
       val kiama = "2.4.0"
       val logback = "1.2.3"
@@ -123,7 +123,7 @@ lazy val library =
     val testcontainers = "org.testcontainers" % "testcontainers" % Version.testcontainers
     val typesafeConfig = "com.typesafe" % "config" % Version.typesafeConfig
     val kalixSdkProtocol =
-      "com.akkaserverless" % "kalix-sdk-protocol" % Version.kalix
+      "io.kalix" % "kalix-sdk-protocol" % Version.kalix
     val scalapbRuntime =
       "com.thesamet.scalapb" %% "scalapb-runtime" % scalapb.compiler.Version.scalapbVersion
   }
