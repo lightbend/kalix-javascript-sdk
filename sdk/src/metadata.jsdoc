@@ -39,7 +39,7 @@
  * a string using toString.
  *
  * @class module:akkaserverless.Metadata
- * @param {module:akkaserverless.MetadataEntry[]} entries The list of entries
+ * @param {module:akkaserverless.MetadataEntry[]} [entries=[]] The list of entries
  */
 
 /**
