@@ -540,6 +540,19 @@ export class Kalix {
           }
 
           res.setEntity(entitySettings);
+        } else if (res.getComponentType().indexOf('View') > -1) {
+          // views need to use entity settings to be able to pass view id (as entity_id)
+          const componentOptions = component.options as ComponentOptions;
+          const entitySettings = new discovery.EntitySettings();
+          if (componentOptions.entityType) {
+            entitySettings.setEntityType(componentOptions.entityType);
+          }
+          if (componentOptions.forwardHeaders) {
+            entitySettings.setForwardHeadersList(
+                componentOptions.forwardHeaders,
+            );
+          }
+          res.setEntity(entitySettings);
         } else {
           // other components has ComponentOptions / GenericComponentSettings
           const componentOptions = component.options as ComponentOptions;
@@ -549,13 +562,6 @@ export class Kalix {
               componentOptions.forwardHeaders,
             );
           }
-          if (componentOptions.entityType) {
-            const entity = new discovery.EntitySettings().setEntityType(
-              componentOptions.entityType,
-            );
-            res.setEntity(entity);
-          }
-          res.setComponent(componentSettings);
         }
 
         return res;
