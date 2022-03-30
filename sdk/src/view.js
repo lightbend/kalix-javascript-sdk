@@ -71,12 +71,12 @@ class View {
     this.options = {
       ...{
         includeDirs: ['.'],
-        viewId: serviceName,
       },
       ...options,
     };
 
-    this.options.entityType = this.options.viewId;
+    // view id is passed as entity type in discovery protocol
+    if (this.options.viewId) this.options.entityType = this.options.viewId;
 
     const allIncludeDirs = protobufHelper.moduleIncludeDirs.concat(
       this.options.includeDirs,
