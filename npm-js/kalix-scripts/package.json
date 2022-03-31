@@ -1,5 +1,5 @@
 {
-  "name": "@lightbend/kalix-scripts",
+  "name": "@kalix-io/kalix-scripts",
   "version": "1.0.0",
   "description": "Create a Kalix entity codebase with a single command.",
   "main": "kalix-scripts.js",
@@ -22,6 +22,6 @@
     "prepublishOnly": "npm version --no-git-tag-version $(../../sdk/bin/version.sh)"
   },
   "publishConfig": {
-    "@lightbend:registry": "https://registry.npmjs.org"
+    "@kalix-io:registry": "https://registry.npmjs.org"
   }
 }

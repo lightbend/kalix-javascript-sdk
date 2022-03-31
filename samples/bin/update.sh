@@ -39,7 +39,7 @@ done
 
 for sample in "$samples_dir"/*/*/ ; do
   pushd "$sample"
-  filter_option=$($all && echo "" || echo --filter "@lightbend/*")
+  filter_option=$($all && echo "" || echo --filter "@kalix-io/*")
   upgrade_option=$($upgrade && echo --upgrade || echo "")
   $ncu $filter_option $upgrade_option
   $upgrade && npm install || echo "No install needed"
