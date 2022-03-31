@@ -10,7 +10,7 @@
     "@kalix-io/kalix-javascript-sdk": "0.33.5"
   },
   "devDependencies": {
-    "@lightbend/kalix-scripts": "0.33.5",
+    "@kalix-io/kalix-scripts": "0.33.5",
     "@types/chai": "^4.2.21",
     "@types/chai-as-promised": "^7.1.4",
     "@types/mocha": "^8.2.3",

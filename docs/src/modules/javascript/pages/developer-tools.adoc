@@ -13,7 +13,7 @@ npm::
 +
 [source,command line]
 ----
-npx @lightbend/create-kalix-entity@latest my-entity
+npx @kalix-io/create-kalix-entity@latest my-entity
 cd my-entity
 npm install
 npm run build
@@ -23,7 +23,7 @@ Yarn::
 +
 [source,command line]
 ----
-yarn create @lightbend/kalix-entity@latest my-entity
+yarn create @kalix-io/kalix-entity@latest my-entity
 cd my-entity
 yarn
 yarn build
@@ -46,7 +46,7 @@ The package can be added to your project via npm:
 
 [source,command line]
 ----
-npm install --save-dev @lightbend/kalix-scripts
+npm install --save-dev @kalix-io/kalix-scripts
 ----
 
 === Configuration
