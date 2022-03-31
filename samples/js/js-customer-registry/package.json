@@ -24,7 +24,7 @@
   "//": "https://npm.community/t/npm-install-does-not-install-transitive-dependencies-of-local-dependency/2264",
   "dependencies": {
     "@grpc/proto-loader": "^0.1.0",
-    "@lightbend/akkaserverless-javascript-sdk": "0.33.5",
+    "@lightbend/akkaserverless-javascript-sdk": "0.33.7",
     "google-protobuf": "^3.11.4",
     "grpc": "^1.24.9"
   },
