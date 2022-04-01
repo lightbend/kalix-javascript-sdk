@@ -8,13 +8,13 @@ You can see the proxy version on prod [on grafana](https://lightbendcloud.grafan
 
 ### Cutting the release
 
-- [ ] Edit the [draft release notes](https://github.com/kalix-io/kalix-javascript-sdk/releases) and create the appropriate tag
+- [ ] Edit the [draft release notes](https://github.com/lightbend/kalix-javascript-sdk/releases) and create the appropriate tag
     - CircleCI will automatically publish the [@kalix-io/kalix-javascript-sdk package](https://www.npmjs.com/package/@kalix-io/kalix-javascript-sdk) to the npm registry based on the tag
     - CI will update the docs/current branch
 
 ### Check availability
 
-- [ ] Check that [`docs/current`](https://github.com/kalix-io/kalix-javascript-sdk/commits/docs/current) has been updated
+- [ ] Check that [`docs/current`](https://github.com/lightbend/kalix-javascript-sdk/commits/docs/current) has been updated
 - [ ] Check the release in the [npm registry](https://www.npmjs.com/package/@kalix-io/kalix-javascript-sdk)
 
 ### Fix and publish docs

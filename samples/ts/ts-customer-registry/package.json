@@ -6,9 +6,9 @@
   "engines": {
     "node": "~14"
   },
-  "homepage": "https://github.com/kalix-io/kalix-javascript-sdk",
+  "homepage": "https://github.com/lightbend/kalix-javascript-sdk",
   "bugs": {
-    "url": "https://github.com/kalix-io/kalix-javascript-sdk/issues"
+    "url": "https://github.com/lightbend/kalix-javascript-sdk/issues"
   },
   "license": "Apache-2.0",
   "author": {
@@ -18,7 +18,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/kalix-io/kalix-javascript-sdk",
+    "url": "https://github.com/lightbend/kalix-javascript-sdk",
     "directory": "samples/ts/ts-customer-registry"
   },
   "//": "https://npm.community/t/npm-install-does-not-install-transitive-dependencies-of-local-dependency/2264",
