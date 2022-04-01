@@ -7,10 +7,10 @@
   },
   "main": "dist/index.js",
   "dependencies": {
-    "@kalix-io/kalix-javascript-sdk": "1.0.0-M3"
+    "@kalix-io/kalix-javascript-sdk": "1.0.0-M4"
   },
   "devDependencies": {
-    "@kalix-io/kalix-scripts": "1.0.0-M3",
+    "@kalix-io/kalix-scripts": "1.0.0-M4",
     "@types/mocha": "^8.2.3",
     "@types/node": "14.18.3",
     "@typescript-eslint/eslint-plugin": "^4.31.0",
