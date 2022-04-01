@@ -22,7 +22,7 @@
     "directory": "samples/js/js-replicated-entity-example"
   },
   "dependencies": {
-    "@kalix-io/kalix-javascript-sdk": "0.33.5"
+    "@kalix-io/kalix-javascript-sdk": "1.0.0-M4"
   },
   "devDependencies": {
     "chai": "4.2.0",
