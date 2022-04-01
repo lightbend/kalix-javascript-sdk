@@ -139,8 +139,8 @@ At package.test.json:2:4:
     // Assert
     result.getProto().should.equal('');
     result.getComponentsList().length.should.equal(0);
-    serviceInfo?.getProtocolMajorVersion().should.equal(0);
-    serviceInfo?.getProtocolMinorVersion().should.equal(10);
+    serviceInfo?.getProtocolMajorVersion().should.equal(1);
+    serviceInfo?.getProtocolMinorVersion().should.equal(0);
     serviceInfo?.getServiceName().should.equal('my-service');
     serviceInfo?.getServiceVersion().should.equal('1.2.3');
     serviceInfo?.getServiceRuntime().should.contains('node v');
