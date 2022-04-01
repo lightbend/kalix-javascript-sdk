@@ -1,6 +1,6 @@
 {
   "name": "js-valueentity-shopping-cart",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "type": "module",
   "engines": {
     "node": ">=13.0.0",
