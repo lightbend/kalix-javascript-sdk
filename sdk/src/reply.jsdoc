@@ -91,7 +91,7 @@
 
 /**
  * @function module:akkaserverless.replies.Reply#getFailure
- * @returns {string|undefined} The failure description.
+ * @returns {module:akkaserverless.replies.Failure|undefined}
  */
 
 /**
@@ -99,6 +99,7 @@
  *
  * @function module:akkaserverless.replies.Reply#setFailure
  * @param {string} failure The failure description.
+ * @param {module:akkaserverless.GrpcStatus} [status] the status code to fail with, defaults to Unknown.
  * @returns {module:akkaserverless.replies.Reply} The updated reply.
  */
 
@@ -157,6 +158,7 @@
  *
  * @function module:akkaserverless.replies~failure
  * @param {string} description A description of the failure.
+ * @param {module:akkaserverless.GrpcStatus} [status] - the GRPC status, defaults to Unknown
  * @return {module:akkaserverless.replies.Reply} A failure reply.
  */
 
@@ -167,4 +169,18 @@
  *
  * @function module:akkaserverless.replies~noReply
  * @return {module:akkaserverless.replies.Reply} An empty reply.
+ */
+
+/**
+ * @class module:akkaserverless.replies.Failure
+ */
+
+/**
+ * @function module:akkaserverless.replies.Failure#getDescription
+ * @returns {string}
+ */
+
+/**
+ * @function module:akkaserverless.replies.Failure#getStatus
+ * @returns {module:akkaserverless.GrpcStatus|undefined}
  */
