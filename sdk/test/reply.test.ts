@@ -18,6 +18,7 @@ import { expect } from 'chai';
 import protobuf from 'protobufjs';
 import { Metadata } from '../src/metadata';
 import * as replies from '../src/reply';
+import { GrpcStatus } from '../src/akkaserverless';
 
 describe('Replies', () => {
   it('should create an empty Reply', () => {
@@ -48,7 +49,7 @@ describe('Replies', () => {
   });
 
   it('should create a failure Reply with status', () => {
-    const reply = replies.failure('my-msg', replies.GrpcStatus.AlreadyExists);
+    const reply = replies.failure('my-msg', GrpcStatus.AlreadyExists);
 
     expect(reply.isEmpty()).to.be.false;
     expect(reply.getMethod()).to.be.undefined;
@@ -59,9 +60,7 @@ describe('Replies', () => {
 
     expect(reply.getFailure()).to.not.be.undefined;
     expect(reply.getFailure()?.getDescription()).to.be.eq('my-msg');
-    expect(reply.getFailure()?.getStatus()).to.be.eq(
-      replies.GrpcStatus.AlreadyExists,
-    );
+    expect(reply.getFailure()?.getStatus()).to.be.eq(GrpcStatus.AlreadyExists);
   });
 
   it('should create a forward Reply', () => {

@@ -34,3 +34,4 @@ module.exports.View = require('./src/view');
 module.exports.replies = require('./src/reply');
 module.exports.settings = require('./settings');
 module.exports.GrpcUtil = require('./src/grpc-util').GrpcUtil;
+module.exports.GrpcStatus = require('./src/akkaserverless').GrpcStatus;
