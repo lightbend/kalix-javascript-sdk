@@ -1,7 +1,7 @@
 # Make Kalix JavaScript SDK SDK documentation
 
 module   := javascript
-upstream := kalix-io/kalix-javascript-sdk
+upstream := lightbend/kalix-javascript-sdk
 branch   := docs/kalix-current
 sources  := src build/src/managed
 
