@@ -2,7 +2,7 @@
 
 module   := javascript
 upstream := kalix-io/kalix-javascript-sdk
-branch   := docs/current
+branch   := docs/kalix-current
 sources  := src build/src/managed
 
 src_managed := build/src/managed
