@@ -4,7 +4,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width">
-	<title>AkkaServerless Interface: StreamedCommandContext</title>
+	<title>AkkaServerless Class: JwtClaims</title>
 
 	<!--[if lt IE 9]>
 	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -93,16 +93,19 @@
 		<div id="main">
 			
 
-	<h1 class="page-title">Interface: StreamedCommandContext</h1>
+	<h1 class="page-title">Class: JwtClaims</h1>
 <section>
 
 <header>
     
         <h2>
-            <span class="ancestors"><a href="module-akkaserverless.html">akkaserverless</a><a href="module-akkaserverless.Action.html">.Action</a>.</span>
+            <span class="ancestors"><a href="module-akkaserverless.html">akkaserverless</a>.</span>
         
-        StreamedCommandContext
+        JwtClaims
         </h2>
+        
+            <div class="class-description"><p>JWT claims.</p>
+<p>This exposes an JWT claims that were extracted from the bearer token.</p></div>
         
     
 </header>
@@ -112,10 +115,74 @@
     <div class="container-overview">
     
         
-            <div class="description"><p>Context for a streamed action command.</p></div>
+<hr>
+<dt>
+    <h4 class="name" id="JwtClaims"><span class="type-signature"></span>new JwtClaims(metadata)</h4>
+    
+    
+</dt>
+<dd>
+
+    
+
+    
+
+    
+
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
         
 
         
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>metadata</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="module-akkaserverless.Metadata.html">module:akkaserverless.Metadata</a></span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The metadata that the JWT claims com efrom.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    
+
+    
 <dl class="details">
     
 
@@ -155,22 +222,23 @@
 </dl>
 
 
-        
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dd>
+
     
     </div>
-
-    
-        <h3 class="subsection-title">Extends</h3>
-
-        
-
-
-    <ul>
-        <li><a href="module-akkaserverless.Action.StreamedInContext.html">module:akkaserverless.Action.StreamedInContext</a></li>
-    
-        <li><a href="module-akkaserverless.Action.StreamedOutContext.html">module:akkaserverless.Action.StreamedOutContext</a></li>
-    </ul>
-
 
     
 
@@ -188,12 +256,386 @@
         <dl>
             
 <hr>
-<dt class="name" id="metadata">
-    <h4 id="metadata"><span class="type-signature"></span>metadata<span class="type-signature"> :<a href="module-akkaserverless.Metadata.html">module:akkaserverless.Metadata</a></span></h4>
+<dt class="name" id="audience">
+    <h4 id="audience"><span class="type-signature">&lt;readonly> </span>audience<span class="type-signature"> :string|undefined</span></h4>
 
     
 </dt>
 <dd>
+    
+    <div class="description">
+        <p>The audience</p>
+    </div>
+    
+
+    
+        <h5>Type:</h5>
+        <ul>
+            <li>
+                
+<span class="param-type">string</span>
+|
+
+<span class="param-type">undefined</span>
+
+
+
+            </li>
+        </ul>
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt class="name" id="expirationTime">
+    <h4 id="expirationTime"><span class="type-signature">&lt;readonly> </span>expirationTime<span class="type-signature"> :Date|undefined</span></h4>
+
+    
+</dt>
+<dd>
+    
+    <div class="description">
+        <p>The expiration time</p>
+    </div>
+    
+
+    
+        <h5>Type:</h5>
+        <ul>
+            <li>
+                
+<span class="param-type">Date</span>
+|
+
+<span class="param-type">undefined</span>
+
+
+
+            </li>
+        </ul>
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt class="name" id="issuedAt">
+    <h4 id="issuedAt"><span class="type-signature">&lt;readonly> </span>issuedAt<span class="type-signature"> :Date|undefined</span></h4>
+
+    
+</dt>
+<dd>
+    
+    <div class="description">
+        <p>The issued at</p>
+    </div>
+    
+
+    
+        <h5>Type:</h5>
+        <ul>
+            <li>
+                
+<span class="param-type">Date</span>
+|
+
+<span class="param-type">undefined</span>
+
+
+
+            </li>
+        </ul>
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt class="name" id="issuer">
+    <h4 id="issuer"><span class="type-signature">&lt;readonly> </span>issuer<span class="type-signature"> :string|undefined</span></h4>
+
+    
+</dt>
+<dd>
+    
+    <div class="description">
+        <p>The issuer</p>
+    </div>
+    
+
+    
+        <h5>Type:</h5>
+        <ul>
+            <li>
+                
+<span class="param-type">string</span>
+|
+
+<span class="param-type">undefined</span>
+
+
+
+            </li>
+        </ul>
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt class="name" id="jwtId">
+    <h4 id="jwtId"><span class="type-signature">&lt;readonly> </span>jwtId<span class="type-signature"> :string|undefined</span></h4>
+
+    
+</dt>
+<dd>
+    
+    <div class="description">
+        <p>The jwt id</p>
+    </div>
+    
+
+    
+        <h5>Type:</h5>
+        <ul>
+            <li>
+                
+<span class="param-type">string</span>
+|
+
+<span class="param-type">undefined</span>
+
+
+
+            </li>
+        </ul>
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt class="name" id="metadata">
+    <h4 id="metadata"><span class="type-signature">&lt;readonly> </span>metadata<span class="type-signature"> :<a href="module-akkaserverless.Metadata.html">module:akkaserverless.Metadata</a></span></h4>
+
+    
+</dt>
+<dd>
+    
+    <div class="description">
+        <p>The metadata backing this JWT claims object.</p>
+    </div>
     
 
     
@@ -218,21 +660,155 @@
 	
 
 	
-	<dt class="inherited-from method-doc-label method-doc-details-label">Inherited From:</dt>
-	<dd class="inherited-from">
-		<ul class="dummy">
-			<li>
-				<a href="module-akkaserverless.EffectContext.html#metadata">module:akkaserverless.EffectContext#metadata</a>
-			</li>
-		</ul>
-	</dd>
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt class="name" id="notBefore">
+    <h4 id="notBefore"><span class="type-signature">&lt;readonly> </span>notBefore<span class="type-signature"> :Date|undefined</span></h4>
+
+    
+</dt>
+<dd>
+    
+    <div class="description">
+        <p>The not before</p>
+    </div>
+    
+
+    
+        <h5>Type:</h5>
+        <ul>
+            <li>
+                
+<span class="param-type">Date</span>
+|
+
+<span class="param-type">undefined</span>
+
+
+
+            </li>
+        </ul>
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
 	
 
     
-    <dt class="tag-overrides">Overrides:</dt>
-    <dd class="tag-overrides"><ul class="dummy"><li>
-        <a href="module-akkaserverless.Action.StreamedOutContext.html#metadata">module:akkaserverless.Action.StreamedOutContext#metadata</a>
-    </li></ul></dd>
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt class="name" id="subject">
+    <h4 id="subject"><span class="type-signature">&lt;readonly> </span>subject<span class="type-signature"> :string|undefined</span></h4>
+
+    
+</dt>
+<dd>
+    
+    <div class="description">
+        <p>The subject</p>
+    </div>
+    
+
+    
+        <h5>Type:</h5>
+        <ul>
+            <li>
+                
+<span class="param-type">string</span>
+|
+
+<span class="param-type">undefined</span>
+
+
+
+            </li>
+        </ul>
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
     
 
     
@@ -276,7 +852,7 @@
             
 <hr>
 <dt>
-    <h4 class="name" id="cancel"><span class="type-signature"></span>cancel()</h4>
+    <h4 class="name" id="getBoolean"><span class="type-signature"></span>getBoolean(name)</h4>
     
     
 </dt>
@@ -284,919 +860,7 @@
 
     
     <div class="description">
-        <p>Cancel the incoming stream of messages.</p>
-    </div>
-    
-
-    
-
-    
-
-    
-    
-
-    
-<dl class="details">
-    
-
-	
-
-	
-
-	
-	<dt class="inherited-from method-doc-label method-doc-details-label">Inherited From:</dt>
-	<dd class="inherited-from">
-		<ul class="dummy">
-			<li>
-				<a href="module-akkaserverless.Action.StreamedInContext.html#cancel">module:akkaserverless.Action.StreamedInContext#cancel</a>
-			</li>
-		</ul>
-	</dd>
-	
-
-    
-
-    
-
-    
-
-    
-
-	
-
-	
-
-	
-
-	
-
-	
-
-
-
-	
-
-	
-
-	
-
-	
-</dl>
-
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</dd>
-
-        
-            
-<hr>
-<dt>
-    <h4 class="name" id="effect"><span class="type-signature"></span>effect(method, message [, synchronous] [, metadata] [, internalCall])</h4>
-    
-    
-</dt>
-<dd>
-
-    
-    <div class="description">
-        <p>DEPRECATED. Emit an effect after processing this command.</p>
-    </div>
-    
-
-    
-
-    
-
-    
-    
-        <h5>Parameters:</h5>
-        
-
-<table class="params table table-striped">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-        <th>Argument</th>
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>method</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">any</span>
-
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-
-                
-
-                
-                </td>
-            
-
-            
-
-            <td class="description last"><p>The entity service method to invoke.</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>message</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">object</span>
-
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-
-                
-
-                
-                </td>
-            
-
-            
-
-            <td class="description last"><p>The message to send to that service.</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>synchronous</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">boolean</span>
-
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-
-            <td class="description last"><p>Whether the effect should be execute synchronously or not.</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>metadata</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><a href="module-akkaserverless.Metadata.html">module:akkaserverless.Metadata</a></span>
-
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-
-            <td class="description last"><p>Metadata to send with the effect.</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>internalCall</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">boolean</span>
-
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-
-            <td class="description last"><p>For internal calls to this deprecated function.</p></td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-    
-
-    
-<dl class="details">
-    
-
-	
-
-	
-
-	
-	<dt class="inherited-from method-doc-label method-doc-details-label">Inherited From:</dt>
-	<dd class="inherited-from">
-		<ul class="dummy">
-			<li>
-				<a href="module-akkaserverless.EffectContext.html#effect">module:akkaserverless.EffectContext#effect</a>
-			</li>
-		</ul>
-	</dd>
-	
-
-    
-    <dt class="tag-overrides">Overrides:</dt>
-    <dd class="tag-overrides"><ul class="dummy"><li>
-        <a href="module-akkaserverless.Action.StreamedOutContext.html#effect">module:akkaserverless.Action.StreamedOutContext#effect</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-
-	
-
-	
-
-	
-
-	
-
-	
-
-
-
-	
-
-	
-
-	
-
-	
-</dl>
-
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</dd>
-
-        
-            
-<hr>
-<dt>
-    <h4 class="name" id="end"><span class="type-signature"></span>end()</h4>
-    
-    
-</dt>
-<dd>
-
-    
-    <div class="description">
-        <p>Terminate the outgoing stream of messages.</p>
-    </div>
-    
-
-    
-
-    
-
-    
-    
-
-    
-<dl class="details">
-    
-
-	
-
-	
-
-	
-	<dt class="inherited-from method-doc-label method-doc-details-label">Inherited From:</dt>
-	<dd class="inherited-from">
-		<ul class="dummy">
-			<li>
-				<a href="module-akkaserverless.Action.StreamedOutContext.html#end">module:akkaserverless.Action.StreamedOutContext#end</a>
-			</li>
-		</ul>
-	</dd>
-	
-
-    
-
-    
-
-    
-
-    
-
-	
-
-	
-
-	
-
-	
-
-	
-
-
-
-	
-
-	
-
-	
-
-	
-</dl>
-
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</dd>
-
-        
-            
-<hr>
-<dt>
-    <h4 class="name" id="fail"><span class="type-signature"></span>fail(msg [, grpcStatus])</h4>
-    
-    
-</dt>
-<dd>
-
-    
-    <div class="description">
-        <p>Fail handling this command.</p>
-<p>An alternative to using this is to return a failed Reply created with 'ReplyFactory.failed'.</p>
-    </div>
-    
-
-    
-
-    
-
-    
-    
-        <h5>Parameters:</h5>
-        
-
-<table class="params table table-striped">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-        <th>Argument</th>
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>msg</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-
-                
-
-                
-                </td>
-            
-
-            
-
-            <td class="description last"><p>The failure message.</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>grpcStatus</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">number</span>
-
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-
-            <td class="description last"><p>The grpcStatus.</p></td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-    
-
-    
-<dl class="details">
-    
-
-	
-
-	
-
-	
-	<dt class="inherited-from method-doc-label method-doc-details-label">Inherited From:</dt>
-	<dd class="inherited-from">
-		<ul class="dummy">
-			<li>
-				<a href="module-akkaserverless.EffectContext.html#fail">module:akkaserverless.EffectContext#fail</a>
-			</li>
-		</ul>
-	</dd>
-	
-
-    
-    <dt class="tag-overrides">Overrides:</dt>
-    <dd class="tag-overrides"><ul class="dummy"><li>
-        <a href="module-akkaserverless.Action.StreamedOutContext.html#fail">module:akkaserverless.Action.StreamedOutContext#fail</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-
-	
-
-	
-
-	
-
-	
-
-	
-
-
-
-	
-
-	
-
-	
-
-	
-</dl>
-
-
-    
-
-    
-
-    
-
-    
-
-    
-    <h5>Throws:</h5>
-    
-            
-
-    <div class="param-desc">
-    
-        <p>An error that captures the failure message. Note that even if you catch the error thrown by this
-method, the command will still be failed with the given message.</p>
-    
-    </div>
-
-
-        
-
-    
-
-    
-</dd>
-
-        
-            
-<hr>
-<dt>
-    <h4 class="name" id="forward"><span class="type-signature"></span>forward(method, message [, metadata] [, internalCall])</h4>
-    
-    
-</dt>
-<dd>
-
-    
-    <div class="description">
-        <p>DEPRECATED. Forward this command to another service component call, use 'ReplyFactory.forward' instead.</p>
-    </div>
-    
-
-    
-
-    
-
-    
-    
-        <h5>Parameters:</h5>
-        
-
-<table class="params table table-striped">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-        <th>Argument</th>
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>method</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">any</span>
-
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-
-                
-
-                
-                </td>
-            
-
-            
-
-            <td class="description last"><p>The service component method to invoke.</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>message</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">object</span>
-
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-
-                
-
-                
-                </td>
-            
-
-            
-
-            <td class="description last"><p>The message to send to that service component.</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>metadata</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><a href="module-akkaserverless.Metadata.html">module:akkaserverless.Metadata</a></span>
-
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-
-            <td class="description last"><p>Metadata to send with the forward.</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>internalCall</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">boolean</span>
-
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-
-            <td class="description last"><p>For internal calls to this deprecated function.</p></td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-    
-
-    
-<dl class="details">
-    
-
-	
-
-	
-
-	
-	<dt class="inherited-from method-doc-label method-doc-details-label">Inherited From:</dt>
-	<dd class="inherited-from">
-		<ul class="dummy">
-			<li>
-				<a href="module-akkaserverless.CommandContext.html#forward">module:akkaserverless.CommandContext#forward</a>
-			</li>
-		</ul>
-	</dd>
-	
-
-    
-    <dt class="tag-overrides">Overrides:</dt>
-    <dd class="tag-overrides"><ul class="dummy"><li>
-        <a href="module-akkaserverless.Action.StreamedOutContext.html#forward">module:akkaserverless.Action.StreamedOutContext#forward</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-
-	
-
-	
-
-	
-
-	
-
-	
-
-
-
-	
-
-	
-
-	
-
-	
-</dl>
-
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</dd>
-
-        
-            
-<hr>
-<dt>
-    <h4 class="name" id="on"><span class="type-signature"></span>on(eventType, callback)</h4>
-    
-    
-</dt>
-<dd>
-
-    
-    <div class="description">
-        <p>Register an event handler.</p>
+        <p>Get the boolean claim with the given name.</p>
     </div>
     
 
@@ -1231,7 +895,7 @@ method, the command will still be failed with the given message.</p>
 
         <tr>
             
-                <td class="name"><code>eventType</code></td>
+                <td class="name"><code>name</code></td>
             
 
             <td class="type">
@@ -1248,31 +912,7 @@ method, the command will still be failed with the given message.</p>
 
             
 
-            <td class="description last"><p>The type of the event.</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>callback</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">function</span>
-
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>The callback to handle the event.</p></td>
+            <td class="description last"><p>The name of the claim.</p></td>
         </tr>
 
     
@@ -1289,157 +929,6 @@ method, the command will still be failed with the given message.</p>
 
 	
 
-	
-	<dt class="inherited-from method-doc-label method-doc-details-label">Inherited From:</dt>
-	<dd class="inherited-from">
-		<ul class="dummy">
-			<li>
-				<a href="module-akkaserverless.Action.ActionCommandContext.html#on">module:akkaserverless.Action.ActionCommandContext#on</a>
-			</li>
-		</ul>
-	</dd>
-	
-
-    
-    <dt class="tag-overrides">Overrides:</dt>
-    <dd class="tag-overrides"><ul class="dummy"><li>
-        <a href="module-akkaserverless.Action.StreamedOutContext.html#on">module:akkaserverless.Action.StreamedOutContext#on</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-
-	
-
-	
-
-	
-
-	
-
-	
-
-
-
-	
-
-	
-
-	
-
-	
-</dl>
-
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</dd>
-
-        
-            
-<hr>
-<dt>
-    <h4 class="name" id="reply"><span class="type-signature"></span>reply(reply)</h4>
-    
-    
-</dt>
-<dd>
-
-    
-    <div class="description">
-        <p>Send a reply</p>
-    </div>
-    
-
-    
-
-    
-
-    
-    
-        <h5>Parameters:</h5>
-        
-
-<table class="params table table-striped">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>reply</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><a href="module-akkaserverless.replies.Reply.html">module:akkaserverless.replies.Reply</a></span>
-
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>The reply to send</p></td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-    
-
-    
-<dl class="details">
-    
-
-	
-
-	
-
-	
-	<dt class="inherited-from method-doc-label method-doc-details-label">Inherited From:</dt>
-	<dd class="inherited-from">
-		<ul class="dummy">
-			<li>
-				<a href="module-akkaserverless.Action.StreamedOutContext.html#reply">module:akkaserverless.Action.StreamedOutContext#reply</a>
-			</li>
-		</ul>
-	</dd>
 	
 
     
@@ -1483,205 +972,33 @@ method, the command will still be failed with the given message.</p>
     
 
     
-
+    <h5>Returns:</h5>
     
-</dd>
-
-        
             
-<hr>
-<dt>
-    <h4 class="name" id="thenForward"><span class="type-signature"></span>thenForward(method, message, metadata)</h4>
-    
-    
-</dt>
-<dd>
-
-    
-    <div class="description">
-        <p>DEPRECATED. Forward this command to another service component call.</p>
-    </div>
-    
-
-    
-
-    
-
-    
-    
-        <h5>Parameters:</h5>
-        
-
-<table class="params table table-striped">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>method</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">any</span>
+<div class="param-desc">
+    <p>the claim, or undefined if it doesn't exist or is not of the right type.</p>
+</div>
 
 
 
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>The service component method to invoke.</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>message</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">object</span>
-
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>The message to send to that service component.</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>metadata</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><a href="module-akkaserverless.Metadata.html">module:akkaserverless.Metadata</a></span>
-
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>Metadata to send with the forward.</p></td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-    
-
-    
-<dl class="details">
-    
-
-	
-
-	
-
-	
-	<dt class="inherited-from method-doc-label method-doc-details-label">Inherited From:</dt>
-	<dd class="inherited-from">
-		<ul class="dummy">
-			<li>
-				<a href="module-akkaserverless.CommandContext.html#thenForward">module:akkaserverless.CommandContext#thenForward</a>
-			</li>
-		</ul>
-	</dd>
-	
-
-    
-    <dt class="tag-overrides">Overrides:</dt>
-    <dd class="tag-overrides"><ul class="dummy"><li>
-        <a href="module-akkaserverless.Action.StreamedOutContext.html#thenForward">module:akkaserverless.Action.StreamedOutContext#thenForward</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-
-	
-	<dt class="important tag-deprecated method-doc-label method-doc-details-label">Deprecated:</dt>
-	
+<dl>
+    <dt>
+        Type
+    </dt>
     <dd>
-        <ul class="dummy">
-            <li>Since version 0.7. Will be deleted in version 0.8. Use 'forward' instead.</li>
-        </ul>
+        
+<span class="param-type">boolean</span>
+|
+
+<span class="param-type">undefined</span>
+
+
+
     </dd>
-    
-    
-
-	
-
-	
-
-	
-
-	
-
-
-
-	
-
-	
-
-	
-
-	
 </dl>
 
 
-    
-
-    
-
-    
-
-    
-
-    
-
-    
+        
 
     
 </dd>
@@ -1690,7 +1007,7 @@ method, the command will still be failed with the given message.</p>
             
 <hr>
 <dt>
-    <h4 class="name" id="write"><span class="type-signature"></span>write(message [, metadata])</h4>
+    <h4 class="name" id="getBooleanArray"><span class="type-signature"></span>getBooleanArray(name)</h4>
     
     
 </dt>
@@ -1698,7 +1015,7 @@ method, the command will still be failed with the given message.</p>
 
     
     <div class="description">
-        <p>Write a message.</p>
+        <p>Get the boolean array claim with the given name.</p>
     </div>
     
 
@@ -1721,8 +1038,6 @@ method, the command will still be failed with the given message.</p>
         <th>Type</th>
 
         
-        <th>Argument</th>
-        
 
         
 
@@ -1735,13 +1050,13 @@ method, the command will still be failed with the given message.</p>
 
         <tr>
             
-                <td class="name"><code>message</code></td>
+                <td class="name"><code>name</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">Object</span>
+<span class="param-type">string</span>
 
 
 
@@ -1749,52 +1064,10 @@ method, the command will still be failed with the given message.</p>
             </td>
 
             
-                <td class="attributes">
-                
-
-                
-
-                
-                </td>
-            
 
             
 
-            <td class="description last"><p>The protobuf message to write.</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>metadata</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><a href="module-akkaserverless.Metadata.html">module:akkaserverless.Metadata</a></span>
-
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-
-            <td class="description last"><p>The metadata associated with the message.</p></td>
+            <td class="description last"><p>The name of the claim.</p></td>
         </tr>
 
     
@@ -1812,21 +1085,7 @@ method, the command will still be failed with the given message.</p>
 	
 
 	
-	<dt class="inherited-from method-doc-label method-doc-details-label">Inherited From:</dt>
-	<dd class="inherited-from">
-		<ul class="dummy">
-			<li>
-				<a href="module-akkaserverless.Action.ActionCommandContext.html#write">module:akkaserverless.Action.ActionCommandContext#write</a>
-			</li>
-		</ul>
-	</dd>
-	
 
-    
-    <dt class="tag-overrides">Overrides:</dt>
-    <dd class="tag-overrides"><ul class="dummy"><li>
-        <a href="module-akkaserverless.Action.StreamedOutContext.html#write">module:akkaserverless.Action.StreamedOutContext#write</a>
-    </li></ul></dd>
     
 
     
@@ -1868,6 +1127,1273 @@ method, the command will still be failed with the given message.</p>
     
 
     
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    <p>the claim, or undefined if it doesn't exist or is not of the right type.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Array.&lt;boolean></span>
+|
+
+<span class="param-type">undefined</span>
+
+
+
+    </dd>
+</dl>
+
+
+        
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="getNumber"><span class="type-signature"></span>getNumber(name)</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Get the numeric claim with the given name.</p>
+    </div>
+    
+
+    
+
+    
+
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>name</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The name of the claim.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    <p>the claim, or undefined if it doesn't exist or is not of the right type.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">number</span>
+|
+
+<span class="param-type">undefined</span>
+
+
+
+    </dd>
+</dl>
+
+
+        
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="getNumberArray"><span class="type-signature"></span>getNumberArray(name)</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Get the numeric array claim with the given name.</p>
+    </div>
+    
+
+    
+
+    
+
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>name</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The name of the claim.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    <p>the claim, or undefined if it doesn't exist or is not of the right type.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Array.&lt;number></span>
+|
+
+<span class="param-type">undefined</span>
+
+
+
+    </dd>
+</dl>
+
+
+        
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="getNumericDate"><span class="type-signature"></span>getNumericDate(name)</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Get the numeric date claim with the given name.</p>
+    </div>
+    
+
+    
+
+    
+
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>name</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The name of the claim.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    <p>the claim, or undefined if it doesn't exist or is not of the right type.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Date</span>
+|
+
+<span class="param-type">undefined</span>
+
+
+
+    </dd>
+</dl>
+
+
+        
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="getNumericDateArray"><span class="type-signature"></span>getNumericDateArray(name)</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Get the numeric date array claim with the given name.</p>
+    </div>
+    
+
+    
+
+    
+
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>name</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The name of the claim.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    <p>the claim, or undefined if it doesn't exist or is not of the right type.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Array.&lt;Date></span>
+|
+
+<span class="param-type">undefined</span>
+
+
+
+    </dd>
+</dl>
+
+
+        
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="getObject"><span class="type-signature"></span>getObject(name)</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Get the object claim with the given name.</p>
+    </div>
+    
+
+    
+
+    
+
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>name</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The name of the claim.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    <p>the claim, or undefined if it doesn't exist or is not of the right type.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">object</span>
+|
+
+<span class="param-type">undefined</span>
+
+
+
+    </dd>
+</dl>
+
+
+        
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="getObjectArray"><span class="type-signature"></span>getObjectArray(name)</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Get the object array claim with the given name.</p>
+    </div>
+    
+
+    
+
+    
+
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>name</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The name of the claim.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    <p>the claim, or undefined if it doesn't exist or is not of the right type.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Array.&lt;object></span>
+|
+
+<span class="param-type">undefined</span>
+
+
+
+    </dd>
+</dl>
+
+
+        
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="getString"><span class="type-signature"></span>getString(name)</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Get the string claim with the given name.</p>
+    </div>
+    
+
+    
+
+    
+
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>name</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The name of the claim.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    <p>the claim, or undefined if it doesn't exist or is not of the right type.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">string</span>
+|
+
+<span class="param-type">undefined</span>
+
+
+
+    </dd>
+</dl>
+
+
+        
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="getStringArray"><span class="type-signature"></span>getStringArray(name)</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Get the string array claim with the given name.</p>
+    </div>
+    
+
+    
+
+    
+
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>name</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The name of the claim.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    <p>the claim, or undefined if it doesn't exist or is not of the right type.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Array.&lt;string></span>
+|
+
+<span class="param-type">undefined</span>
+
+
+
+    </dd>
+</dl>
+
+
+        
 
     
 </dd>
@@ -1877,280 +2403,6 @@ method, the command will still be failed with the given message.</p>
 
     
 
-    
-        <h3 class="subsection-title">Events</h3>
-
-        <dl>
-            
-<hr>
-<dt>
-    <h4 class="name" id="event:cancelled">cancelled</h4>
-    
-    
-</dt>
-<dd>
-
-    
-    <div class="description">
-        <p>A cancelled event.</p>
-    </div>
-    
-
-    
-
-    
-
-    
-    
-
-    
-<dl class="details">
-    
-
-	
-
-	
-
-	
-	<dt class="inherited-from method-doc-label method-doc-details-label">Inherited From:</dt>
-	<dd class="inherited-from">
-		<ul class="dummy">
-			<li>
-				<a href="module-akkaserverless.Action.StreamedOutContext.html#event:cancelled">module:akkaserverless.Action.StreamedOutContext#event:cancelled</a>
-			</li>
-		</ul>
-	</dd>
-	
-
-    
-
-    
-
-    
-
-    
-
-	
-
-	
-
-	
-
-	
-
-	
-
-
-
-	
-
-	
-
-	
-
-	
-</dl>
-
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</dd>
-
-        
-            
-<hr>
-<dt>
-    <h4 class="name" id="event:data">data</h4>
-    
-    
-</dt>
-<dd>
-
-    
-    <div class="description">
-        <p>A data event.</p>
-<p>Emitted when a new message arrives.</p>
-    </div>
-    
-
-    
-
-    
-        <h5>Type: 
-<span class="param-type">Object</span>
-
-
-</h5>
-    
-
-    
-    
-
-    
-<dl class="details">
-    
-
-	
-
-	
-
-	
-	<dt class="inherited-from method-doc-label method-doc-details-label">Inherited From:</dt>
-	<dd class="inherited-from">
-		<ul class="dummy">
-			<li>
-				<a href="module-akkaserverless.Action.StreamedInContext.html#event:data">module:akkaserverless.Action.StreamedInContext#event:data</a>
-			</li>
-		</ul>
-	</dd>
-	
-
-    
-
-    
-
-    
-
-    
-
-	
-
-	
-
-	
-
-	
-
-	
-
-
-
-	
-
-	
-
-	
-
-	
-</dl>
-
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</dd>
-
-        
-            
-<hr>
-<dt>
-    <h4 class="name" id="event:end">end</h4>
-    
-    
-</dt>
-<dd>
-
-    
-    <div class="description">
-        <p>A stream end event.</p>
-<p>Emitted when the input stream terminates.</p>
-<p>If a callback is registered and that returns a Reply, then that is returned as a response from the action</p>
-    </div>
-    
-
-    
-
-    
-
-    
-    
-
-    
-<dl class="details">
-    
-
-	
-
-	
-
-	
-	<dt class="inherited-from method-doc-label method-doc-details-label">Inherited From:</dt>
-	<dd class="inherited-from">
-		<ul class="dummy">
-			<li>
-				<a href="module-akkaserverless.Action.StreamedInContext.html#event:end">module:akkaserverless.Action.StreamedInContext#event:end</a>
-			</li>
-		</ul>
-	</dd>
-	
-
-    
-
-    
-
-    
-
-    
-
-	
-
-	
-
-	
-
-	
-
-	
-
-
-
-	
-
-	
-
-	
-
-	
-</dl>
-
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</dd>
-
-        </dl>
     
 </article>
 

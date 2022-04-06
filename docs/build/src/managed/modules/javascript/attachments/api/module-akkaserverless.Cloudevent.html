@@ -4,7 +4,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width">
-	<title>AkkaServerless Interface: ProtocolVersion</title>
+	<title>AkkaServerless Class: Cloudevent</title>
 
 	<!--[if lt IE 9]>
 	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -93,16 +93,20 @@
 		<div id="main">
 			
 
-	<h1 class="page-title">Interface: ProtocolVersion</h1>
+	<h1 class="page-title">Class: Cloudevent</h1>
 <section>
 
 <header>
     
         <h2>
-            <span class="ancestors"><a href="module-akkaserverless.html">akkaserverless</a><a href="module-akkaserverless.settings.html">.settings</a>.</span>
+            <span class="ancestors"><a href="module-akkaserverless.html">akkaserverless</a>.</span>
         
-        ProtocolVersion
+        Cloudevent
         </h2>
+        
+            <div class="class-description"><p>CloudEvent data.</p>
+<p>This exposes CloudEvent data from metadata. Changes made to the Cloudevent are reflected in the backing metadata,
+as are changes to the backing metadata reflected in this CloudEvent.</p></div>
         
     
 </header>
@@ -112,8 +116,74 @@
     <div class="container-overview">
     
         
+<hr>
+<dt>
+    <h4 class="name" id="Cloudevent"><span class="type-signature"></span>new Cloudevent(metadata)</h4>
+    
+    
+</dt>
+<dd>
+
+    
+
+    
+
+    
+
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
 
         
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>metadata</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="module-akkaserverless.Metadata.html">module:akkaserverless.Metadata</a></span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The metadata backing this CloudEvent.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    
+
+    
 <dl class="details">
     
 
@@ -153,7 +223,21 @@
 </dl>
 
 
-        
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dd>
+
     
     </div>
 
@@ -173,12 +257,16 @@
         <dl>
             
 <hr>
-<dt class="name" id="major">
-    <h4 id="major"><span class="type-signature"></span>major<span class="type-signature"> :string</span></h4>
+<dt class="name" id="datacontenttype">
+    <h4 id="datacontenttype"><span class="type-signature"></span>datacontenttype<span class="type-signature"> :string|undefined</span></h4>
 
     
 </dt>
 <dd>
+    
+    <div class="description">
+        <p>The datacontenttype</p>
+    </div>
     
 
     
@@ -187,6 +275,9 @@
             <li>
                 
 <span class="param-type">string</span>
+|
+
+<span class="param-type">undefined</span>
 
 
 
@@ -240,12 +331,16 @@
         
             
 <hr>
-<dt class="name" id="minor">
-    <h4 id="minor"><span class="type-signature"></span>minor<span class="type-signature"> :string</span></h4>
+<dt class="name" id="dataschema">
+    <h4 id="dataschema"><span class="type-signature"></span>dataschema<span class="type-signature"> :string|undefined</span></h4>
 
     
 </dt>
 <dd>
+    
+    <div class="description">
+        <p>The dataschema</p>
+    </div>
     
 
     
@@ -254,6 +349,524 @@
             <li>
                 
 <span class="param-type">string</span>
+|
+
+<span class="param-type">undefined</span>
+
+
+
+            </li>
+        </ul>
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt class="name" id="id">
+    <h4 id="id"><span class="type-signature"></span>id<span class="type-signature"> :string|undefined</span></h4>
+
+    
+</dt>
+<dd>
+    
+    <div class="description">
+        <p>The id</p>
+    </div>
+    
+
+    
+        <h5>Type:</h5>
+        <ul>
+            <li>
+                
+<span class="param-type">string</span>
+|
+
+<span class="param-type">undefined</span>
+
+
+
+            </li>
+        </ul>
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt class="name" id="metadata">
+    <h4 id="metadata"><span class="type-signature">&lt;readonly> </span>metadata<span class="type-signature"> :<a href="module-akkaserverless.Metadata.html">module:akkaserverless.Metadata</a></span></h4>
+
+    
+</dt>
+<dd>
+    
+    <div class="description">
+        <p>The metadata backing this CloudEvent.</p>
+    </div>
+    
+
+    
+        <h5>Type:</h5>
+        <ul>
+            <li>
+                
+<span class="param-type"><a href="module-akkaserverless.Metadata.html">module:akkaserverless.Metadata</a></span>
+
+
+
+            </li>
+        </ul>
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt class="name" id="source">
+    <h4 id="source"><span class="type-signature"></span>source<span class="type-signature"> :string|undefined</span></h4>
+
+    
+</dt>
+<dd>
+    
+    <div class="description">
+        <p>The source</p>
+    </div>
+    
+
+    
+        <h5>Type:</h5>
+        <ul>
+            <li>
+                
+<span class="param-type">string</span>
+|
+
+<span class="param-type">undefined</span>
+
+
+
+            </li>
+        </ul>
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt class="name" id="specversion">
+    <h4 id="specversion"><span class="type-signature">&lt;readonly> </span>specversion<span class="type-signature"> :string|undefined</span></h4>
+
+    
+</dt>
+<dd>
+    
+    <div class="description">
+        <p>The spec version</p>
+    </div>
+    
+
+    
+        <h5>Type:</h5>
+        <ul>
+            <li>
+                
+<span class="param-type">string</span>
+|
+
+<span class="param-type">undefined</span>
+
+
+
+            </li>
+        </ul>
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt class="name" id="subject">
+    <h4 id="subject"><span class="type-signature"></span>subject<span class="type-signature"> :string|undefined</span></h4>
+
+    
+</dt>
+<dd>
+    
+    <div class="description">
+        <p>The subject</p>
+    </div>
+    
+
+    
+        <h5>Type:</h5>
+        <ul>
+            <li>
+                
+<span class="param-type">string</span>
+|
+
+<span class="param-type">undefined</span>
+
+
+
+            </li>
+        </ul>
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt class="name" id="time">
+    <h4 id="time"><span class="type-signature"></span>time<span class="type-signature"> :Date|undefined</span></h4>
+
+    
+</dt>
+<dd>
+    
+    <div class="description">
+        <p>The time</p>
+    </div>
+    
+
+    
+        <h5>Type:</h5>
+        <ul>
+            <li>
+                
+<span class="param-type">Date</span>
+|
+
+<span class="param-type">undefined</span>
+
+
+
+            </li>
+        </ul>
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt class="name" id="type">
+    <h4 id="type"><span class="type-signature"></span>type<span class="type-signature"> :string|undefined</span></h4>
+
+    
+</dt>
+<dd>
+    
+    <div class="description">
+        <p>The type</p>
+    </div>
+    
+
+    
+        <h5>Type:</h5>
+        <ul>
+            <li>
+                
+<span class="param-type">string</span>
+|
+
+<span class="param-type">undefined</span>
 
 
 

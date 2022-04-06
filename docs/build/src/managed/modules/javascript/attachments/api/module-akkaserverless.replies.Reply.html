@@ -47,7 +47,7 @@
 			<li class="dropdown">
 				<a href="classes.list.html" class="dropdown-toggle" data-toggle="dropdown">Classes<b class="caret"></b></a>
 				<ul class="dropdown-menu ">
-					<li><a href="module-akkaserverless.Action.html">akkaserverless.Action</a></li><li><a href="module-akkaserverless.AkkaServerless.html">akkaserverless.AkkaServerless</a></li><li><a href="module-akkaserverless.EventSourcedEntity.html">akkaserverless.EventSourcedEntity</a></li><li><a href="module-akkaserverless.IntegrationTestkit.html">akkaserverless.IntegrationTestkit</a></li><li><a href="module-akkaserverless.Metadata.html">akkaserverless.Metadata</a></li><li><a href="module-akkaserverless.replicatedentity.ReplicatedCounter.html">akkaserverless.replicatedentity.ReplicatedCounter</a></li><li><a href="module-akkaserverless.replicatedentity.ReplicatedCounterMap.html">akkaserverless.replicatedentity.ReplicatedCounterMap</a></li><li><a href="module-akkaserverless.replicatedentity.ReplicatedEntity.html">akkaserverless.replicatedentity.ReplicatedEntity</a></li><li><a href="module-akkaserverless.replicatedentity.ReplicatedMap.html">akkaserverless.replicatedentity.ReplicatedMap</a></li><li><a href="module-akkaserverless.replicatedentity.ReplicatedMultiMap.html">akkaserverless.replicatedentity.ReplicatedMultiMap</a></li><li><a href="module-akkaserverless.replicatedentity.ReplicatedRegister.html">akkaserverless.replicatedentity.ReplicatedRegister</a></li><li><a href="module-akkaserverless.replicatedentity.ReplicatedRegisterMap.html">akkaserverless.replicatedentity.ReplicatedRegisterMap</a></li><li><a href="module-akkaserverless.replicatedentity.ReplicatedSet.html">akkaserverless.replicatedentity.ReplicatedSet</a></li><li><a href="module-akkaserverless.replicatedentity.Vote.html">akkaserverless.replicatedentity.Vote</a></li><li><a href="module-akkaserverless.replies.Effect.html">akkaserverless.replies.Effect</a></li><li><a href="module-akkaserverless.replies.Reply.html">akkaserverless.replies.Reply</a></li><li><a href="module-akkaserverless.ValueEntity.html">akkaserverless.ValueEntity</a></li><li><a href="module-akkaserverless.View.html">akkaserverless.View</a></li>
+					<li><a href="module-akkaserverless.Action.html">akkaserverless.Action</a></li><li><a href="module-akkaserverless.AkkaServerless.html">akkaserverless.AkkaServerless</a></li><li><a href="module-akkaserverless.Cloudevent.html">akkaserverless.Cloudevent</a></li><li><a href="module-akkaserverless.EventSourcedEntity.html">akkaserverless.EventSourcedEntity</a></li><li><a href="module-akkaserverless.IntegrationTestkit.html">akkaserverless.IntegrationTestkit</a></li><li><a href="module-akkaserverless.JwtClaims.html">akkaserverless.JwtClaims</a></li><li><a href="module-akkaserverless.Metadata.html">akkaserverless.Metadata</a></li><li><a href="module-akkaserverless.replicatedentity.ReplicatedCounter.html">akkaserverless.replicatedentity.ReplicatedCounter</a></li><li><a href="module-akkaserverless.replicatedentity.ReplicatedCounterMap.html">akkaserverless.replicatedentity.ReplicatedCounterMap</a></li><li><a href="module-akkaserverless.replicatedentity.ReplicatedEntity.html">akkaserverless.replicatedentity.ReplicatedEntity</a></li><li><a href="module-akkaserverless.replicatedentity.ReplicatedMap.html">akkaserverless.replicatedentity.ReplicatedMap</a></li><li><a href="module-akkaserverless.replicatedentity.ReplicatedMultiMap.html">akkaserverless.replicatedentity.ReplicatedMultiMap</a></li><li><a href="module-akkaserverless.replicatedentity.ReplicatedRegister.html">akkaserverless.replicatedentity.ReplicatedRegister</a></li><li><a href="module-akkaserverless.replicatedentity.ReplicatedRegisterMap.html">akkaserverless.replicatedentity.ReplicatedRegisterMap</a></li><li><a href="module-akkaserverless.replicatedentity.ReplicatedSet.html">akkaserverless.replicatedentity.ReplicatedSet</a></li><li><a href="module-akkaserverless.replicatedentity.Vote.html">akkaserverless.replicatedentity.Vote</a></li><li><a href="module-akkaserverless.replies.Effect.html">akkaserverless.replies.Effect</a></li><li><a href="module-akkaserverless.replies.Failure.html">akkaserverless.replies.Failure</a></li><li><a href="module-akkaserverless.replies.Reply.html">akkaserverless.replies.Reply</a></li><li><a href="module-akkaserverless.ValueEntity.html">akkaserverless.ValueEntity</a></li><li><a href="module-akkaserverless.View.html">akkaserverless.View</a></li>
 				</ul>
 			</li>
 			
@@ -811,10 +811,6 @@
     <h5>Returns:</h5>
     
             
-<div class="param-desc">
-    <p>The failure description.</p>
-</div>
-
 
 
 <dl>
@@ -823,7 +819,7 @@
     </dt>
     <dd>
         
-<span class="param-type">string</span>
+<span class="param-type"><a href="module-akkaserverless.replies.Failure.html">module:akkaserverless.replies.Failure</a></span>
 |
 
 <span class="param-type">undefined</span>
@@ -1343,7 +1339,7 @@
             
 <hr>
 <dt>
-    <h4 class="name" id="setFailure"><span class="type-signature"></span>setFailure(failure)</h4>
+    <h4 class="name" id="setFailure"><span class="type-signature"></span>setFailure(failure [, status])</h4>
     
     
 </dt>
@@ -1374,6 +1370,8 @@
         <th>Type</th>
 
         
+        <th>Argument</th>
+        
 
         
 
@@ -1400,10 +1398,52 @@
             </td>
 
             
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
 
             
 
             <td class="description last"><p>The failure description.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>status</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="module-akkaserverless.html#.GrpcStatus">module:akkaserverless.GrpcStatus</a></span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>the status code to fail with, defaults to Unknown.</p></td>
         </tr>
 
     

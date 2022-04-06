@@ -47,7 +47,7 @@
 			<li class="dropdown">
 				<a href="classes.list.html" class="dropdown-toggle" data-toggle="dropdown">Classes<b class="caret"></b></a>
 				<ul class="dropdown-menu ">
-					<li><a href="module-akkaserverless.Action.html">akkaserverless.Action</a></li><li><a href="module-akkaserverless.AkkaServerless.html">akkaserverless.AkkaServerless</a></li><li><a href="module-akkaserverless.EventSourcedEntity.html">akkaserverless.EventSourcedEntity</a></li><li><a href="module-akkaserverless.IntegrationTestkit.html">akkaserverless.IntegrationTestkit</a></li><li><a href="module-akkaserverless.Metadata.html">akkaserverless.Metadata</a></li><li><a href="module-akkaserverless.replicatedentity.ReplicatedCounter.html">akkaserverless.replicatedentity.ReplicatedCounter</a></li><li><a href="module-akkaserverless.replicatedentity.ReplicatedCounterMap.html">akkaserverless.replicatedentity.ReplicatedCounterMap</a></li><li><a href="module-akkaserverless.replicatedentity.ReplicatedEntity.html">akkaserverless.replicatedentity.ReplicatedEntity</a></li><li><a href="module-akkaserverless.replicatedentity.ReplicatedMap.html">akkaserverless.replicatedentity.ReplicatedMap</a></li><li><a href="module-akkaserverless.replicatedentity.ReplicatedMultiMap.html">akkaserverless.replicatedentity.ReplicatedMultiMap</a></li><li><a href="module-akkaserverless.replicatedentity.ReplicatedRegister.html">akkaserverless.replicatedentity.ReplicatedRegister</a></li><li><a href="module-akkaserverless.replicatedentity.ReplicatedRegisterMap.html">akkaserverless.replicatedentity.ReplicatedRegisterMap</a></li><li><a href="module-akkaserverless.replicatedentity.ReplicatedSet.html">akkaserverless.replicatedentity.ReplicatedSet</a></li><li><a href="module-akkaserverless.replicatedentity.Vote.html">akkaserverless.replicatedentity.Vote</a></li><li><a href="module-akkaserverless.replies.Effect.html">akkaserverless.replies.Effect</a></li><li><a href="module-akkaserverless.replies.Reply.html">akkaserverless.replies.Reply</a></li><li><a href="module-akkaserverless.ValueEntity.html">akkaserverless.ValueEntity</a></li><li><a href="module-akkaserverless.View.html">akkaserverless.View</a></li>
+					<li><a href="module-akkaserverless.Action.html">akkaserverless.Action</a></li><li><a href="module-akkaserverless.AkkaServerless.html">akkaserverless.AkkaServerless</a></li><li><a href="module-akkaserverless.Cloudevent.html">akkaserverless.Cloudevent</a></li><li><a href="module-akkaserverless.EventSourcedEntity.html">akkaserverless.EventSourcedEntity</a></li><li><a href="module-akkaserverless.IntegrationTestkit.html">akkaserverless.IntegrationTestkit</a></li><li><a href="module-akkaserverless.JwtClaims.html">akkaserverless.JwtClaims</a></li><li><a href="module-akkaserverless.Metadata.html">akkaserverless.Metadata</a></li><li><a href="module-akkaserverless.replicatedentity.ReplicatedCounter.html">akkaserverless.replicatedentity.ReplicatedCounter</a></li><li><a href="module-akkaserverless.replicatedentity.ReplicatedCounterMap.html">akkaserverless.replicatedentity.ReplicatedCounterMap</a></li><li><a href="module-akkaserverless.replicatedentity.ReplicatedEntity.html">akkaserverless.replicatedentity.ReplicatedEntity</a></li><li><a href="module-akkaserverless.replicatedentity.ReplicatedMap.html">akkaserverless.replicatedentity.ReplicatedMap</a></li><li><a href="module-akkaserverless.replicatedentity.ReplicatedMultiMap.html">akkaserverless.replicatedentity.ReplicatedMultiMap</a></li><li><a href="module-akkaserverless.replicatedentity.ReplicatedRegister.html">akkaserverless.replicatedentity.ReplicatedRegister</a></li><li><a href="module-akkaserverless.replicatedentity.ReplicatedRegisterMap.html">akkaserverless.replicatedentity.ReplicatedRegisterMap</a></li><li><a href="module-akkaserverless.replicatedentity.ReplicatedSet.html">akkaserverless.replicatedentity.ReplicatedSet</a></li><li><a href="module-akkaserverless.replicatedentity.Vote.html">akkaserverless.replicatedentity.Vote</a></li><li><a href="module-akkaserverless.replies.Effect.html">akkaserverless.replies.Effect</a></li><li><a href="module-akkaserverless.replies.Failure.html">akkaserverless.replies.Failure</a></li><li><a href="module-akkaserverless.replies.Reply.html">akkaserverless.replies.Reply</a></li><li><a href="module-akkaserverless.ValueEntity.html">akkaserverless.ValueEntity</a></li><li><a href="module-akkaserverless.View.html">akkaserverless.View</a></li>
 				</ul>
 			</li>
 			
@@ -274,6 +274,227 @@ a string using toString.</p></div>
 
     
 
+    
+        <h3 class="subsection-title">Members</h3>
+
+        <dl>
+            
+<hr>
+<dt class="name" id="asMap">
+    <h4 id="asMap"><span class="type-signature">&lt;readonly> </span>asMap<span class="type-signature"> :Object.&lt;string, (string|Buffer|undefined)></span></h4>
+
+    
+</dt>
+<dd>
+    
+    <div class="description">
+        <p>The entries as a map of keys to single values.</p>
+<p>This allows working with the metadata as if it's just a map with single values for each key.</p>
+<p>Modifications to the object will be reflected by replacing all values for a given key with a single value for the<br>
+key.</p>
+<p>Keys are also treated case insensitively.</p>
+    </div>
+    
+
+    
+        <h5>Type:</h5>
+        <ul>
+            <li>
+                
+<span class="param-type">Object.&lt;string, (string|Buffer|undefined)></span>
+
+
+
+            </li>
+        </ul>
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt class="name" id="cloudevent">
+    <h4 id="cloudevent"><span class="type-signature">&lt;readonly> </span>cloudevent<span class="type-signature"> :<a href="module-akkaserverless.Cloudevent.html">module:akkaserverless.Cloudevent</a></span></h4>
+
+    
+</dt>
+<dd>
+    
+    <div class="description">
+        <p>The CloudEvent information extracted from the metadata.</p>
+    </div>
+    
+
+    
+        <h5>Type:</h5>
+        <ul>
+            <li>
+                
+<span class="param-type"><a href="module-akkaserverless.Cloudevent.html">module:akkaserverless.Cloudevent</a></span>
+
+
+
+            </li>
+        </ul>
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt class="name" id="jwtClaims">
+    <h4 id="jwtClaims"><span class="type-signature">&lt;readonly> </span>jwtClaims<span class="type-signature"> :<a href="module-akkaserverless.JwtClaims.html">module:akkaserverless.JwtClaims</a></span></h4>
+
+    
+</dt>
+<dd>
+    
+    <div class="description">
+        <p>The JWT claims information extracted from the metadata.</p>
+    </div>
+    
+
+    
+        <h5>Type:</h5>
+        <ul>
+            <li>
+                
+<span class="param-type"><a href="module-akkaserverless.JwtClaims.html">module:akkaserverless.JwtClaims</a></span>
+
+
+
+            </li>
+        </ul>
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+</dd>
+
+        </dl>
     
 
     
@@ -1114,6 +1335,136 @@ a string using toString.</p></div>
 
 
         
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="setHttpStatusCode"><span class="type-signature"></span>setHttpStatusCode(code)</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Set the HTTP status code for the response when sending a successful response using HTTP transcoding.</p>
+<p>This will only apply to responses that are being transcoded to plain HTTP from gRPC using the protobuf HTTP
+annotations. When gRPC is being used, calling this has no effect.</p>
+    </div>
+    
+
+    
+
+    
+
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>code</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The HTTP status code.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
 
     
 </dd>
