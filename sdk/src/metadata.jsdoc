@@ -43,8 +43,50 @@
  */
 
 /**
+ * The entries as a map of keys to single values.
+ *
+ * This allows working with the metadata as if it's just a map with single values for each key.
+ *
+ * Modifications to the object will be reflected by replacing all values for a given key with a single value for the\
+ * key.
+ *
+ * Keys are also treated case insensitively.
+ *
+ * @name module:kalix.Metadata#asMap
+ * @type {Object.<string,string|Buffer|undefined>}
+ * @readonly
+ */
+
+/**
+ * The CloudEvent information extracted from the metadata.
+ *
+ * @name module:kalix.Metadata#cloudevent
+ * @type {module:kalix.Cloudevent}
+ * @readonly
+ */
+
+
+/**
+ * The JWT claims information extracted from the metadata.
+ *
+ * @name module:kalix.Metadata#jwtClaims
+ * @type {module:kalix.JwtClaims}
+ * @readonly
+ */
+
+/**
  * @function module:kalix.Metadata#getSubject
  * @returns {module:kalix.MetadataValue|undefined} CloudEvent subject value.
+ */
+
+/**
+ * Set the HTTP status code for the response when sending a successful response using HTTP transcoding.
+ *
+ * This will only apply to responses that are being transcoded to plain HTTP from gRPC using the protobuf HTTP
+ * annotations. When gRPC is being used, calling this has no effect.
+ *
+ * @function module:kalix.Metadata#setHttpStatusCode
+ * @param {number} code The HTTP status code.
  */
 
 /**
