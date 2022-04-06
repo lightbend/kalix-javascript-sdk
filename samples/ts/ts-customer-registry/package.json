@@ -24,7 +24,7 @@
   "//": "https://npm.community/t/npm-install-does-not-install-transitive-dependencies-of-local-dependency/2264",
   "main": "dist/index.js",
   "dependencies": {
-    "@lightbend/akkaserverless-javascript-sdk": "0.33.7"
+    "@lightbend/akkaserverless-javascript-sdk": "0.33.8"
   },
   "devDependencies": {
     "@types/chai": "^4.2.21",
