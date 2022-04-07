@@ -16,7 +16,7 @@
 
 import { Metadata } from './metadata';
 
-const JwtClaimPrefix = '_akkasls-jwt-claim-';
+const JwtClaimPrefix = '_kalix-jwt-claim-';
 
 /**
  * JWT claims that were part of the bearer token with this request.

@@ -91,7 +91,7 @@
 
 /**
  * @function module:kalix.replies.Reply#getFailure
- * @returns {string|undefined} The failure description.
+ * @returns {module:kalix.replies.Failure|undefined} The failure description.
  */
 
 /**
@@ -99,6 +99,7 @@
  *
  * @function module:kalix.replies.Reply#setFailure
  * @param {string} failure The failure description.
+ * @param {module:kalix.GrpcStatus} [status] the status code to fail with, defaults to Unknown.
  * @returns {module:kalix.replies.Reply} The updated reply.
  */
 
@@ -157,6 +158,7 @@
  *
  * @function module:kalix.replies~failure
  * @param {string} description A description of the failure.
+ * @param {module:kalix.GrpcStatus} [status] - the GRPC status, defaults to Unknown
  * @return {module:kalix.replies.Reply} A failure reply.
  */
 
@@ -167,4 +169,18 @@
  *
  * @function module:kalix.replies~noReply
  * @return {module:kalix.replies.Reply} An empty reply.
+ */
+
+/**
+ * @class module:kalix.replies.Failure
+ */
+
+/**
+ * @function module:kalix.replies.Failure#getDescription
+ * @returns {string}
+ */
+
+/**
+ * @function module:kalix.replies.Failure#getStatus
+ * @returns {module:kalix.GrpcStatus|undefined}
  */

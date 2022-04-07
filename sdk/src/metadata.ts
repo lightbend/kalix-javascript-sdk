@@ -184,7 +184,7 @@ export class Metadata {
     if (code < 100 || code >= 600) {
       throw new Error('Invalid HTTP status code: ' + code);
     }
-    this.set('_akkasls-http-code', code.toString());
+    this.set('_kalix-http-code', code.toString());
   }
 
   /**

@@ -99,3 +99,28 @@
  *                             distributed to remaining replicas in the background.
  * @property {number} ALL Updates will be written immediately to all replicas.
  */
+
+/**
+ * The GRPC status codes.
+ *
+ * @readonly
+ * @name module:kalix.GrpcStatus
+ * @enum
+ * @property [Ok = 0]
+ * @property [Cancelled = 1]
+ * @property [Unknown = 2]
+ * @property [InvalidArgument = 3]
+ * @property [DeadlineExceeded = 4]
+ * @property [NotFound = 5]
+ * @property [AlreadyExists = 6]
+ * @property [PermissionDenied = 7]
+ * @property [ResourceExhausted = 8]
+ * @property [FailedPrecondition = 9]
+ * @property [Aborted = 10]
+ * @property [OutOfRange = 11]
+ * @property [Unimplemented = 12]
+ * @property [Internal = 13]
+ * @property [Unavailable = 14]
+ * @property [DataLoss = 15]
+ * @property [Unauthenticated = 16]
+ */
