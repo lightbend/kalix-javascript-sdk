@@ -16,7 +16,7 @@
 
 import { Method } from 'protobufjs';
 import { Metadata } from './metadata';
-import { GrpcStatus } from './akkaserverless';
+import { GrpcStatus } from './kalix';
 
 // Note that there is a parallel reply.jsdoc that needs to be changed for API changes here to be visible
 

@@ -18,7 +18,7 @@ import { expect } from 'chai';
 import protobuf from 'protobufjs';
 import { Metadata } from '../src/metadata';
 import * as replies from '../src/reply';
-import { GrpcStatus } from '../src/akkaserverless';
+import { GrpcStatus } from '../src/kalix';
 
 describe('Replies', () => {
   it('should create an empty Reply', () => {

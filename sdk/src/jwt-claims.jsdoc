@@ -19,22 +19,22 @@
  *
  * This exposes an JWT claims that were extracted from the bearer token.
  *
- * @class module:akkaserverless.JwtClaims
- * @param {module:akkaserverless.Metadata} metadata The metadata that the JWT claims com efrom.
+ * @class module:kalix.JwtClaims
+ * @param {module:kalix.Metadata} metadata The metadata that the JWT claims com efrom.
  */
 
 /**
  * The metadata backing this JWT claims object.
  *
- * @name module:akkaserverless.JwtClaims#metadata
- * @type {module:akkaserverless.Metadata}
+ * @name module:kalix.JwtClaims#metadata
+ * @type {module:kalix.Metadata}
  * @readonly
  */
 
 /**
  * The issuer
  *
- * @name module:akkaserverless.JwtClaims#issuer
+ * @name module:kalix.JwtClaims#issuer
  * @type {string | undefined}
  * @readonly
  */
@@ -42,7 +42,7 @@
 /**
  * The subject
  *
- * @name module:akkaserverless.JwtClaims#subject
+ * @name module:kalix.JwtClaims#subject
  * @type {string | undefined}
  * @readonly
  */
@@ -50,7 +50,7 @@
 /**
  * The audience
  *
- * @name module:akkaserverless.JwtClaims#audience
+ * @name module:kalix.JwtClaims#audience
  * @type {string | undefined}
  * @readonly
  */
@@ -58,7 +58,7 @@
 /**
  * The expiration time
  *
- * @name module:akkaserverless.JwtClaims#expirationTime
+ * @name module:kalix.JwtClaims#expirationTime
  * @type {Date | undefined}
  * @readonly
  */
@@ -66,7 +66,7 @@
 /**
  * The not before
  *
- * @name module:akkaserverless.JwtClaims#notBefore
+ * @name module:kalix.JwtClaims#notBefore
  * @type {Date | undefined}
  * @readonly
  */
@@ -74,7 +74,7 @@
 /**
  * The issued at
  *
- * @name module:akkaserverless.JwtClaims#issuedAt
+ * @name module:kalix.JwtClaims#issuedAt
  * @type {Date | undefined}
  * @readonly
  */
@@ -82,7 +82,7 @@
 /**
  * The jwt id
  *
- * @name module:akkaserverless.JwtClaims#jwtId
+ * @name module:kalix.JwtClaims#jwtId
  * @type {string | undefined}
  * @readonly
  */
@@ -90,7 +90,7 @@
 /**
  * Get the string claim with the given name.
  *
- * @function module:akkaserverless.JwtClaims#getString
+ * @function module:kalix.JwtClaims#getString
  * @param {string} name The name of the claim.
  * @returns {string | undefined} the claim, or undefined if it doesn't exist or is not of the right type.
  */
@@ -98,7 +98,7 @@
 /**
  * Get the numeric claim with the given name.
  *
- * @function module:akkaserverless.JwtClaims#getNumber
+ * @function module:kalix.JwtClaims#getNumber
  * @param {string} name The name of the claim.
  * @returns {number | undefined} the claim, or undefined if it doesn't exist or is not of the right type.
  */
@@ -106,7 +106,7 @@
 /**
  * Get the numeric date claim with the given name.
  *
- * @function module:akkaserverless.JwtClaims#getNumericDate
+ * @function module:kalix.JwtClaims#getNumericDate
  * @param {string} name The name of the claim.
  * @returns {Date | undefined} the claim, or undefined if it doesn't exist or is not of the right type.
  */
@@ -114,7 +114,7 @@
 /**
  * Get the boolean claim with the given name.
  *
- * @function module:akkaserverless.JwtClaims#getBoolean
+ * @function module:kalix.JwtClaims#getBoolean
  * @param {string} name The name of the claim.
  * @returns {boolean | undefined} the claim, or undefined if it doesn't exist or is not of the right type.
  */
@@ -122,7 +122,7 @@
 /**
  * Get the object claim with the given name.
  *
- * @function module:akkaserverless.JwtClaims#getObject
+ * @function module:kalix.JwtClaims#getObject
  * @param {string} name The name of the claim.
  * @returns {object | undefined} the claim, or undefined if it doesn't exist or is not of the right type.
  */
@@ -130,7 +130,7 @@
 /**
  * Get the string array claim with the given name.
  *
- * @function module:akkaserverless.JwtClaims#getStringArray
+ * @function module:kalix.JwtClaims#getStringArray
  * @param {string} name The name of the claim.
  * @returns {string[] | undefined} the claim, or undefined if it doesn't exist or is not of the right type.
  */
@@ -138,7 +138,7 @@
 /**
  * Get the numeric array claim with the given name.
  *
- * @function module:akkaserverless.JwtClaims#getNumberArray
+ * @function module:kalix.JwtClaims#getNumberArray
  * @param {string} name The name of the claim.
  * @returns {number[] | undefined} the claim, or undefined if it doesn't exist or is not of the right type.
  */
@@ -146,7 +146,7 @@
 /**
  * Get the boolean array claim with the given name.
  *
- * @function module:akkaserverless.JwtClaims#getBooleanArray
+ * @function module:kalix.JwtClaims#getBooleanArray
  * @param {string} name The name of the claim.
  * @returns {boolean[] | undefined} the claim, or undefined if it doesn't exist or is not of the right type.
  */
@@ -154,7 +154,7 @@
 /**
  * Get the object array claim with the given name.
  *
- * @function module:akkaserverless.JwtClaims#getObjectArray
+ * @function module:kalix.JwtClaims#getObjectArray
  * @param {string} name The name of the claim.
  * @returns {object[] | undefined} the claim, or undefined if it doesn't exist or is not of the right type.
  */
@@ -162,7 +162,7 @@
 /**
  * Get the numeric date array claim with the given name.
  *
- * @function module:akkaserverless.JwtClaims#getNumericDateArray
+ * @function module:kalix.JwtClaims#getNumericDateArray
  * @param {string} name The name of the claim.
  * @returns {Date[] | undefined} the claim, or undefined if it doesn't exist or is not of the right type.
  */

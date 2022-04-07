@@ -20,22 +20,22 @@
  * This exposes CloudEvent data from metadata. Changes made to the Cloudevent are reflected in the backing metadata,
  * as are changes to the backing metadata reflected in this CloudEvent.
  *
- * @class module:akkaserverless.Cloudevent
- * @param {module:akkaserverless.Metadata} metadata The metadata backing this CloudEvent.
+ * @class module:kalix.Cloudevent
+ * @param {module:kalix.Metadata} metadata The metadata backing this CloudEvent.
  */
 
 /**
  * The metadata backing this CloudEvent.
  *
- * @name module:akkaserverless.Cloudevent#metadata
- * @type {module:akkaserverless.Metadata}
+ * @name module:kalix.Cloudevent#metadata
+ * @type {module:kalix.Metadata}
  * @readonly
  */
 
 /**
  * The spec version
  *
- * @name module:akkaserverless.Cloudevent#specversion
+ * @name module:kalix.Cloudevent#specversion
  * @type {string | undefined}
  * @readonly
  */
@@ -43,49 +43,49 @@
 /**
  * The id
  *
- * @name module:akkaserverless.Cloudevent#id
+ * @name module:kalix.Cloudevent#id
  * @type {string | undefined}
  */
 
 /**
  * The source
  *
- * @name module:akkaserverless.Cloudevent#source
+ * @name module:kalix.Cloudevent#source
  * @type {string | undefined}
  */
 
 /**
  * The type
  *
- * @name module:akkaserverless.Cloudevent#type
+ * @name module:kalix.Cloudevent#type
  * @type {string | undefined}
  */
 
 /**
  * The datacontenttype
  *
- * @name module:akkaserverless.Cloudevent#datacontenttype
+ * @name module:kalix.Cloudevent#datacontenttype
  * @type {string | undefined}
  */
 
 /**
  * The dataschema
  *
- * @name module:akkaserverless.Cloudevent#dataschema
+ * @name module:kalix.Cloudevent#dataschema
  * @type {string | undefined}
  */
 
 /**
  * The subject
  *
- * @name module:akkaserverless.Cloudevent#subject
+ * @name module:kalix.Cloudevent#subject
  * @type {string | undefined}
  */
 
 /**
  * The time
  *
- * @name module:akkaserverless.Cloudevent#time
+ * @name module:kalix.Cloudevent#time
  * @type {Date | undefined}
  */
 

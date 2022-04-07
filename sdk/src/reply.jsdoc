@@ -176,7 +176,7 @@
  */
 
 /**
- * @function module:akkaserverless.replies.Failure#getDescription
+ * @function module:kalix.replies.Failure#getDescription
  * @returns {string}
  */
 

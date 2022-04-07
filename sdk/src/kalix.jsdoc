@@ -104,7 +104,7 @@
  * The GRPC status codes.
  *
  * @readonly
- * @name module:akkaserverless.GrpcStatus
+ * @name module:kalix.GrpcStatus
  * @enum
  * @property [Ok = 0]
  * @property [Cancelled = 1]
