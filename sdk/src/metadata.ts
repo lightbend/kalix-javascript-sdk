@@ -20,7 +20,7 @@ import { JwtClaims } from './jwt-claims';
 type MetadataValue = string | Buffer;
 
 // Using an interface for compatibility with legacy JS code
-interface MetadataEntry {
+export interface MetadataEntry {
   readonly key: string;
   readonly bytesValue: Buffer | undefined;
   readonly stringValue: string | undefined;
