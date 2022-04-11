@@ -14,17 +14,21 @@
  * limitations under the License.
  */
 
-const should = require('chai').should();
-const protobuf = require('protobufjs');
-const path = require('path');
-const AnySupport = require('../src/protobuf-any');
-const Long = require('long');
+import { should } from 'chai';
+import protobuf from 'protobufjs';
+import path from 'path';
+import AnySupport from '../src/protobuf-any';
+import Long from 'long';
+import * as protobufHelper from '../src/protobuf-helper';
+
+should();
 
 const root = new protobuf.Root();
 root.loadSync(path.join(__dirname, 'example.proto'));
 const anySupport = new AnySupport(root);
 const Example = root.lookupType('com.example.Example');
 const PrimitiveLike = root.lookupType('com.example.PrimitiveLike');
+const Any = protobufHelper.moduleRoot.google.protobuf.Any;
 
 describe('AnySupport', () => {
   it('should support serializing strings', () => {
@@ -125,23 +129,27 @@ describe('AnySupport', () => {
 
   it('should support deserializing primitives when the field in not present', () => {
     anySupport
-      .deserialize({
-        type_url: 'type.kalix.io/string',
-        value: PrimitiveLike.encode({}).finish(),
-      })
+      .deserialize(
+        Any.create({
+          type_url: 'type.kalix.io/string',
+          value: PrimitiveLike.encode({}).finish(),
+        }),
+      )
       .should.equal('');
   });
 
   it('should support deserializing primitives when other fields are present', () => {
     anySupport
-      .deserialize({
-        type_url: 'type.kalix.io/string',
-        value: PrimitiveLike.encode({
-          field1: 'one',
-          field2: 'two',
-          field3: 'three',
-        }).finish(),
-      })
+      .deserialize(
+        Any.create({
+          type_url: 'type.kalix.io/string',
+          value: PrimitiveLike.encode({
+            field1: 'one',
+            field2: 'two',
+            field3: 'three',
+          }).finish(),
+        }),
+      )
       .should.equal('one');
   });
 
@@ -186,7 +194,9 @@ describe('AnySupport', () => {
   });
 
   it('should handle deserializing undefined any values', () => {
-    const serialized = { type_url: 'type.googleapis.com/com.example.Example' };
+    const serialized = Any.create({
+      type_url: 'type.googleapis.com/com.example.Example',
+    });
     const deserialized = anySupport.deserialize(serialized);
     deserialized.should.be.an.instanceof(Example.ctor);
     deserialized.should.be.empty;

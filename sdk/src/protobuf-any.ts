@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-const path = require('path');
-const util = require('util');
-const protobufHelper = require('./protobuf-helper');
-const protobuf = require('protobufjs');
-const Long = require('long');
-const stableJsonStringify = require('json-stable-stringify');
+import util from 'util';
+import * as protobufHelper from './protobuf-helper';
+import protobuf from 'protobufjs';
+import Long from 'long';
+import stableJsonStringify from 'json-stable-stringify';
 
+type Any = protobufHelper.moduleRoot.google.protobuf.Any;
 const Any = protobufHelper.moduleRoot.google.protobuf.Any;
 
 // To allow primitive types to be stored, Kalix defines a number of primitive type URLs, based on protobuf types.
@@ -30,50 +30,34 @@ const KalixPrimitive = 'type.kalix.io/';
 // Chosen because it reduces the likelihood of clashing with something else.
 const KalixPrimitiveFieldNumber = 1;
 const KalixPrimitiveFieldNumberEncoded = KalixPrimitiveFieldNumber << 3; // 8
-const KalixSupportedPrimitiveTypes = new Set();
-['string', 'bytes', 'int64', 'bool', 'double'].forEach(
-  KalixSupportedPrimitiveTypes.add.bind(KalixSupportedPrimitiveTypes),
-);
-const EmptyArray = Object.freeze([]);
+const KalixSupportedPrimitiveTypes = new Set([
+  'string',
+  'bytes',
+  'int64',
+  'bool',
+  'double',
+]);
+
+type PrimitiveTypeName = 'string' | 'bytes' | 'int64' | 'bool' | 'double';
+type PrimitiveType = string | number | boolean | protobuf.Long | Uint8Array;
+
+const EmptyArray = Object.freeze(new Uint8Array(0));
 
 const KalixJson = 'json.kalix.io/';
-
-/**
- * This is any type that has been returned by the protobufjs Message.create method.
- *
- * It should have a encode() method on it.
- *
- * @typedef module:kalix.SerializableProtobufMessage
- * @type {Object}
- */
-
-/**
- * Any type that has a type property on it can be serialized as JSON, with the value of the type property describing
- * the type of the value.
- *
- * @typedef module:kalix.TypedJson
- * @type {Object}
- * @property {string} type The type of the object.
- */
-
-/**
- * A type that is serializable.
- *
- * @typedef module:kalix.Serializable
- * @type {module:kalix.SerializableProtobufMessage|module:kalix.TypedJson|Object|string|number|boolean|Long|Buffer}
- */
 
 /**
  * @private
  */
 class AnySupport {
-  constructor(root) {
+  private root: protobuf.Root;
+
+  constructor(root: protobuf.Root) {
     this.root = root;
   }
 
-  static fullNameOf(descriptor) {
-    function namespace(desc) {
-      if (desc.name === '') {
+  static fullNameOf(descriptor: protobuf.Type): string {
+    function namespace(desc: protobuf.NamespaceBase | null): string {
+      if (!desc || desc.name === '') {
         return '';
       } else {
         return namespace(desc.parent) + desc.name + '.';
@@ -82,23 +66,26 @@ class AnySupport {
     return namespace(descriptor.parent) + descriptor.name;
   }
 
-  static stripHostName(url) {
+  static stripHostName(url: string): string {
     const idx = url.indexOf('/');
     if (url.indexOf('/') >= 0) {
-      return url.substr(idx + 1);
+      return url.substring(idx + 1);
     } else {
       // fail?
       return url;
     }
   }
 
-  static isPrimitiveDefaultValue(obj, type) {
+  static isPrimitiveDefaultValue(obj: any, type: PrimitiveTypeName): boolean {
     if (Long.isLong(obj)) return obj.equals(Long.ZERO);
     else if (Buffer.isBuffer(obj)) return !obj.length;
     else return obj === protobuf.types.defaults[type];
   }
 
-  static serializePrimitiveValue(obj, type) {
+  static serializePrimitiveValue(
+    obj: any,
+    type: PrimitiveTypeName,
+  ): Uint8Array {
     if (this.isPrimitiveDefaultValue(obj, type)) return EmptyArray;
     const writer = new protobuf.Writer();
     // First write the field key.
@@ -107,11 +94,11 @@ class AnySupport {
       (KalixPrimitiveFieldNumberEncoded | protobuf.types.basic[type]) >>> 0,
     );
     // Now write the primitive
-    writer[type](obj);
+    (writer[type] as Function)(obj);
     return writer.finish();
   }
 
-  static serializePrimitive(obj, type) {
+  static serializePrimitive(obj: any, type: PrimitiveTypeName): Any {
     return Any.create({
       // I have *no* idea why it's type_url and not typeUrl, but it is.
       type_url: KalixPrimitive + type,
@@ -133,7 +120,7 @@ class AnySupport {
    * - objects (based on stable JSON serialization)
    * @private
    */
-  static toComparable(obj) {
+  static toComparable(obj: any): string | number | boolean {
     // When outputting strings, we prefix with a letter for the type, to guarantee uniqueness of different types.
     if (typeof obj === 'string') {
       return 's' + obj;
@@ -176,11 +163,11 @@ class AnySupport {
    * @private
    */
   static serialize(
-    obj,
-    allowPrimitives,
-    fallbackToJson,
+    obj: any,
+    allowPrimitives: boolean,
+    fallbackToJson: boolean,
     requireJsonType = false,
-  ) {
+  ): Any {
     if (allowPrimitives) {
       if (typeof obj === 'string') {
         return this.serializePrimitive(obj, 'string');
@@ -240,14 +227,14 @@ class AnySupport {
    * @param any The any.
    * @private
    */
-  deserialize(any) {
+  deserialize(any: Any): any {
     const url = any.type_url;
     const idx = url.indexOf('/');
     let hostName = '';
     let type = url;
     if (url.indexOf('/') >= 0) {
-      hostName = url.substr(0, idx + 1);
-      type = url.substr(idx + 1);
+      hostName = url.substring(0, idx + 1);
+      type = url.substring(idx + 1);
     }
 
     let bytes = any.value || EmptyArray;
@@ -257,7 +244,7 @@ class AnySupport {
     }
 
     if (hostName === KalixJson) {
-      const json = AnySupport.deserializePrimitive(bytes, 'string');
+      const json = AnySupport.deserializePrimitive(bytes, 'string') as string;
       return JSON.parse(json);
     }
 
@@ -265,16 +252,21 @@ class AnySupport {
     return desc.decode(bytes);
   }
 
-  static primitiveDefaultValue(type) {
+  static primitiveDefaultValue(type: PrimitiveTypeName): PrimitiveType {
     if (type === 'int64') return Long.ZERO;
     else if (type === 'bytes') return Buffer.alloc(0);
     else return protobuf.types.defaults[type];
   }
 
-  static deserializePrimitive(bytes, type) {
-    if (!KalixSupportedPrimitiveTypes.has(type)) {
-      throw new Error('Unsupported Kalix primitive Any type: ' + type);
+  static deserializePrimitive(
+    bytes: Uint8Array,
+    typeName: string,
+  ): PrimitiveType {
+    if (!KalixSupportedPrimitiveTypes.has(typeName)) {
+      throw new Error('Unsupported Kalix primitive type: ' + typeName);
     }
+
+    const type = typeName as PrimitiveTypeName;
 
     if (!bytes.length) return this.primitiveDefaultValue(type);
 
@@ -308,4 +300,4 @@ class AnySupport {
   }
 }
 
-module.exports = AnySupport;
+export = AnySupport;
