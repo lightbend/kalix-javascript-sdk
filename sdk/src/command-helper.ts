@@ -14,25 +14,50 @@
  * limitations under the License.
  */
 
-const AnySupport = require('./protobuf-any');
-const EffectSerializer = require('./effect-serializer');
-const { ContextFailure } = require('./context-failure');
-const { Metadata } = require('./metadata');
-const { Reply } = require('./reply');
+import AnySupport from './protobuf-any';
+import { CommandHandlerFactory, InternalContext, UserReply } from './command';
+import { ContextFailure } from './context-failure';
+import { EffectMethod } from './effect';
+import EffectSerializer from './effect-serializer';
+import { GrpcStatus, ServiceMap } from './kalix';
+import Long from 'long';
+import { Metadata } from './metadata';
+import { Reply } from './reply';
+import grpc from '@grpc/grpc-js';
+import * as proto from '../proto/protobuf-bundle';
+
+namespace protocol {
+  export type EntityCommand = proto.kalix.component.entity.ICommand;
+  export type EntityStreamOut =
+    | proto.kalix.component.valueentity.IValueEntityStreamOut
+    | proto.kalix.component.eventsourcedentity.IEventSourcedStreamOut
+    | proto.kalix.component.replicatedentity.IReplicatedEntityStreamOut;
+  export type Failure = proto.kalix.component.IFailure;
+}
+
+type Message = { [key: string]: any };
 
 /**
  * Creates the base for context objects.
  * @private
  */
 class CommandHelper {
+  private entityId: string;
+  private service: protobuf.Service;
+  private streamId: string;
+  private call: grpc.ServerDuplexStream<any, any>;
+  private handlerFactory: CommandHandlerFactory;
+  private effectSerializer: EffectSerializer;
+  private debug: debug.Debugger;
+
   constructor(
-    entityId,
-    service,
-    streamId,
-    call,
-    handlerFactory,
-    allComponents,
-    debug,
+    entityId: string,
+    service: protobuf.Service,
+    streamId: string,
+    call: grpc.ServerDuplexStream<any, any>,
+    handlerFactory: CommandHandlerFactory,
+    allComponents: ServiceMap,
+    debug: debug.Debugger,
   ) {
     this.entityId = entityId;
     this.service = service;
@@ -49,11 +74,11 @@ class CommandHelper {
    * @param command The command to handle.
    * @private
    */
-  async handleCommand(command) {
+  async handleCommand(command: protocol.EntityCommand): Promise<void> {
     try {
       const reply = await this.handleCommandLogic(command);
       this.call.write(reply);
-    } catch (err) {
+    } catch (err: any) {
       if (err.failure && err.failure.commandId === command.id) {
         this.call.write(err);
         this.call.end();
@@ -64,15 +89,17 @@ class CommandHelper {
     }
   }
 
-  async handleCommandLogic(command) {
-    let metadata = new Metadata([]);
-    if (command.metadata && command.metadata.entries) {
-      metadata = new Metadata(command.metadata.entries);
-    }
+  async handleCommandLogic(
+    command: protocol.EntityCommand,
+  ): Promise<protocol.EntityStreamOut> {
+    const commandId = command.id ? Long.fromValue(command.id) : Long.ZERO;
+    const metadata = Metadata.fromProtocol(command.metadata);
+    const ctx = this.createContext(commandId, metadata);
 
-    const ctx = this.createContext(command.id, metadata);
-
-    const errorReply = (msg, status) => {
+    const errorReply = (
+      msg: string,
+      status: GrpcStatus,
+    ): protocol.EntityStreamOut => {
       return {
         failure: {
           commandId: command.id,
@@ -82,65 +109,59 @@ class CommandHelper {
       };
     };
 
-    if (!this.service.methods.hasOwnProperty(command.name)) {
+    if (!command.name) {
+      ctx.commandDebug('No command name');
+      return errorReply('No command name', GrpcStatus.InvalidArgument);
+    } else if (!this.service.methods.hasOwnProperty(command.name)) {
       ctx.commandDebug("Command '%s' unknown", command.name);
       return errorReply(
         'Unknown command named ' + command.name,
-        12 /* unimplemented */,
+        GrpcStatus.Unimplemented,
       );
     } else {
       try {
         const grpcMethod = this.service.methods[command.name];
 
         // todo maybe reconcile whether the command URL of the Any type matches the gRPC response type
-        let commandBuffer = command.payload.value;
-        if (typeof commandBuffer === 'undefined') {
-          commandBuffer = new Buffer(0);
-        }
-        const deserCommand =
-          grpcMethod.resolvedRequestType.decode(commandBuffer);
+        const payload = command.payload?.value ?? Buffer.alloc(0);
+        const message = grpcMethod.resolvedRequestType!.decode(payload);
 
-        const handler = this.handlerFactory(command.name, grpcMethod);
+        const handler = this.handlerFactory(command.name);
 
         if (handler !== null) {
-          ctx.streamed = command.streamed;
-
           const reply = await this.invokeHandlerLogic(
-            () => handler(deserCommand, ctx),
+            () => handler(message, ctx),
             ctx,
             grpcMethod,
             'Command',
           );
-
-          if (reply && reply.reply) {
-            return reply;
-          } else {
-            return { reply: reply };
-          }
+          return reply;
         } else {
           const msg =
             "No handler registered for command '" + command.name + "'";
           ctx.commandDebug(msg);
-          return errorReply(msg, 12 /* unimplemented */);
+          return errorReply(msg, GrpcStatus.Unimplemented);
         }
-      } catch (err) {
+      } catch (err: any) {
         const error = "Error handling command '" + command.name + "'";
         ctx.commandDebug(error);
         console.error(err);
-
-        throw errorReply(error + ': ' + err, 2 /* unknown */);
+        throw errorReply(error + ': ' + err, GrpcStatus.Unknown);
       }
     }
   }
 
-  async invoke(handler, ctx) {
+  async invoke(
+    handler: () => Promise<UserReply>,
+    ctx: InternalContext,
+  ): Promise<UserReply> {
     ctx.reply = {};
-    let userReply = null;
+    let userReply: UserReply;
     try {
       userReply = await Promise.resolve(handler());
     } catch (err) {
-      if (ctx.error === null) {
-        // If the error field isn't null, then that means we were explicitly told
+      if (ctx.error === undefined) {
+        // If the error field is defined, then that means we were explicitly told
         // to fail, so we can ignore this thrown error and fail gracefully with a
         // failure message. Otherwise, we rethrow, and handle by closing the connection
         // higher up.
@@ -153,9 +174,14 @@ class CommandHelper {
     return userReply;
   }
 
-  errorReply(msg, status, ctx, desc) {
+  errorReply(
+    msg: string | undefined,
+    status: GrpcStatus | undefined,
+    ctx: InternalContext,
+    desc: string,
+  ): protocol.EntityStreamOut {
     ctx.commandDebug("%s failed with message '%s'", desc, msg);
-    const failure = {
+    const failure: protocol.Failure = {
       commandId: ctx.commandId,
       description: msg,
     };
@@ -172,10 +198,15 @@ class CommandHelper {
     };
   }
 
-  async invokeHandlerLogic(handler, ctx, grpcMethod, desc) {
+  async invokeHandlerLogic(
+    handler: () => Promise<UserReply>,
+    ctx: InternalContext,
+    grpcMethod: protobuf.Method,
+    desc: string,
+  ): Promise<protocol.EntityStreamOut> {
     const userReply = await this.invoke(handler, ctx);
 
-    if (ctx.error !== null) {
+    if (ctx.error !== undefined) {
       return this.errorReply(
         ctx.error.message,
         ctx.error.grpcStatus,
@@ -183,57 +214,60 @@ class CommandHelper {
         desc,
       );
     } else if (userReply instanceof Reply) {
-      if (userReply.failure) {
+      if (userReply.getFailure()) {
         // handle failure with a separate write to make sure we don't write back events etc
         return this.errorReply(
-          userReply.failure.description,
-          userReply.failure.status,
+          userReply.getFailure()?.getDescription(),
+          userReply.getFailure()?.getStatus(),
           ctx,
           desc,
         );
       } else {
         // effects need to go first to end up in reply
         // note that we amend the ctx.reply to get events etc passed along from the entities
+        if (!ctx.reply) ctx.reply = {};
         ctx.reply.commandId = ctx.commandId;
-        if (userReply.effects) {
-          ctx.reply.sideEffects = userReply.effects.map((effect) =>
-            this.effectSerializer.serializeSideEffect(
-              effect.method,
-              effect.message,
-              effect.synchronous,
-              effect.metadata,
-            ),
-          );
+        if (userReply.getEffects()) {
+          ctx.reply.sideEffects = userReply
+            .getEffects()
+            .map((effect) =>
+              this.effectSerializer.serializeSideEffect(
+                effect.method,
+                effect.message,
+                effect.synchronous,
+                effect.metadata,
+              ),
+            );
         }
-        if (userReply.message) {
+        if (userReply.getMessage()) {
           ctx.reply.clientAction = {
             reply: {
               payload: AnySupport.serialize(
-                grpcMethod.resolvedResponseType.create(userReply.message),
+                grpcMethod.resolvedResponseType!.create(userReply.getMessage()),
                 false,
                 false,
               ),
-              metadata: userReply.metadata || null,
+              metadata: userReply.getMetadata() || null,
             },
           };
           ctx.commandDebug(
             '%s reply with type [%s] with %d side effects.',
             desc,
-            ctx.reply.clientAction.reply.payload.type_url,
+            ctx.reply.clientAction.reply?.payload?.type_url,
             ctx.effects.length,
           );
-        } else if (userReply.forward) {
+        } else if (userReply.getForward()) {
           ctx.reply.clientAction = {
-            forward: this.effectSerializer.serializeEffect(
-              userReply.forward.method,
-              userReply.forward.message,
-              userReply.forward.metadata,
+            forward: this.effectSerializer.serializeForward(
+              userReply.getForward()?.getMethod() ?? null,
+              userReply.getForward()?.getMessage(),
+              userReply.getForward()?.getMetadata(),
             ),
           };
           ctx.commandDebug(
             '%s forward to %s with %d side effects.',
             desc,
-            userReply.forward.method,
+            userReply.getForward()?.getMethod(),
             ctx.effects.length,
           );
         } else {
@@ -247,37 +281,38 @@ class CommandHelper {
           ctx.reply.clientAction = {
             reply: {
               payload: AnySupport.serialize(
-                grpcMethod.resolvedResponseType.create({}),
+                grpcMethod.resolvedResponseType!.create({}),
                 false,
                 false,
               ),
-              metadata: userReply.metadata || null,
+              metadata: userReply.getMetadata() || null,
             },
           };
         }
 
-        return ctx.reply;
+        return { reply: ctx.reply };
       }
     } else {
+      if (!ctx.reply) ctx.reply = {};
       ctx.reply.commandId = ctx.commandId;
       ctx.reply.sideEffects = ctx.effects;
 
-      if (ctx.forward !== null) {
+      if (ctx.forward !== undefined) {
         ctx.reply.clientAction = {
           forward: ctx.forward,
         };
         ctx.commandDebug(
           '%s forward to %s.%s with %d side effects.',
           desc,
-          ctx.forward.serviceName,
-          ctx.forward.commandName,
+          ctx.forward?.serviceName,
+          ctx.forward?.commandName,
           ctx.effects.length,
         );
       } else if (userReply !== undefined) {
         ctx.reply.clientAction = {
           reply: {
             payload: AnySupport.serialize(
-              grpcMethod.resolvedResponseType.create(userReply),
+              grpcMethod.resolvedResponseType!.create(userReply),
               false,
               false,
             ),
@@ -289,7 +324,7 @@ class CommandHelper {
         ctx.commandDebug(
           '%s reply with type [%s] with %d side effects.',
           desc,
-          ctx.reply.clientAction.reply.payload.type_url,
+          ctx.reply.clientAction.reply?.payload?.type_url,
           ctx.effects.length,
         );
       } else {
@@ -300,11 +335,11 @@ class CommandHelper {
         );
       }
 
-      return ctx.reply;
+      return { reply: ctx.reply };
     }
   }
 
-  commandDebug(msg, ...args) {
+  commandDebug(msg: string, ...args: any[]): void {
     this.debug(
       '%s [%s] (%s) - ' + msg,
       ...[this.streamId, this.entityId].concat(args),
@@ -315,86 +350,37 @@ class CommandHelper {
   // has everything the ReplicatedEntity and EventSourcedEntity support needs to do its stuff, it's where effects and
   // metadata are recorded, etc. The second is the user facing context, which is a property on the internal context
   // called "context".
-  createContext(commandId, metadata) {
-    const accessor = {};
-
-    accessor.commandDebug = (msg, ...args) => {
-      this.commandDebug(msg, ...[commandId].concat(args));
-    };
-
-    accessor.commandId = commandId;
-    accessor.effects = [];
-    accessor.active = true;
-    accessor.ensureActive = () => {
-      if (!accessor.active) {
-        throw new Error('Command context no longer active!');
-      }
-    };
-    accessor.error = null;
-    accessor.forward = null;
-    accessor.replyMetadata = new Metadata([]);
-
-    /**
-     * Context for an entity.
-     *
-     * @interface module:kalix.EntityContext
-     * @property {string} entityId The id of the entity that the command is for.
-     * @property {Long} commandId The id of the command.
-     * @property {module:kalix.Metadata} replyMetadata The metadata to send with a reply.
-     */
-
-    /**
-     * Effect context.
-     *
-     * @interface module:kalix.EffectContext
-     * @property {module:kalix.Metadata} metadata The metadata associated with the command.
-     */
-
-    /**
-     * Context for a command.
-     *
-     * @interface module:kalix.CommandContext
-     * @extends module:kalix.EffectContext
-     */
-    accessor.context = {
-      /**
-       * @name module:kalix.EntityContext#entityId
-       * @type {string}
-       */
-      entityId: this.entityId,
-      /**
-       * @name module:kalix.EntityContext#commandId
-       * @type {Long}
-       */
+  createContext(commandId: Long, metadata: Metadata) {
+    const accessor: InternalContext = {
       commandId: commandId,
-      /**
-       * @name module:kalix.EffectContext#metadata
-       * @type {module:kalix.Metadata}
-       */
+      active: true,
+      effects: [],
+      replyMetadata: new Metadata(),
+
+      ensureActive: () => {
+        if (!accessor.active) {
+          throw new Error('Command context no longer active!');
+        }
+      },
+
+      commandDebug: (msg: string, ...args: any[]) => {
+        this.commandDebug(msg, ...[commandId].concat(args));
+      },
+    };
+
+    accessor.context = {
+      entityId: this.entityId,
+      commandId: commandId,
       metadata: metadata,
-      /**
-       * @name module:kalix.EntityContext#replyMetadata
-       * @type {module:kalix.Metadata}
-       */
       replyMetadata: accessor.replyMetadata,
 
-      /**
-       * DEPRECATED. Emit an effect after processing this command.
-       *
-       * @function module:kalix.EffectContext#effect
-       * @param {any} method The entity service method to invoke.
-       * @param {object} message The message to send to that service.
-       * @param {boolean} [synchronous] Whether the effect should be execute synchronously or not.
-       * @param {module:kalix.Metadata} [metadata] Metadata to send with the effect.
-       * @param {boolean} [internalCall] For internal calls to this deprecated function.
-       */
       effect: (
-        method,
-        message,
+        method: EffectMethod,
+        message: Message,
         synchronous = false,
-        metadata,
-        internalCall,
-      ) => {
+        metadata: Metadata,
+        internalCall?: boolean,
+      ): void => {
         accessor.ensureActive();
         if (!internalCall)
           console.warn(
@@ -411,54 +397,33 @@ class CommandHelper {
       },
 
       // FIXME: remove for version 0.8 (https://github.com/lightbend/kalix-proxy/issues/410)
-      /**
-       * DEPRECATED. Forward this command to another service component call.
-       *
-       * @deprecated Since version 0.7. Will be deleted in version 0.8. Use 'forward' instead.
-       *
-       * @function module:kalix.CommandContext#thenForward
-       * @param {any} method The service component method to invoke.
-       * @param {object} message The message to send to that service component.
-       * @param {module:kalix.Metadata} metadata Metadata to send with the forward.
-       */
-      thenForward: (method, message, metadata) => {
-        accessor.context.forward(method, message, metadata);
+      thenForward: (
+        method: EffectMethod,
+        message: Message,
+        metadata: Metadata,
+      ): void => {
+        accessor.context?.forward(method, message, metadata);
       },
 
-      /**
-       * DEPRECATED. Forward this command to another service component call, use 'ReplyFactory.forward' instead.
-       *
-       * @function module:kalix.CommandContext#forward
-       * @param {any} method The service component method to invoke.
-       * @param {object} message The message to send to that service component.
-       * @param {module:kalix.Metadata} [metadata] Metadata to send with the forward.
-       * @param {boolean} [internalCall] For internal calls to this deprecated function.
-       */
-      forward: (method, message, metadata, internalCall) => {
+      forward: (
+        method: EffectMethod,
+        message: Message,
+        metadata: Metadata,
+        internalCall?: boolean,
+      ): void => {
         accessor.ensureActive();
         if (!internalCall)
           console.warn(
             "WARNING: Command context 'forward' is deprecated. Please use 'ReplyFactory.forward' instead.",
           );
-        accessor.forward = this.effectSerializer.serializeEffect(
+        accessor.forward = this.effectSerializer.serializeForward(
           method,
           message,
           metadata,
         );
       },
 
-      /**
-       * Fail handling this command.
-       *
-       * An alternative to using this is to return a failed Reply created with 'ReplyFactory.failed'.
-       *
-       * @function module:kalix.EffectContext#fail
-       * @param {string} msg The failure message.
-       * @param {number} [grpcStatus] The grpcStatus.
-       * @throws An error that captures the failure message. Note that even if you catch the error thrown by this
-       * method, the command will still be failed with the given message.
-       */
-      fail: (msg, grpcStatus) => {
+      fail: (msg: string, grpcStatus?: GrpcStatus): never => {
         accessor.ensureActive();
         // We set it here to ensure that even if the user catches the error, for
         // whatever reason, we will still fail as instructed.
@@ -471,4 +436,4 @@ class CommandHelper {
   }
 }
 
-module.exports = CommandHelper;
+export = CommandHelper;

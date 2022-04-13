@@ -18,9 +18,14 @@ import { ServiceMap } from './kalix';
 import protobuf from 'protobufjs';
 import AnySupport from './protobuf-any';
 import util from 'util';
-import grpc from '@grpc/grpc-js';
-import { Effect } from './effect';
+import { EffectMethod } from './effect';
 import { Metadata } from './metadata';
+import * as proto from '../proto/protobuf-bundle';
+
+namespace protocol {
+  export type Forward = proto.kalix.component.IForward;
+  export type SideEffect = proto.kalix.component.ISideEffect;
+}
 
 class EffectSerializer {
   private services: ServiceMap;
@@ -30,14 +35,10 @@ class EffectSerializer {
   }
 
   serializeEffect(
-    method:
-      | grpc.MethodDefinition<any, any>
-      | protobuf.Method
-      | protobuf.ReflectionObject
-      | null,
+    method: EffectMethod,
     message: { [key: string]: any },
     metadata?: Metadata,
-  ): Effect {
+  ): protocol.Forward | protocol.SideEffect {
     let serviceName: string, commandName: string;
     // We support either the grpc method, or a protobufjs method being passed
     if (method && 'path' in method && typeof method.path === 'string') {
@@ -76,7 +77,7 @@ class EffectSerializer {
           false,
           false,
         );
-        const effect: Effect = {
+        const effect: protocol.Forward | protocol.SideEffect = {
           serviceName: serviceName,
           commandName: commandName,
           payload: payload,
@@ -116,17 +117,25 @@ class EffectSerializer {
     }
   }
 
+  serializeForward(
+    method: EffectMethod,
+    message: { [key: string]: any },
+    metadata?: Metadata,
+  ): protocol.Forward {
+    return this.serializeEffect(method, message, metadata);
+  }
+
   serializeSideEffect(
-    method:
-      | grpc.MethodDefinition<any, any>
-      | protobuf.Method
-      | protobuf.ReflectionObject
-      | null,
+    method: EffectMethod,
     message: { [key: string]: any },
     synchronous?: boolean,
     metadata?: Metadata,
-  ): Effect {
-    const effect = this.serializeEffect(method, message, metadata);
+  ): protocol.SideEffect {
+    const effect: protocol.SideEffect = this.serializeEffect(
+      method,
+      message,
+      metadata,
+    );
     effect.synchronous = typeof synchronous === 'boolean' ? synchronous : false;
     return effect;
   }
