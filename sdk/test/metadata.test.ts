@@ -112,13 +112,13 @@ describe('Metadata', () => {
   it('should make string entries accessible as a map', () => {
     const meta = new Metadata();
     meta.set('foo', 'string');
-    meta.set('foo', new Buffer('bytes'));
+    meta.set('foo', Buffer.from('bytes'));
     expect(meta.asMap.foo).to.be.equal('string');
   });
 
   it('should make byte entries accessible as a map', () => {
     const meta = new Metadata();
-    meta.set('foo', new Buffer('bytes'));
+    meta.set('foo', Buffer.from('bytes'));
     meta.set('foo', 'string');
     expect((meta.asMap.foo as Buffer).toString()).to.be.equal('bytes');
   });
@@ -126,7 +126,7 @@ describe('Metadata', () => {
   it('changes to the map should be reflected in the metadata', () => {
     const meta = new Metadata();
     meta.set('foo', 'string');
-    meta.set('foo', new Buffer('bytes'));
+    meta.set('foo', Buffer.from('bytes'));
     meta.asMap.foo = 'new string';
     expect(meta.entries.length).to.be.equal(1);
     expect(meta.entries[0].stringValue).to.be.equal('new string');
@@ -135,7 +135,7 @@ describe('Metadata', () => {
   it('allows deleting properties from the map', () => {
     const meta = new Metadata();
     meta.set('foo', 'string');
-    meta.set('foo', new Buffer('bytes'));
+    meta.set('foo', Buffer.from('bytes'));
     delete meta.asMap.foo;
     expect(meta.entries.length).to.be.equal(0);
   });

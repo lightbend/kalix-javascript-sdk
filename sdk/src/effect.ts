@@ -14,17 +14,10 @@
  * limitations under the License.
  */
 
-import { MetadataEntry } from './metadata';
-import * as protobufHelper from './protobuf-helper';
+import grpc from '@grpc/grpc-js';
 
-type Any = protobufHelper.moduleRoot.google.protobuf.Any;
-
-export interface Effect {
-  serviceName: string;
-  commandName: string;
-  payload: Any;
-  metadata?: {
-    entries: MetadataEntry[];
-  };
-  synchronous?: boolean;
-}
+export type EffectMethod =
+  | grpc.MethodDefinition<any, any>
+  | protobuf.Method
+  | protobuf.ReflectionObject
+  | null;

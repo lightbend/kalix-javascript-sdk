@@ -16,6 +16,11 @@
 
 import { Cloudevent } from './cloudevent';
 import { JwtClaims } from './jwt-claims';
+import * as proto from '../proto/protobuf-bundle';
+
+namespace protocol {
+  export type Metadata = proto.kalix.component.IMetadata;
+}
 
 type MetadataValue = string | Buffer;
 
@@ -170,6 +175,21 @@ export class Metadata {
 
   constructor(entries: MetadataEntry[] = []) {
     this.entries = entries;
+  }
+
+  static fromProtocol(metadata?: protocol.Metadata | null): Metadata {
+    if (metadata && metadata.entries) {
+      const entries: MetadataEntry[] = metadata.entries.map((entry) => ({
+        key: entry.key ?? '',
+        bytesValue: entry.bytesValue
+          ? Buffer.from(entry.bytesValue)
+          : undefined,
+        stringValue: entry.stringValue ?? undefined,
+      }));
+      return new Metadata(entries);
+    } else {
+      return new Metadata();
+    }
   }
 
   /**
