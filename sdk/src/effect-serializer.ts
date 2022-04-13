@@ -14,18 +14,33 @@
  * limitations under the License.
  */
 
-const AnySupport = require('./protobuf-any');
-const util = require('util');
+import { ServiceMap } from './kalix';
+import protobuf from 'protobufjs';
+import AnySupport from './protobuf-any';
+import util from 'util';
+import grpc from '@grpc/grpc-js';
+import { Effect } from './effect';
+import { Metadata } from './metadata';
 
-module.exports = class EffectSerializer {
-  constructor(allComponents) {
-    this.allComponents = allComponents;
+class EffectSerializer {
+  private services: ServiceMap;
+
+  constructor(services: ServiceMap) {
+    this.services = services;
   }
 
-  serializeEffect(method, message, metadata) {
-    let serviceName, commandName;
+  serializeEffect(
+    method:
+      | grpc.MethodDefinition<any, any>
+      | protobuf.Method
+      | protobuf.ReflectionObject
+      | null,
+    message: { [key: string]: any },
+    metadata?: Metadata,
+  ): Effect {
+    let serviceName: string, commandName: string;
     // We support either the grpc method, or a protobufjs method being passed
-    if (typeof method.path === 'string') {
+    if (method && 'path' in method && typeof method.path === 'string') {
       const r = new RegExp('^/([^/]+)/([^/]+)$').exec(method.path);
       if (r == null) {
         throw new Error(
@@ -38,12 +53,16 @@ module.exports = class EffectSerializer {
       }
       serviceName = r[1];
       commandName = r[2];
-    } else if (method.type === 'rpc') {
+    } else if (method && 'type' in method && method.type === 'rpc') {
       serviceName = this.fullName(method.parent);
       commandName = method.name;
+    } else {
+      throw new Error(
+        'Method must either be a gRPC MethodDefinition or a protobufjs Method',
+      );
     }
 
-    const service = this.allComponents[serviceName];
+    const service = this.services[serviceName];
 
     if (service !== undefined) {
       const command = service.methods[commandName];
@@ -53,11 +72,11 @@ module.exports = class EffectSerializer {
         }
 
         const payload = AnySupport.serialize(
-          command.resolvedRequestType.create(message),
+          command.resolvedRequestType!.create(message),
           false,
           false,
         );
-        const effect = {
+        const effect: Effect = {
           serviceName: serviceName,
           commandName: commandName,
           payload: payload,
@@ -89,17 +108,28 @@ module.exports = class EffectSerializer {
     }
   }
 
-  fullName(item) {
-    if (item.parent && item.parent.name !== '') {
+  fullName(item: protobuf.NamespaceBase | null): string {
+    if (item?.parent && item.parent.name !== '') {
       return this.fullName(item.parent) + '.' + item.name;
     } else {
-      return item.name;
+      return item?.name ?? '';
     }
   }
 
-  serializeSideEffect(method, message, synchronous, metadata) {
-    const msg = this.serializeEffect(method, message, metadata);
-    msg.synchronous = typeof synchronous === 'boolean' ? synchronous : false;
-    return msg;
+  serializeSideEffect(
+    method:
+      | grpc.MethodDefinition<any, any>
+      | protobuf.Method
+      | protobuf.ReflectionObject
+      | null,
+    message: { [key: string]: any },
+    synchronous?: boolean,
+    metadata?: Metadata,
+  ): Effect {
+    const effect = this.serializeEffect(method, message, metadata);
+    effect.synchronous = typeof synchronous === 'boolean' ? synchronous : false;
+    return effect;
   }
-};
+}
+
+export = EffectSerializer;

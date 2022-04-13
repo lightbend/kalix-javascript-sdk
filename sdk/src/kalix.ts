@@ -121,11 +121,15 @@ export interface EntityOptions {
 export interface Component {
   serviceName: string;
   desc?: string | string[];
-  service?: any;
+  service?: protobuf.Service;
   options: ComponentOptions | EntityOptions;
   grpc?: grpc.GrpcObject;
   componentType: () => string;
   register?: (components: any) => ComponentService;
+}
+
+export interface ServiceMap {
+  [key: string]: protobuf.Service;
 }
 
 class DocLink {
@@ -312,16 +316,16 @@ export class Kalix {
       }
     }
 
-    const allComponentsMap: any = {};
+    const serviceMap: ServiceMap = {};
     this.components.forEach((component: Component) => {
-      allComponentsMap[component.serviceName ?? 'undefined'] =
-        component.service;
+      if (component.service)
+        serviceMap[component.serviceName] = component.service;
     });
 
     const componentTypes: any = {};
     this.components.forEach((component: Component) => {
       if (component.register) {
-        const componentServices = component.register(allComponentsMap);
+        const componentServices = component.register(serviceMap);
         componentTypes[componentServices.componentType()] = componentServices;
       }
     });
