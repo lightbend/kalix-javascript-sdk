@@ -14,23 +14,129 @@
  * limitations under the License.
  */
 
-const path = require('path');
-const grpc = require('@grpc/grpc-js');
-const protoLoader = require('@grpc/proto-loader');
+import path from 'path';
+import * as grpc from '@grpc/grpc-js';
+import * as protoLoader from '@grpc/proto-loader';
+import Action from './action';
+import AnySupport from './protobuf-any';
+import { CommandContext, Message } from './command';
+import { EffectMethod } from './effect';
+import EffectSerializer from './effect-serializer';
+import { GrpcStatus, ServiceMap } from './kalix';
+import { Metadata } from './metadata';
+import { Reply } from './reply';
+import * as proto from '../proto/protobuf-bundle';
+
 const debug = require('debug')('kalix-action');
 // Bind to stdout
 debug.log = console.log.bind(console);
-const AnySupport = require('./protobuf-any');
-const EffectSerializer = require('./effect-serializer');
-const { Metadata } = require('./metadata');
-const { Reply } = require('./reply');
 
-class ActionSupport {
-  constructor(root, service, commandHandlers, allComponents) {
+namespace protocol {
+  export type Command = proto.kalix.component.action.IActionCommand;
+  export type Response = proto.kalix.component.action.IActionResponse;
+  export type Metadata = proto.kalix.component.IMetadata;
+  export type SideEffect = proto.kalix.component.ISideEffect;
+  export type Failure = proto.kalix.component.IFailure;
+}
+
+export type Call = UnaryCall | StreamedInCall | StreamedOutCall | StreamedCall;
+
+export type UnaryCall = grpc.ServerUnaryCall<
+  protocol.Command,
+  protocol.Response
+>;
+
+export type UnaryCallback = grpc.sendUnaryData<protocol.Response>;
+
+export type StreamedInCall = grpc.ServerReadableStream<
+  protocol.Command,
+  protocol.Response
+>;
+
+export type StreamedOutCall = grpc.ServerWritableStream<
+  protocol.Command,
+  protocol.Response
+>;
+
+export type StreamedCall = grpc.ServerDuplexStream<
+  protocol.Command,
+  protocol.Response
+>;
+
+export interface ActionContext {
+  readonly cancelled: boolean;
+  readonly metadata: Metadata;
+  on: (eventType: string, callback: Function) => void;
+}
+
+export interface ActionCommandContext extends ActionContext, CommandContext {
+  write: (message: any, metadata?: Metadata) => void;
+}
+
+export interface UnaryCommandContext extends ActionCommandContext {
+  alreadyReplied: boolean;
+}
+
+export interface StreamedInContext extends ActionCommandContext {
+  cancel: () => void;
+}
+
+export interface StreamedInCommandContext extends StreamedInContext {}
+
+export interface StreamedOutContext extends ActionCommandContext {
+  reply: (reply: Reply) => void;
+  end: () => void;
+}
+
+export interface StreamedOutCommandContext extends StreamedOutContext {}
+
+export interface StreamedCommandContext
+  extends StreamedInContext,
+    StreamedOutContext {}
+
+export type ActionCommandHandler =
+  | UnaryCommandHandler
+  | StreamedInCommandHandler
+  | StreamedOutCommandHandler
+  | StreamedCommandHandler;
+
+export type UnaryCommandHandler = (
+  message: any,
+  context: UnaryCommandContext,
+) => Reply | any | Promise<any> | undefined;
+
+export type StreamedInCommandHandler = (
+  context: StreamedInCommandContext,
+) => any | Promise<any> | undefined;
+
+export type StreamedOutCommandHandler = (
+  message: any,
+  context: StreamedOutCommandContext,
+) => void;
+
+export type StreamedCommandHandler = (context: StreamedCommandContext) => void;
+
+export type ActionCommandHandlers = {
+  [commandName: string]: ActionCommandHandler;
+};
+
+class ActionService {
+  readonly root: protobuf.Root;
+  readonly service: protobuf.Service;
+  readonly commandHandlers: ActionCommandHandlers;
+  readonly anySupport: AnySupport;
+  readonly effectSerializer: EffectSerializer;
+
+  constructor(
+    root: protobuf.Root,
+    service: protobuf.Service,
+    commandHandlers: ActionCommandHandlers,
+    allComponents: ServiceMap,
+  ) {
     this.root = root;
     this.service = service;
     this.commandHandlers = commandHandlers;
-    this.anySupport = new AnySupport(this.root);
+    this.anySupport = new AnySupport(root);
     this.effectSerializer = new EffectSerializer(allComponents);
   }
 }
@@ -39,90 +145,77 @@ class ActionSupport {
  * @private
  */
 class ActionHandler {
+  private actionService: ActionService;
+  private grpcMethod: protobuf.Method;
+  private commandHandler: ActionCommandHandler;
+  private call: Call;
+  private grpcCallback: UnaryCallback | null;
+
+  private streamId: string;
+  private supportedEvents: string[];
+  private callbacks: { [eventType: string]: Function };
+
+  private ctx:
+    | ActionContext
+    | UnaryCommandContext
+    | StreamedInCommandContext
+    | StreamedOutCommandContext
+    | StreamedCommandContext;
+
   constructor(
-    support,
-    grpcMethod,
-    commandHandler,
-    call,
-    grpcCallback,
-    metadata,
+    actionService: ActionService,
+    grpcMethod: protobuf.Method,
+    commandHandler: ActionCommandHandler,
+    call: Call,
+    grpcCallback: UnaryCallback | null,
+    metadata?: protocol.Metadata | null,
   ) {
-    this.support = support;
+    this.actionService = actionService;
     this.grpcMethod = grpcMethod;
     this.commandHandler = commandHandler;
     this.call = call;
     this.grpcCallback = grpcCallback;
 
-    this.streamId = Math.random().toString(16).substr(2, 7);
+    this.streamId = Math.random().toString(16).substring(2, 7);
     this.streamDebug('Started new call');
     this.supportedEvents = [];
     this.callbacks = {};
     this.ctx = this.createContext(metadata);
   }
 
-  streamDebug(msg, ...args) {
+  streamDebug(msg: string, ...args: any[]): void {
     debug(
       '%s [%s.%s] - ' + msg,
       ...[
         this.streamId,
-        this.support.service.name,
+        this.actionService.service.name,
         this.grpcMethod.name,
       ].concat(args),
     );
   }
 
-  /**
-   * Context for an action command.
-   *
-   * @interface module:kalix.Action.ActionCommandContext
-   * @extends module:kalix.CommandContext
-   * @property {boolean} cancelled Whether the client is still connected.
-   * @property {module:kalix.Metadata} metadata The metadata associated with the command.
-   */
-  createContext(metadata) {
-    /**
-     * Write a message.
-     *
-     * @function module:kalix.Action.ActionCommandContext#write
-     * @param {Object} message The protobuf message to write.
-     * @param {module:kalix.Metadata} [metadata] The metadata associated with the message.
-     */
-
+  createContext(metadata?: protocol.Metadata | null): ActionContext {
     const call = this.call;
-    let metadataObject = new Metadata([]);
-    if (metadata && metadata.entries) {
-      metadataObject = new Metadata(metadata.entries);
-    }
-    const ctx = {
+    const metadataObject = Metadata.fromProtocol(metadata);
+    const ctx: ActionContext = {
       get cancelled() {
         return call.cancelled;
       },
       get metadata() {
         return metadataObject;
       },
-    };
-
-    /**
-     * Register an event handler.
-     *
-     * @function module:kalix.Action.ActionCommandContext#on
-     * @param {string} eventType The type of the event.
-     * @param {function} callback The callback to handle the event.
-     */
-    ctx.on = (eventType, callback) => {
-      if (this.supportedEvents.includes(eventType)) {
-        this.callbacks[eventType] = callback;
-      } else {
-        throw new Error('Unknown event type: ' + eventType);
-      }
+      on: (eventType: string, callback: Function): void => {
+        if (this.supportedEvents.includes(eventType)) {
+          this.callbacks[eventType] = callback;
+        } else {
+          throw new Error('Unknown event type: ' + eventType);
+        }
+      },
     };
     return ctx;
   }
 
-  /**
-   * @return {*} The return value from the callback, if there was one
-   */
-  invokeCallback(eventType, ...args) {
+  invokeCallback(eventType: string, ...args: any[]): any {
     if (this.callbacks.hasOwnProperty(eventType)) {
       return this.invokeUserCallback(
         eventType + ' event',
@@ -140,14 +233,10 @@ class ActionHandler {
     }
   }
 
-  /**
-   * @param {module:kalix.Action.ActionCommandContext} ctx
-   * @param {module:kalix.replies.Reply} reply
-   */
-  passReplyThroughContext(ctx, reply) {
+  passReplyThroughContext(ctx: ActionCommandContext, reply: Reply): void {
     // effects need to go first to end up in reply
-    if (reply.effects) {
-      reply.effects.forEach(function (effect) {
+    if (reply.getEffects()) {
+      reply.getEffects().forEach(function (effect) {
         ctx.effect(
           effect.method,
           effect.message,
@@ -157,15 +246,18 @@ class ActionHandler {
         );
       });
     }
-    if (reply.failure) {
-      ctx.fail(reply.failure.description, reply.failure.status);
-    } else if (reply.message) {
-      ctx.write(reply.message, reply.metadata);
-    } else if (reply.forward) {
+    if (reply.getFailure()) {
+      ctx.fail(
+        reply.getFailure()?.getDescription() ?? '',
+        reply.getFailure()?.getStatus(),
+      );
+    } else if (reply.getMessage()) {
+      ctx.write(reply.getMessage(), reply.getMetadata());
+    } else if (reply.getForward() && reply.getForward()?.getMethod()) {
       ctx.forward(
-        reply.forward.method,
-        reply.forward.message,
-        reply.forward.metadata,
+        reply.getForward()?.getMethod()!,
+        reply.getForward()?.getMessage(),
+        reply.getForward()?.getMetadata(),
         true,
       );
     } else {
@@ -174,34 +266,30 @@ class ActionHandler {
     }
   }
 
-  handleSingleReturn(value) {
+  handleSingleReturn(value: any): void {
+    const ctx = this.ctx as UnaryCommandContext;
     if (value) {
-      if (this.ctx.alreadyReplied) {
+      if (ctx.alreadyReplied) {
         console.warn(
-          `WARNING: Action handler for ${this.support.service.name}.${this.grpcMethod.name} both sent a reply through the context and returned a value, ignoring return value.`,
+          `WARNING: Action handler for ${this.actionService.service.name}.${this.grpcMethod.name} both sent a reply through the context and returned a value, ignoring return value.`,
         );
       } else if (value instanceof Reply) {
-        this.passReplyThroughContext(this.ctx, value);
+        this.passReplyThroughContext(ctx, value);
       } else if (typeof value.then === 'function') {
-        value.then(this.handleSingleReturn.bind(this), this.ctx.fail);
+        value.then(this.handleSingleReturn.bind(this), ctx.fail);
       } else {
-        this.ctx.write(value);
+        ctx.write(value);
       }
-    } else if (!this.ctx.alreadyReplied) {
-      this.ctx.write({}); // empty reply, resolved to response type
+    } else if (!ctx.alreadyReplied) {
+      ctx.write({}); // empty reply, resolved to response type
     }
   }
 
-  /**
-   * Context for a unary action command.
-   *
-   * @interface module:kalix.Action.UnaryCommandContext
-   * @extends module:kalix.Action.ActionCommandContext
-   */
   handleUnary() {
     this.setupUnaryOutContext();
-    const deserializedCommand = this.support.anySupport.deserialize(
-      this.call.request.payload,
+    const call = this.call as UnaryCall;
+    const deserializedCommand = this.actionService.anySupport.deserialize(
+      call.request.payload,
     );
     const userReturn = this.invokeUserCallback(
       'command',
@@ -212,13 +300,6 @@ class ActionHandler {
     this.handleSingleReturn(userReturn);
   }
 
-  /**
-   * Context for a streamed in action command.
-   *
-   * @interface module:kalix.Action.StreamedInCommandContext
-   * @extends module:kalix.Action.StreamedInContext
-   * @extends module:kalix.Action.ActionCommandContext
-   */
   handleStreamedIn() {
     this.setupUnaryOutContext();
     this.setupStreamedInContext();
@@ -231,29 +312,25 @@ class ActionHandler {
       if (this.call.cancelled) {
         this.streamDebug(
           'Streamed command handler for command %s.%s both sent a reply through the context and returned a value, ignoring return value.',
-          this.support.service.name,
+          this.actionService.service.name,
           this.grpcMethod.name,
         );
       } else {
+        const ctx = this.ctx as ActionCommandContext;
         if (typeof userReturn.then === 'function') {
-          userReturn.then(this.ctx.write, this.ctx.fail);
+          userReturn.then(ctx.write, ctx.fail);
         } else {
-          this.ctx.write(userReturn);
+          ctx.write(userReturn);
         }
       }
     }
   }
 
-  /**
-   * Context for a streamed out action command.
-   *
-   * @interface module:kalix.Action.StreamedOutCommandContext
-   * @extends module:kalix.Action.StreamedOutContext
-   */
   handleStreamedOut() {
     this.setupStreamedOutContext();
-    const deserializedCommand = this.support.anySupport.deserialize(
-      this.call.request.payload,
+    const call = this.call as StreamedOutCall;
+    const deserializedCommand = this.actionService.anySupport.deserialize(
+      call.request.payload,
     );
     this.invokeUserCallback(
       'command',
@@ -263,13 +340,6 @@ class ActionHandler {
     );
   }
 
-  /**
-   * Context for a streamed action command.
-   *
-   * @interface module:kalix.Action.StreamedCommandContext
-   * @extends module:kalix.Action.StreamedInContext
-   * @extends module:kalix.Action.StreamedOutContext
-   */
   handleStreamed() {
     this.setupStreamedInContext();
     this.setupStreamedOutContext();
@@ -277,58 +347,61 @@ class ActionHandler {
   }
 
   setupUnaryOutContext() {
-    const effects = [];
+    const ctx = this.ctx as UnaryCommandContext;
+
+    const effects: protocol.SideEffect[] = [];
 
     // FIXME: remove for version 0.8 (https://github.com/lightbend/kalix-proxy/issues/410)
-    this.ctx.thenForward = (method, message, metadata) => {
+    ctx.thenForward = (
+      method: EffectMethod,
+      message: Message,
+      metadata?: Metadata,
+    ): void => {
       console.warn(
         "WARNING: Action context 'thenForward' is deprecated. Please use 'forward' instead.",
       );
-      this.ctx.forward(method, message, metadata, true);
+      ctx.forward(method, message, metadata, true);
     };
 
-    /**
-     * DEPRECATED. Forward this command to another service component call, use 'ReplyFactory.forward' instead.
-     *
-     * @function module:kalix.Action.UnaryCommandContext#forward
-     * @param method The service component method to invoke.
-     * @param {object} message The message to send to that service component.
-     * @param {module:kalix.Metadata} metadata Metadata to send with the forward.
-     */
-    this.ctx.forward = (method, message, metadata, internalCall) => {
+    ctx.forward = (
+      method: EffectMethod,
+      message: Message,
+      metadata?: Metadata,
+      internalCall?: boolean,
+    ): void => {
       this.ensureNotCancelled();
       this.streamDebug('Forwarding to %s', method);
-      this.ctx.alreadyReplied = true;
+      ctx.alreadyReplied = true;
       if (!internalCall)
         console.warn(
           "WARNING: Action context 'forward' is deprecated. Please use 'ReplyFactory.forward' instead.",
         );
-      const forward = this.support.effectSerializer.serializeEffect(
+      const forward = this.actionService.effectSerializer.serializeEffect(
         method,
         message,
         metadata,
       );
-      this.grpcCallback(null, {
+      this.grpcCallback!(null, {
         forward: forward,
         sideEffects: effects,
       });
     };
 
-    this.ctx.write = (message, metadata) => {
+    ctx.write = (message: any, metadata?: Metadata): void => {
       this.ensureNotCancelled();
       this.streamDebug('Sending reply');
-      this.ctx.alreadyReplied = true;
+      ctx.alreadyReplied = true;
       if (message != null) {
         let replyPayload;
         if (
-          this.grpcMethod.resolvedResponseType.fullName ===
+          this.grpcMethod!.resolvedResponseType!.fullName ===
           '.google.protobuf.Any'
         ) {
           // special handling to emit JSON to topics by defining return type as proto Any
           replyPayload = AnySupport.serialize(message, false, true);
         } else {
           const messageProto =
-            this.grpcMethod.resolvedResponseType.create(message);
+            this.grpcMethod!.resolvedResponseType!.create(message);
           replyPayload = AnySupport.serialize(messageProto, false, false);
         }
         let replyMetadata = null;
@@ -337,7 +410,7 @@ class ActionHandler {
             entries: metadata.entries,
           };
         }
-        this.grpcCallback(null, {
+        this.grpcCallback!(null, {
           reply: {
             payload: replyPayload,
             metadata: replyMetadata,
@@ -346,19 +419,19 @@ class ActionHandler {
         });
       } else {
         // empty reply
-        this.grpcCallback(null, {
+        this.grpcCallback!(null, {
           sideEffects: effects,
         });
       }
     };
 
-    this.ctx.effect = (
-      method,
-      message,
-      synchronous,
-      metadata,
-      internalCall,
-    ) => {
+    ctx.effect = (
+      method: EffectMethod,
+      message: Message,
+      synchronous: boolean,
+      metadata?: Metadata,
+      internalCall?: boolean,
+    ): void => {
       this.ensureNotCancelled();
       if (!internalCall)
         console.warn(
@@ -366,7 +439,7 @@ class ActionHandler {
         );
       this.streamDebug('Emitting effect to %s', method);
       effects.push(
-        this.support.effectSerializer.serializeSideEffect(
+        this.actionService.effectSerializer.serializeSideEffect(
           method,
           message,
           synchronous,
@@ -375,91 +448,81 @@ class ActionHandler {
       );
     };
 
-    this.ctx.fail = (description, status) => {
+    ctx.fail = (description: string, status?: GrpcStatus): void => {
       this.ensureNotCancelled();
       this.streamDebug('Failing with %s', description);
-      this.ctx.alreadyReplied = true;
-      this.grpcCallback(null, {
+      ctx.alreadyReplied = true;
+      this.grpcCallback!(null, {
         failure: this.createFailure(description, status),
         sideEffects: effects,
       });
     };
   }
 
-  /**
-   * Context for an action command that returns a streamed message out.
-   *
-   * @interface module:kalix.Action.StreamedOutContext
-   * @extends module:kalix.Action.ActionCommandContext
-   */
   setupStreamedOutContext() {
-    let effects = [];
+    const ctx = this.ctx as StreamedOutContext;
+    const call = this.call as StreamedOutCall | StreamedCall;
 
-    /**
-     * A cancelled event.
-     *
-     * @event module:kalix.Action.StreamedOutContext#cancelled
-     */
+    let effects: protocol.SideEffect[] = [];
+
     this.supportedEvents.push('cancelled');
 
     this.call.on('cancelled', () => {
       this.streamDebug('Received stream cancelled');
-      this.invokeCallback('cancelled', this.ctx);
+      this.invokeCallback('cancelled', ctx);
     });
 
-    /**
-     * Send a reply
-     *
-     * @function module:kalix.Action.StreamedOutContext#reply
-     * @param {module:kalix.replies.Reply} reply The reply to send
-     */
-    this.ctx.reply = (reply) => {
-      this.passReplyThroughContext(this.ctx, reply);
+    ctx.reply = (reply: Reply): void => {
+      this.passReplyThroughContext(ctx, reply);
     };
 
-    /**
-     * Terminate the outgoing stream of messages.
-     *
-     * @function module:kalix.Action.StreamedOutContext#end
-     */
-    this.ctx.end = () => {
-      if (this.call.cancelled) {
+    ctx.end = (): void => {
+      if (call.cancelled) {
         this.streamDebug('end invoked when already cancelled.');
       } else {
         this.streamDebug('Ending stream out');
-        this.call.end();
+        call.end();
       }
     };
 
     // FIXME: remove for version 0.8 (https://github.com/lightbend/kalix-proxy/issues/410)
-    this.ctx.thenForward = (method, message, metadata) => {
+    ctx.thenForward = (
+      method: EffectMethod,
+      message: Message,
+      metadata?: Metadata,
+    ): void => {
       console.warn(
         "WARNING: Action context 'thenForward' is deprecated. Please use 'forward' instead.",
       );
-      this.ctx.forward(method, message, metadata);
+      ctx.forward(method, message, metadata);
     };
 
-    this.ctx.forward = (method, message, metadata) => {
+    ctx.forward = (
+      method: EffectMethod,
+      message: Message,
+      metadata?: Metadata,
+      internalCall?: boolean,
+    ): void => {
       this.ensureNotCancelled();
       this.streamDebug('Forwarding to %s', method);
-      const forward = this.support.effectSerializer.serializeEffect(
+      const forward = this.actionService.effectSerializer.serializeEffect(
         method,
         message,
         metadata,
       );
-      this.call.write({
+      call.write({
         forward: forward,
         sideEffects: effects,
       });
       effects = []; // clear effects after each streamed write
     };
 
-    this.ctx.write = (message, metadata) => {
+    ctx.write = (message: any, metadata?: Metadata): void => {
       this.ensureNotCancelled();
       this.streamDebug('Sending reply');
       if (message != null) {
         const messageProto =
-          this.grpcMethod.resolvedResponseType.create(message);
+          this.grpcMethod!.resolvedResponseType!.create(message);
         const replyPayload = AnySupport.serialize(messageProto, false, false);
         let replyMetadata = null;
         if (metadata && metadata.entries) {
@@ -467,7 +530,7 @@ class ActionHandler {
             entries: metadata.entries,
           };
         }
-        this.call.write({
+        call.write({
           reply: {
             payload: replyPayload,
             metadata: replyMetadata,
@@ -476,20 +539,20 @@ class ActionHandler {
         });
       } else {
         // empty reply
-        this.call.write({
+        call.write({
           sideEffects: effects,
         });
       }
       effects = []; // clear effects after each streamed write
     };
 
-    this.ctx.effect = (
-      method,
-      message,
-      synchronous,
-      metadata,
-      internalCall,
-    ) => {
+    ctx.effect = (
+      method: EffectMethod,
+      message: Message,
+      synchronous: boolean,
+      metadata?: Metadata,
+      internalCall?: boolean,
+    ): void => {
       this.ensureNotCancelled();
       if (!internalCall)
         console.warn(
@@ -497,7 +560,7 @@ class ActionHandler {
         );
       this.streamDebug('Emitting effect to %s', method);
       effects.push(
-        this.support.effectSerializer.serializeSideEffect(
+        this.actionService.effectSerializer.serializeSideEffect(
           method,
           message,
           synchronous,
@@ -506,10 +569,10 @@ class ActionHandler {
       );
     };
 
-    this.ctx.fail = (description, status) => {
+    ctx.fail = (description: string, status?: GrpcStatus): void => {
       this.ensureNotCancelled();
       this.streamDebug('Failing with %s', description);
-      this.call.write({
+      call.write({
         failure: this.createFailure(description, status),
         sideEffects: effects,
       });
@@ -517,37 +580,16 @@ class ActionHandler {
     };
   }
 
-  /**
-   * Context for an action command that handles streamed messages in.
-   *
-   * @interface module:kalix.Action.StreamedInContext
-   * @extends module:kalix.Action.ActionCommandContext
-   */
   setupStreamedInContext() {
-    /**
-     * A data event.
-     *
-     * Emitted when a new message arrives.
-     *
-     * @event module:kalix.Action.StreamedInContext#data
-     * @type {Object}
-     */
-    this.supportedEvents.push('data');
+    const ctx = this.ctx as StreamedInContext;
+    const call = this.call as StreamedInCall | StreamedCall;
 
-    /**
-     * A stream end event.
-     *
-     * Emitted when the input stream terminates.
-     *
-     * If a callback is registered and that returns a Reply, then that is returned as a response from the action
-     *
-     * @event module:kalix.Action.StreamedInContext#end
-     */
+    this.supportedEvents.push('data');
     this.supportedEvents.push('end');
 
     this.call.on('data', (data) => {
       this.streamDebug('Received data in');
-      const deserializedCommand = this.support.anySupport.deserialize(
+      const deserializedCommand = this.actionService.anySupport.deserialize(
         data.payload,
       );
       this.invokeCallback('data', deserializedCommand, this.ctx);
@@ -557,7 +599,7 @@ class ActionHandler {
       this.streamDebug('Received stream end');
       const userReturn = this.invokeCallback('end', this.ctx);
       if (userReturn instanceof Reply) {
-        this.passReplyThroughContext(this.ctx, userReturn);
+        this.passReplyThroughContext(ctx, userReturn);
       } else {
         this.streamDebug(
           'Ignored unknown (non Reply) return value from end callback',
@@ -565,21 +607,21 @@ class ActionHandler {
       }
     });
 
-    /**
-     * Cancel the incoming stream of messages.
-     *
-     * @function module:kalix.Action.StreamedInContext#cancel
-     */
-    this.ctx.cancel = () => {
-      if (this.call.cancelled) {
+    ctx.cancel = () => {
+      if (call.cancelled) {
         this.streamDebug('cancel invoked when already cancelled.');
       } else {
-        this.call.cancel();
+        // FIXME: there doesn't seem to be any server-side cancel, only client-side, so what was this doing before?
+        // call.cancel();
       }
     };
   }
 
-  invokeUserCallback(callbackName, callback, ...args) {
+  invokeUserCallback(
+    callbackName: string,
+    callback: Function,
+    ...args: any[]
+  ): any {
     try {
       return callback.apply(null, args);
     } catch (err) {
@@ -587,14 +629,14 @@ class ActionHandler {
       this.streamDebug(error);
       console.error(err);
       if (!this.call.cancelled) {
-        const failure = {
+        const failure: protocol.Response = {
           failure: {
             description: error,
           },
         };
         if (this.grpcCallback != null) {
           this.grpcCallback(null, failure);
-        } else {
+        } else if ('write' in this.call) {
           this.call.write(failure);
           this.call.end();
         }
@@ -602,8 +644,11 @@ class ActionHandler {
     }
   }
 
-  createFailure(description, grpcStatus) {
-    const failure = {
+  createFailure(
+    description: string,
+    grpcStatus?: GrpcStatus,
+  ): protocol.Failure {
+    const failure: protocol.Failure = {
       description: description,
     };
     if (grpcStatus !== undefined) {
@@ -619,13 +664,15 @@ class ActionHandler {
   }
 }
 
-module.exports = class ActionServices {
+export default class ActionSupport {
+  private actionServices: { [serviceName: string]: ActionService };
+
   constructor() {
-    this.services = {};
+    this.actionServices = {};
   }
 
-  addService(component, allComponents) {
-    this.services[component.serviceName] = new ActionSupport(
+  addService(component: Action, allComponents: ServiceMap) {
+    this.actionServices[component.serviceName] = new ActionService(
       component.root,
       component.service,
       component.commandHandlers,
@@ -637,7 +684,7 @@ module.exports = class ActionServices {
     return 'kalix.component.action.Actions';
   }
 
-  register(server) {
+  register(server: grpc.Server) {
     const includeDirs = [
       path.join(__dirname, '..', 'proto'),
       path.join(__dirname, '..', 'protoc', 'include'),
@@ -652,7 +699,8 @@ module.exports = class ActionServices {
     );
     const grpcDescriptor = grpc.loadPackageDefinition(packageDefinition);
 
-    const actionService = grpcDescriptor.kalix.component.action.Actions.service;
+    const actionService: grpc.ServiceDefinition = (grpcDescriptor as any).kalix
+      .component.action.Actions.service;
 
     server.addService(actionService, {
       handleUnary: this.handleUnary.bind(this),
@@ -662,58 +710,64 @@ module.exports = class ActionServices {
     });
   }
 
-  createHandler(call, callback, data) {
-    const service = this.services[data.serviceName];
-    if (service && service.service.methods.hasOwnProperty(data.name)) {
-      if (service.commandHandlers.hasOwnProperty(data.name)) {
-        return new ActionHandler(
-          service,
-          service.service.methods[data.name],
-          service.commandHandlers[data.name],
-          call,
-          callback,
-          data.metadata,
-        );
+  createHandler(
+    call: Call,
+    callback: UnaryCallback | null,
+    data: protocol.Command,
+  ): ActionHandler | undefined {
+    if (data.serviceName && data.name) {
+      const actionService = this.actionServices[data.serviceName];
+      if (
+        actionService &&
+        actionService.service.methods.hasOwnProperty(data.name)
+      ) {
+        if (actionService.commandHandlers.hasOwnProperty(data.name)) {
+          return new ActionHandler(
+            actionService,
+            actionService.service.methods[data.name],
+            actionService.commandHandlers[data.name],
+            call,
+            callback,
+            data.metadata,
+          );
+        } else {
+          this.reportError(
+            `Service call ${data.serviceName}.${data.name} not implemented`,
+            call,
+            callback,
+          );
+          return undefined;
+        }
       } else {
         this.reportError(
-          'Service call ' +
-            data.serviceName +
-            '.' +
-            data.name +
-            ' not implemented',
+          `No service call named ${data.serviceName}.${data.name} found`,
           call,
           callback,
         );
+        return undefined;
       }
     } else {
-      this.reportError(
-        'No service call named ' +
-          data.serviceName +
-          '.' +
-          data.name +
-          ' found',
-        call,
-        callback,
-      );
+      this.reportError('Missing service or method name', call, callback);
+      return undefined;
     }
   }
 
-  reportError(error, call, callback) {
+  reportError(error: string, call: Call, callback: UnaryCallback | null): void {
     console.warn(error);
-    const failure = {
+    const failure: protocol.Response = {
       failure: {
         description: error,
       },
     };
     if (callback !== null) {
       callback(null, failure);
-    } else {
+    } else if ('write' in call) {
       call.write(failure);
       call.end();
     }
   }
 
-  handleStreamed(call) {
+  handleStreamed(call: StreamedCall): void {
     let initial = true;
     call.on('data', (data) => {
       if (initial) {
@@ -726,14 +780,14 @@ module.exports = class ActionServices {
     });
   }
 
-  handleStreamedOut(call) {
+  handleStreamedOut(call: StreamedOutCall): void {
     const handler = this.createHandler(call, null, call.request);
     if (handler) {
       handler.handleStreamedOut();
     }
   }
 
-  handleStreamedIn(call, callback) {
+  handleStreamedIn(call: StreamedInCall, callback: UnaryCallback) {
     let initial = true;
     call.on('data', (data) => {
       if (initial) {
@@ -746,10 +800,10 @@ module.exports = class ActionServices {
     });
   }
 
-  handleUnary(call, callback) {
+  handleUnary(call: UnaryCall, callback: UnaryCallback) {
     const handler = this.createHandler(call, callback, call.request);
     if (handler) {
       handler.handleUnary();
     }
   }
-};
+}

@@ -26,7 +26,7 @@ module.exports.ValueEntity = require('./src/value-entity');
 module.exports.replicatedentity = require('./src/replicated-entity');
 module.exports.ReplicatedWriteConsistency =
   require('./src/kalix').ReplicatedWriteConsistency;
-module.exports.Action = require('./src/action');
+module.exports.Action = require('./src/action').default;
 module.exports.Metadata = require('./src/metadata').Metadata;
 module.exports.IntegrationTestkit =
   require('./src/integration-testkit').IntegrationTestkit;
