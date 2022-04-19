@@ -20,6 +20,7 @@ import protobuf from 'protobufjs';
 import Long from 'long';
 import stableJsonStringify from 'json-stable-stringify';
 
+type IAny = protobufHelper.moduleRoot.google.protobuf.IAny;
 type Any = protobufHelper.moduleRoot.google.protobuf.Any;
 const Any = protobufHelper.moduleRoot.google.protobuf.Any;
 
@@ -227,7 +228,9 @@ class AnySupport {
    * @param any The any.
    * @private
    */
-  deserialize(any: Any): any {
+  deserialize(any?: IAny | null): any {
+    if (!any?.type_url) throw Error('No type URL specified for Any');
+
     const url = any.type_url;
     const idx = url.indexOf('/');
     let hostName = '';

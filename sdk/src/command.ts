@@ -32,7 +32,7 @@ namespace protocol {
   export type Failure = proto.kalix.component.IFailure;
 }
 
-type Message = { [key: string]: any };
+export type Message = { [key: string]: any };
 
 export interface InternalContext {
   commandId: Long;
@@ -54,27 +54,31 @@ export interface EntityContext {
 }
 
 export interface EffectContext {
-  metadata: Metadata;
+  readonly metadata: Metadata;
 
   effect(
     method: EffectMethod,
     message: Message,
-    synchronous: boolean,
-    metadata: Metadata,
+    synchronous?: boolean,
+    metadata?: Metadata,
     internalCall?: boolean,
   ): void;
 
-  fail(msg: string, grpcStatus?: GrpcStatus): never;
+  fail(msg: string, grpcStatus?: GrpcStatus): void;
 }
 
 export interface CommandContext extends EffectContext {
   // FIXME: remove for version 0.8 (https://github.com/lightbend/kalix-proxy/issues/410)
-  thenForward(method: EffectMethod, message: Message, metadata: Metadata): void;
+  thenForward(
+    method: EffectMethod,
+    message: Message,
+    metadata?: Metadata,
+  ): void;
 
   forward(
     method: EffectMethod,
     message: Message,
-    metadata: Metadata,
+    metadata?: Metadata,
     internalCall?: boolean,
   ): void;
 }

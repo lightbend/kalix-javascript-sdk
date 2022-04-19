@@ -15,7 +15,12 @@
  */
 
 import AnySupport from './protobuf-any';
-import { CommandHandlerFactory, InternalContext, UserReply } from './command';
+import {
+  CommandHandlerFactory,
+  InternalContext,
+  Message,
+  UserReply,
+} from './command';
 import { ContextFailure } from './context-failure';
 import { EffectMethod } from './effect';
 import EffectSerializer from './effect-serializer';
@@ -34,8 +39,6 @@ namespace protocol {
     | proto.kalix.component.replicatedentity.IReplicatedEntityStreamOut;
   export type Failure = proto.kalix.component.IFailure;
 }
-
-type Message = { [key: string]: any };
 
 /**
  * Creates the base for context objects.
@@ -378,7 +381,7 @@ class CommandHelper {
         method: EffectMethod,
         message: Message,
         synchronous = false,
-        metadata: Metadata,
+        metadata?: Metadata,
         internalCall?: boolean,
       ): void => {
         accessor.ensureActive();
@@ -400,7 +403,7 @@ class CommandHelper {
       thenForward: (
         method: EffectMethod,
         message: Message,
-        metadata: Metadata,
+        metadata?: Metadata,
       ): void => {
         accessor.context?.forward(method, message, metadata);
       },
@@ -408,7 +411,7 @@ class CommandHelper {
       forward: (
         method: EffectMethod,
         message: Message,
-        metadata: Metadata,
+        metadata?: Metadata,
         internalCall?: boolean,
       ): void => {
         accessor.ensureActive();
