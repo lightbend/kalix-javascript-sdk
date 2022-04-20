@@ -100,8 +100,8 @@ const scriptHandlers = {
       dockerBuild(dockerTag);
     }
     runOrFail('Pushing docker image', 'docker', ['push', dockerTag]);
-    runOrFail('Deploying Kalix service', 'akkasls', [
-      'services',
+    runOrFail('Deploying Kalix service', 'kalix', [
+      'service',
       'deploy',
       serviceName,
       dockerTag,
