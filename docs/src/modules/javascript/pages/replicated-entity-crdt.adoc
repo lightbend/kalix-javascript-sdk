@@ -8,7 +8,7 @@ include::ROOT:partial$include.adoc[]
 
 Replicated Entities distribute state using a https://en.wikipedia.org/wiki/Conflict-free_replicated_data_type[conflict-free replicated data type (CRDT)]. Data is shared across multiple instances of a Replicated Entity and is eventually consistent to provide high availability with low latency. The underlying CRDT semantics allow Replicated Entity instances to update their state independently and concurrently and without coordination. The state changes will always converge without conflicts, but note that with the state being eventually consistent, reading the current data may return an out-of-date value.
 
-Akka Serverless needs to serialize the data to replicate, and it is recommended that this is done with Protocol Buffers using `protobuf` types. While Protocol Buffers are the recommended format for state, we recommend that you do not use your service's public `protobuf` messages in the replicated data. This may introduce some overhead to convert from one type to the other, but allows the service public interface logic to evolve independently of the data format, which should be private.
+Kalix needs to serialize the data to replicate, and it is recommended that this is done with Protocol Buffers using `protobuf` types. While Protocol Buffers are the recommended format for state, we recommend that you do not use your service's public `protobuf` messages in the replicated data. This may introduce some overhead to convert from one type to the other, but allows the service public interface logic to evolve independently of the data format, which should be private.
 
 The steps necessary to implement a Replicated Entity include:
 
@@ -43,9 +43,9 @@ The `shoppingcart_api.proto` file defines the commands we can send to the shoppi
 include::example$js-replicated-entity-shopping-cart/proto/shoppingcart_api.proto[tag=api]
 ----
 <1> Define the protobuf package for the service and API messages.
-<2> Import the Akka Serverless protobuf annotations, or options.
+<2> Import the Kalix protobuf annotations, or options.
 <3> We use protobuf messages to describe the Commands that our service handles. They may contain other messages to represent structured data.
-<4> Every Command must contain a `string` field that contains the entity ID and is marked with the `(akkaserverless.field).entity_key` option.
+<4> Every Command must contain a `string` field that contains the entity ID and is marked with the `(kalix.field).entity_key` option.
 <5> Messages describe the return value for our API. For methods that don't have return values, we use `google.protobuf.Empty`.
 <6> The service descriptor shows the API of the entity. It lists the methods a client can use to issue Commands to the entity.
 
@@ -54,7 +54,7 @@ include::example$js-replicated-entity-shopping-cart/proto/shoppingcart_api.proto
 
 == Implementing behavior
 
-A Replicated Entity is implemented with the link:{attachmentsdir}/api/module-akkaserverless.replicatedentity.ReplicatedEntity.html[ReplicatedEntity{tab-icon}, window="new"] class:
+A Replicated Entity is implemented with the link:{attachmentsdir}/api/module-kalix.replicatedentity.ReplicatedEntity.html[ReplicatedEntity{tab-icon}, window="new"] class:
 
 [.tabset]
 JavaScript::
@@ -102,7 +102,7 @@ NOTE: Each Replicated Entity is associated with one underlying Replicated Data t
 
 === Using protobuf types
 
-To create protobuf messages, for responses or the replicated state, first lookup the protobuf type constructors using the Replicated Entity link:{attachmentsdir}/api/module-akkaserverless.replicatedentity.ReplicatedEntity.html#lookupType[`lookupType`{tab-icon}, window="new"] helper. For TypeScript, the protobuf types used in command handlers can be added using the statically generated type declarations.
+To create protobuf messages, for responses or the replicated state, first lookup the protobuf type constructors using the Replicated Entity link:{attachmentsdir}/api/module-kalix.replicatedentity.ReplicatedEntity.html#lookupType[`lookupType`{tab-icon}, window="new"] helper. For TypeScript, the protobuf types used in command handlers can be added using the statically generated type declarations.
 
 [.tabset]
 JavaScript::
@@ -124,9 +124,9 @@ NOTE: Each protobuf type constructor has a `create` method for creating a protob
 
 === Defining command handlers
 
-We need to implement all methods our Replicated Entity offers as https://developer.lightbend.com/docs/akka-serverless/reference/glossary.html#command_handler[_command handlers_]. A link:{attachmentsdir}/api/module-akkaserverless.replicatedentity.ReplicatedEntity.html#~commandHandler[`command handler`{tab-icon}, window="new"] is a function that takes a command and a link:{attachmentsdir}/api/module-akkaserverless.replicatedentity.ReplicatedEntityCommandContext.html[`ReplicatedEntityCommandContext`{tab-icon}, window="new"]. The command is the input message type for the gRPC service call, and the command handler must return a message of the same type as the output type of the gRPC service call.
+We need to implement all methods our Replicated Entity offers as https://docs.kalix.io/reference/glossary.html#command_handler[_command handlers_]. A link:{attachmentsdir}/api/module-kalix.replicatedentity.ReplicatedEntity.html#~commandHandler[`command handler`{tab-icon}, window="new"] is a function that takes a command and a link:{attachmentsdir}/api/module-kalix.replicatedentity.ReplicatedEntityCommandContext.html[`ReplicatedEntityCommandContext`{tab-icon}, window="new"]. The command is the input message type for the gRPC service call, and the command handler must return a message of the same type as the output type of the gRPC service call.
 
-We map each method to a command handler function using link:{attachmentsdir}/api/module-akkaserverless.replicatedentity.ReplicatedEntity.html#commandHandlers[`commandHandlers`{tab-icon}, window="new"].
+We map each method to a command handler function using link:{attachmentsdir}/api/module-kalix.replicatedentity.ReplicatedEntity.html#commandHandlers[`commandHandlers`{tab-icon}, window="new"].
 
 [.tabset]
 JavaScript::
@@ -148,7 +148,7 @@ include::example$ts-replicated-entity-shopping-cart/src/shoppingcart.ts[tag=comm
 
 In the example below, the `AddItem` service call uses the request message `AddLineItem` to update items in the shopping cart.
 
-The current Replicated Data value can be accessed using the link:{attachmentsdir}/api/module-akkaserverless.replicatedentity.ReplicatedEntityCommandContext.html#state[`state`{tab-icon}, window="new"] method on the provided context.
+The current Replicated Data value can be accessed using the link:{attachmentsdir}/api/module-kalix.replicatedentity.ReplicatedEntityCommandContext.html#state[`state`{tab-icon}, window="new"] method on the provided context.
 
 [.tabset]
 JavaScript::
@@ -176,7 +176,7 @@ include::example$ts-replicated-entity-shopping-cart/src/shoppingcart.ts[tags=imp
 
 The following example shows the implementation of the `GetCart` command handler. This command handler is a read-only command handler--it doesn't update the state, it just returns it.
 
-The current Replicated Data value can be accessed using the link:{attachmentsdir}/api/module-akkaserverless.replicatedentity.ReplicatedEntityCommandContext.html#state[`state`{tab-icon}, window="new"] method on the provided context.
+The current Replicated Data value can be accessed using the link:{attachmentsdir}/api/module-kalix.replicatedentity.ReplicatedEntityCommandContext.html#state[`state`{tab-icon}, window="new"] method on the provided context.
 
 IMPORTANT: The state of Replicated Entities is eventually consistent. An individual Replicated Entity instance may have an out-of-date value, if there are concurrent modifications made by another instance.
 
@@ -203,9 +203,9 @@ include::example$ts-replicated-entity-shopping-cart/src/shoppingcart.ts[tags=imp
 
 === Deleting state
 
-The following example shows the implementation of the `RemoveCart` command handler. Replicated Entity instances for a particular entity identifier can be deleted, using the link:{attachmentsdir}/api/module-akkaserverless.replicatedentity.ReplicatedEntityCommandContext.html#delete[`delete`{tab-icon}, window="new"] method on the provided context. Once deleted, an entity instance cannot be recreated, and all subsequent commands for that entity identifier will be rejected with an error.
+The following example shows the implementation of the `RemoveCart` command handler. Replicated Entity instances for a particular entity identifier can be deleted, using the link:{attachmentsdir}/api/module-kalix.replicatedentity.ReplicatedEntityCommandContext.html#delete[`delete`{tab-icon}, window="new"] method on the provided context. Once deleted, an entity instance cannot be recreated, and all subsequent commands for that entity identifier will be rejected with an error.
 
-IMPORTANT: Caution should be taken with creating and deleting Replicated Entities, as Akka Serverless maintains the replicated state in memory and also retains tombstones for each deleted entity. Over time, if many Replicated Entities are created and deleted, this will result in hitting memory limits.
+IMPORTANT: Caution should be taken with creating and deleting Replicated Entities, as Kalix maintains the replicated state in memory and also retains tombstones for each deleted entity. Over time, if many Replicated Entities are created and deleted, this will result in hitting memory limits.
 
 
 [.tabset]
@@ -230,7 +230,7 @@ include::example$ts-replicated-entity-shopping-cart/src/shoppingcart.ts[tags=imp
 
 == Registering the Entity
 
-To make Akka Serverless aware of the Replicated Entity, we need to register it with the service.
+To make Kalix aware of the Replicated Entity, we need to register it with the service.
 
 // TODO: use generated components once there's codegen for Replicated Entities
 
@@ -250,7 +250,7 @@ TypeScript::
 include::example$ts-replicated-entity-shopping-cart/src/index.ts[tag=register]
 ----
 
-<1> Create an `AkkaServerless` service.
+<1> Create a `Kalix` service.
 <2> Register the Replicated Entity using `addComponent`.
 <3> Start the service.
 
@@ -263,7 +263,7 @@ NOTE: The current value for a Replicated Data object may not be the most up-to-d
 
 === Replicated Counter
 
-A link:{attachmentsdir}/api/module-akkaserverless.replicatedentity.ReplicatedCounter.html[ReplicatedCounter{tab-icon}, window="new"] can be incremented and decremented.
+A link:{attachmentsdir}/api/module-kalix.replicatedentity.ReplicatedCounter.html[ReplicatedCounter{tab-icon}, window="new"] can be incremented and decremented.
 
 // TODO: add codegen protobuf when avaliable for Replicated Entities
 
@@ -273,7 +273,7 @@ When implementing a Replicated Counter entity, the state can be updated by calli
 
 === Replicated Register
 
-A link:{attachmentsdir}/api/module-akkaserverless.replicatedentity.ReplicatedRegister.html[ReplicatedRegister{tab-icon}, window="new"] can contain any (serializable) value. Updates to the value are replicated using last-write-wins semantics, where concurrent modifications are resolved by using the update with the highest timestamp.
+A link:{attachmentsdir}/api/module-kalix.replicatedentity.ReplicatedRegister.html[ReplicatedRegister{tab-icon}, window="new"] can contain any (serializable) value. Updates to the value are replicated using last-write-wins semantics, where concurrent modifications are resolved by using the update with the highest timestamp.
 
 // TODO: configuring clocks for register replication
 
@@ -285,7 +285,7 @@ When creating a Replicated Register, an initial or empty value needs to be defin
 
 === Replicated Set
 
-A link:{attachmentsdir}/api/module-akkaserverless.replicatedentity.ReplicatedSet.html[ReplicatedSet{tab-icon}, window="new"] is a set of (serializable) values, where elements can be added or removed.
+A link:{attachmentsdir}/api/module-kalix.replicatedentity.ReplicatedSet.html[ReplicatedSet{tab-icon}, window="new"] is a set of (serializable) values, where elements can be added or removed.
 
 // TODO: add codegen protobuf when avaliable for Replicated Entities
 
@@ -297,7 +297,7 @@ IMPORTANT: Care needs to be taken to ensure that the serialized values for eleme
 
 === Replicated Counter Map
 
-A link:{attachmentsdir}/api/module-akkaserverless.replicatedentity.ReplicatedCounterMap.html[ReplicatedCounterMap{tab-icon}, window="new"] maps (serializable) keys to replicated counters, where each value can be incremented and decremented.
+A link:{attachmentsdir}/api/module-kalix.replicatedentity.ReplicatedCounterMap.html[ReplicatedCounterMap{tab-icon}, window="new"] maps (serializable) keys to replicated counters, where each value can be incremented and decremented.
 
 // TODO: add codegen protobuf when avaliable for Replicated Entities
 
@@ -307,7 +307,7 @@ When implementing a Replicated Counter Map entity, the value of an entry can be 
 
 === Replicated Register Map
 
-A link:{attachmentsdir}/api/module-akkaserverless.replicatedentity.ReplicatedRegisterMap.html[ReplicatedRegisterMap{tab-icon}, window="new"] maps (serializable) keys to replicated registers of (serializable) values. Updates to values are replicated using last-write-wins semantics, where concurrent modifications are resolved by using the update with the highest timestamp.
+A link:{attachmentsdir}/api/module-kalix.replicatedentity.ReplicatedRegisterMap.html[ReplicatedRegisterMap{tab-icon}, window="new"] maps (serializable) keys to replicated registers of (serializable) values. Updates to values are replicated using last-write-wins semantics, where concurrent modifications are resolved by using the update with the highest timestamp.
 
 // TODO: configuring clocks for register replication
 
@@ -319,7 +319,7 @@ When implementing a Replicated Register Map entity, the value of an entry can be
 
 === Replicated Multi-Map
 
-A link:{attachmentsdir}/api/module-akkaserverless.replicatedentity.ReplicatedMultiMap.html[ReplicatedMultiMap{tab-icon}, window="new"] maps (serializable) keys to replicated sets of (serializable) values, providing a multi-map interface that can associate multiple values with each key.
+A link:{attachmentsdir}/api/module-kalix.replicatedentity.ReplicatedMultiMap.html[ReplicatedMultiMap{tab-icon}, window="new"] maps (serializable) keys to replicated sets of (serializable) values, providing a multi-map interface that can associate multiple values with each key.
 
 // TODO: add codegen protobuf when avaliable for Replicated Entities
 
@@ -329,7 +329,7 @@ When implementing a Replicated Multi-Map entity, the values of an entry can be u
 
 === Replicated Map
 
-A link:{attachmentsdir}/api/module-akkaserverless.replicatedentity.ReplicatedMap.html[ReplicatedMap{tab-icon}, window="new"] maps (serializable) keys to any other Replicated Data types, allowing a heterogeneous map where values can be of any Replicated Data type.
+A link:{attachmentsdir}/api/module-kalix.replicatedentity.ReplicatedMap.html[ReplicatedMap{tab-icon}, window="new"] maps (serializable) keys to any other Replicated Data types, allowing a heterogeneous map where values can be of any Replicated Data type.
 
 NOTE: Prefer to use the specialized replicated maps (<<_replicated_counter_map>>, <<_replicated_register_map>>, or <<_replicated_multi_map>>) whenever the values of the map are of the same type -- counters, registers, or sets.
 
@@ -344,7 +344,7 @@ When implementing a Replicated Map entity, the replicated data for an entry can 
 ====
 All objects used within Replicated Data types -- as keys, values, or elements -- must be immutable, and their serialized form must be stable.
 
-Akka Serverless uses the serialized form of these values to track changes in Replicated Sets or Maps. If the same value serializes to different bytes on different occasions, they will be treated as different keys, values, or elements in a Replicated Set or Map.
+Kalix uses the serialized form of these values to track changes in Replicated Sets or Maps. If the same value serializes to different bytes on different occasions, they will be treated as different keys, values, or elements in a Replicated Set or Map.
 
 This is particularly relevant when using Protocol Buffers (`protobuf`) for serialization. The serialized ordering for the entries of a protobuf `map` type is undefined, so protobuf `map` types should not be used within protobuf messages that are keys, values, or elements in Replicated Data objects.
 

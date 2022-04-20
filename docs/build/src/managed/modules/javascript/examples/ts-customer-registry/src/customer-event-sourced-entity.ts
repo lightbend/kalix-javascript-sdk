@@ -17,7 +17,7 @@
 import {
   EventSourcedEntity,
   replies
-} from "@lightbend/akkaserverless-javascript-sdk";
+} from "@kalix-io/kalix-javascript-sdk";
 import { customer as customerApi } from "../lib/generated/customer_api";
 import { customer as customerDomain } from "../lib/generated/customer_domain";
 

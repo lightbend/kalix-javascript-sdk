@@ -1,0 +1,1547 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width">
+	<title>Kalix Class: View</title>
+
+	<!--[if lt IE 9]>
+	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+	<![endif]-->
+	<link type="text/css" rel="stylesheet" href="styles/sunlight.default.css">
+
+	<link type="text/css" rel="stylesheet" href="styles/site.cosmo.css">
+
+</head>
+
+<body>
+
+<div class="navbar navbar-default navbar-fixed-top ">
+<div class="container">
+	<div class="navbar-header">
+		<a class="navbar-brand" href="index.html">Kalix</a>
+		<button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#topNavigation">
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+        </button>
+	</div>
+	<div class="navbar-collapse collapse" id="topNavigation">
+		<ul class="nav navbar-nav">
+			
+			<li class="dropdown">
+				<a href="namespaces.list.html" class="dropdown-toggle" data-toggle="dropdown">Namespaces<b class="caret"></b></a>
+				<ul class="dropdown-menu ">
+					<li><a href="module-kalix.replicatedentity.html">kalix.replicatedentity</a></li><li><a href="module-kalix.replies.html">kalix.replies</a></li><li><a href="module-kalix.settings.html">kalix.settings</a></li>
+				</ul>
+			</li>
+			
+			<li class="dropdown">
+				<a href="modules.list.html" class="dropdown-toggle" data-toggle="dropdown">Modules<b class="caret"></b></a>
+				<ul class="dropdown-menu ">
+					<li><a href="module-kalix.html">kalix</a></li>
+				</ul>
+			</li>
+			
+			<li class="dropdown">
+				<a href="classes.list.html" class="dropdown-toggle" data-toggle="dropdown">Classes<b class="caret"></b></a>
+				<ul class="dropdown-menu ">
+					<li><a href="module-kalix.Action.html">kalix.Action</a></li><li><a href="module-kalix.Cloudevent.html">kalix.Cloudevent</a></li><li><a href="module-kalix.EventSourcedEntity.html">kalix.EventSourcedEntity</a></li><li><a href="module-kalix.IntegrationTestkit.html">kalix.IntegrationTestkit</a></li><li><a href="module-kalix.JwtClaims.html">kalix.JwtClaims</a></li><li><a href="module-kalix.Kalix.html">kalix.Kalix</a></li><li><a href="module-kalix.Metadata.html">kalix.Metadata</a></li><li><a href="module-kalix.replicatedentity.ReplicatedCounter.html">kalix.replicatedentity.ReplicatedCounter</a></li><li><a href="module-kalix.replicatedentity.ReplicatedCounterMap.html">kalix.replicatedentity.ReplicatedCounterMap</a></li><li><a href="module-kalix.replicatedentity.ReplicatedEntity.html">kalix.replicatedentity.ReplicatedEntity</a></li><li><a href="module-kalix.replicatedentity.ReplicatedMap.html">kalix.replicatedentity.ReplicatedMap</a></li><li><a href="module-kalix.replicatedentity.ReplicatedMultiMap.html">kalix.replicatedentity.ReplicatedMultiMap</a></li><li><a href="module-kalix.replicatedentity.ReplicatedRegister.html">kalix.replicatedentity.ReplicatedRegister</a></li><li><a href="module-kalix.replicatedentity.ReplicatedRegisterMap.html">kalix.replicatedentity.ReplicatedRegisterMap</a></li><li><a href="module-kalix.replicatedentity.ReplicatedSet.html">kalix.replicatedentity.ReplicatedSet</a></li><li><a href="module-kalix.replicatedentity.Vote.html">kalix.replicatedentity.Vote</a></li><li><a href="module-kalix.replies.Effect.html">kalix.replies.Effect</a></li><li><a href="module-kalix.replies.Failure.html">kalix.replies.Failure</a></li><li><a href="module-kalix.replies.Reply.html">kalix.replies.Reply</a></li><li><a href="module-kalix.ValueEntity.html">kalix.ValueEntity</a></li><li><a href="module-kalix.View.html">kalix.View</a></li>
+				</ul>
+			</li>
+			
+			<li class="dropdown">
+				<a href="events.list.html" class="dropdown-toggle" data-toggle="dropdown">Events<b class="caret"></b></a>
+				<ul class="dropdown-menu ">
+					<li><a href="module-kalix.Action.StreamedCommandContext.html#event:cancelled">kalix.Action.StreamedCommandContext#event:cancelled</a></li><li><a href="module-kalix.Action.StreamedCommandContext.html#event:data">kalix.Action.StreamedCommandContext#event:data</a></li><li><a href="module-kalix.Action.StreamedCommandContext.html#event:end">kalix.Action.StreamedCommandContext#event:end</a></li><li><a href="module-kalix.Action.StreamedInCommandContext.html#event:data">kalix.Action.StreamedInCommandContext#event:data</a></li><li><a href="module-kalix.Action.StreamedInCommandContext.html#event:end">kalix.Action.StreamedInCommandContext#event:end</a></li><li><a href="module-kalix.Action.StreamedInContext.html#event:data">kalix.Action.StreamedInContext#event:data</a></li><li><a href="module-kalix.Action.StreamedInContext.html#event:end">kalix.Action.StreamedInContext#event:end</a></li><li><a href="module-kalix.Action.StreamedOutCommandContext.html#event:cancelled">kalix.Action.StreamedOutCommandContext#event:cancelled</a></li><li><a href="module-kalix.Action.StreamedOutContext.html#event:cancelled">kalix.Action.StreamedOutContext#event:cancelled</a></li>
+				</ul>
+			</li>
+			
+			<li class="dropdown">
+				<a href="interfaces.list.html" class="dropdown-toggle" data-toggle="dropdown">Interfaces<b class="caret"></b></a>
+				<ul class="dropdown-menu ">
+					<li><a href="module-kalix.Action.ActionCommandContext.html">kalix.Action.ActionCommandContext</a></li><li><a href="module-kalix.Action.StreamedCommandContext.html">kalix.Action.StreamedCommandContext</a></li><li><a href="module-kalix.Action.StreamedInCommandContext.html">kalix.Action.StreamedInCommandContext</a></li><li><a href="module-kalix.Action.StreamedInContext.html">kalix.Action.StreamedInContext</a></li><li><a href="module-kalix.Action.StreamedOutCommandContext.html">kalix.Action.StreamedOutCommandContext</a></li><li><a href="module-kalix.Action.StreamedOutContext.html">kalix.Action.StreamedOutContext</a></li><li><a href="module-kalix.Action.UnaryCommandContext.html">kalix.Action.UnaryCommandContext</a></li><li><a href="module-kalix.CommandContext.html">kalix.CommandContext</a></li><li><a href="module-kalix.Component.html">kalix.Component</a></li><li><a href="module-kalix.EffectContext.html">kalix.EffectContext</a></li><li><a href="module-kalix.Entity.html">kalix.Entity</a></li><li><a href="module-kalix.EntityContext.html">kalix.EntityContext</a></li><li><a href="module-kalix.EventSourcedEntity.EventSourcedEntityCommandContext.html">kalix.EventSourcedEntity.EventSourcedEntityCommandContext</a></li><li><a href="module-kalix.GrpcClient.html">kalix.GrpcClient</a></li><li><a href="module-kalix.GrpcClientCreator.html">kalix.GrpcClientCreator</a></li><li><a href="module-kalix.KalixOptions.html">kalix.KalixOptions</a></li><li><a href="module-kalix.MetadataEntry.html">kalix.MetadataEntry</a></li><li><a href="module-kalix.replicatedentity.ReplicatedData.html">kalix.replicatedentity.ReplicatedData</a></li><li><a href="module-kalix.replicatedentity.ReplicatedEntityCommandContext.html">kalix.replicatedentity.ReplicatedEntityCommandContext</a></li><li><a href="module-kalix.replicatedentity.StateManagementContext.html">kalix.replicatedentity.StateManagementContext</a></li><li><a href="module-kalix.ServiceBinding.html">kalix.ServiceBinding</a></li><li><a href="module-kalix.settings.ProtocolVersion.html">kalix.settings.ProtocolVersion</a></li><li><a href="module-kalix.ValueEntity.ValueEntityCommandContext.html">kalix.ValueEntity.ValueEntityCommandContext</a></li><li><a href="module-kalix.View.UpdateHandlerContext.html">kalix.View.UpdateHandlerContext</a></li>
+				</ul>
+			</li>
+			
+		</ul>
+        
+            <div class="col-sm-3 col-md-3">
+                <form class="navbar-form" role="search">
+                    <div class="input-group">
+                        <input type="text" class="form-control" placeholder="Search" name="q" id="search-input">
+                        <div class="input-group-btn">
+                            <button class="btn btn-default" id="search-submit"><i class="glyphicon glyphicon-search"></i></button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        
+	</div>
+
+</div>
+</div>
+
+
+<div class="container" id="toc-content">
+<div class="row">
+
+	
+	<div class="col-md-8">
+	
+		<div id="main">
+			
+
+	<h1 class="page-title">Class: View</h1>
+<section>
+
+<header>
+    
+        <h2>
+            <span class="ancestors"><a href="module-kalix.html">kalix</a>.</span>
+        
+        View
+        </h2>
+        
+            <div class="class-description"><p>A view.</p></div>
+        
+    
+</header>
+
+
+<article>
+    <div class="container-overview">
+    
+        
+<hr>
+<dt>
+    <h4 class="name" id="View"><span class="type-signature"></span>new View(desc, serviceName [, options])</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Create a new view.</p>
+    </div>
+    
+
+    
+
+    
+
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Argument</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>desc</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+|
+
+<span class="param-type">Array.&lt;string></span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>A descriptor or list of descriptors to parse, containing the service to serve.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>serviceName</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>The fully qualified name of the service that provides this interface.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>options</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="module-kalix.View.html#~options">module:kalix.View~options</a></span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>The options for this view</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+    <dt class="implements">Implements:</dt>
+    <dd class="implements"><ul>
+        
+            <li><a href="module-kalix.Component.html">module:kalix.Component</a></li>
+        
+    </ul></dd>
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dd>
+
+    
+    </div>
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+        <h3 class="subsection-title">Members</h3>
+
+        <dl>
+            
+<hr>
+<dt class="name" id="options">
+    <h4 id="options"><span class="type-signature"></span>options<span class="type-signature"> :<a href="module-kalix.View.html#~options">module:kalix.View~options</a></span></h4>
+
+    
+</dt>
+<dd>
+    
+
+    
+        <h5>Type:</h5>
+        <ul>
+            <li>
+                
+<span class="param-type"><a href="module-kalix.View.html#~options">module:kalix.View~options</a></span>
+
+
+
+            </li>
+        </ul>
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt class="name" id="service">
+    <h4 id="service"><span class="type-signature"></span>service<span class="type-signature"> :protobuf.Service</span></h4>
+
+    
+</dt>
+<dd>
+    
+
+    
+        <h5>Type:</h5>
+        <ul>
+            <li>
+                
+<span class="param-type">protobuf.Service</span>
+
+
+
+            </li>
+        </ul>
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt class="name" id="serviceName">
+    <h4 id="serviceName"><span class="type-signature"></span>serviceName<span class="type-signature"> :string</span></h4>
+
+    
+</dt>
+<dd>
+    
+
+    
+        <h5>Type:</h5>
+        <ul>
+            <li>
+                
+<span class="param-type">string</span>
+
+
+
+            </li>
+        </ul>
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+</dd>
+
+        </dl>
+    
+
+    
+        <h3 class="subsection-title">Methods</h3>
+
+        <dl>
+            
+<hr>
+<dt>
+    <h4 class="name" id="componentType"><span class="type-signature"></span>componentType()</h4>
+    
+    
+</dt>
+<dd>
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    <p>view component type.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">string</span>
+
+
+
+    </dd>
+</dl>
+
+
+        
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="lookupType"><span class="type-signature"></span>lookupType(messageType)</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Lookup a protobuf message type.</p>
+<p>This is provided as a convenience to lookup protobuf message types.</p>
+    </div>
+    
+
+    
+
+    
+
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>messageType</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The fully qualified name of the type to lookup.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    <p>The protobuf message type.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">protobuf.Type</span>
+
+
+
+    </dd>
+</dl>
+
+
+        
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="setUpdateHandlers"><span class="type-signature"></span>setUpdateHandlers(handlers)</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Set the update handlers of the view. Only used for updates where event transformation is enabled through
+&quot;transform_updates: true&quot; in the grpc descriptor.</p>
+    </div>
+    
+
+    
+
+    
+
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>handlers</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="module-kalix.View.html#~handlers">module:kalix.View~handlers</a></span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The handler callbacks.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    <p>This view.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="module-kalix.View.html">module:kalix.View</a></span>
+
+
+
+    </dd>
+</dl>
+
+
+        
+
+    
+</dd>
+
+        </dl>
+    
+
+    
+        <h3 class="subsection-title">Type Definitions</h3>
+
+        <dl>
+                
+<hr>
+<dt>
+    <h4 class="name" id="~handler"><span class="type-signature"></span>handler(event, state, context)</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>A handler for transforming an incoming event and the previous view state into a new state</p>
+    </div>
+    
+
+    
+
+    
+
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>event</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The event, this will be of the type of the gRPC event handler input type.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>state</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">undefined</span>
+|
+
+<span class="param-type"><a href="module-kalix.html#.Serializable">module:kalix.Serializable</a></span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The previous view state or 'undefined' if no previous state was stored.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>context</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="module-kalix.View.UpdateHandlerContext.html">module:kalix.View.UpdateHandlerContext</a></span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The view handler context.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    <p>The state to store in the view or undefined to not update/store state for the event</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">undefined</span>
+|
+
+<span class="param-type"><a href="module-kalix.html#.Serializable">module:kalix.Serializable</a></span>
+
+
+
+    </dd>
+</dl>
+
+
+        
+
+    
+</dd>
+
+            
+                
+<hr>
+<dt class="name" id="~handlers">
+    <h4 id="~handlers">handlers</h4>
+
+    
+</dt>
+<dd>
+    
+    <div class="description">
+        <p>View handlers
+The names of the properties must match the names of all the view methods specified in the gRPC
+descriptor.</p>
+    </div>
+    
+
+    
+        <h5>Type:</h5>
+        <ul>
+            <li>
+                
+<span class="param-type">Object.&lt;string, <a href="module-kalix.View.html#~handler">module:kalix.View~handler</a>></span>
+
+
+
+            </li>
+        </ul>
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+</dd>
+
+            
+                
+<hr>
+<dt class="name" id="~options">
+    <h4 id="~options">options</h4>
+
+    
+</dt>
+<dd>
+    
+    <div class="description">
+        <p>Options for a view.</p>
+    </div>
+    
+
+    
+
+    
+<dl class="details">
+    
+
+    <h5 class="subsection-title">Properties:</h5>
+
+    <dl>
+
+<table class="props table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Argument</th>
+        
+
+        
+        <th>Default</th>
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>viewId</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    serviceName
+                
+                </td>
+            
+
+            <td class="description last"><p>The id for the view, used for persisting the view.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>includeDirs</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">array.&lt;string></span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    ["."]
+                
+                </td>
+            
+
+            <td class="description last"><p>The directories to include when looking up imported protobuf files.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+</dl>
+
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+</dd>
+
+            </dl>
+    
+
+    
+</article>
+
+</section>
+
+
+
+
+		</div>
+	</div>
+
+	<div class="clearfix"></div>
+
+	
+		<div class="col-md-3">
+			<div id="toc" class="col-md-3 hidden-xs hidden-sm hidden-md"></div>
+		</div>
+	
+
+</div>
+</div>
+
+
+    <div class="modal fade" id="searchResults">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title">Search results</h4>
+          </div>
+          <div class="modal-body"></div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          </div>
+        </div><!-- /.modal-content -->
+      </div><!-- /.modal-dialog -->
+    </div>
+
+
+<footer>
+
+
+<span class="jsdoc-message">
+	Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.10</a>
+	
+	using the <a href="https://github.com/docstrap/docstrap">DocStrap template</a>.
+</span>
+</footer>
+
+<script src="scripts/docstrap.lib.js"></script>
+<script src="scripts/toc.js"></script>
+
+    <script type="text/javascript" src="scripts/fulltext-search-ui.js"></script>
+
+
+<script>
+$( function () {
+	$( "[id*='$']" ).each( function () {
+		var $this = $( this );
+
+		$this.attr( "id", $this.attr( "id" ).replace( "$", "__" ) );
+	} );
+
+	$( ".tutorial-section pre, .readme-section pre, pre.prettyprint.source" ).each( function () {
+		var $this = $( this );
+
+		var example = $this.find( "code" );
+		exampleText = example.html();
+		var lang = /{@lang (.*?)}/.exec( exampleText );
+		if ( lang && lang[1] ) {
+			exampleText = exampleText.replace( lang[0], "" );
+			example.html( exampleText );
+			lang = lang[1];
+		} else {
+			var langClassMatch = example.parent()[0].className.match(/lang\-(\S+)/);
+			lang = langClassMatch ? langClassMatch[1] : "javascript";
+		}
+
+		if ( lang ) {
+
+			$this
+			.addClass( "sunlight-highlight-" + lang )
+			.addClass( "linenums" )
+			.html( example.html() );
+
+		}
+	} );
+
+	Sunlight.highlightAll( {
+		lineNumbers : false,
+		showMenu : true,
+		enableDoclinks : true
+	} );
+
+	$.catchAnchorLinks( {
+        navbarOffset: 10
+	} );
+	$( "#toc" ).toc( {
+		anchorName  : function ( i, heading, prefix ) {
+			return $( heading ).attr( "id" ) || ( prefix + i );
+		},
+		selectors   : "#toc-content h1,#toc-content h2,#toc-content h3,#toc-content h4",
+		showAndHide : false,
+		smoothScrolling: true
+	} );
+
+	$( "#main span[id^='toc']" ).addClass( "toc-shim" );
+	$( '.dropdown-toggle' ).dropdown();
+
+    $( "table" ).each( function () {
+      var $this = $( this );
+      $this.addClass('table');
+    } );
+
+} );
+</script>
+
+
+
+<!--Navigation and Symbol Display-->
+
+
+<!--Google Analytics-->
+
+
+
+    <script type="text/javascript">
+        $(document).ready(function() {
+            SearcherDisplay.init();
+        });
+    </script>
+
+
+</body>
+</html>

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { AkkaServerless } from "@lightbend/akkaserverless-javascript-sdk";
+import { Kalix } from "@kalix-io/kalix-javascript-sdk";
 import customerValueEntity from "./customer-value-entity";
 import customerValueEntityView from "./customer-value-entity-view";
 import customerEventSourcedEntity from "./customer-event-sourced-entity";
@@ -24,7 +24,7 @@ if (!process.argv || process.argv.length === 2) {
   // node file.js - 2 args means no extra arg
   console.log("Starting Value Entity");
   // tag::register[]
-  new AkkaServerless()
+  new Kalix()
     .addComponent(customerValueEntity)
     .addComponent(customerValueEntityView)
     .start();
@@ -32,7 +32,7 @@ if (!process.argv || process.argv.length === 2) {
 } else {
   console.log("Starting Event Sourced Entity");
   // tag::register-event-sourced[]
-  new AkkaServerless()
+  new Kalix()
     .addComponent(customerEventSourcedEntity)
     .addComponent(customerEventSourcedEntityView)
     .start();

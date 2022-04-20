@@ -3,7 +3,7 @@
 
 include::ROOT:partial$include.adoc[]
 
-You can access a single https://developer.lightbend.com/docs/akka-serverless/reference/glossary.html#entity[Entity] with its https://developer.lightbend.com/docs/akka-serverless/reference/glossary.html#entity_key[Entity key]. You might want to retrieve multiple Entities, or retrieve them using an attribute other than the key. Akka Serverless https://developer.lightbend.com/docs/akka-serverless/reference/glossary.html#view[Views] allow you achieve this. By creating multiple Views, you can optimize for query performance against each one.
+You can access a single https://docs.kalix.io/reference/glossary.html#entity[Entity] with its https://docs.kalix.io/reference/glossary.html#entity_key[Entity key]. You might want to retrieve multiple Entities, or retrieve them using an attribute other than the key. Kalix https://docs.kalix.io/reference/glossary.html#view[Views] allow you achieve this. By creating multiple Views, you can optimize for query performance against each one.
 
 Views can be defined from any of the following:
 
@@ -18,15 +18,15 @@ In addition, this page describes:
 * xref:changing[How to modify a View]
 * xref:query[Query reference]
 
-IMPORTANT: Be aware that Views are not updated immediately when Entity state changes. Akka Serverless does update Views as quickly as possible, but it is not instant and can take up to a few seconds for the changes to become visible in the query results. View updates might also take more time during failure scenarios than during normal operation.
+IMPORTANT: Be aware that Views are not updated immediately when Entity state changes. Kalix does update Views as quickly as possible, but it is not instant and can take up to a few seconds for the changes to become visible in the query results. View updates might also take more time during failure scenarios than during normal operation.
 
-https://github.com/lightbend/akkaserverless-javascript-sdk/tree/main/samples/js/js-customer-registry[The `akkaserverless-javascript-sdk` GitHub repository] includes an example of all views described on this page.
+https://github.com/lightbend/kalix-javascript-sdk/tree/main/samples/js/js-customer-registry[The `kalix-javascript-sdk` GitHub repository] includes an example of all views described on this page.
 [#value-entity]
 == View from a Value Entity
 
 Consider an example of a Customer Registry service with a `customer` Value Entity. When `customer` state changes, the entire state is emitted as a value change. Value changes update any associated Views. To create a View that lists customers by their name:
 
-. <<_define_the_view_service_descriptor>> for a service that selects customers by name and associates a table name with the View. The table is created and used by Akka Serverless to store the View, use any name for the table.
+. <<_define_the_view_service_descriptor>> for a service that selects customers by name and associates a table name with the View. The table is created and used by Kalix to store the View, use any name for the table.
 . <<#register-view>>.
 
 This example assumes the following `customer` state is defined in a `customer_domain.proto` file:
@@ -50,11 +50,11 @@ To get a view of multiple customers by their name, define the View as a `service
 include::example$js-customer-registry/customer_view.proto[tags=declarations;service]
 ----
 
-<1> The `UpdateCustomer` method defines how Akka Serverless will update the view.
+<1> The `UpdateCustomer` method defines how Kalix will update the view.
 <2> The source of the View is the `"customers"` Value Entity. This identifier is defined in the `@ValueEntity(entityType = "customers")` annotation of the Value Entity.
-<3> The `(akkaserverless.method).view.update` annotation defines that this method is used for updating the View. You must define the `table` attribute for the table to be used in the query. Pick any name and use it in the query `SELECT` statement.
+<3> The `(kalix.method).view.update` annotation defines that this method is used for updating the View. You must define the `table` attribute for the table to be used in the query. Pick any name and use it in the query `SELECT` statement.
 <4> The `GetCustomers` method defines the query to retrieve a stream of customers.
-<5> The `(akkaserverless.method).view.query` annotation defines that this method is used as a query of the View.
+<5> The `(kalix.method).view.query` annotation defines that this method is used as a query of the View.
 
 [NOTE]
 ====
@@ -75,7 +75,7 @@ See <<#query>> for examples of valid query syntax.
 [#register-view]
 === Register the View
 
-In the View implementation, register the View with Akka Serverless. In addition to passing the service descriptor and a unique identifier, pass any descriptors that define state. In this example, the `customer_domain.proto` descriptor defines the Value Entity state:
+In the View implementation, register the View with Kalix. In addition to passing the service descriptor and a unique identifier, pass any descriptors that define state. In this example, the `customer_domain.proto` descriptor defines the Value Entity state:
 
 .customer-value-entity-view.js
 [.tabset]
@@ -136,7 +136,7 @@ A view descriptor:
 * Defines update methods for events.
 * Provides the source of the View.
 * Enables transformation updates.
-* Specifies a `table` attribute used by Akka Serverless to store the View. Pick any name and use it in the Query `SELECT` statement for the View.
+* Specifies a `table` attribute used by Kalix to store the View. Pick any name and use it in the Query `SELECT` statement for the View.
 
 The following example `customer_view.proto` file defines a View to consume the `CustomerCreated` and `CustomerNameChanged` events. It must ignore all other events.
 
@@ -184,7 +184,7 @@ NOTE: This type of update transformation is a natural fit for Events emitted by 
 [#ES_register]
 === Register the View
 
-In the implementation, register the View with `AkkaServerless`:
+In the implementation, register the View with `Kalix`:
 
 .customer-event-sourced-view.js
 [.tabset]
@@ -338,26 +338,26 @@ TypeScript::
 include::example$ts-customer-registry/integration-test/customer-registry-test.ts[tag=exercise]
 ----
 
-Find the complete test example https://github.com/lightbend/akkaserverless-javascript-sdk/blob/main/samples/js/js-customer-registry/integration-test/customer-registry-test.js[on GitHub].
+Find the complete test example https://github.com/lightbend/kalix-javascript-sdk/blob/main/samples/js/js-customer-registry/integration-test/customer-registry-test.js[on GitHub].
 
 [#changing]
 == How to modify a View
 
-Akka Serverless creates indexes for the View based on the query. For example, the following query will result in a View with an index on the `name` column:
+Kalix creates indexes for the View based on the query. For example, the following query will result in a View with an index on the `name` column:
 
 [source,proto,indent=0]
 ----
 SELECT * FROM customers WHERE name = :customer_name
 ----
 
-If the query is changed, Akka Serverless might need to add other indexes. For example, changing the above query to filter on the `city` would mean that Akka Serverless needs to build a View with the index on the `city` column.
+If the query is changed, Kalix might need to add other indexes. For example, changing the above query to filter on the `city` would mean that Kalix needs to build a View with the index on the `city` column.
 
 [source,proto,indent=0]
 ----
 SELECT * FROM customers WHERE address.city = :city
 ----
 
-Such changes require you to define a new View. Akka Serverless will then rebuild it from the source event log or value changes.
+Such changes require you to define a new View. Kalix will then rebuild it from the source event log or value changes.
 
 WARNING: Views from topics cannot be rebuilt from the source messages, because it's not possible to consume all events from the topic again. The new View will be built from new messages published to the topic.
 
@@ -403,9 +403,13 @@ SELECT * FROM customers WHERE name = :customer_name AND address.city = :city
 SELECT * FROM customers WHERE address.city = 'New York'
 ----
 
-=== Query filter predicates
+=== Filter predicates
 
-Filter predicates include:
+Use filter predicates in `WHERE` conditions to further refine results.
+
+==== Comparison operators
+
+The following comparison operators are supported:
 
 * `=` equals
 * `!=` not equals
@@ -414,11 +418,170 @@ Filter predicates include:
 * `<` less than
 * `\<=` less than or equals
 
-The filter conditions can be combined with `AND`/`OR`.
+==== Logical operators
+
+////
+Combine filter conditions with the `AND` and `OR` operators, and negate using the `NOT` operator. Group conditions using parentheses. Note that `AND` has precedence over `OR`.
 
 [source,proto,indent=0]
 ----
 SELECT * FROM customers WHERE
   name = :customer_name AND address.city = 'New York' OR
-  name = :customer_name AND address.city = 'San Francisco'
+  NOT (name = :customer_name AND address.city = 'San Francisco')
+----
+////
+
+Combine filter conditions with the `AND` operator, and negate using the `NOT` operator. Group conditions using parentheses.
+
+NOTE: `OR` support is currently disabled, until it can be more efficiently indexed.
+
+----
+SELECT * FROM customers WHERE
+  name = :customer_name AND NOT (address.city = 'New York' AND age > 65)
+----
+
+==== Array operators
+
+Use `IN` or `= ANY` to check whether a value is contained in a group of values or in an array column or parameter (a `repeated` field in the Protobuf message).
+
+Use `IN` with a list of values or parameters:
+
+----
+SELECT * FROM customers WHERE email IN ('bob@example.com', :some_email)
+----
+
+Use `= ANY` to check against an array column (a `repeated` field in the Protobuf message):
+
+----
+SELECT * FROM customers WHERE :some_email = ANY(emails)
+----
+
+Or use `= ANY` with a repeated field in the request parameters:
+
+----
+SELECT * FROM customers WHERE email = ANY(:some_emails)
+----
+
+==== Pattern matching
+
+Use `LIKE` to pattern match on strings. The standard SQL `LIKE` patterns are supported, with `_` (underscore) matching a single character, and `%` (percent sign) matching any sequence of zero or more characters.
+
+----
+SELECT * FROM customers WHERE name LIKE 'Bob%'
+----
+
+NOTE: For index efficiency, the pattern must have a non-wildcard prefix or suffix. A pattern like `'%foo%'` is not supported. Given this limitation, only constant patterns with literal strings are supported; patterns in request parameters are not allowed.
+
+==== Text search
+
+Use the `text_search` function to search text values for words, with automatic tokenization and normalization based on language-specific configuration. The `text_search` function takes the text column to search, the query (as a parameter or literal string), and an optional language configuration.
+
+----
+text_search(<column>, <query parameter or string>, [<configuration>])
+----
+
+If the query contains multiple words, the text search will find values that contain all of these words (logically combined with AND), with tokenization and normalization automatically applied.
+
+The following text search language configurations are supported: `'danish'`, `'dutch'`, `'english'`, `'finnish'`, `'french'`, `'german'`, `'hungarian'`, `'italian'`, `'norwegian'`, `'portuguese'`, `'romanian'`, `'russian'`, `'simple'`, `'spanish'`, `'swedish'`, `'turkish'`. By default, a `'simple'` configuration will be used, without language-specific features.
+
+----
+SELECT * FROM customers WHERE text_search(profile, :search_words, 'english')
+----
+
+NOTE: Text search is currently only available for deployed services, and can't be used in local testing.
+
+==== Data types
+
+The following data types are supported, for their corresponding Protobuf types. Arrays are created for a repeated field in a Protobuf message. Timestamps can be stored and compared using the `google.protobuf.Timestamp` message type.
+
+[cols="1,1"]
+|===
+| Data type | Protobuf type
+
+| Text
+| `string`
+
+| Integer
+| `int32`
+
+| Long (Big Integer)
+| `int64`
+
+| Float (Real)
+| `float`
+
+| Double
+| `double`
+
+| Boolean
+| `bool`
+
+| Byte String
+| `bytes`
+
+| Array
+| repeated fields
+
+| Timestamp
+| `google.protobuf.Timestamp`
+
+|===
+
+=== Sorting
+
+Results for a view query can be sorted. Use `ORDER BY` with view columns to sort results in ascending (`ASC`, by default) or descending (`DESC`) order.
+
+If no explicit ordering is specified in a view query, results will be returned in the natural index order, which is based on the filter predicates in the query.
+
+----
+SELECT * FROM customers WHERE name = :name AND age > :min_age ORDER BY age DESC
+----
+
+NOTE: Some orderings may be rejected, if the view index cannot be efficiently ordered. Generally, to order by a column it should also appear in the `WHERE` conditions.
+
+=== Paging
+
+Reading through a query result one "page" at a time rather than returning the entire result at once is possible in two ways, with a count based offset.
+
+In both cases `OFFSET` and `LIMIT` are used.
+
+`OFFSET` specifies at which offset in the result to start
+
+`LIMIT` specifies a maximum number of results to return
+
+==== Count based offset ====
+
+The values can either be static, defined up front in the query:
+
+[source,proto,indent=0]
+----
+SELECT * FROM customers LIMIT 10
+----
+
+Or come from fields in the request message:
+[source,proto,indent=0]
+----
+SELECT * FROM customers OFFSET :start_from LIMIT :max_customers
+----
+
+Note: Using numeric offsets can lead to missing or duplicated entries in the result if entries are added to or removed from the view between requests for the pages.
+
+[#has-more]
+==== Check if there are more pages ====
+
+To check if there are more pages left, you can use the function `has_more()` providing a boolean value for the result. This works both for the count offset paging and also when only using `LIMIT` without any `OFFSET`:
+
+[source,proto,indent=0]
+----
+SELECT * AS customers, has_more() AS more_customers FROM customers LIMIT 10
+----
+
+This query will return `more_customers = true` when the view contains more than 10 customers.
+
+==== Total count of results
+
+To get the total number of results that will be returned over all pages, use `COUNT(*)` in a query that projects its results into a field. The total count will be returned in the aliased field (using `AS`) or otherwise into a field named `count`.
+
+----
+SELECT * AS customers, COUNT(*) AS total, has_more() AS more FROM customers LIMIT 10
 ----
