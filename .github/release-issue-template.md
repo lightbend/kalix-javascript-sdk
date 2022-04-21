@@ -4,23 +4,23 @@
 - [ ] Check that the [latest build](https://app.circleci.com/pipelines/github/lightbend/kalix-javascript-sdk) successfully finished
 - [ ] Make sure a version of the proxy that supports the protocol version the SDK expects has been deployed to production
 
-You can see the proxy version on prod [on grafana](https://lightbendcloud.grafana.net/d/ebzw4ARnz/prod-akka-serverless-operations-dashboard?orgId=1) or using [various other methods](https://github.com/lightbend/akkaserverless/wiki/Versioning-and-how-to-determine-what-version-is-running).
+You can see the proxy version on prod [on grafana](https://lightbendcloud.grafana.net/d/ebzw4ARnz/prod-akka-serverless-operations-dashboard?orgId=1) or using [various other methods](https://github.com/lightbend/kalix/wiki/Versioning-and-how-to-determine-what-version-is-running).
 
 ### Cutting the release
 
 - [ ] Edit the [draft release notes](https://github.com/lightbend/kalix-javascript-sdk/releases) and create the appropriate tag
     - CircleCI will automatically publish the [@kalix-io/kalix-javascript-sdk package](https://www.npmjs.com/package/@kalix-io/kalix-javascript-sdk) to the npm registry based on the tag
-    - CI will update the docs/current branch
+    - CI will update the docs/kalix-current branch
 
 ### Check availability
 
-- [ ] Check that [`docs/current`](https://github.com/lightbend/kalix-javascript-sdk/commits/docs/current) has been updated
+- [ ] Check that [`docs/kalix-current`](https://github.com/lightbend/kalix-javascript-sdk/commits/docs/kalix-current) has been updated
 - [ ] Check the release in the [npm registry](https://www.npmjs.com/package/@kalix-io/kalix-javascript-sdk)
 
 ### Fix and publish docs
 
-- [ ] Update the [supported version in the main docs](https://github.com/lightbend/akkaserverless-docs/blob/master/docs/modules/ROOT/partials/include.adoc#L20) if relevant (affects [Supported Versions](https://docs.kalix.io/setting-up/index.html#_supported_languages))
-- [ ] Add an item to the [Release Notes](https://github.com/lightbend/akkaserverless-docs/blob/master/docs/modules/release-notes/pages/index.adoc) in the documentation
+- [ ] Update the [supported version in the main docs](https://github.com/lightbend/kalix-docs/blob/main/docs/modules/ROOT/partials/include.adoc#L20) if relevant (affects [Supported Versions](https://docs.kalix.io/setting-up/index.html#_supported_languages))
+- [ ] Add an item to the [Release Notes](https://github.com/lightbend/kalix-docs/blob/main/docs/modules/release-notes/pages/index.adoc) in the documentation
 - [ ] Release the Kalix documentation to get the SDK docs updates published
 
 ### Update to the latest version
