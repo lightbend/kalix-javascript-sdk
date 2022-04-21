@@ -1,16 +1,16 @@
 {
   "name": "js-eventsourced-shopping-cart",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "type": "module",
   "engines": {
     "node": ">=14.0.0",
     "npm": ">=6.0.0"
   },
   "dependencies": {
-    "@kalix-io/kalix-javascript-sdk": "1.0.0-M4"
+    "@kalix-io/kalix-javascript-sdk": "1.0.0-M5"
   },
   "devDependencies": {
-    "@kalix-io/kalix-scripts": "1.0.0-M4",
+    "@kalix-io/kalix-scripts": "1.0.0-M5",
     "chai": "^4.3.3",
     "jsdoc": "^3.6.3",
     "mocha": "^8.3.1",
