@@ -147,7 +147,7 @@ module.exports = class ViewServices {
             }
           } else {
             console.error(
-              "No handler defined for commandName: '%s'",
+              "No handler defined for commandName: '%s', view will not be updated and event stream will be stuck.",
               receiveEvent.commandName,
             );
             failAndEndCall(
