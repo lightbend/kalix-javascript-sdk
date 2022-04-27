@@ -43,13 +43,13 @@ class EntityServiceSourceGeneratorSuite extends munit.FunSuite {
         | * A TypeScript aware editor such as VS Code will be able to leverage them to provide hinting and validation.
         | * 
         | * State; the serialisable and persistable state of the entity
-        | * @typedef { import("../../lib/generated/myservice").State } State
+        | * @typedef { import("../../lib/generated/myentity").State } State
         | * 
         | * Event; the union of all possible event types
-        | * @typedef { import("../../lib/generated/myservice").Event } Event
+        | * @typedef { import("../../lib/generated/myentity").Event } Event
         | * 
         | * MyService; a strongly typed extension of EventSourcedEntity derived from your proto source
-        | * @typedef { import("../../lib/generated/myservice").MyService } MyService
+        | * @typedef { import("../../lib/generated/myentity").MyService } MyService
         | */
         |
         |/**
@@ -124,10 +124,10 @@ class EntityServiceSourceGeneratorSuite extends munit.FunSuite {
         | * A TypeScript aware editor such as VS Code will be able to leverage them to provide hinting and validation.
         | * 
         | * State; the serialisable and persistable state of the entity
-        | * @typedef { import("../../lib/generated/myservice").State } State
+        | * @typedef { import("../../lib/generated/myvalueentity").State } State
         | * 
         | * MyService; a strongly typed extension of ValueEntity derived from your proto source
-        | * @typedef { import("../../lib/generated/myservice").MyService } MyService
+        | * @typedef { import("../../lib/generated/myvalueentity").MyService } MyService
         | */
         |
         |/**

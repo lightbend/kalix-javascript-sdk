@@ -26,7 +26,7 @@ Each sample under `samples` can be run locally. See their READMEs for details.
 
 ## TCK
 
-To run the Akka Serverless TCK, see [tck/README.md].
+To run the Kalix TCK, see [tck/README.md].
 
 
 ## Docs
