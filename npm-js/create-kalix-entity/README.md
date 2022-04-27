@@ -9,8 +9,8 @@ This tool can be used to generate a project suitable for the general development
 
 There are two templates available to select from:
 
-- `value-entity` (default); provides the starting point to develop a [Value Entity](https://docs.akkaserverless.dev/js-services/value-entity.html)
-- `event-sourced-entity`; provides the starting point to develop an [Event Sourced Entity](https://docs.akkaserverless.dev/js-services/eventsourced.html)
+- `value-entity` (default); provides the starting point to develop a [Value Entity](https://docs.kalix.io/javascript/value-entity.html)
+- `event-sourced-entity`; provides the starting point to develop an [Event Sourced Entity](https://docs.kalix.io/javascript/eventsourced.html)
 
 To create the initial codebase for a new entity with npm:
 
@@ -49,7 +49,7 @@ npm pack
 ...and then install locally (substituting <some-version> with the version that the above `npm pack` reports):
 
 ```sh
-npm install -g lightbend-create-kalix-entity-<some-version>.tgz
+npm install -g kalix-io-create-kalix-entity-<some-version>.tgz
 ```
 
 As the `create-kalix-entity` command is now locally installed, you are able to run:

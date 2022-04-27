@@ -1,7 +1,7 @@
 {
   "name": "kalix-tck-javascript-sdk",
   "version": "0.0.0",
-  "description": "Akka Serverless TCK implementation for JavaScript SDK",
+  "description": "Kalix TCK implementation for JavaScript SDK",
   "engineStrict": true,
   "engines": {
     "node": "~14"
