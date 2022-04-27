@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ValueEntity, replies } from "@lightbend/akkaserverless-javascript-sdk";
+import { ValueEntity, replies } from "@kalix-io/kalix-javascript-sdk";
 import { customer as customerApi } from "../lib/generated/customer_api";
 import { customer as customerDomain } from "../lib/generated/customer_domain";
 

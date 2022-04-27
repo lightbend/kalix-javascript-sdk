@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-import { ValueEntity, View } from '@lightbend/akkaserverless-javascript-sdk';
+import { ValueEntity, View } from '@kalix-io/kalix-javascript-sdk';
 import protocol from '../generated/tck';
 
-type Event = protocol.akkaserverless.tck.model.view.Event;
-type ViewState = protocol.akkaserverless.tck.model.view.ViewState;
+type Event = protocol.kalix.tck.model.view.Event;
+type ViewState = protocol.kalix.tck.model.view.ViewState;
 
 export const tckModel = new View(
   'proto/view.proto',
-  'akkaserverless.tck.model.view.ViewTckModel',
+  'kalix.tck.model.view.ViewTckModel',
 ).setUpdateHandlers({
   ProcessUpdateUnary: processUpdateUnary,
 });
@@ -54,6 +54,6 @@ function processUpdateUnary(
 
 export const viewSource = new ValueEntity(
   ['proto/view.proto'],
-  'akkaserverless.tck.model.view.ViewTckSource',
+  'kalix.tck.model.view.ViewTckSource',
   'view-source',
 );

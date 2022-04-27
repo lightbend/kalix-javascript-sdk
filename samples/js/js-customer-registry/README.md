@@ -19,7 +19,7 @@ npm start
 Start the proxy:
 
 ```
-docker run --rm -e USER_FUNCTION_HOST=host.docker.internal -p 9000:9000 gcr.io/akkaserverless-public/akkaserverless-proxy
+docker run --rm -e USER_FUNCTION_HOST=host.docker.internal -p 9000:9000 gcr.io/kalix-public/kalix-proxy
 ```
 
 Create a customer:

@@ -7,10 +7,10 @@
   },
   "main": "dist/index.js",
   "dependencies": {
-    "@lightbend/akkaserverless-javascript-sdk": "0.33.5"
+    "@kalix-io/kalix-javascript-sdk": "1.0.0-M5"
   },
   "devDependencies": {
-    "@lightbend/akkasls-scripts": "0.33.5",
+    "@kalix-io/kalix-scripts": "1.0.0-M5",
     "@types/mocha": "^8.2.3",
     "@types/node": "14.18.3",
     "@typescript-eslint/eslint-plugin": "^4.31.0",
@@ -27,7 +27,7 @@
     "uglify-js": "^3.7.7"
   },
   "config": {
-    "dockerImage": "gcr.io/akkaserverless-public/samples-ts-value-entity-shopping-cart",
+    "dockerImage": "gcr.io/kalix-public/samples-ts-value-entity-shopping-cart",
     "sourceDir": "./src",
     "testSourceDir": "./test",
     "protoSourceDir": "./proto",
@@ -40,8 +40,8 @@
     "start": "node dist/index.js",
     "test": "ts-mocha test/**/*.test.ts",
     "integration-test": "ts-mocha integration-test/**/*.integration-test.ts",
-    "build": "akkasls-scripts build && rimraf {src,test,integration-test}/**/*.js && rimraf lib/**/*{shoppingcart,index}.{js,d.ts} && npm run lint-check && tsc",
-    "package": "akkasls-scripts package",
-    "deploy": "akkasls-scripts deploy"
+    "build": "kalix-scripts build && rimraf {src,test,integration-test}/**/*.js && rimraf lib/**/*{shoppingcart,index}.{js,d.ts} && tsc",
+    "package": "kalix-scripts package",
+    "deploy": "kalix-scripts deploy"
   }
 }

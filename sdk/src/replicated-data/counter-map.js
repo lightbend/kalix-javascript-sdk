@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-const debug = require('debug')('akkaserverless-replicated-entity');
+const debug = require('debug')('kalix-replicated-entity');
 const ReplicatedCounter = require('./counter');
 const AnySupport = require('../protobuf-any');
 const iterators = require('./iterators');
@@ -23,8 +23,8 @@ const util = require('util');
 /**
  * @classdesc A replicated map of counters.
  *
- * @constructor module:akkaserverless.replicatedentity.ReplicatedCounterMap
- * @implements module:akkaserverless.replicatedentity.ReplicatedData
+ * @constructor module:kalix.replicatedentity.ReplicatedCounterMap
+ * @implements module:kalix.replicatedentity.ReplicatedData
  */
 function ReplicatedCounterMap() {
   const counters = new Map();
@@ -34,8 +34,8 @@ function ReplicatedCounterMap() {
   /**
    * Get the value at the given key.
    *
-   * @function module:akkaserverless.replicatedentity.ReplicatedCounterMap#get
-   * @param {module:akkaserverless.Serializable} key The key to get.
+   * @function module:kalix.replicatedentity.ReplicatedCounterMap#get
+   * @param {module:kalix.Serializable} key The key to get.
    * @returns {number|undefined} The counter value, or undefined if no value is defined at that key.
    */
   this.get = (key) => {
@@ -46,8 +46,8 @@ function ReplicatedCounterMap() {
   /**
    * Get the value as a long at the given key.
    *
-   * @function module:akkaserverless.replicatedentity.ReplicatedCounterMap#getLong
-   * @param {module:akkaserverless.Serializable} key The key to get.
+   * @function module:kalix.replicatedentity.ReplicatedCounterMap#getLong
+   * @param {module:kalix.Serializable} key The key to get.
    * @returns {Long|undefined} The counter value as a long, or undefined if no value is defined at that key.
    */
   this.getLong = (key) => {
@@ -58,10 +58,10 @@ function ReplicatedCounterMap() {
   /**
    * Increment the counter at the given key by the given number.
    *
-   * @function module:akkaserverless.replicatedentity.ReplicatedCounterMap#increment
-   * @param {module:akkaserverless.Serializable} key The key for the counter to increment.
+   * @function module:kalix.replicatedentity.ReplicatedCounterMap#increment
+   * @param {module:kalix.Serializable} key The key for the counter to increment.
    * @param {Long|number} increment The amount to increment the counter by. If negative, it will be decremented instead.
-   * @returns {module:akkaserverless.replicatedentity.ReplicatedCounterMap} This counter map.
+   * @returns {module:kalix.replicatedentity.ReplicatedCounterMap} This counter map.
    */
   this.increment = function (key, increment) {
     this.getOrCreateCounter(key).increment(increment);
@@ -71,10 +71,10 @@ function ReplicatedCounterMap() {
   /**
    * Decrement the counter at the given key by the given number.
    *
-   * @function module:akkaserverless.replicatedentity.ReplicatedCounterMap#decrement
-   * @param {module:akkaserverless.Serializable} key The key for the counter to decrement.
+   * @function module:kalix.replicatedentity.ReplicatedCounterMap#decrement
+   * @param {module:kalix.Serializable} key The key for the counter to decrement.
    * @param {Long|number} decrement The amount to decrement the counter by. If negative, it will be incremented instead.
-   * @returns {module:akkaserverless.replicatedentity.ReplicatedCounterMap} This counter map.
+   * @returns {module:kalix.replicatedentity.ReplicatedCounterMap} This counter map.
    */
   this.decrement = function (key, decrement) {
     this.getOrCreateCounter(key).decrement(decrement);
@@ -84,8 +84,8 @@ function ReplicatedCounterMap() {
   /**
    * Check whether this map contains a value of the given key.
    *
-   * @function module:akkaserverless.replicatedentity.ReplicatedCounterMap#has
-   * @param {module:akkaserverless.Serializable} key The key to check.
+   * @function module:kalix.replicatedentity.ReplicatedCounterMap#has
+   * @param {module:kalix.Serializable} key The key to check.
    * @returns {boolean} True if this counter map contains a value for the given key.
    */
   this.has = function (key) {
@@ -95,7 +95,7 @@ function ReplicatedCounterMap() {
   /**
    * The number of elements in this map.
    *
-   * @name module:akkaserverless.replicatedentity.ReplicatedCounterMap#size
+   * @name module:kalix.replicatedentity.ReplicatedCounterMap#size
    * @type {number}
    * @readonly
    */
@@ -108,8 +108,8 @@ function ReplicatedCounterMap() {
   /**
    * Return an iterator of the keys of this counter map.
    *
-   * @function module:akkaserverless.replicatedentity.ReplicatedCounterMap#keys
-   * @returns {IterableIterator<module:akkaserverless.Serializable>}
+   * @function module:kalix.replicatedentity.ReplicatedCounterMap#keys
+   * @returns {IterableIterator<module:kalix.Serializable>}
    */
   this.keys = function () {
     return iterators.map(counters.values(), (entry) => entry.key);
@@ -118,9 +118,9 @@ function ReplicatedCounterMap() {
   /**
    * Delete the counter at the given key.
    *
-   * @function module:akkaserverless.replicatedentity.ReplicatedCounterMap#delete
-   * @param {module:akkaserverless.Serializable} key The key to delete.
-   * @return {module:akkaserverless.replicatedentity.ReplicatedCounterMap} This counter map.
+   * @function module:kalix.replicatedentity.ReplicatedCounterMap#delete
+   * @param {module:kalix.Serializable} key The key to delete.
+   * @return {module:kalix.replicatedentity.ReplicatedCounterMap} This counter map.
    */
   this.delete = function (key) {
     const comparableKey = AnySupport.toComparable(key);
@@ -134,8 +134,8 @@ function ReplicatedCounterMap() {
   /**
    * Clear all counters from this counter map.
    *
-   * @function module:akkaserverless.replicatedentity.ReplicatedCounterMap#clear
-   * @return {module:akkaserverless.replicatedentity.ReplicatedCounterMap} This counter map.
+   * @function module:kalix.replicatedentity.ReplicatedCounterMap#clear
+   * @return {module:kalix.replicatedentity.ReplicatedCounterMap} This counter map.
    */
   this.clear = function () {
     if (counters.size > 0) {

@@ -17,7 +17,7 @@
 import {
   EventSourcedEntity,
   replies
-} from "@lightbend/akkaserverless-javascript-sdk";
+} from "@kalix-io/kalix-javascript-sdk";
 import * as proto from "../lib/generated/proto";
 
 type Context = EventSourcedEntity.EventSourcedEntityCommandContext;

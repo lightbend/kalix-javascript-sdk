@@ -3,7 +3,7 @@
 # Update package versions in samples.
 #
 # If `--all` is specified, then all dependencies will be updated to latest versions,
-# otherwise just the SDK and akkasls-scripts dependencies will be updated.
+# otherwise just the SDK and kalix-scripts dependencies will be updated.
 #
 # If `--check` is specified, then don't upgrade and only check for updates.
 
@@ -39,7 +39,7 @@ done
 
 for sample in "$samples_dir"/*/*/ ; do
   pushd "$sample"
-  filter_option=$($all && echo "" || echo --filter "@lightbend/*")
+  filter_option=$($all && echo "" || echo --filter "@kalix-io/*")
   upgrade_option=$($upgrade && echo --upgrade || echo "")
   $ncu $filter_option $upgrade_option
   $upgrade && npm install || echo "No install needed"

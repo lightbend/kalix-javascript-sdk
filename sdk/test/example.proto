@@ -17,7 +17,7 @@ syntax = "proto3";
 package com.example;
 
 import "google/protobuf/any.proto";
-import "akkaserverless/annotations.proto";
+import "kalix/annotations.proto";
 
 message Example {
     string field1 = 1;
@@ -31,7 +31,7 @@ message PrimitiveLike {
 }
 
 message In {
-    string field = 1 [(akkaserverless.field).entity_key = true];
+    string field = 1 [(kalix.field).entity_key = true];
 }
 
 message Out {

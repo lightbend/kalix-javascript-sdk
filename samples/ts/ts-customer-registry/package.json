@@ -1,30 +1,30 @@
 {
   "name": "ts-customer-registry",
   "version": "0.0.0",
-  "description": "Akka Serverless TypeScript SDK sample application for customer registry",
+  "description": "Kalix TypeScript SDK sample application for customer registry",
   "engineStrict": true,
   "engines": {
     "node": "~14"
   },
-  "homepage": "https://github.com/lightbend/akkaserverless-javascript-sdk",
+  "homepage": "https://github.com/lightbend/kalix-javascript-sdk",
   "bugs": {
-    "url": "https://github.com/lightbend/akkaserverless-javascript-sdk/issues"
+    "url": "https://github.com/lightbend/kalix-javascript-sdk/issues"
   },
   "license": "Apache-2.0",
   "author": {
-    "name": "Akka Serverless Team",
+    "name": "Kalix Team",
     "email": "info@lightbend.com",
     "url": "https://lightbend.com"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/lightbend/akkaserverless-javascript-sdk",
+    "url": "https://github.com/lightbend/kalix-javascript-sdk",
     "directory": "samples/ts/ts-customer-registry"
   },
   "//": "https://npm.community/t/npm-install-does-not-install-transitive-dependencies-of-local-dependency/2264",
   "main": "dist/index.js",
   "dependencies": {
-    "@lightbend/akkaserverless-javascript-sdk": "0.33.5"
+    "@kalix-io/kalix-javascript-sdk": "1.0.0-M5"
   },
   "devDependencies": {
     "@types/chai": "^4.2.21",
@@ -46,7 +46,7 @@
     "compile-customer-api-proto": "mkdirp lib/generated && pbjs -t static-module -w commonjs --no-encode --no-decode --no-verify --no-convert --no-delimited customer_api.proto -o lib/generated/customer_api.js && pbts --no-comments -o lib/generated/customer_api.d.ts lib/generated/customer_api.js",
     "compile-customer-domain-proto": "mkdirp lib/generated && pbjs -t static-module -w commonjs --no-encode --no-decode --no-verify --no-convert --no-delimited customer_domain.proto -o lib/generated/customer_domain.js && pbts --no-comments -o lib/generated/customer_domain.d.ts lib/generated/customer_domain.js",
     "compile-customer-view-proto": "mkdirp lib/generated && pbjs -t static-module -w commonjs --no-encode --no-decode --no-verify --no-convert --no-delimited customer_view.proto -o lib/generated/customer_view.js && pbts --no-comments -o lib/generated/customer_view.d.ts lib/generated/customer_view.js",
-    "build": "compile-descriptor customer_api.proto customer_domain.proto customer_view.proto && npm run compile-customer-api-proto && npm run compile-customer-domain-proto && npm run compile-customer-view-proto && npm run lint-check && tsc",
+    "build": "compile-descriptor customer_api.proto customer_domain.proto customer_view.proto && npm run compile-customer-api-proto && npm run compile-customer-domain-proto && npm run compile-customer-view-proto && tsc",
     "pretest": "npm run build",
     "test": "ts-mocha",
     "preintegration-test": "npm run build",

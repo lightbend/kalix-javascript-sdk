@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { AkkaServerless } from '@lightbend/akkaserverless-javascript-sdk';
+import { Kalix } from '@kalix-io/kalix-javascript-sdk';
 
 import * as action from './src/action';
 import * as valueEntity from './src/value-entity';
@@ -23,7 +23,7 @@ import * as replicatedEntity from './src/replicated-entity';
 import * as view from './src/view';
 import * as eventing from './src/eventing';
 
-const service = new AkkaServerless()
+const service = new Kalix()
   .addComponent(action.tckModel)
   .addComponent(action.two)
   .addComponent(valueEntity.tckModel)

@@ -15,22 +15,23 @@
  */
 
 /**
- * The AkkaServerless module.
+ * The Kalix module.
  *
- * @module akkaserverless
+ * @module kalix
  */
 
-module.exports.AkkaServerless = require('./src/akkaserverless').AkkaServerless;
+module.exports.Kalix = require('./src/kalix').Kalix;
 module.exports.EventSourcedEntity = require('./src/event-sourced-entity');
 module.exports.ValueEntity = require('./src/value-entity');
 module.exports.replicatedentity = require('./src/replicated-entity');
 module.exports.ReplicatedWriteConsistency =
-  require('./src/akkaserverless').ReplicatedWriteConsistency;
-module.exports.Action = require('./src/action');
-module.exports.Metadata = require('./src/metadata');
+  require('./src/kalix').ReplicatedWriteConsistency;
+module.exports.Action = require('./src/action').default;
+module.exports.Metadata = require('./src/metadata').Metadata;
 module.exports.IntegrationTestkit =
   require('./src/integration-testkit').IntegrationTestkit;
 module.exports.View = require('./src/view');
 module.exports.replies = require('./src/reply');
 module.exports.settings = require('./settings');
 module.exports.GrpcUtil = require('./src/grpc-util').GrpcUtil;
+module.exports.GrpcStatus = require('./src/kalix').GrpcStatus;

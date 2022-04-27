@@ -18,7 +18,7 @@ const path = require('path');
 const grpc = require('@grpc/grpc-js');
 const protoLoader = require('@grpc/proto-loader');
 
-const debug = require('debug')('akkaserverless-value-entity');
+const debug = require('debug')('kalix-value-entity');
 // Bind to stdout
 debug.log = console.log.bind(console);
 const AnySupport = require('./protobuf-any');
@@ -115,9 +115,9 @@ class ValueEntityHandler {
           /**
            * Context for an value entity command.
            *
-           * @interface module:akkaserverless.ValueEntity.ValueEntityCommandContext
-           * @extends module:akkaserverless.CommandContext
-           * @extends module:akkaserverless.EntityContext
+           * @interface module:kalix.ValueEntity.ValueEntityCommandContext
+           * @extends module:kalix.CommandContext
+           * @extends module:kalix.EntityContext
            */
 
           /**
@@ -126,8 +126,8 @@ class ValueEntityHandler {
            * The state won't be persisted until the reply is sent to the proxy. Then, the state will be persisted
            * before the reply is sent back to the client.
            *
-           * @function module:akkaserverless.ValueEntity.ValueEntityCommandContext#updateState
-           * @param {module:akkaserverless.Serializable} newState The state to store.
+           * @function module:kalix.ValueEntity.ValueEntityCommandContext#updateState
+           * @param {module:kalix.Serializable} newState The state to store.
            */
           ctx.context.updateState = (newState) => {
             ctx.ensureActive();
@@ -140,7 +140,7 @@ class ValueEntityHandler {
           /**
            * Delete this entity.
            *
-           * @function module:akkaserverless.ValueEntity.ValueEntityCommandContext#deleteState
+           * @function module:kalix.ValueEntity.ValueEntityCommandContext#deleteState
            */
           ctx.context.deleteState = () => {
             ctx.ensureActive();
@@ -240,7 +240,7 @@ module.exports = class ValueEntityServices {
   }
 
   componentType() {
-    return 'akkaserverless.component.valueentity.ValueEntities';
+    return 'kalix.component.valueentity.ValueEntities';
   }
 
   register(server) {
@@ -251,12 +251,7 @@ module.exports = class ValueEntityServices {
       path.join(__dirname, '..', '..', 'protoc', 'include'),
     ];
     const packageDefinition = protoLoader.loadSync(
-      path.join(
-        'akkaserverless',
-        'component',
-        'valueentity',
-        'value_entity.proto',
-      ),
+      path.join('kalix', 'component', 'valueentity', 'value_entity.proto'),
       {
         includeDirs: includeDirs,
       },
@@ -264,7 +259,7 @@ module.exports = class ValueEntityServices {
     const grpcDescriptor = grpc.loadPackageDefinition(packageDefinition);
 
     const entityService =
-      grpcDescriptor.akkaserverless.component.valueentity.ValueEntities.service;
+      grpcDescriptor.kalix.component.valueentity.ValueEntities.service;
 
     server.addService(entityService, {
       handle: this.handle.bind(this),

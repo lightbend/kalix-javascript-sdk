@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { AkkaServerless } from "@lightbend/akkaserverless-javascript-sdk";
+import { Kalix } from "@kalix-io/kalix-javascript-sdk";
 import shoppingcartEntity from "./shoppingcart";
 
-new AkkaServerless().addComponent(shoppingcartEntity).start();
+new Kalix().addComponent(shoppingcartEntity).start();

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-const debug = require('debug')('akkaserverless-replicated-entity');
+const debug = require('debug')('kalix-replicated-entity');
 const ReplicatedRegister = require('./register');
 const AnySupport = require('../protobuf-any');
 const protobufHelper = require('../protobuf-helper');
@@ -22,14 +22,14 @@ const iterators = require('./iterators');
 const util = require('util');
 
 const Clocks =
-  protobufHelper.moduleRoot.akkaserverless.component.replicatedentity
+  protobufHelper.moduleRoot.kalix.component.replicatedentity
     .ReplicatedEntityClock;
 
 /**
  * @classdesc A replicated map of registers.
  *
- * @constructor module:akkaserverless.replicatedentity.ReplicatedRegisterMap
- * @implements module:akkaserverless.replicatedentity.ReplicatedData
+ * @constructor module:kalix.replicatedentity.ReplicatedRegisterMap
+ * @implements module:kalix.replicatedentity.ReplicatedData
  */
 function ReplicatedRegisterMap() {
   const registers = new Map();
@@ -39,8 +39,8 @@ function ReplicatedRegisterMap() {
   /**
    * Get the value at the given key.
    *
-   * @function module:akkaserverless.replicatedentity.ReplicatedRegisterMap#get
-   * @param {module:akkaserverless.Serializable} key The key to get.
+   * @function module:kalix.replicatedentity.ReplicatedRegisterMap#get
+   * @param {module:kalix.Serializable} key The key to get.
    * @returns {number|undefined} The register value, or undefined if no value is defined at that key.
    */
   this.get = (key) => {
@@ -51,12 +51,12 @@ function ReplicatedRegisterMap() {
   /**
    * Set the register at the given key to the given value.
    *
-   * @function module:akkaserverless.replicatedentity.ReplicatedRegisterMap#set
-   * @param {module:akkaserverless.Serializable} key The key for the register.
-   * @param {module:akkaserverless.Serializable} value The new value for the register.
-   * @param {module:akkaserverless.replicatedentity.Clock} [clock=Clocks.DEFAULT] The register clock.
+   * @function module:kalix.replicatedentity.ReplicatedRegisterMap#set
+   * @param {module:kalix.Serializable} key The key for the register.
+   * @param {module:kalix.Serializable} value The new value for the register.
+   * @param {module:kalix.replicatedentity.Clock} [clock=Clocks.DEFAULT] The register clock.
    * @param {number} [customClockValue=0] Clock value when using custom clock, otherwise ignored.
-   * @returns {module:akkaserverless.replicatedentity.ReplicatedRegisterMap} This register map.
+   * @returns {module:kalix.replicatedentity.ReplicatedRegisterMap} This register map.
    */
   this.set = function (
     key,
@@ -71,8 +71,8 @@ function ReplicatedRegisterMap() {
   /**
    * Check whether this map contains a value of the given key.
    *
-   * @function module:akkaserverless.replicatedentity.ReplicatedRegisterMap#has
-   * @param {module:akkaserverless.Serializable} key The key to check.
+   * @function module:kalix.replicatedentity.ReplicatedRegisterMap#has
+   * @param {module:kalix.Serializable} key The key to check.
    * @returns {boolean} True if this register map contains a value for the given key.
    */
   this.has = function (key) {
@@ -82,7 +82,7 @@ function ReplicatedRegisterMap() {
   /**
    * The number of elements in this map.
    *
-   * @name module:akkaserverless.replicatedentity.ReplicatedRegisterMap#size
+   * @name module:kalix.replicatedentity.ReplicatedRegisterMap#size
    * @type {number}
    * @readonly
    */
@@ -95,8 +95,8 @@ function ReplicatedRegisterMap() {
   /**
    * Return an iterator of the keys of this register map.
    *
-   * @function module:akkaserverless.replicatedentity.ReplicatedRegisterMap#keys
-   * @returns {IterableIterator<module:akkaserverless.Serializable>}
+   * @function module:kalix.replicatedentity.ReplicatedRegisterMap#keys
+   * @returns {IterableIterator<module:kalix.Serializable>}
    */
   this.keys = function () {
     return iterators.map(registers.values(), (entry) => entry.key);
@@ -105,9 +105,9 @@ function ReplicatedRegisterMap() {
   /**
    * Delete the register at the given key.
    *
-   * @function module:akkaserverless.replicatedentity.ReplicatedRegisterMap#delete
-   * @param {module:akkaserverless.Serializable} key The key to delete.
-   * @return {module:akkaserverless.replicatedentity.ReplicatedRegisterMap} This register map.
+   * @function module:kalix.replicatedentity.ReplicatedRegisterMap#delete
+   * @param {module:kalix.Serializable} key The key to delete.
+   * @return {module:kalix.replicatedentity.ReplicatedRegisterMap} This register map.
    */
   this.delete = function (key) {
     const comparableKey = AnySupport.toComparable(key);
@@ -121,8 +121,8 @@ function ReplicatedRegisterMap() {
   /**
    * Clear all registers from this register map.
    *
-   * @function module:akkaserverless.replicatedentity.ReplicatedRegisterMap#clear
-   * @return {module:akkaserverless.replicatedentity.ReplicatedRegisterMap} This register map.
+   * @function module:kalix.replicatedentity.ReplicatedRegisterMap#clear
+   * @return {module:kalix.replicatedentity.ReplicatedRegisterMap} This register map.
    */
   this.clear = function () {
     if (registers.size > 0) {

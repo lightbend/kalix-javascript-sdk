@@ -17,147 +17,149 @@
 /**
  * Creating replies.
  *
- * @namespace module:akkaserverless.replies
+ * @namespace module:kalix.replies
  */
 
 /**
  * Side effect for a reply.
  * 
- * @class module:akkaserverless.replies.Effect
+ * @class module:kalix.replies.Effect
  * @param {protobuf.Method} method The entity service method to invoke.
  * @param {object} message The message to send to that service.
  * @param {boolean} [synchronous=false] Whether the effect should be execute synchronously or not, default is false
- * @param {module:akkaserverless.Metadata} [metadata] Metadata to send with the effect.
+ * @param {module:kalix.Metadata} [metadata] Metadata to send with the effect.
  */
 
 /**
  * A return type to allow returning forwards or failures, and attaching effects to messages.
  * 
- * @class module:akkaserverless.replies.Reply
+ * @class module:kalix.replies.Reply
  */
 
 /**
- * @function module:akkaserverless.replies.Reply#getMethod
+ * @function module:kalix.replies.Reply#getMethod
  * @returns {protobuf.Method|undefined} The protobuf method for a forwarding reply.
  */
 
 /**
  * Set the protobuf method for a forwarding reply.
  *
- * @function module:akkaserverless.replies.Reply#setMethod
+ * @function module:kalix.replies.Reply#setMethod
  * @param {protobuf.Method} method The protobuf method.
- * @returns {module:akkaserverless.replies.Reply} The updated reply.
+ * @returns {module:kalix.replies.Reply} The updated reply.
  */
 
 /**
- * @function module:akkaserverless.replies.Reply#getMessage
+ * @function module:kalix.replies.Reply#getMessage
  * @returns {any} the reply message
  */
 
 /**
  * Set the message for this reply.
  *
- * @function module:akkaserverless.replies.Reply#setMessage
+ * @function module:kalix.replies.Reply#setMessage
  * @param {any} message The reply message.
- * @returns {module:akkaserverless.replies.Reply} The updated reply.
+ * @returns {module:kalix.replies.Reply} The updated reply.
  */
 
 /**
- * @function module:akkaserverless.replies.Reply#getMetadata
- * @returns {module:akkaserverless.Metadata} The metadata attached to the reply.
+ * @function module:kalix.replies.Reply#getMetadata
+ * @returns {module:kalix.Metadata} The metadata attached to the reply.
  */
 
 /**
  * Attach metadata to this reply.
  *
- * @function module:akkaserverless.replies.Reply#setMetadata
- * @param {module:akkaserverless.Metadata|undefined} metadata Metadata to send with the reply.
- * @returns {module:akkaserverless.replies.Reply} The updated reply.
+ * @function module:kalix.replies.Reply#setMetadata
+ * @param {module:kalix.Metadata|undefined} metadata Metadata to send with the reply.
+ * @returns {module:kalix.replies.Reply} The updated reply.
  */
 
 
 /**
- * @function module:akkaserverless.replies.Reply#getForward
- * @returns {module:akkaserverless.replies.Reply|undefined} The forwarding reply.
+ * @function module:kalix.replies.Reply#getForward
+ * @returns {module:kalix.replies.Reply|undefined} The forwarding reply.
  */
 
 /**
  * Make this a forwarding reply.
  *
- * @function module:akkaserverless.replies.Reply#setForward
- * @param {module:akkaserverless.replies.Reply} forward The forward reply.
- * @returns {module:akkaserverless.replies.Reply} The updated reply.
+ * @function module:kalix.replies.Reply#setForward
+ * @param {module:kalix.replies.Reply} forward The forward reply.
+ * @returns {module:kalix.replies.Reply} The updated reply.
  */
 
 /**
- * @function module:akkaserverless.replies.Reply#getFailure
- * @returns {string|undefined} The failure description.
+ * @function module:kalix.replies.Reply#getFailure
+ * @returns {module:kalix.replies.Failure|undefined} The failure description.
  */
 
 /**
  * Make this a failure reply.
  *
- * @function module:akkaserverless.replies.Reply#setFailure
+ * @function module:kalix.replies.Reply#setFailure
  * @param {string} failure The failure description.
- * @returns {module:akkaserverless.replies.Reply} The updated reply.
+ * @param {module:kalix.GrpcStatus} [status] the status code to fail with, defaults to Unknown.
+ * @returns {module:kalix.replies.Reply} The updated reply.
  */
 
 /**
- * @function module:akkaserverless.replies.Reply#getEffects
- * @returns {module:akkaserverless.replies.Effect[]} The side effects for this reply.
+ * @function module:kalix.replies.Reply#getEffects
+ * @returns {module:kalix.replies.Effect[]} The side effects for this reply.
  */
 
 /**
  * Attach the given effect to this reply.
  *
- * @function module:akkaserverless.replies.Reply#addEffect
+ * @function module:kalix.replies.Reply#addEffect
  * @param {protobuf.Method} method The entity service method to invoke.
  * @param {object} message The message to send to that service.
  * @param {boolean} [synchronous=false] Whether the effect should be execute synchronously or not, default is false.
- * @param {module:akkaserverless.Metadata} [metadata] Metadata to send with the effect.
- * @return {module:akkaserverless.replies.Reply} This reply after adding the effect.
+ * @param {module:kalix.Metadata} [metadata] Metadata to send with the effect.
+ * @return {module:kalix.replies.Reply} This reply after adding the effect.
  */
 
 /**
  * Attach the given effects to this reply.
  *
- * @function module:akkaserverless.replies.Reply#addEffects
+ * @function module:kalix.replies.Reply#addEffects
  * @param {Effect[]} effects One or more service calls to execute as side effects.
- * @return {module:akkaserverless.replies.Reply} This reply after adding the effects.
+ * @return {module:kalix.replies.Reply} This reply after adding the effects.
  */
 
 /**
  * Whether this reply is empty: does not have a message, forward, or failure.
  *
- * @function module:akkaserverless.replies.Reply#isEmpty
+ * @function module:kalix.replies.Reply#isEmpty
  * @return {boolean} Whether the reply is empty.
  */
 
 /**
  * Create a message reply.
  *
- * @function module:akkaserverless.replies~message
+ * @function module:kalix.replies~message
  * @param {any} message The message to reply with.
- * @param {module:akkaserverless.Metadata} [metadata] Optional metadata to pass with the reply.
- * @return {module:akkaserverless.replies.Reply} A message reply.
+ * @param {module:kalix.Metadata} [metadata] Optional metadata to pass with the reply.
+ * @return {module:kalix.replies.Reply} A message reply.
  */
 
 /**
  * Create a forward reply.
  *
- * @function module:akkaserverless.replies~forward
+ * @function module:kalix.replies~forward
  * @param {protobuf.Method} method The service call representing the forward.
  * @param {any} message The message to forward.
- * @param {module:akkaserverless.Metadata} [metadata] Optional metadata to pass with the forwarded message.
- * @return {module:akkaserverless.replies.Reply} A forward reply.
+ * @param {module:kalix.Metadata} [metadata] Optional metadata to pass with the forwarded message.
+ * @return {module:kalix.replies.Reply} A forward reply.
  */
 
 /**
  * Create a failure reply.
  *
- * @function module:akkaserverless.replies~failure
+ * @function module:kalix.replies~failure
  * @param {string} description A description of the failure.
- * @return {module:akkaserverless.replies.Reply} A failure reply.
+ * @param {module:kalix.GrpcStatus} [status] - the GRPC status, defaults to Unknown
+ * @return {module:kalix.replies.Reply} A failure reply.
  */
 
 /**
@@ -167,4 +169,18 @@
  *
  * @function module:akkaserverless.replies~emptyReply
  * @return {module:akkaserverless.replies.Reply} An empty reply.
+ */
+
+/**
+ * @class module:kalix.replies.Failure
+ */
+
+/**
+ * @function module:kalix.replies.Failure#getDescription
+ * @returns {string}
+ */
+
+/**
+ * @function module:kalix.replies.Failure#getStatus
+ * @returns {module:kalix.GrpcStatus|undefined}
  */

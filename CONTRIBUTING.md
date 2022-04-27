@@ -32,3 +32,9 @@ To run the Akka Serverless TCK, see [tck/README.md].
 ## Docs
 
 Build docs in the `doc/` directory with `make`. Note that it requires a docker daemon running.
+
+## Formatting
+
+Auto-update formatting with:
+
+    npm run prettier-format

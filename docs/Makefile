@@ -1,8 +1,8 @@
-# Make Akka Serverless JavaScript SDK documentation
+# Make Kalix JavaScript SDK SDK documentation
 
 module   := javascript
-upstream := lightbend/akkaserverless-javascript-sdk
-branch   := docs/current
+upstream := lightbend/kalix-javascript-sdk
+branch   := docs/kalix-current
 sources  := src build/src/managed
 
 src_managed := build/src/managed
@@ -28,7 +28,7 @@ managed: attributes apidocs examples bundles
 
 attributes:
 	mkdir -p "${managed_partials}"
-	bin/version.sh | xargs -0  printf ":akkaserverless-javascript-sdk-version: %s" \
+	bin/version.sh | xargs -0  printf ":kalix-javascript-sdk-version: %s" \
 		> "${managed_partials}/attributes.adoc"
 	echo ":minimum_node_version: 14" \
 		>> "${managed_partials}/attributes.adoc"

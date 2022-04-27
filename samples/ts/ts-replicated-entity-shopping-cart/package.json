@@ -7,10 +7,10 @@
   },
   "main": "dist/index.js",
   "dependencies": {
-    "@lightbend/akkaserverless-javascript-sdk": "0.33.5"
+    "@kalix-io/kalix-javascript-sdk": "1.0.0-M5"
   },
   "devDependencies": {
-    "@lightbend/akkasls-scripts": "0.33.5",
+    "@kalix-io/kalix-scripts": "1.0.0-M5",
     "@types/chai": "^4.2.21",
     "@types/chai-as-promised": "^7.1.4",
     "@types/mocha": "^8.2.3",
@@ -30,7 +30,7 @@
     "uglify-js": "^3.7.7"
   },
   "config": {
-    "dockerImage": "gcr.io/akkaserverless-public/samples-ts-replicated-entity-shopping-cart",
+    "dockerImage": "gcr.io/kalix-public/samples-ts-replicated-entity-shopping-cart",
     "sourceDir": "./src",
     "testSourceDir": "./test",
     "protoSourceDir": "./proto",
@@ -42,8 +42,8 @@
     "lint-fix": "eslint src --ext .ts --fix && prettier --write {src,integration-test}/**/*.ts",
     "start": "node dist/index.js",
     "integration-test": "ts-mocha integration-test/**/*.integration-test.ts",
-    "build": "akkasls-scripts build && npm run lint-check && tsc",
-    "package": "akkasls-scripts package",
-    "deploy": "akkasls-scripts deploy"
+    "build": "kalix-scripts build && tsc",
+    "package": "kalix-scripts package",
+    "deploy": "kalix-scripts deploy"
   }
 }

@@ -2,20 +2,20 @@
 
 ## Designing
 
-While designing your service it is useful to read [designing services](https://developer.lightbend.com/docs/akka-serverless/designing/index.html)
+While designing your service it is useful to read [designing services](https://docs.kalix.io/designing/index.html)
 
 ## Developing
 
 This project has a functioning service ready to adapt and
-extend it it may be useful to read up on [developing services](https://developer.lightbend.com/docs/akka-serverless/developing/index.html)
-and in particular the [JavaScript section](https://developer.lightbend.com/docs/akka-serverless/javascript/index.html)
+extend it it may be useful to read up on [developing services](https://docs.kalix.io/developing/index.html)
+and in particular the [JavaScript section](https://docs.kalix.io/javascript/index.html)
 
 ## Prerequisites
 
 No additional tooling is required for local development. To build and deploy to a cluster:
 
 - Docker; see https://docs.docker.com/engine/install/
-- Akka Serverless CLI (`akkasls`); see https://developer.lightbend.com/docs/akka-serverless/getting-started/set-up-development-env.html#_akka_serverless_cli
+- Kalix CLI (`akkasls`); see https://docs.kalix.io/getting-started/set-up-development-env.html#_akka_serverless_cli
 
 ## Building
 
@@ -48,8 +48,8 @@ npm run integration-test
 
 ## Running Locally
 
-In order to run your application locally, you must run the Akka Serverless proxy. The included `docker-compose` file contains the configuration required to run the proxy for a locally running application.
-It also contains the configuration to start a local Google Pub/Sub emulator that the Akka Serverless proxy will connect to.
+In order to run your application locally, you must run the Kalix proxy. The included `docker-compose` file contains the configuration required to run the proxy for a locally running application.
+It also contains the configuration to start a local Google Pub/Sub emulator that the Kalix proxy will connect to.
 To start the proxy, run the following command from this directory:
 
 ```
@@ -64,7 +64,7 @@ To start the application locally, use the following commands:
 npm run build && npm run start
 ```
 
-With both the proxy and your application running, any defined endpoints should be available at `http://localhost:9000`. In addition to the defined gRPC interface, each method has a corresponding HTTP endpoint. Unless configured otherwise (see [Transcoding HTTP](https://developer.lightbend.com/docs/akka-serverless/javascript/proto.html#_transcoding_http)), this endpoint accepts POST requests at the path `/[package].[entity name]/[method]`. For example, using `curl`:
+With both the proxy and your application running, any defined endpoints should be available at `http://localhost:9000`. In addition to the defined gRPC interface, each method has a corresponding HTTP endpoint. Unless configured otherwise (see [Transcoding HTTP](https://docs.kalix.io/javascript/proto.html#_transcoding_http)), this endpoint accepts POST requests at the path `/[package].[entity name]/[method]`. For example, using `curl`:
 
 ```
 > curl -XPOST -H "Content-Type: application/json" localhost:9000/com.example.MyServiceEntity/GetValue -d '{"entityId": "foo"}'
@@ -86,14 +86,14 @@ ERROR:
 ## Deploying
 
 To deploy your service, install the `akkasls` CLI as documented in
-[Setting up a local development environment](https://developer.lightbend.com/docs/akka-serverless/getting-started/set-up-development-env.html)
+[Setting up a local development environment](https://docs.kalix.io/getting-started/set-up-development-env.html)
 and configure a Docker Registry to upload your docker image to.
 
 You will need to update the `akkasls.dockerImage` property in the `pom.xml` and refer to
-[Configuring registries](https://developer.lightbend.com/docs/akka-serverless/projects/container-registries.html)
-for more information on how to make your docker image available to Akka Serverless.
+[Configuring registries](https://docs.kalix.io/projects/container-registries.html)
+for more information on how to make your docker image available to Kalix.
 
-Finally you can or use the [Akka Serverless Console](https://console.akkaserverless.com)
+Finally you can or use the [Kalix Console](https://console.kalix.io)
 to create a project and then deploy your service into the project either by using `npm run deploy`,
 through the `akkasls` CLI or via the web interface. When using `npm run deploy`, NPM will also
 conveniently package and publish your docker image prior to deployment.

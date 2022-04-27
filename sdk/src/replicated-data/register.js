@@ -19,7 +19,7 @@ const protobufHelper = require('../protobuf-helper');
 const AnySupport = require('../protobuf-any');
 
 const Clocks =
-  protobufHelper.moduleRoot.akkaserverless.component.replicatedentity
+  protobufHelper.moduleRoot.kalix.component.replicatedentity
     .ReplicatedEntityClock;
 
 /**
@@ -30,10 +30,10 @@ const Clocks =
  * time, custom clocks can supply a custom number to be used. If two clock values are equal, the
  * write from the node with the lowest address wins.
  *
- * @constructor module:akkaserverless.replicatedentity.ReplicatedRegister
- * @implements module:akkaserverless.replicatedentity.ReplicatedData
- * @param {module:akkaserverless.Serializable} value A value to hold in the register.
- * @param {module:akkaserverless.replicatedentity.Clock} [clock=Clocks.DEFAULT] The clock to use.
+ * @constructor module:kalix.replicatedentity.ReplicatedRegister
+ * @implements module:kalix.replicatedentity.ReplicatedData
+ * @param {module:kalix.Serializable} value A value to hold in the register.
+ * @param {module:kalix.replicatedentity.Clock} [clock=Clocks.DEFAULT] The clock to use.
  * @param {number} [customClockValue=0] The custom clock value, if using a custom clock.
  */
 function ReplicatedRegister(
@@ -61,8 +61,8 @@ function ReplicatedRegister(
    *
    * Setting it will cause it to be set with the default clock.
    *
-   * @name module:akkaserverless.replicatedentity.ReplicatedRegister#value
-   * @type {module:akkaserverless.Serializable}
+   * @name module:kalix.replicatedentity.ReplicatedRegister#value
+   * @type {module:kalix.Serializable}
    */
   Object.defineProperty(this, 'value', {
     get: function () {
@@ -76,9 +76,9 @@ function ReplicatedRegister(
   /**
    * Set the value using a custom clock.
    *
-   * @function module:akkaserverless.replicatedentity.ReplicatedRegister#setWithClock
-   * @param {module:akkaserverless.Serializable} value The value to set.
-   * @param {module:akkaserverless.replicatedentity.Clock} [clock=Clocks.DEFAULT] The clock.
+   * @function module:kalix.replicatedentity.ReplicatedRegister#setWithClock
+   * @param {module:kalix.Serializable} value The value to set.
+   * @param {module:kalix.replicatedentity.Clock} [clock=Clocks.DEFAULT] The clock.
    * @param {number} [customClockValue=0] Ignored if a custom clock isn't specified.
    */
   this.setWithClock = function (

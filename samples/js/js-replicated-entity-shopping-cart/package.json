@@ -7,10 +7,10 @@
     "npm": ">=6.0.0"
   },
   "dependencies": {
-    "@lightbend/akkaserverless-javascript-sdk": "0.33.5"
+    "@kalix-io/kalix-javascript-sdk": "1.0.0-M5"
   },
   "devDependencies": {
-    "@lightbend/akkasls-scripts": "0.33.5",
+    "@kalix-io/kalix-scripts": "1.0.0-M5",
     "chai": "^4.3.3",
     "chai-as-promised": "^7.1.1",
     "jsdoc": "^3.6.3",
@@ -18,7 +18,7 @@
     "uglify-js": "^3.7.7"
   },
   "config": {
-    "dockerImage": "gcr.io/akkaserverless-public/samples-js-replicated-entity-shopping-cart",
+    "dockerImage": "gcr.io/kalix-public/samples-js-replicated-entity-shopping-cart",
     "sourceDir": "./src",
     "testSourceDir": "./test",
     "protoSourceDir": "./proto",
@@ -29,8 +29,8 @@
     "start": "node src/index.js",
     "test": "mocha ./test",
     "integration-test": "mocha ./integration-test",
-    "build": "akkasls-scripts build",
-    "package": "akkasls-scripts package",
-    "deploy": "akkasls-scripts deploy"
+    "build": "kalix-scripts build",
+    "package": "kalix-scripts package",
+    "deploy": "kalix-scripts deploy"
   }
 }

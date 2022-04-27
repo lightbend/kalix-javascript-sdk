@@ -14,14 +14,9 @@
  * limitations under the License.
  */
 
-/* This code was initialised by Akka Serverless tooling.
- * As long as this file exists it will not be re-generated.
- * You are free to make changes to this file.
- */
-
 // tag::delegating-action[]
-import { Action } from "@lightbend/akkaserverless-javascript-sdk";
-import { replies } from '@lightbend/akkaserverless-javascript-sdk';
+import { Action } from "@kalix-io/kalix-javascript-sdk";
+import { replies } from '@kalix-io/kalix-javascript-sdk';
 // end::delegating-action[]
 // tag::public-grpc[]
 import * as grpc from '@grpc/grpc-js'; // <1>
@@ -60,7 +55,7 @@ const counterClient = action.clients.com.example.CounterService.createClient( //
 {
 // tag::public-grpc[]
 const counterClient = action.clients.com.example.CounterService.createClient( // <2>
-  "still-queen-1447.us-east1.apps.akkaserverless.dev", // <3>
+  "still-queen-1447.us-east1.apps.kalix.dev", // <3>
   grpc.credentials.createSsl() // <4>
 );
 // end::public-grpc[]

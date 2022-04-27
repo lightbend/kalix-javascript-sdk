@@ -14,13 +14,8 @@
  * limitations under the License.
  */
 
-/* This code was initialised by Akka Serverless tooling.
- * As long as this file exists it will not be re-generated.
- * You are free to make changes to this file.
- */
-
-import { Action } from "@lightbend/akkaserverless-javascript-sdk";
-import { replies } from '@lightbend/akkaserverless-javascript-sdk';
+import { Action } from "@kalix-io/kalix-javascript-sdk";
+import { replies } from '@kalix-io/kalix-javascript-sdk';
 import * as grpc from '@grpc/grpc-js';
 
 /**

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ValueEntity } from "@lightbend/akkaserverless-javascript-sdk";
+import { ValueEntity } from "@kalix-io/kalix-javascript-sdk";
 
 /**
  * Type definitions.

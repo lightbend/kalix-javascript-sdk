@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-const AkkaServerless = require("@lightbend/akkaserverless-javascript-sdk").AkkaServerless;
+const Kalix = require("@kalix-io/kalix-javascript-sdk").Kalix;
 
-const server = new AkkaServerless();
+const server = new Kalix();
 server.addComponent(require("./users"));
 server.addComponent(require("./users-by-email"));
 server.addComponent(require("./user-email-count"));

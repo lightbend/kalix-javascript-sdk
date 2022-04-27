@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import akkaserverless from "@lightbend/akkaserverless-javascript-sdk";
+import kalix from "@kalix-io/kalix-javascript-sdk";
 import chai from "chai";
 import chaiAsPromised from "chai-as-promised";
 import shoppingcart from "../src/shoppingcart.js";
@@ -22,7 +22,7 @@ import shoppingcart from "../src/shoppingcart.js";
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
-const testkit = new akkaserverless.IntegrationTestkit();
+const testkit = new kalix.IntegrationTestkit();
 testkit.addComponent(shoppingcart);
 
 function client() {

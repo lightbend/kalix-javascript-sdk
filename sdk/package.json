@@ -1,25 +1,25 @@
 {
-  "name": "@lightbend/akkaserverless-javascript-sdk",
+  "name": "@kalix-io/kalix-javascript-sdk",
   "version": "0.0.0",
-  "description": "Akka Serverless JavaScript SDK",
+  "description": "Kalix JavaScript SDK SDK",
   "keywords": [
-    "akka",
+    "kalix",
     "serverless",
     "akka serverless"
   ],
-  "homepage": "https://github.com/lightbend/akkaserverless-javascript-sdk",
+  "homepage": "https://github.com/lightbend/kalix-javascript-sdk",
   "bugs": {
-    "url": "https://github.com/lightbend/akkaserverless-javascript-sdk"
+    "url": "https://github.com/lightbend/kalix-javascript-sdk"
   },
   "license": "Apache-2.0",
   "author": {
-    "name": "Akka Serverless Team",
+    "name": "Kalix Team",
     "email": "info@lightbend.com",
     "url": "https://lightbend.com"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/lightbend/akkaserverless-javascript-sdk"
+    "url": "https://github.com/lightbend/kalix-javascript-sdk"
   },
   "engineStrict": true,
   "engines": {
@@ -35,7 +35,7 @@
     "grpc-tools": "^1.11.2",
     "grpc_tools_node_protoc_ts": "^5.3.0",
     "json-stable-stringify": "^1.0.1",
-    "minimist": ">=0.2.1",
+    "minimist": ">=1.2.6",
     "mkdirp": "^0.5.1",
     "node-fetch": "^2.6.7",
     "rimraf": "^2.6.3",
@@ -47,10 +47,14 @@
   "devDependencies": {
     "@lightbend/tsd-jsdoc": "^2.5.1",
     "@types/chai": "^4.2.19",
+    "@types/chai-as-promised": "^7.1.5",
     "@types/debug": "^4.1.5",
     "@types/google-protobuf": "^3.15.2",
+    "@types/json-stable-stringify": "^1.0.34",
     "@types/mocha": "^8.2.2",
     "@types/node": "14.18.3",
+    "@types/sinon": "^10.0.11",
+    "@types/sinon-chai": "^3.2.8",
     "chai": "4.2.0",
     "chai-as-promised": "7.1.1",
     "ink-docstrap": "^1.3.2",
@@ -79,7 +83,7 @@
     }
   },
   "scripts": {
-    "clean": "rm -rf ./dist ./proto",
+    "clean": "rm -rf ./dist ./proto ./apidocs kalix-io-kalix-javascript-sdk-0.0.0.tgz user-function.desc index.d.ts",
     "copy-files": "cp -r ./proto ./dist && cp index.d.ts ./dist",
     "compile": "tsc && npm run copy-files",
     "verify-types": "tsc dist/index.d.ts --noEmit",
@@ -95,6 +99,6 @@
     "prepublishOnly": "npm version --no-git-tag-version $(bin/version.sh)"
   },
   "publishConfig": {
-    "@lightbend:registry": "https://registry.npmjs.org"
+    "@kalix-io:registry": "https://registry.npmjs.org"
   }
 }

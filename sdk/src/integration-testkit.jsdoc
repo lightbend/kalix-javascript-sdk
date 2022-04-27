@@ -17,42 +17,42 @@
 /**
  * Integration Testkit.
  *
- * @class module:akkaserverless.IntegrationTestkit
- * @param {any} [options] Options for the testkit and Akka Serverless service.
+ * @class module:kalix.IntegrationTestkit
+ * @param {any} [options] Options for the testkit and Kalix service.
  */
 
 /**
  * Add the given component to this testkit.
  *
- * @function module:akkaserverless.IntegrationTestkit#addComponent
- * @param {module:akkaserverless.Component} component The component to add.
- * @returns {module:akkaserverless.IntegrationTestkit} This testkit.
+ * @function module:kalix.IntegrationTestkit#addComponent
+ * @param {module:kalix.Component} component The component to add.
+ * @returns {module:kalix.IntegrationTestkit} This testkit.
  */
 
 /**
  * Start the testkit, with the registered components.
  *
- * @function module:akkaserverless.IntegrationTestkit#start
- * @param {module:akkaserverless.IntegrationTestkit~startCallback} callback Start callback, accepting possible error.
+ * @function module:kalix.IntegrationTestkit#start
+ * @param {module:kalix.IntegrationTestkit~startCallback} callback Start callback, accepting possible error.
  */
 
 /**
  * Callback for start, accepting possible error.
  *
- * @callback module:akkaserverless.IntegrationTestkit~startCallback
+ * @callback module:kalix.IntegrationTestkit~startCallback
  * @param {Error} [error] Error on starting the testkit.
  */
 
 /**
  * Shut down the testkit.
  *
- * @function module:akkaserverless.IntegrationTestkit#shutdown
- * @param {module:akkaserverless.IntegrationTestkit~shutdownCallback} callback Shutdown callback, accepting possible error.
+ * @function module:kalix.IntegrationTestkit#shutdown
+ * @param {module:kalix.IntegrationTestkit~shutdownCallback} callback Shutdown callback, accepting possible error.
  */
 
 /**
  * Callback for shutdown, accepting possible error.
  *
- * @callback module:akkaserverless.IntegrationTestkit~shutdownCallback
+ * @callback module:kalix.IntegrationTestkit~shutdownCallback
  * @param {Error} [error] Error on shutting down the testkit.
  */

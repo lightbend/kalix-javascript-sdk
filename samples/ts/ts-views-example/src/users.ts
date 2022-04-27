@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ValueEntity, replies } from "@lightbend/akkaserverless-javascript-sdk";
+import { ValueEntity, replies } from "@kalix-io/kalix-javascript-sdk";
 import * as proto from "../lib/generated/proto";
 
 type Context = ValueEntity.ValueEntityCommandContext;

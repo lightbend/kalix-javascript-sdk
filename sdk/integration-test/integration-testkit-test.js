@@ -15,9 +15,9 @@
  */
 
 const should = require('chai').should();
-const akkaserverless = require('../');
+const kalix = require('../');
 
-const action = new akkaserverless.Action(
+const action = new kalix.Action(
   './test/example.proto',
   'com.example.ExampleService',
 );
@@ -35,7 +35,7 @@ action.commandHandlers = {
   },
 };
 
-const value_entity = new akkaserverless.ValueEntity(
+const value_entity = new kalix.ValueEntity(
   './test/example.proto',
   'com.example.ExampleServiceTwo',
   'value-entity-example-service',
@@ -62,7 +62,7 @@ value_entity.commandHandlers = {
   },
 };
 
-const entity = new akkaserverless.EventSourcedEntity(
+const entity = new kalix.EventSourcedEntity(
   './test/example.proto',
   'com.example.ExampleServiceThree',
   'event-sourced-entity-example-service',
@@ -97,7 +97,7 @@ entity.setBehavior((e) => {
   };
 });
 
-const testkit = new akkaserverless.IntegrationTestkit({
+const testkit = new kalix.IntegrationTestkit({
   descriptorSetPath: 'integration-test/user-function.desc',
 });
 
@@ -105,7 +105,7 @@ testkit.addComponent(action);
 testkit.addComponent(value_entity);
 testkit.addComponent(entity);
 
-describe('The AkkaServerless IntegrationTestkit', function () {
+describe('The Kalix IntegrationTestkit', function () {
   this.timeout(60000);
   before((done) => testkit.start(done));
   after((done) => testkit.shutdown(done));

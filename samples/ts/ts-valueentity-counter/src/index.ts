@@ -15,8 +15,8 @@
  */
 
 // tag::starting[]
-import { AkkaServerless } from "@lightbend/akkaserverless-javascript-sdk";
+import { Kalix } from "@kalix-io/kalix-javascript-sdk";
 import counterEntity from "./counter";
 
-new AkkaServerless().addComponent(counterEntity).start();
+new Kalix().addComponent(counterEntity).start();
 // end::starting[]

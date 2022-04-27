@@ -24,8 +24,8 @@ const Long = require('long');
  *
  * The value is stored as a 64-bit signed long, hence values over `2^63 - 1` and less than `2^63` can't be represented.
  *
- * @constructor module:akkaserverless.replicatedentity.ReplicatedCounter
- * @implements module:akkaserverless.replicatedentity.ReplicatedData
+ * @constructor module:kalix.replicatedentity.ReplicatedCounter
+ * @implements module:kalix.replicatedentity.ReplicatedData
  */
 function ReplicatedCounter() {
   let currentValue = Long.ZERO;
@@ -34,7 +34,7 @@ function ReplicatedCounter() {
   /**
    * The value as a long.
    *
-   * @name module:akkaserverless.replicatedentity.ReplicatedCounter#longValue
+   * @name module:kalix.replicatedentity.ReplicatedCounter#longValue
    * @type {Long}
    * @readonly
    */
@@ -46,10 +46,10 @@ function ReplicatedCounter() {
 
   /**
    * The value as a number. Note that once the value exceeds `2^53`, this will not be an accurate
-   * representation of the value. If you expect it to exceed `2^53`, {@link module:akkaserverless.replicatedentity.ReplicatedCounter#longValue}
+   * representation of the value. If you expect it to exceed `2^53`, {@link module:kalix.replicatedentity.ReplicatedCounter#longValue}
    * should be used instead.
    *
-   * @name module:akkaserverless.replicatedentity.ReplicatedCounter#value
+   * @name module:kalix.replicatedentity.ReplicatedCounter#value
    * @type {number}
    * @readonly
    */
@@ -62,9 +62,9 @@ function ReplicatedCounter() {
   /**
    * Increment the counter by the given number.
    *
-   * @function module:akkaserverless.replicatedentity.ReplicatedCounter#increment
+   * @function module:kalix.replicatedentity.ReplicatedCounter#increment
    * @param {Long|number} increment The amount to increment the counter by. If negative, it will be decremented instead.
-   * @returns {module:akkaserverless.replicatedentity.ReplicatedCounter} This counter.
+   * @returns {module:kalix.replicatedentity.ReplicatedCounter} This counter.
    */
   this.increment = function (increment) {
     currentValue = currentValue.add(increment);
@@ -75,9 +75,9 @@ function ReplicatedCounter() {
   /**
    * Decrement the counter by the given number.
    *
-   * @function module:akkaserverless.replicatedentity.ReplicatedCounter#decrement
+   * @function module:kalix.replicatedentity.ReplicatedCounter#decrement
    * @param {Long|number} decrement The amount to decrement the counter by. If negative, it will be incremented instead.
-   * @returns {module:akkaserverless.replicatedentity.ReplicatedCounter} This counter.
+   * @returns {module:kalix.replicatedentity.ReplicatedCounter} This counter.
    */
   this.decrement = function (decrement) {
     currentValue = currentValue.subtract(decrement);

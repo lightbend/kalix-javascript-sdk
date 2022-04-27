@@ -2,28 +2,28 @@
 // Projects
 // *****************************************************************************
 
-lazy val `akkasls-codegen` =
+lazy val `kalix-codegen` =
   project
     .in(file("."))
     .enablePlugins(AutomateHeaderPlugin)
     .settings(commonSettings ++ Seq(skip in publish := true))
-    .aggregate(`akkasls-codegen-core`, `akkasls-codegen-js`, `akkasls-codegen-js-cli`)
+    .aggregate(`kalix-codegen-core`, `kalix-codegen-js`, `kalix-codegen-js-cli`)
 
-lazy val `akkasls-codegen-core` =
+lazy val `kalix-codegen-core` =
   project
     .in(file("core"))
     .enablePlugins(AutomateHeaderPlugin)
     .settings(commonSettings)
     .settings(
       libraryDependencies ++= Seq(
-        library.akkaserverless % "protobuf-src",
+        library.kalixSdkProtocol % "protobuf-src",
         library.scalapbRuntime % "protobuf",
         library.protobufJava,
         library.munit % Test,
         library.munitScalaCheck % Test),
       Compile / PB.targets := Seq(PB.gens.java -> (Compile / sourceManaged).value))
 
-lazy val `akkasls-codegen-js` =
+lazy val `kalix-codegen-js` =
   project
     .in(file("js-gen"))
     .enablePlugins(AutomateHeaderPlugin)
@@ -34,12 +34,12 @@ lazy val `akkasls-codegen-js` =
         library.commonsIo % Test,
         library.munit % Test,
         library.munitScalaCheck % Test))
-    .dependsOn(`akkasls-codegen-core`)
+    .dependsOn(`kalix-codegen-core`)
 
 lazy val cachedNativeImage =
   taskKey[File]("A cached version of the nativeImage task key, that only rebuilds when required.")
 
-lazy val `akkasls-codegen-js-cli` =
+lazy val `kalix-codegen-js-cli` =
   project
     .in(file("js-gen-cli"))
     .configs(IntegrationTest)
@@ -47,8 +47,8 @@ lazy val `akkasls-codegen-js-cli` =
     .settings(commonSettings, Defaults.itSettings)
     .settings(
       buildInfoKeys := Seq[BuildInfoKey](version),
-      buildInfoPackage := "com.lightbend.akkasls.codegen.js",
-      name in NativeImage := "akkasls-codegen-js",
+      buildInfoPackage := "io.kalix.codegen.js",
+      name in NativeImage := "kalix-codegen-js",
       /**
        * Due to limitations of the Windows command prompt/PowerShell, with a the native-image command fails with a long
        * classpath By using sbt-assembly, we first build a fat JAR which is then able to be used in place of the full
@@ -92,7 +92,7 @@ lazy val `akkasls-codegen-js-cli` =
         library.typesafeConfig % "it"),
       testOptions in IntegrationTest += Tests.Argument(s"-Djs-codegen-cli.native-image=${cachedNativeImage.value}"),
       skip in publish := true)
-    .dependsOn(`akkasls-codegen-js`)
+    .dependsOn(`kalix-codegen-js`)
 
 // *****************************************************************************
 // Library dependencies
@@ -101,7 +101,7 @@ lazy val `akkasls-codegen-js-cli` =
 lazy val library =
   new {
     object Version {
-      val akkaserverless = "0.8.7"
+      val kalix = "1.0.0-M2"
       val commonsIo = "2.8.0"
       val kiama = "2.4.0"
       val logback = "1.2.3"
@@ -122,8 +122,8 @@ lazy val library =
     val scopt = "com.github.scopt" %% "scopt" % Version.scopt
     val testcontainers = "org.testcontainers" % "testcontainers" % Version.testcontainers
     val typesafeConfig = "com.typesafe" % "config" % Version.typesafeConfig
-    val akkaserverless =
-      "com.akkaserverless" % "akkaserverless-sdk-protocol" % Version.akkaserverless
+    val kalixSdkProtocol =
+      "io.kalix" % "kalix-sdk-protocol" % Version.kalix
     val scalapbRuntime =
       "com.thesamet.scalapb" %% "scalapb-runtime" % scalapb.compiler.Version.scalapbVersion
   }
@@ -135,7 +135,7 @@ lazy val library =
 lazy val commonSettings =
   Seq(
     scalaVersion := "2.13.4",
-    organization := "com.lightbend",
+    organization := "io.kalix",
     organizationName := "Lightbend Inc",
     startYear := Some(2021),
     scalacOptions ++= Seq("-unchecked", "-deprecation", "-language:_", "-encoding", "UTF-8", "-Ywarn-unused:imports"),

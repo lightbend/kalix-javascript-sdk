@@ -1,10 +1,10 @@
-# akkasls-codegen
+# kalix-codegen
 
-akkasls-codegen is a JVM-based library that accepts protobuf descriptors and
-introspects them to build a graph of Cloudstate event-sourced entities, along with their commands,
+kalix-codegen is a JVM-based library that accepts protobuf descriptors and
+introspects them to build a graph of Kalix event-sourced entities, along with their commands,
 events and serializable state types. This graph can then be fed into code generation for which
-multiple libraries are also provided e.g. `akkasls-codegen-java` takes the graph along with a target source
-directory and generates Java Akka serverless source code. Any existing Akka serverless source code
+multiple libraries are also provided e.g. `kalix-codegen-js` takes the graph along with a target source
+directory and generates JavaScript Kalix source code. Any existing Kalix source code
 is preserved.
 
 ## Contribution policy
@@ -30,6 +30,6 @@ components may break as a result of changes made to codegen. Therefore, the inte
 are provided as a tool to understand in advance what may break.
 
 To be able to truly validate generated code, each language has a full integration test to generate and test the result in a dockerised environment.
-These tests spin up a generated entity alongside the Akka Serverless proxy in a Docker network, and then validate against the published service. These tests can take several minutes to run due to the overhead of installing dependencies in a containerised environment, so will only be run when necessary.
+These tests spin up a generated entity alongside the Kalix proxy in a Docker network, and then validate against the published service. These tests can take several minutes to run due to the overhead of installing dependencies in a containerised environment, so will only be run when necessary.
 
 These tests are invoked with the `it:test` SBT task, either on the root project or within one of the subprojects that implements an integration test.

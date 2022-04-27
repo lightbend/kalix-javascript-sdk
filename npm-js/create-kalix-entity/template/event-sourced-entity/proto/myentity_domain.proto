@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+package com.example.domain;
+
+import "kalix/annotations.proto";
+
+option (kalix.file).event_sourced_entity = {
+    name: "MyEntity"
+    entity_type: "MyEntity"
+    state: "MyState"
+    events: "ValueSet"
+};
+
+message MyState {
+    int32 value = 1;
+}
+
+message ValueSet {
+    string entity_id = 1 [(kalix.field).entity_key = true];
+}

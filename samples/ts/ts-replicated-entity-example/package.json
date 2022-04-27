@@ -1,14 +1,14 @@
 {
   "name": "ts-replicated-entity-example",
   "version": "0.0.0",
-  "description": "Akka Serverless TypeScript SDK example for replicated entities",
-  "homepage": "https://github.com/lightbend/akkaserverless-javascript-sdk",
+  "description": "Kalix TypeScript SDK example for replicated entities",
+  "homepage": "https://github.com/lightbend/kalix-javascript-sdk",
   "bugs": {
-    "url": "https://github.com/lightbend/akkaserverless-javascript-sdk/issues"
+    "url": "https://github.com/lightbend/kalix-javascript-sdk/issues"
   },
   "license": "Apache-2.0",
   "author": {
-    "name": "Akka Serverless Team",
+    "name": "Kalix Team",
     "email": "info@lightbend.com",
     "url": "https://lightbend.com"
   },
@@ -19,14 +19,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/lightbend/akkaserverless-javascript-sdk",
+    "url": "https://github.com/lightbend/kalix-javascript-sdk",
     "directory": "samples/ts/ts-replicated-entity-example"
   },
   "dependencies": {
-    "@lightbend/akkaserverless-javascript-sdk": "0.33.5"
+    "@kalix-io/kalix-javascript-sdk": "1.0.0-M5"
   },
   "devDependencies": {
-    "@lightbend/akkasls-scripts": "0.33.5",
+    "@kalix-io/kalix-scripts": "1.0.0-M5",
     "@types/mocha": "^8.2.3",
     "@types/node": "14.18.3",
     "@typescript-eslint/eslint-plugin": "^4.31.0",
@@ -45,7 +45,7 @@
     "lint-check": "eslint src --ext .ts && prettier --check src/**/*.ts",
     "lint-fix": "eslint src --ext .ts --fix && prettier --write src/**/*.ts",
     "compile-proto": "mkdirp lib/generated && pbjs -t static-module -w commonjs --no-encode --no-decode --no-verify --no-convert --no-delimited replicated_entity_example.proto -o lib/generated/proto.js && pbts --no-comments -o lib/generated/proto.d.ts lib/generated/proto.js",
-    "build": "compile-descriptor replicated_entity_example.proto && npm run compile-proto && npm run lint-check && tsc",
+    "build": "compile-descriptor replicated_entity_example.proto && npm run compile-proto && tsc",
     "pretest": "npm run build",
     "test": "ts-mocha",
     "prestart": "npm run build",

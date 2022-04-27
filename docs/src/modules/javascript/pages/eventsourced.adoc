@@ -6,7 +6,7 @@ include::partial$eventsourced.adoc[]
 
 == Persistence types and serialization
 
-Event Sourced Entities persist events and snapshots in the journal, so Akka Serverless must serialize them.  Akka Serverless will automatically detect if an emitted event or snapshot is a `protobuf` type, and serialize it using `protobufjs`. However, as a JavaScript developer, you may find it more natural to use JSON. xref:javascript:serialization.adoc[] describes how to do that. See the https://www.npmjs.com/package/protobufjs[protobuf documentation{tab-icon}, window="new"] for more information on `protobufjs`.
+Event Sourced Entities persist events and snapshots in the journal, so Kalix must serialize them.  Kalix will automatically detect if an emitted event or snapshot is a `protobuf` type, and serialize it using `protobufjs`. However, as a JavaScript developer, you may find it more natural to use JSON. xref:javascript:serialization.adoc[] describes how to do that. See the https://www.npmjs.com/package/protobufjs[protobuf documentation{tab-icon}, window="new"] for more information on `protobufjs`.
 
 While `protobuf` is the recommended format for persisting events, we recommend that you do not persist your service's `protobuf` messages, rather, you should create new messages, even if they are identical. While this may introduce some overhead in converting from one type to the other, it will allow the service's public interface to evolve independently from its data storage format, which should be private.
 
@@ -21,7 +21,7 @@ In this file, the `Cart` message represents the state snapshot, while `ItemAdded
 
 == Creating an entity
 
-Create an Event Sourced Entity with the link:{attachmentsdir}/api/module-akkaserverless.EventSourcedEntity.html[EventSourcedEntity{tab-icon}, window="new"] class.
+Create an Event Sourced Entity with the link:{attachmentsdir}/api/module-kalix.EventSourcedEntity.html[EventSourcedEntity{tab-icon}, window="new"] class.
 
 ifdef::todo[TODO: update with new SDK names.]
 
@@ -42,20 +42,20 @@ include::example$test/eventsourced/shoppingcart.ts[tag=entity-class]
 
 .Example details:
 ****
-* The example passes in the `protobuf` files that contain the service and the domain protocols: `shoppingcart.proto` and `domain.proto`. Akka Serverless will load and read these `protobuf` files. The domain event and snapshot definitions in `domain.proto` allow Akka Serverless to deserialize these messages when it receives them.
+* The example passes in the `protobuf` files that contain the service and the domain protocols: `shoppingcart.proto` and `domain.proto`. Kalix will load and read these `protobuf` files. The domain event and snapshot definitions in `domain.proto` allow Kalix to deserialize these messages when it receives them.
 
 * The example defines the fully qualified name of the service the Event Sourced Entity implements, `example.shoppingcart.ShoppingCartService` and specifies options:
 
-** Akka Serverless uses the `entityType` to namespace events in the journal.
+** Kalix uses the `entityType` to namespace events in the journal.
 
-** The `snapshotEvery` parameter controls how often Akka Serverless takes snapshots, so that the entity doesn't need to be recovered from the whole journal each time it's loaded. If left unset, it defaults to every 100 events. Setting it to a negative number disables snapshots. Typically, the default works well, we only recommend changing it if you have specific data from performance tests to justify a change.
+** The `snapshotEvery` parameter controls how often Kalix takes snapshots, so that the entity doesn't need to be recovered from the whole journal each time it's loaded. If left unset, it defaults to every 100 events. Setting it to a negative number disables snapshots. Typically, the default works well, we only recommend changing it if you have specific data from performance tests to justify a change.
 ****
 
 == Using protobuf types
 
-When you pass an event or snapshot to persist, Akka Serverless needs to know how to serialize it. Simply passing a regular object does not provide enough information to know how `protobuf` should serialize the objects. To emit an event or snapshot, you first must lookup the `protobuf` types, and then use the `create` method to create them.
+When you pass an event or snapshot to persist, Kalix needs to know how to serialize it. Simply passing a regular object does not provide enough information to know how `protobuf` should serialize the objects. To emit an event or snapshot, you first must lookup the `protobuf` types, and then use the `create` method to create them.
 
-The `EventSourced` class provides a helper method called link:{attachmentsdir}/api/module-akkaserverless.EventSourcedEntity.html#lookupType[`lookupType`{tab-icon}, window="new"]. So before implementing, we'll use `lookupType` to get these types to use later.
+The `EventSourced` class provides a helper method called link:{attachmentsdir}/api/module-kalix.EventSourcedEntity.html#lookupType[`lookupType`{tab-icon}, window="new"]. So before implementing, we'll use `lookupType` to get these types to use later.
 
 [.tabset]
 JavaScript::
@@ -76,7 +76,7 @@ include::example$test/eventsourced/shoppingcart.ts[tag=lookup-type]
 
 When there are no snapshots persisted for an entity (such as when the entity is first created), the entity needs to have an initial state. Note that Event Sourced Entities are not explicitly created, they are implicitly created when a command arrives for them. And, nothing is persisted until an event is created for that Entity. So, if user "X" opens their shopping cart for the first time, an Entity will be created for them, with no events in the log. It will just be in the initial state.
 
-To create the initial state, we set the link:{attachmentsdir}/api/module-akkaserverless.EventSourcedEntity.html#initial[`initial`{tab-icon}, window="new"] callback. This takes the id of the entity being created, and returns a new empty state, in this case, an empty shopping cart:
+To create the initial state, we set the link:{attachmentsdir}/api/module-kalix.EventSourcedEntity.html#initial[`initial`{tab-icon}, window="new"] callback. This takes the id of the entity being created, and returns a new empty state, in this case, an empty shopping cart:
 
 [.tabset]
 JavaScript::
@@ -97,15 +97,15 @@ Note the use of `Cart.create()`, this creates a `protobuf` message using the `Ca
 
 == Behavior
 
-Now we need to define the behavior for our entity. The behavior consists of two parts, https://developer.lightbend.com/docs/akka-serverless/reference/glossary.html#command_handler[_command handlers_], and https://developer.lightbend.com/docs/akka-serverless/reference/glossary.html#event_handler[_event handlers_].
+Now we need to define the behavior for our entity. The behavior consists of two parts, https://docs.kalix.io/reference/glossary.html#command_handler[_command handlers_], and https://docs.kalix.io/reference/glossary.html#event_handler[_event handlers_].
 
 === Command handlers
 
-A link:{attachmentsdir}/api/module-akkaserverless.EventSourcedEntity.html#~commandHandler[command handler{tab-icon}, window="new"] is a function that takes a command, the current state, and an link:{attachmentsdir}/api/module-akkaserverless.EventSourcedEntity.EventSourcedEntityCommandContext.html[`EventSourcedEntityCommandContext`{tab-icon}, window="new"]. It implements a service call on the Entity's gRPC interface.
+A link:{attachmentsdir}/api/module-kalix.EventSourcedEntity.html#~commandHandler[command handler{tab-icon}, window="new"] is a function that takes a command, the current state, and an link:{attachmentsdir}/api/module-kalix.EventSourcedEntity.EventSourcedEntityCommandContext.html[`EventSourcedEntityCommandContext`{tab-icon}, window="new"]. It implements a service call on the Entity's gRPC interface.
 
 The command is the input message type for the gRPC service call. For example, the `GetCart` service call has an input type of `GetShoppingCart`, while the `AddItem` service call has an input type of `AddLineItem`. The command will be an object that matches the structure of these protobuf types.
 
-The command handler must return a message of the same type as the output type of the gRPC service call, in the case of our `GetCart` command, this must be a `Cart` message. Note that unlike for the state and events, this message does not need to be created using a looked up protobuf message type--Akka Serverless already knows the output type of the gRPC service call and so can infer it. It only has to be a plain JavaScript object that matches the structure of the protobuf type.
+The command handler must return a message of the same type as the output type of the gRPC service call, in the case of our `GetCart` command, this must be a `Cart` message. Note that unlike for the state and events, this message does not need to be created using a looked up protobuf message type--Kalix already knows the output type of the gRPC service call and so can infer it. It only has to be a plain JavaScript object that matches the structure of the protobuf type.
 
 The following shows the implementation of the `GetCart` command handler. This command handler is a read-only command handler, it doesn't emit any events, it just returns some state:
 
@@ -130,7 +130,7 @@ Commands that modify the state MUST do so by emitting events.
 
 WARNING: The **only** way a command handler may modify its state is by emitting an event. Any modifications made directly to the state from the command handler will not be persisted, and will be lost as soon as the command handler finishes executing.
 
-A command handler may emit an event by using the link:{attachmentsdir}/api/module-akkaserverless.EventSourcedEntity.EventSourcedEntityCommandContext.html#emit[`emit`{tab-icon}, window="new"] method on the `EventSourcedEntityCommandContext`.
+A command handler may emit an event by using the link:{attachmentsdir}/api/module-kalix.EventSourcedEntity.EventSourcedEntityCommandContext.html#emit[`emit`{tab-icon}, window="new"] method on the `EventSourcedEntityCommandContext`.
 
 The following command handler example emits an event:
 
@@ -149,11 +149,11 @@ TypeScript::
 include::example$test/eventsourced/shoppingcart.ts[tag=add-item]
 ----
 
-This command handler also validates the command by ensuring that the quantity of items added is greater than zero. Invoking link:{attachmentsdir}/api/module-akkaserverless.EventSourcedEntity.EventSourcedEntityCommandContext.html#fail[`fail`{tab-icon}, window="new"] fails the command - this method throws so there's no need to explicitly throw an exception.
+This command handler also validates the command by ensuring that the quantity of items added is greater than zero. Invoking link:{attachmentsdir}/api/module-kalix.EventSourcedEntity.EventSourcedEntityCommandContext.html#fail[`fail`{tab-icon}, window="new"] fails the command - this method throws so there's no need to explicitly throw an exception.
 
 === Event handlers
 
-An link:{attachmentsdir}/api/module-akkaserverless.EventSourcedEntity.html#~eventHandler[event handler{tab-icon}, window="new"] is invoked at two points:
+An link:{attachmentsdir}/api/module-kalix.EventSourcedEntity.html#~eventHandler[event handler{tab-icon}, window="new"] is invoked at two points:
 
 * When restoring Entities from the journal, before any commands are handled
 * Each time a new event is emitted
@@ -183,9 +183,9 @@ include::example$test/eventsourced/shoppingcart.ts[tag=item-added]
 
 === Setting the behavior
 
-Once you have command handler and event handler functions implemented, you can set your behavior. The link:{attachmentsdir}/api/module-akkaserverless.EventSourcedEntity.html#~behaviorCallback[behavior callback{tab-icon}, window="new"] takes the current state of the entity, and returns an object with two properties: `commandHandlers` and `eventHandlers`. The callback may return different sets of handlers according to the current state, this will be explored more later, for now we'll just implement an entity with one set of handlers.
+Once you have command handler and event handler functions implemented, you can set your behavior. The link:{attachmentsdir}/api/module-kalix.EventSourcedEntity.html#~behaviorCallback[behavior callback{tab-icon}, window="new"] takes the current state of the entity, and returns an object with two properties: `commandHandlers` and `eventHandlers`. The callback may return different sets of handlers according to the current state, this will be explored more later, for now we'll just implement an entity with one set of handlers.
 
-The behavior callback can be set by setting the link:{attachmentsdir}/api/module-akkaserverless.EventSourcedEntity.html#behavior[`behavior`{tab-icon}, window="new"] property on the entity:
+The behavior callback can be set by setting the link:{attachmentsdir}/api/module-kalix.EventSourcedEntity.html#behavior[`behavior`{tab-icon}, window="new"] property on the entity:
 
 [.tabset]
 JavaScript::
@@ -208,7 +208,7 @@ The event handlers are a mapping of event names to the event handler functions t
 
 === Multiple behaviors
 
-In the examples above, our shopping cart entity only has one behavior. An entity may have different states, where command and event handling may differ according to the state it is currently in. While this could be implemented using if statements in the handlers, Akka Serverless also provides multiple behavior support, so that an entity can change its behavior. This multiple behavior support allows implementing entities as finite state machines.
+In the examples above, our shopping cart entity only has one behavior. An entity may have different states, where command and event handling may differ according to the state it is currently in. While this could be implemented using if statements in the handlers, Kalix also provides multiple behavior support, so that an entity can change its behavior. This multiple behavior support allows implementing entities as finite state machines.
 
 The Entity's behavior can be changed by returning different sets of handlers from the `behavior` callback after inspecting the state. This callback is invoked each time a handler is needed, so there's no need to explicitly transition behaviors.
 
@@ -231,7 +231,7 @@ include::example$test/eventsourced/shoppingcart.ts[tag=multiple-behaviors]
 
 == Starting the entity
 
-You can let Akka Serverless start entities by adding the entities to an `Akka Serverless server` instance:
+You can let Kalix start entities by adding the entities to an `Kalix server` instance:
 
 [.tabset]
 JavaScript::

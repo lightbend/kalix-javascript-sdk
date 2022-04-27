@@ -31,28 +31,28 @@ const Empty = protobufHelper.moduleRoot.google.protobuf.Empty;
 /**
  * All Replicated Data types and Replicated Data type support classes.
  *
- * @namespace module:akkaserverless.replicatedentity
+ * @namespace module:kalix.replicatedentity
  */
 
 /**
  * A Replicated Data type.
  *
- * @interface module:akkaserverless.replicatedentity.ReplicatedData
+ * @interface module:kalix.replicatedentity.ReplicatedData
  */
 
 /**
- * A clock that may be used by {@link module:akkaserverless.replicatedentity.ReplicatedRegister}.
+ * A clock that may be used by {@link module:kalix.replicatedentity.ReplicatedRegister}.
  *
- * @typedef module:akkaserverless.replicatedentity.Clock
+ * @typedef module:kalix.replicatedentity.Clock
  * @type {number}
  */
 
 /**
- * An enum of all clocks that can be used by {@link module:akkaserverless.replicatedentity.ReplicatedRegister}.
+ * An enum of all clocks that can be used by {@link module:kalix.replicatedentity.ReplicatedRegister}.
  *
  * @readonly
- * @name module:akkaserverless.replicatedentity.Clocks
- * @enum {module:akkaserverless.replicatedentity.Clock}
+ * @name module:kalix.replicatedentity.Clocks
+ * @enum {module:kalix.replicatedentity.Clock}
  * @property DEFAULT The default clock, uses the machines system time.
  * @property REVERSE A reverse clock, for achieving first-write-wins semantics.
  * @property CUSTOM A custom clock.
@@ -61,7 +61,7 @@ const Empty = protobufHelper.moduleRoot.google.protobuf.Empty;
  */
 const Clocks = (function () {
   const ReplicatedEntityClock =
-    protobufHelper.moduleRoot.akkaserverless.component.replicatedentity
+    protobufHelper.moduleRoot.kalix.component.replicatedentity
       .ReplicatedEntityClock;
   const values = {
     DEFAULT: ReplicatedEntityClock.REPLICATED_ENTITY_CLOCK_DEFAULT_UNSPECIFIED,

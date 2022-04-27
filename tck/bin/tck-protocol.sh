@@ -36,12 +36,14 @@ else
   if [ -n "$PROXY_SNAPSHOT_DIRECTORY" ]; then
     # Use local sources by pointing PROXY_SNAPSHOTS_DIRECTORY to local framework directory
     echo "Using snapshot of TCK protocols from '$PROXY_SNAPSHOT_DIRECTORY'"
-    cp -f $PROXY_SNAPSHOT_DIRECTORY/protocols/tck/src/main/protobuf/akkaserverless/tck/model/*/*.proto "$proto_dir"
+    cp -f $PROXY_SNAPSHOT_DIRECTORY/protocols/tck/src/main/protobuf/kalix/tck/model/*/*.proto "$proto_dir"
   else
     # Download and unzip the TCK protocols to the proto directory
-    curl -OL "https://repo1.maven.org/maven2/com/akkaserverless/akkaserverless-tck-protocol/$framework_version/akkaserverless-tck-protocol-$framework_version.zip"
-    unzip -j -d "$proto_dir" "akkaserverless-tck-protocol-$framework_version.zip"
-    rm -f "akkaserverless-tck-protocol-$framework_version.zip"
+    artifact_url="https://repo1.maven.org/maven2/io/kalix/kalix-tck-protocol/$framework_version/kalix-tck-protocol-$framework_version.zip"
+    echo "Fetching TCK protocol module from: $artifact_url"
+    curl -OL $artifact_url
+    unzip -j -d "$proto_dir" "kalix-tck-protocol-$framework_version.zip"
+    rm -f "kalix-tck-protocol-$framework_version.zip"
   fi
 
   # protobufjs generated proto

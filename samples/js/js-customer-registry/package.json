@@ -1,30 +1,30 @@
 {
   "name": "js-customer-registry",
   "version": "0.0.0",
-  "description": "Akka Serverless JavaScript SDK sample application for customer registry",
+  "description": "Kalix JavaScript SDK sample application for customer registry",
   "engineStrict": true,
   "engines": {
     "node": "~14"
   },
-  "homepage": "https://github.com/lightbend/akkaserverless-javascript-sdk",
+  "homepage": "https://github.com/lightbend/kalix-javascript-sdk",
   "bugs": {
-    "url": "https://github.com/lightbend/akkaserverless-javascript-sdk/issues"
+    "url": "https://github.com/lightbend/kalix-javascript-sdk/issues"
   },
   "license": "Apache-2.0",
   "author": {
-    "name": "Akka Serverless Team",
+    "name": "Kalix Team",
     "email": "info@lightbend.com",
     "url": "https://lightbend.com"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/lightbend/akkaserverless-javascript-sdk",
+    "url": "https://github.com/lightbend/kalix-javascript-sdk",
     "directory": "samples/js/js-customer-registry"
   },
   "//": "https://npm.community/t/npm-install-does-not-install-transitive-dependencies-of-local-dependency/2264",
   "dependencies": {
     "@grpc/proto-loader": "^0.1.0",
-    "@lightbend/akkaserverless-javascript-sdk": "0.33.5",
+    "@kalix-io/kalix-javascript-sdk": "file:../../../sdk/kalix-io-kalix-javascript-sdk-0.0.0.tgz",
     "google-protobuf": "^3.11.4",
     "grpc": "^1.24.9"
   },
@@ -41,8 +41,8 @@
     "prestart": "npm run build",
     "start": "node index.js",
     "start-no-prestart": "node index.js",
-    "docker-build": "docker build -f Dockerfile -t ${DOCKER_PUBLISH_TO:-akkaserverless}/js-customer-registry:$(../../../sdk/bin/version.sh) ../../..",
-    "docker-push": "docker push ${DOCKER_PUBLISH_TO:-akkaserverless}/js-customer-registry:$(../../../sdk/bin/version.sh)",
+    "docker-build": "docker build -f Dockerfile -t ${DOCKER_PUBLISH_TO:-kalix}/js-customer-registry:$(../../../sdk/bin/version.sh) ../../..",
+    "docker-push": "docker push ${DOCKER_PUBLISH_TO:-kalix}/js-customer-registry:$(../../../sdk/bin/version.sh)",
     "docker-build-push": "npm run docker-build && npm run docker-push"
   }
 }

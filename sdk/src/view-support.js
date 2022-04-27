@@ -18,7 +18,7 @@ const path = require('path');
 const grpc = require('@grpc/grpc-js');
 const protoLoader = require('@grpc/proto-loader');
 
-const debug = require('debug')('akkaserverless-view');
+const debug = require('debug')('kalix-view');
 // Bind to stdout
 debug.log = console.log.bind(console);
 const AnySupport = require('./protobuf-any');
@@ -34,7 +34,7 @@ module.exports = class ViewServices {
   }
 
   componentType() {
-    return 'akkaserverless.component.view.Views';
+    return 'kalix.component.view.Views';
   }
 
   register(server) {
@@ -46,15 +46,14 @@ module.exports = class ViewServices {
       path.join(__dirname, '..', '..', 'protoc', 'include'),
     ];
     const packageDefinition = protoLoader.loadSync(
-      path.join('akkaserverless', 'component', 'view', 'view.proto'),
+      path.join('kalix', 'component', 'view', 'view.proto'),
       {
         includeDirs: includeDirs,
       },
     );
     const grpcDescriptor = grpc.loadPackageDefinition(packageDefinition);
 
-    const viewService =
-      grpcDescriptor.akkaserverless.component.view.Views.service;
+    const viewService = grpcDescriptor.kalix.component.view.Views.service;
 
     server.addService(viewService, {
       handle: this.handle.bind(this),
@@ -76,8 +75,8 @@ module.exports = class ViewServices {
 
     call.on('data', (viewStreamIn) => {
       // FIXME: It is currently only implemented to support one request (ReceiveEvent) with one response (Upsert).
-      // see https://github.com/lightbend/akkaserverless-framework/issues/186
-      // and https://github.com/lightbend/akkaserverless-framework/issues/187
+      // see https://github.com/lightbend/kalix-proxy/issues/186
+      // and https://github.com/lightbend/kalix-proxy/issues/187
       if (viewStreamIn.receive) {
         const receiveEvent = viewStreamIn.receive,
           service = this.services[receiveEvent.serviceName];
@@ -88,7 +87,7 @@ module.exports = class ViewServices {
             try {
               const anySupport = new AnySupport(service.root),
                 metadata = new Metadata(
-                  receiveEvent.metada ? receiveEvent.metadata.entries : [],
+                  receiveEvent.metadata ? receiveEvent.metadata.entries : [],
                 ),
                 payload = anySupport.deserialize(receiveEvent.payload),
                 existingState = receiveEvent.bySubjectLookupResult
@@ -100,12 +99,12 @@ module.exports = class ViewServices {
                 /**
                  * Context for a view update event.
                  *
-                 * @interface module:akkaserverless.View.UpdateHandlerContext
-                 * @property {module:akkaserverless.Metadata} metadata for the event
+                 * @interface module:kalix.View.UpdateHandlerContext
+                 * @property {module:kalix.Metadata} metadata for the event
                  * @property {string} commandName
                  */
                 context = {
-                  viewId: service.viewId,
+                  viewId: service.options.viewId,
                   eventSubject: receiveEvent.metadata['ce-subject'],
                   metadata: metadata,
                   commandName: receiveEvent.commandName,
@@ -148,7 +147,7 @@ module.exports = class ViewServices {
             }
           } else {
             console.error(
-              "No handler defined for commandName: '%s'",
+              "No handler defined for commandName: '%s', view will not be updated and event stream will be stuck.",
               receiveEvent.commandName,
             );
             failAndEndCall(

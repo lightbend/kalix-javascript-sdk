@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { IntegrationTestkit } from "@lightbend/akkaserverless-javascript-sdk";
+import { IntegrationTestkit } from "@kalix-io/kalix-javascript-sdk";
 import { expect, use as chaiUse } from "chai";
 import * as chaiAsPromised from "chai-as-promised";
 import * as proto from "../lib/generated/proto";

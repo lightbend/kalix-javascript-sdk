@@ -18,10 +18,13 @@ import * as grpc from '@grpc/grpc-js';
 import * as settings from '../settings';
 import { GrpcUtil } from './grpc-util';
 
-import { AkkaServerless, Component } from './akkaserverless';
+import { Kalix, Component } from './kalix';
 import { GenericContainer, TestContainers, Wait } from 'testcontainers';
 
-const defaultDockerImage = `gcr.io/akkaserverless-public/akkaserverless-proxy:${settings.frameworkVersion}`;
+const defaultDockerImage = `gcr.io/kalix-public/kalix-proxy:${settings.frameworkVersion.replace(
+  '-SNAPSHOT',
+  '',
+)}`;
 
 /**
  * Integration Testkit.
@@ -29,7 +32,7 @@ const defaultDockerImage = `gcr.io/akkaserverless-public/akkaserverless-proxy:${
 export class IntegrationTestkit {
   private options: any = { dockerImage: defaultDockerImage };
   private clients: any;
-  private akkaServerless: AkkaServerless;
+  private kalix: Kalix;
   private proxyContainer: any;
 
   constructor(options?: any) {
@@ -41,7 +44,7 @@ export class IntegrationTestkit {
     }
 
     this.clients = {};
-    this.akkaServerless = new AkkaServerless(options);
+    this.kalix = new Kalix(options);
   }
 
   /**
@@ -51,7 +54,7 @@ export class IntegrationTestkit {
    * @returns this testkit
    */
   addComponent(component: Component): IntegrationTestkit {
-    this.akkaServerless.addComponent(component);
+    this.kalix.addComponent(component);
     return this;
   }
 
@@ -74,7 +77,7 @@ export class IntegrationTestkit {
 
   private async asyncStart() {
     // First start this user function
-    const boundPort = await this.akkaServerless.start({ port: 0 });
+    const boundPort = await this.kalix.start({ port: 0 });
 
     await TestContainers.exposeHostPorts(boundPort);
 
@@ -83,6 +86,10 @@ export class IntegrationTestkit {
       .withEnv('USER_FUNCTION_HOST', 'host.testcontainers.internal')
       .withEnv('USER_FUNCTION_PORT', boundPort.toString())
       .withEnv('HTTP_PORT', '9000')
+      .withEnv(
+        'VERSION_CHECK_ON_STARTUP',
+        process.env.VERSION_CHECK_ON_STARTUP || 'true',
+      )
       .withWaitStrategy(Wait.forLogMessage('gRPC proxy started'))
       .start();
 
@@ -91,7 +98,7 @@ export class IntegrationTestkit {
     const proxyPort = proxyContainer.getMappedPort(9000);
 
     // Create clients
-    this.akkaServerless.getComponents().forEach((entity: Component) => {
+    this.kalix.getComponents().forEach((entity: Component) => {
       const parts = entity.serviceName ? entity.serviceName.split('.') : [];
       if (entity.grpc) {
         let stub: any = entity.grpc;
@@ -116,14 +123,21 @@ export class IntegrationTestkit {
    * @param callback - shutdown callback, accepting possible error
    */
   shutdown(callback: (error?: any) => void) {
-    if (this.proxyContainer !== undefined) {
-      this.proxyContainer.stop();
-    }
-
     Object.getOwnPropertyNames(this.clients).forEach((client) => {
       this.clients[client].close();
     });
-
-    this.akkaServerless.tryShutdown(callback);
+    let proxyContainerStopped: Promise<void>;
+    if (this.proxyContainer !== undefined) {
+      // Important, ensure that the proxy container is stopped before we shut down
+      // ourselves, otherwise it will try to reconnect and that will cause unhandled
+      // exceptions.
+      proxyContainerStopped = this.proxyContainer.stop();
+    } else {
+      proxyContainerStopped = Promise.resolve();
+    }
+    proxyContainerStopped.then(
+      () => this.kalix.tryShutdown(callback),
+      (err) => this.kalix.tryShutdown(() => callback(err)),
+    );
   }
 }

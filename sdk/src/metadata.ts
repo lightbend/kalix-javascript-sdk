@@ -16,11 +16,16 @@
 
 import { Cloudevent } from './cloudevent';
 import { JwtClaims } from './jwt-claims';
+import * as proto from '../proto/protobuf-bundle';
+
+namespace protocol {
+  export type Metadata = proto.kalix.component.IMetadata;
+}
 
 type MetadataValue = string | Buffer;
 
 // Using an interface for compatibility with legacy JS code
-interface MetadataEntry {
+export interface MetadataEntry {
   readonly key: string;
   readonly bytesValue: Buffer | undefined;
   readonly stringValue: string | undefined;
@@ -128,7 +133,7 @@ class MetadataMapProxyHandler implements ProxyHandler<MetadataMap> {
 }
 
 /**
- * Akka Serverless metadata.
+ * Kalix metadata.
  *
  * Metadata is treated as case insensitive on lookup, and case sensitive on set. Multiple values per key are supported,
  * setting a value will add it to the current values for that key. You should delete first if you wish to replace a
@@ -170,6 +175,36 @@ export class Metadata {
 
   constructor(entries: MetadataEntry[] = []) {
     this.entries = entries;
+  }
+
+  static fromProtocol(metadata?: protocol.Metadata | null): Metadata {
+    if (metadata && metadata.entries) {
+      const entries: MetadataEntry[] = metadata.entries.map((entry) => ({
+        key: entry.key ?? '',
+        bytesValue: entry.bytesValue
+          ? Buffer.from(entry.bytesValue)
+          : undefined,
+        stringValue: entry.stringValue ?? undefined,
+      }));
+      return new Metadata(entries);
+    } else {
+      return new Metadata();
+    }
+  }
+
+  /**
+   * If this metadata object is being returned as the metadata for an HTTP transcoded response, this will set the
+   * HTTP status code for the response.
+   *
+   * This will have no impact on gRPC responses.
+   *
+   * @param code The status code to set.
+   */
+  setHttpStatusCode(code: number) {
+    if (code < 100 || code >= 600) {
+      throw new Error('Invalid HTTP status code: ' + code);
+    }
+    this.set('_kalix-http-code', code.toString());
   }
 
   /**
