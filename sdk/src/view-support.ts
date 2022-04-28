@@ -14,30 +14,41 @@
  * limitations under the License.
  */
 
-const path = require('path');
-const grpc = require('@grpc/grpc-js');
-const protoLoader = require('@grpc/proto-loader');
+import * as path from 'path';
+import * as grpc from '@grpc/grpc-js';
+import * as protoLoader from '@grpc/proto-loader';
+import AnySupport from './protobuf-any';
+import { Metadata } from './metadata';
+import { ServiceMap } from './kalix';
+import View from './view';
+import * as proto from '../proto/protobuf-bundle';
 
 const debug = require('debug')('kalix-view');
 // Bind to stdout
 debug.log = console.log.bind(console);
-const AnySupport = require('./protobuf-any');
-const { Metadata } = require('./metadata');
 
-module.exports = class ViewServices {
+namespace protocol {
+  export type StreamIn = proto.kalix.component.view.IViewStreamIn;
+  export type StreamOut = proto.kalix.component.view.IViewStreamOut;
+  export type Call = grpc.ServerDuplexStream<StreamIn, StreamOut>;
+}
+
+class ViewServices {
+  private services: { [serviceName: string]: View };
+
   constructor() {
     this.services = {};
   }
 
-  addService(component, allComponents) {
+  addService(component: View, _allComponents: ServiceMap): void {
     this.services[component.serviceName] = component;
   }
 
-  componentType() {
+  componentType(): string {
     return 'kalix.component.view.Views';
   }
 
-  register(server) {
+  register(server: grpc.Server): void {
     // Nothing to register
     const includeDirs = [
       path.join(__dirname, '..', 'proto'),
@@ -53,15 +64,16 @@ module.exports = class ViewServices {
     );
     const grpcDescriptor = grpc.loadPackageDefinition(packageDefinition);
 
-    const viewService = grpcDescriptor.kalix.component.view.Views.service;
+    const viewService = (grpcDescriptor as any).kalix.component.view.Views
+      .service;
 
     server.addService(viewService, {
       handle: this.handle.bind(this),
     });
   }
 
-  handle(call) {
-    const failAndEndCall = function (description) {
+  handle(call: protocol.Call): void {
+    const failAndEndCall = function (_description: string): void {
       // FIXME no failure reporting in protocol and this does not reach the proxy as a failure
       /*
       call.write({
@@ -73,22 +85,20 @@ module.exports = class ViewServices {
       call.end();
     };
 
-    call.on('data', (viewStreamIn) => {
+    call.on('data', (viewStreamIn: protocol.StreamIn) => {
       // FIXME: It is currently only implemented to support one request (ReceiveEvent) with one response (Upsert).
       // see https://github.com/lightbend/kalix-proxy/issues/186
       // and https://github.com/lightbend/kalix-proxy/issues/187
-      if (viewStreamIn.receive) {
+      if (viewStreamIn.receive?.serviceName) {
         const receiveEvent = viewStreamIn.receive,
-          service = this.services[receiveEvent.serviceName];
-        if (service) {
+          service = this.services[viewStreamIn.receive.serviceName];
+        if (service && service.updateHandlers && receiveEvent.commandName) {
           const updateHandler =
             service.updateHandlers[receiveEvent.commandName];
           if (updateHandler) {
             try {
               const anySupport = new AnySupport(service.root),
-                metadata = new Metadata(
-                  receiveEvent.metadata ? receiveEvent.metadata.entries : [],
-                ),
+                metadata = Metadata.fromProtocol(receiveEvent.metadata),
                 payload = anySupport.deserialize(receiveEvent.payload),
                 existingState = receiveEvent.bySubjectLookupResult
                   ? anySupport.deserialize(
@@ -96,23 +106,16 @@ module.exports = class ViewServices {
                     )
                   : undefined,
                 grpcMethod = service.service.methods[receiveEvent.commandName],
-                /**
-                 * Context for a view update event.
-                 *
-                 * @interface module:kalix.View.UpdateHandlerContext
-                 * @property {module:kalix.Metadata} metadata for the event
-                 * @property {string} commandName
-                 */
-                context = {
+                context: View.UpdateHandlerContext = {
                   viewId: service.options.viewId,
-                  eventSubject: receiveEvent.metadata['ce-subject'],
+                  eventSubject: metadata.cloudevent.subject,
                   metadata: metadata,
                   commandName: receiveEvent.commandName,
                 };
               const result = updateHandler(payload, existingState, context);
               if (result) {
                 const resultProto =
-                    grpcMethod.resolvedResponseType.create(result),
+                    grpcMethod.resolvedResponseType!.create(result),
                   resultPayload = AnySupport.serialize(
                     resultProto,
                     false,
@@ -121,8 +124,6 @@ module.exports = class ViewServices {
                 call.write({
                   upsert: {
                     row: {
-                      index: receiveEvent.initialTable,
-                      key: receiveEvent.key,
                       value: resultPayload,
                     },
                   },
@@ -159,10 +160,10 @@ module.exports = class ViewServices {
         } else {
           console.error(
             "Received event for unknown service: '%s'",
-            viewStreamIn.init.serviceName,
+            viewStreamIn.receive.serviceName,
           );
           failAndEndCall(
-            "Service '" + viewStreamIn.init.serviceName + "' unknown.",
+            "Service '" + viewStreamIn.receive.serviceName + "' unknown.",
           );
         }
       } else {
@@ -175,4 +176,6 @@ module.exports = class ViewServices {
       call.end();
     });
   }
-};
+}
+
+export = ViewServices;
