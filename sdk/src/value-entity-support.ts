@@ -14,21 +14,55 @@
  * limitations under the License.
  */
 
-const path = require('path');
-const grpc = require('@grpc/grpc-js');
-const protoLoader = require('@grpc/proto-loader');
+import path from 'path';
+import * as grpc from '@grpc/grpc-js';
+import * as protoLoader from '@grpc/proto-loader';
+import AnySupport from './protobuf-any';
+import { CommandHandler, InternalContext } from './command';
+import CommandHelper from './command-helper';
+import { ServiceMap } from './kalix';
+import ValueEntity from './value-entity';
+import * as proto from '../proto/protobuf-bundle';
 
 const debug = require('debug')('kalix-value-entity');
 // Bind to stdout
 debug.log = console.log.bind(console);
-const AnySupport = require('./protobuf-any');
-const CommandHelper = require('./command-helper');
 
-/**
- * @private
- */
+namespace protocol {
+  export type Any = proto.google.protobuf.IAny;
+
+  export type StreamIn = proto.kalix.component.valueentity.IValueEntityStreamIn;
+
+  export type Init = proto.kalix.component.valueentity.IValueEntityInit;
+
+  export type InitState =
+    proto.kalix.component.valueentity.IValueEntityInitState;
+
+  export type StreamOut =
+    proto.kalix.component.valueentity.IValueEntityStreamOut;
+
+  export type Reply = proto.kalix.component.valueentity.IValueEntityReply;
+
+  export type Call = grpc.ServerDuplexStream<StreamIn, StreamOut>;
+}
+
 class ValueEntitySupport {
-  constructor(root, service, commandHandlers, initial, options, allComponents) {
+  readonly root: protobuf.Root;
+  readonly service: protobuf.Service;
+  readonly commandHandlers: ValueEntity.CommandHandlers;
+  readonly initial?: ValueEntity.InitialCallback;
+  readonly options: Required<ValueEntity.Options>;
+  readonly anySupport: AnySupport;
+  readonly allComponents: ServiceMap;
+
+  constructor(
+    root: protobuf.Root,
+    service: protobuf.Service,
+    commandHandlers: ValueEntity.CommandHandlers,
+    initial: ValueEntity.InitialCallback | undefined,
+    options: Required<ValueEntity.Options>,
+    allComponents: ServiceMap,
+  ) {
     this.root = root;
     this.service = service;
     this.commandHandlers = commandHandlers;
@@ -38,7 +72,7 @@ class ValueEntitySupport {
     this.allComponents = allComponents;
   }
 
-  serialize(obj, requireJsonType) {
+  serialize(obj: any, requireJsonType?: boolean): protocol.Any {
     return AnySupport.serialize(
       obj,
       this.options.serializeAllowPrimitives,
@@ -47,17 +81,11 @@ class ValueEntitySupport {
     );
   }
 
-  deserialize(any) {
+  deserialize(any?: protocol.Any | null): any {
     return this.anySupport.deserialize(any);
   }
 
-  /**
-   * @param call
-   * @param init
-   * @returns {ValueEntityHandler}
-   * @private
-   */
-  create(call, init) {
+  create(call: protocol.Call, init: protocol.Init): ValueEntityHandler {
     return new ValueEntityHandler(this, call, init.entityId, init.state);
   }
 }
@@ -67,17 +95,22 @@ class ValueEntitySupport {
  * @private
  */
 class ValueEntityHandler {
-  /**
-   * @param {ValueEntitySupport} support
-   * @param call
-   * @param entityId
-   * @param initialState
-   * @private
-   */
-  constructor(support, call, entityId, initialState) {
+  private entity: ValueEntitySupport;
+  private call: protocol.Call;
+  private entityId: string;
+  private streamId: string;
+  private commandHelper: CommandHelper;
+  private anyState?: protocol.Any | null;
+
+  constructor(
+    support: ValueEntitySupport,
+    call: protocol.Call,
+    entityId?: string | null,
+    initialState?: protocol.InitState | null,
+  ) {
     this.entity = support;
     this.call = call;
-    this.entityId = entityId;
+    this.entityId = entityId ?? '';
 
     // The current entity state, serialized
     if (!initialState || Object.keys(initialState).length === 0) {
@@ -86,7 +119,7 @@ class ValueEntityHandler {
       this.anyState = initialState.value; // already serialized
     }
 
-    this.streamId = Math.random().toString(16).substr(2, 7);
+    this.streamId = Math.random().toString(16).substring(2, 7);
 
     this.commandHelper = new CommandHelper(
       this.entityId,
@@ -101,35 +134,20 @@ class ValueEntityHandler {
     this.streamDebug('Started new stream');
   }
 
-  streamDebug(msg, ...args) {
+  streamDebug(msg: string, ...args: any[]): void {
     debug('%s [%s] - ' + msg, ...[this.streamId, this.entityId].concat(args));
   }
 
-  commandHandlerFactory(commandName) {
+  commandHandlerFactory(commandName: string): CommandHandler | null {
     return this.withState((state) => {
       if (this.entity.commandHandlers.hasOwnProperty(commandName)) {
-        return async (command, ctx) => {
-          let updatedAnyState = null,
-            deleted = false;
+        return async (command: protobuf.Message, ctx: InternalContext) => {
+          let updatedAnyState = null as protocol.Any | null;
+          let deleted = false;
 
-          /**
-           * Context for an value entity command.
-           *
-           * @interface module:kalix.ValueEntity.ValueEntityCommandContext
-           * @extends module:kalix.CommandContext
-           * @extends module:kalix.EntityContext
-           */
+          const context = ctx.context as ValueEntity.ValueEntityCommandContext;
 
-          /**
-           * Persist the updated state.
-           *
-           * The state won't be persisted until the reply is sent to the proxy. Then, the state will be persisted
-           * before the reply is sent back to the client.
-           *
-           * @function module:kalix.ValueEntity.ValueEntityCommandContext#updateState
-           * @param {module:kalix.Serializable} newState The state to store.
-           */
-          ctx.context.updateState = (newState) => {
+          context.updateState = (newState) => {
             ctx.ensureActive();
             if (newState === null)
               throw new Error("Entity state cannot be set to 'null'");
@@ -137,12 +155,7 @@ class ValueEntityHandler {
             updatedAnyState = this.entity.serialize(newState, true);
           };
 
-          /**
-           * Delete this entity.
-           *
-           * @function module:kalix.ValueEntity.ValueEntityCommandContext#deleteState
-           */
-          ctx.context.deleteState = () => {
+          context.deleteState = () => {
             ctx.ensureActive();
             deleted = true;
           };
@@ -150,15 +163,18 @@ class ValueEntityHandler {
           const userReply = await this.entity.commandHandlers[commandName](
             command,
             state,
-            ctx.context,
+            context,
           );
 
+          if (!ctx.reply) ctx.reply = {};
+          const reply = ctx.reply as protocol.Reply;
+
           if (deleted) {
-            ctx.reply.stateAction = { delete: {} };
+            reply.stateAction = { delete: {} };
             this.anyState = null;
             ctx.commandDebug("Deleting state '%s'", this.entityId);
           } else if (updatedAnyState !== null) {
-            ctx.reply.stateAction = {
+            reply.stateAction = {
               update: {
                 value: updatedAnyState,
               },
@@ -175,7 +191,7 @@ class ValueEntityHandler {
     });
   }
 
-  onData(valueEntityStreamIn) {
+  onData(valueEntityStreamIn: protocol.StreamIn): void {
     try {
       if (valueEntityStreamIn.command) {
         this.commandHelper.handleCommand(valueEntityStreamIn.command);
@@ -199,13 +215,15 @@ class ValueEntityHandler {
     }
   }
 
-  updateState(stateObj) {
+  updateState(stateObj: any): void {
     const serialized = this.entity.serialize(stateObj, false);
     this.anyState = serialized;
   }
 
-  withState(callback) {
-    if (this.anyState === null) {
+  withState(
+    callback: (state: any) => CommandHandler | null,
+  ): CommandHandler | null {
+    if (this.anyState === null && this.entity.initial) {
       const initial = this.entity.initial(this.entityId);
       if (initial === null)
         throw new Error("Initial entity state must not be 'null'");
@@ -223,12 +241,14 @@ class ValueEntityHandler {
   }
 }
 
-module.exports = class ValueEntityServices {
+class ValueEntityServices {
+  private services: { [serviceName: string]: ValueEntitySupport };
+
   constructor() {
     this.services = {};
   }
 
-  addService(entity, allComponents) {
+  addService(entity: ValueEntity, allComponents: ServiceMap): void {
     this.services[entity.serviceName] = new ValueEntitySupport(
       entity.root,
       entity.service,
@@ -239,11 +259,11 @@ module.exports = class ValueEntityServices {
     );
   }
 
-  componentType() {
+  componentType(): string {
     return 'kalix.component.valueentity.ValueEntities';
   }
 
-  register(server) {
+  register(server: grpc.Server): void {
     const includeDirs = [
       path.join(__dirname, '..', 'proto'),
       path.join(__dirname, '..', 'protoc', 'include'),
@@ -258,18 +278,18 @@ module.exports = class ValueEntityServices {
     );
     const grpcDescriptor = grpc.loadPackageDefinition(packageDefinition);
 
-    const entityService =
-      grpcDescriptor.kalix.component.valueentity.ValueEntities.service;
+    const entityService = (grpcDescriptor as any).kalix.component.valueentity
+      .ValueEntities.service;
 
     server.addService(entityService, {
       handle: this.handle.bind(this),
     });
   }
 
-  handle(call) {
-    let service;
+  handle(call: protocol.Call): void {
+    let service: ValueEntityHandler;
 
-    call.on('data', (valueEntityStreamIn) => {
+    call.on('data', (valueEntityStreamIn: protocol.StreamIn) => {
       if (valueEntityStreamIn.init) {
         if (service != null) {
           service.streamDebug(
@@ -282,7 +302,10 @@ module.exports = class ValueEntityServices {
             },
           });
           call.end();
-        } else if (valueEntityStreamIn.init.serviceName in this.services) {
+        } else if (
+          valueEntityStreamIn.init.serviceName &&
+          valueEntityStreamIn.init.serviceName in this.services
+        ) {
           service = this.services[valueEntityStreamIn.init.serviceName].create(
             call,
             valueEntityStreamIn.init,
@@ -326,4 +349,6 @@ module.exports = class ValueEntityServices {
       }
     });
   }
-};
+}
+
+export = ValueEntityServices;

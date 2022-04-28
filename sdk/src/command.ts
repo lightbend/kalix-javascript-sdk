@@ -37,7 +37,7 @@ export type Message = { [key: string]: any };
 export interface InternalContext {
   commandId: Long;
   active: boolean;
-  context?: EntityContext & CommandContext;
+  context: EntityContext & CommandContext;
   reply?: protocol.EntityReply;
   replyMetadata: Metadata;
   forward?: protocol.Forward;
@@ -86,7 +86,7 @@ export interface CommandContext extends EffectContext {
 export type UserReply = Reply | Message | undefined;
 
 export interface CommandHandler {
-  (message: protobuf.Message<{}>, context: InternalContext): Promise<UserReply>;
+  (message: protobuf.Message, context: InternalContext): Promise<UserReply>;
 }
 
 export interface CommandHandlerFactory {

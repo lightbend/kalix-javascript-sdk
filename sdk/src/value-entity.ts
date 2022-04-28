@@ -17,40 +17,72 @@
 import * as protobufHelper from './protobuf-helper';
 import * as grpc from '@grpc/grpc-js';
 import * as protoLoader from '@grpc/proto-loader';
-import ActionSupport, { ActionCommandHandlers } from './action-support';
+import ValueEntityServices from './value-entity-support';
 import { GrpcClientLookup, GrpcUtil } from './grpc-util';
-import { ServiceMap } from './kalix';
+import { EntityOptions, ServiceMap } from './kalix';
+import { Serializable } from './serializable';
+import { CommandContext, EntityContext, UserReply } from './command';
 
-const actionSupport = new ActionSupport();
+const valueEntityServices = new ValueEntityServices();
 
-export interface ActionOptions {
-  includeDirs?: string[];
-  forwardHeaders?: string[];
+namespace ValueEntity {
+  export interface ValueEntityCommandContext
+    extends CommandContext,
+      EntityContext {
+    updateState(newState: Serializable): void;
+    deleteState(): void;
+  }
+
+  export type CommandHandler = (
+    message: any,
+    state: Serializable,
+    context: ValueEntityCommandContext,
+  ) => Promise<UserReply>;
+
+  export type CommandHandlers = {
+    [commandName: string]: CommandHandler;
+  };
+
+  export type InitialCallback = (entityId: string) => Serializable;
+
+  export interface Options
+    extends Omit<EntityOptions, 'replicatedWriteConsistency'> {
+    serializeAllowPrimitives?: boolean;
+    serializeFallbackToJson?: boolean;
+  }
 }
 
 const defaultOptions = {
   includeDirs: ['.'],
+  serializeAllowPrimitives: false,
+  serializeFallbackToJson: false,
   forwardHeaders: [],
+  entityPassivationStrategy: {},
 };
 
-export default class Action {
-  readonly options: Required<ActionOptions>;
+class ValueEntity {
+  readonly options: Required<ValueEntity.Options>;
   readonly root: protobuf.Root;
   readonly serviceName: string;
   readonly service: protobuf.Service;
   readonly grpc: grpc.GrpcObject;
   readonly clients: GrpcClientLookup;
-  commandHandlers: ActionCommandHandlers;
+  initial?: ValueEntity.InitialCallback;
+  commandHandlers: ValueEntity.CommandHandlers;
 
   constructor(
     desc: string | string[],
     serviceName: string,
-    options?: ActionOptions,
+    entityType: string,
+    options?: ValueEntity.Options,
   ) {
     this.options = {
       ...defaultOptions,
+      ...{ entityType: entityType },
       ...options,
     };
+
+    if (!entityType) throw Error('EntityType must contain a name');
 
     const allIncludeDirs = protobufHelper.moduleIncludeDirs.concat(
       this.options.includeDirs,
@@ -66,7 +98,6 @@ export default class Action {
     const packageDefinition = protoLoader.loadSync(desc, {
       includeDirs: allIncludeDirs,
     });
-
     this.grpc = grpc.loadPackageDefinition(packageDefinition);
 
     this.clients = GrpcUtil.clientCreators(this.root, this.grpc);
@@ -75,20 +106,27 @@ export default class Action {
   }
 
   componentType(): string {
-    return actionSupport.componentType();
+    return valueEntityServices.componentType();
   }
 
   lookupType(messageType: string): protobuf.Type {
     return this.root.lookupType(messageType);
   }
 
-  setCommandHandlers(commandHandlers: ActionCommandHandlers): Action {
+  setInitial(callback: ValueEntity.InitialCallback): ValueEntity {
+    this.initial = callback;
+    return this;
+  }
+
+  setCommandHandlers(commandHandlers: ValueEntity.CommandHandlers) {
     this.commandHandlers = commandHandlers;
     return this;
   }
 
-  register(allComponents: ServiceMap): ActionSupport {
-    actionSupport.addService(this, allComponents);
-    return actionSupport;
+  register(allComponents: ServiceMap): ValueEntityServices {
+    valueEntityServices.addService(this, allComponents);
+    return valueEntityServices;
   }
 }
+
+export = ValueEntity;
