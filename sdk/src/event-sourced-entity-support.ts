@@ -102,6 +102,7 @@ class EventSourcedEntitySupport {
   }
 
   create(call: protocol.Call, init: protocol.Init): EventSourcedEntityHandler {
+    if (!init.entityId) throw Error('Entity id is required');
     const handler = new EventSourcedEntityHandler(this, call, init.entityId);
     if (init.snapshot) {
       handler.handleSnapshot(init.snapshot);
@@ -126,11 +127,11 @@ class EventSourcedEntityHandler {
   constructor(
     support: EventSourcedEntitySupport,
     call: protocol.Call,
-    entityId?: string | null,
+    entityId: string,
   ) {
     this.entity = support;
     this.call = call;
-    this.entityId = entityId ?? '';
+    this.entityId = entityId;
 
     // The current entity state, serialized to an Any
     this.anyState = null;
