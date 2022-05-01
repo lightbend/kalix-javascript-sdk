@@ -86,6 +86,7 @@ class ValueEntitySupport {
   }
 
   create(call: protocol.Call, init: protocol.Init): ValueEntityHandler {
+    if (!init.entityId) throw Error('Entity id is required');
     return new ValueEntityHandler(this, call, init.entityId, init.state);
   }
 }
@@ -105,12 +106,12 @@ class ValueEntityHandler {
   constructor(
     support: ValueEntitySupport,
     call: protocol.Call,
-    entityId?: string | null,
+    entityId: string,
     initialState?: protocol.InitState | null,
   ) {
     this.entity = support;
     this.call = call;
-    this.entityId = entityId ?? '';
+    this.entityId = entityId;
 
     // The current entity state, serialized
     if (!initialState || Object.keys(initialState).length === 0) {
