@@ -353,12 +353,14 @@ class CommandHelper {
   // has everything the ReplicatedEntity and EventSourcedEntity support needs to do its stuff, it's where effects and
   // metadata are recorded, etc. The second is the user facing context, which is a property on the internal context
   // called "context".
-  createContext(commandId: Long, metadata: Metadata) {
+  createContext(commandId: Long, metadata: Metadata): InternalContext {
+    const replyMetadata = new Metadata();
+
     const accessor: InternalContext = {
       commandId: commandId,
       active: true,
       effects: [],
-      replyMetadata: new Metadata(),
+      replyMetadata: replyMetadata,
 
       ensureActive: () => {
         if (!accessor.active) {
@@ -369,70 +371,70 @@ class CommandHelper {
       commandDebug: (msg: string, ...args: any[]) => {
         this.commandDebug(msg, ...[commandId].concat(args));
       },
-    };
 
-    accessor.context = {
-      entityId: this.entityId,
-      commandId: commandId,
-      metadata: metadata,
-      replyMetadata: accessor.replyMetadata,
+      context: {
+        entityId: this.entityId,
+        commandId: commandId,
+        metadata: metadata,
+        replyMetadata: replyMetadata,
 
-      effect: (
-        method: EffectMethod,
-        message: Message,
-        synchronous = false,
-        metadata?: Metadata,
-        internalCall?: boolean,
-      ): void => {
-        accessor.ensureActive();
-        if (!internalCall)
-          console.warn(
-            "WARNING: Command context 'effect' is deprecated. Please use 'Reply.addEffect' instead.",
+        effect: (
+          method: EffectMethod,
+          message: Message,
+          synchronous = false,
+          metadata?: Metadata,
+          internalCall?: boolean,
+        ): void => {
+          accessor.ensureActive();
+          if (!internalCall)
+            console.warn(
+              "WARNING: Command context 'effect' is deprecated. Please use 'Reply.addEffect' instead.",
+            );
+          accessor.effects.push(
+            this.effectSerializer.serializeSideEffect(
+              method,
+              message,
+              synchronous,
+              metadata,
+            ),
           );
-        accessor.effects.push(
-          this.effectSerializer.serializeSideEffect(
+        },
+
+        // FIXME: remove for version 0.8 (https://github.com/lightbend/kalix-proxy/issues/410)
+        thenForward: (
+          method: EffectMethod,
+          message: Message,
+          metadata?: Metadata,
+        ): void => {
+          accessor.context?.forward(method, message, metadata);
+        },
+
+        forward: (
+          method: EffectMethod,
+          message: Message,
+          metadata?: Metadata,
+          internalCall?: boolean,
+        ): void => {
+          accessor.ensureActive();
+          if (!internalCall)
+            console.warn(
+              "WARNING: Command context 'forward' is deprecated. Please use 'ReplyFactory.forward' instead.",
+            );
+          accessor.forward = this.effectSerializer.serializeForward(
             method,
             message,
-            synchronous,
             metadata,
-          ),
-        );
-      },
-
-      // FIXME: remove for version 0.8 (https://github.com/lightbend/kalix-proxy/issues/410)
-      thenForward: (
-        method: EffectMethod,
-        message: Message,
-        metadata?: Metadata,
-      ): void => {
-        accessor.context?.forward(method, message, metadata);
-      },
-
-      forward: (
-        method: EffectMethod,
-        message: Message,
-        metadata?: Metadata,
-        internalCall?: boolean,
-      ): void => {
-        accessor.ensureActive();
-        if (!internalCall)
-          console.warn(
-            "WARNING: Command context 'forward' is deprecated. Please use 'ReplyFactory.forward' instead.",
           );
-        accessor.forward = this.effectSerializer.serializeForward(
-          method,
-          message,
-          metadata,
-        );
-      },
+        },
 
-      fail: (msg: string, grpcStatus?: GrpcStatus): never => {
-        accessor.ensureActive();
-        // We set it here to ensure that even if the user catches the error, for
-        // whatever reason, we will still fail as instructed.
-        accessor.error = new ContextFailure(msg, grpcStatus);
-        // Then we throw, to end processing of the command.
-        throw accessor.error;
+        fail: (msg: string, grpcStatus?: GrpcStatus): never => {
+          accessor.ensureActive();
+          // We set it here to ensure that even if the user catches the error, for
+          // whatever reason, we will still fail as instructed.
+          accessor.error = new ContextFailure(msg, grpcStatus);
+          // Then we throw, to end processing of the command.
+          throw accessor.error;
+        },
       },
     };
     return accessor;
