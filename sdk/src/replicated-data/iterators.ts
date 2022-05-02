@@ -17,13 +17,14 @@
 // Internal utility functions for iterators
 
 // Map an iterator to a new iterator
-function map(iter, f) {
-  const mapped = {
+function map<T, U>(iter: Iterator<T>, f: (value: T) => U): IterableIterator<U> {
+  const mapped: IterableIterator<U> = {
     [Symbol.iterator]: () => mapped,
     next: () => {
       const next = iter.next();
       if (next.done) {
         return {
+          value: undefined,
           done: true,
         };
       } else {
@@ -37,6 +38,6 @@ function map(iter, f) {
   return mapped;
 }
 
-module.exports = {
+export = {
   map: map,
 };

@@ -15,17 +15,22 @@
  */
 
 const should = require('chai').should();
-const protobuf = require('protobufjs');
-const path = require('path');
-const replicatedData = require('../../src/replicated-data');
+import protobuf from 'protobufjs';
+import path from 'path';
+import * as replicatedData from '../../src/replicated-data';
 const ReplicatedRegister = replicatedData.ReplicatedRegister;
 const Clocks = replicatedData.Clocks;
-const protobufHelper = require('../../src/protobuf-helper');
-const AnySupport = require('../../src/protobuf-any');
+import AnySupport from '../../src/protobuf-any';
+import Long from 'long';
+import * as proto from '../proto/protobuf-bundle';
 
-const ReplicatedEntityDelta =
-  protobufHelper.moduleRoot.kalix.component.replicatedentity
-    .ReplicatedEntityDelta;
+namespace protocol {
+  export type Any = proto.google.protobuf.IAny;
+  export type Delta =
+    proto.kalix.component.replicatedentity.IReplicatedEntityDelta;
+  export const Delta =
+    proto.kalix.component.replicatedentity.ReplicatedEntityDelta;
+}
 
 const root = new protobuf.Root();
 root.loadSync(path.join(__dirname, '..', 'example.proto'));
@@ -33,18 +38,22 @@ root.resolveAll();
 const Example = root.lookupType('com.example.Example');
 const anySupport = new AnySupport(root);
 
-function roundTripDelta(delta) {
-  return ReplicatedEntityDelta.decode(
-    ReplicatedEntityDelta.encode(delta).finish(),
-  );
+function roundTripDelta(delta: protocol.Delta | null): protocol.Delta {
+  return delta
+    ? protocol.Delta.decode(protocol.Delta.encode(delta).finish())
+    : {};
 }
 
-function toAny(value) {
+function toAny(value: any): protocol.Any {
   return AnySupport.serialize(value, true, true);
 }
 
-function fromAny(value) {
+function fromAny(value?: protocol.Any | null): any {
   return anySupport.deserialize(value);
+}
+
+function toNumber(n?: Long | number | null): number {
+  return Long.isLong(n) ? n.toNumber() : n ?? 0;
 }
 
 describe('ReplicatedRegister', () => {
@@ -52,8 +61,8 @@ describe('ReplicatedRegister', () => {
     const register = new ReplicatedRegister(Example.create({ field1: 'foo' }));
     register.value.field1.should.equal('foo');
     const initial = roundTripDelta(register.getAndResetDelta()).register;
-    fromAny(initial.value).field1.should.equal('foo');
-    initial.clock.should.eql(Clocks.DEFAULT);
+    fromAny(initial?.value).field1.should.equal('foo');
+    initial?.clock?.should.eql(Clocks.DEFAULT);
   });
 
   it('should reflect an initial delta', () => {
@@ -75,8 +84,8 @@ describe('ReplicatedRegister', () => {
     register.value = Example.create({ field1: 'bar' });
     register.value.field1.should.equal('bar');
     const delta = roundTripDelta(register.getAndResetDelta()).register;
-    fromAny(delta.value).field1.should.equal('bar');
-    delta.clock.should.eql(Clocks.DEFAULT);
+    fromAny(delta?.value).field1.should.equal('bar');
+    delta?.clock?.should.eql(Clocks.DEFAULT);
     should.equal(register.getAndResetDelta(), null);
   });
 
@@ -85,9 +94,9 @@ describe('ReplicatedRegister', () => {
     register.setWithClock(Example.create({ field1: 'bar' }), Clocks.CUSTOM, 10);
     register.value.field1.should.equal('bar');
     const delta = roundTripDelta(register.getAndResetDelta()).register;
-    fromAny(delta.value).field1.should.equal('bar');
-    delta.clock.should.eql(Clocks.CUSTOM);
-    delta.customClockValue.toNumber().should.equal(10);
+    fromAny(delta?.value).field1.should.equal('bar');
+    delta?.clock?.should.eql(Clocks.CUSTOM);
+    toNumber(delta?.customClockValue).should.equal(10);
     should.equal(register.getAndResetDelta(), null);
   });
 
@@ -111,7 +120,7 @@ describe('ReplicatedRegister', () => {
     register.value = 'hello';
     register.value.should.equal('hello');
     const delta = roundTripDelta(register.getAndResetDelta());
-    fromAny(delta.register.value).should.equal('hello');
+    fromAny(delta?.register?.value).should.equal('hello');
   });
 
   it('should work with json types', () => {
@@ -120,6 +129,6 @@ describe('ReplicatedRegister', () => {
     register.value = { foo: 'baz' };
     register.value.foo.should.equal('baz');
     const delta = roundTripDelta(register.getAndResetDelta());
-    fromAny(delta.register.value).should.eql({ foo: 'baz' });
+    fromAny(delta?.register?.value).should.eql({ foo: 'baz' });
   });
 });

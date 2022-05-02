@@ -15,15 +15,21 @@
  */
 
 const should = require('chai').should();
-const ReplicatedMultiMap = require('../../src/replicated-data/multi-map');
-const path = require('path');
-const protobuf = require('protobufjs');
-const protobufHelper = require('../../src/protobuf-helper');
-const AnySupport = require('../../src/protobuf-any');
+import ReplicatedMultiMap from '../../src/replicated-data/multi-map';
+import path from 'path';
+import protobuf from 'protobufjs';
+import AnySupport from '../../src/protobuf-any';
+import * as proto from '../proto/protobuf-bundle';
 
-const ReplicatedEntityDelta =
-  protobufHelper.moduleRoot.kalix.component.replicatedentity
-    .ReplicatedEntityDelta;
+namespace protocol {
+  export type Any = proto.google.protobuf.IAny;
+  export type Delta =
+    proto.kalix.component.replicatedentity.IReplicatedEntityDelta;
+  export const Delta =
+    proto.kalix.component.replicatedentity.ReplicatedEntityDelta;
+  export type EntryDelta =
+    proto.kalix.component.replicatedentity.IReplicatedMultiMapEntryDelta;
+}
 
 const root = new protobuf.Root();
 root.loadSync(path.join(__dirname, '..', 'example.proto'));
@@ -31,33 +37,43 @@ root.resolveAll();
 const Example = root.lookupType('com.example.Example');
 const anySupport = new AnySupport(root);
 
-function roundTripDelta(delta) {
-  return ReplicatedEntityDelta.decode(
-    ReplicatedEntityDelta.encode(delta).finish(),
-  );
+function roundTripDelta(delta: protocol.Delta | null): protocol.Delta {
+  return delta
+    ? protocol.Delta.decode(protocol.Delta.encode(delta).finish())
+    : {};
 }
 
-function toAny(value) {
+function toAny(value: any): protocol.Any {
   return AnySupport.serialize(value, true, true);
 }
 
-function fromAnys(values) {
-  return values.map((any) => anySupport.deserialize(any));
+function fromAnys(values?: protocol.Any[] | null): any[] {
+  return values ? values.map((any) => anySupport.deserialize(any)) : [];
 }
 
-function deltaEntries(entries) {
-  return entries.map((entry) => {
-    return {
-      key: anySupport.deserialize(entry.key),
-      delta: {
-        removed: fromAnys(entry.delta.removed),
-        added: fromAnys(entry.delta.added),
-      },
-    };
-  });
+interface Entry {
+  key: any;
+  delta: { removed: any[]; added: any[] };
 }
 
-function valuesDelta(key, delta) {
+function deltaEntries(entries?: protocol.EntryDelta[] | null): Entry[] {
+  return entries
+    ? entries.map((entry) => {
+        return {
+          key: anySupport.deserialize(entry.key),
+          delta: {
+            removed: fromAnys(entry.delta?.removed),
+            added: fromAnys(entry.delta?.added),
+          },
+        };
+      })
+    : [];
+}
+
+function valuesDelta(
+  key: any,
+  delta: { removed?: any[]; added?: any[] },
+): protocol.EntryDelta {
   return {
     key: toAny(key),
     delta: {
@@ -109,12 +125,12 @@ describe('ReplicatedMultiMap', () => {
     Array.from(multiMap.get('key2')).should.have.members(['value2', 'value3']);
 
     const delta = roundTripDelta(multiMap.getAndResetDelta());
-    deltaEntries(delta.replicatedMultiMap.updated).should.have.deep.members([
+    deltaEntries(delta.replicatedMultiMap?.updated).should.have.deep.members([
       { key: 'key1', delta: { removed: [], added: ['value1'] } },
       { key: 'key2', delta: { removed: [], added: ['value2', 'value3'] } },
     ]);
-    delta.replicatedMultiMap.removed.should.be.empty;
-    delta.replicatedMultiMap.cleared.should.be.false;
+    delta.replicatedMultiMap?.removed?.should.be.empty;
+    delta.replicatedMultiMap?.cleared?.should.be.false;
   });
 
   it('should generate a delta with removed entries', () => {
@@ -135,11 +151,11 @@ describe('ReplicatedMultiMap', () => {
     Array.from(multiMap.get('key2')).should.have.members(['value2']);
 
     const delta = roundTripDelta(multiMap.getAndResetDelta());
-    fromAnys(delta.replicatedMultiMap.removed).should.have.members(['key3']);
-    deltaEntries(delta.replicatedMultiMap.updated).should.have.deep.members([
+    fromAnys(delta.replicatedMultiMap?.removed).should.have.members(['key3']);
+    deltaEntries(delta.replicatedMultiMap?.updated).should.have.deep.members([
       { key: 'key2', delta: { removed: ['value3'], added: [] } },
     ]);
-    delta.replicatedMultiMap.cleared.should.be.false;
+    delta.replicatedMultiMap?.cleared?.should.be.false;
   });
 
   it('should generate a delta with updated entries', () => {
@@ -166,7 +182,7 @@ describe('ReplicatedMultiMap', () => {
     ]);
 
     const delta = roundTripDelta(multiMap.getAndResetDelta());
-    deltaEntries(delta.replicatedMultiMap.updated).should.have.deep.members([
+    deltaEntries(delta.replicatedMultiMap?.updated).should.have.deep.members([
       { key: 'key1', delta: { removed: [], added: ['value2'] } },
       { key: 'key2', delta: { removed: ['value2'], added: ['value4'] } },
       {
@@ -174,8 +190,8 @@ describe('ReplicatedMultiMap', () => {
         delta: { removed: [], added: ['value5', 'value6', 'value7'] },
       },
     ]);
-    delta.replicatedMultiMap.removed.should.be.empty;
-    delta.replicatedMultiMap.cleared.should.be.false;
+    delta.replicatedMultiMap?.removed?.should.be.empty;
+    delta.replicatedMultiMap?.cleared?.should.be.false;
   });
 
   it('should generate a delta with cleared entries', () => {
@@ -191,9 +207,9 @@ describe('ReplicatedMultiMap', () => {
     multiMap.size.should.equal(0);
 
     const delta = roundTripDelta(multiMap.getAndResetDelta());
-    delta.replicatedMultiMap.cleared.should.be.true;
-    delta.replicatedMultiMap.updated.should.be.empty;
-    delta.replicatedMultiMap.removed.should.be.empty;
+    delta.replicatedMultiMap?.cleared?.should.be.true;
+    delta.replicatedMultiMap?.updated?.should.be.empty;
+    delta.replicatedMultiMap?.removed?.should.be.empty;
   });
 
   it('should reflect a delta with added entries', () => {
@@ -282,7 +298,7 @@ describe('ReplicatedMultiMap', () => {
     ]);
 
     const delta1 = roundTripDelta(multiMap.getAndResetDelta());
-    deltaEntries(delta1.replicatedMultiMap.updated).should.have.deep.members([
+    deltaEntries(delta1.replicatedMultiMap?.updated).should.have.deep.members([
       {
         key: Example.create({ field1: 'key1' }),
         delta: { removed: [], added: [Example.create({ field1: 'value1' })] },
@@ -302,8 +318,8 @@ describe('ReplicatedMultiMap', () => {
         },
       },
     ]);
-    delta1.replicatedMultiMap.removed.should.be.empty;
-    delta1.replicatedMultiMap.cleared.should.be.false;
+    delta1.replicatedMultiMap?.removed?.should.be.empty;
+    delta1.replicatedMultiMap?.cleared?.should.be.false;
 
     multiMap.delete(
       Example.create({ field1: 'key3' }),
@@ -314,16 +330,16 @@ describe('ReplicatedMultiMap', () => {
     multiMap.size.should.equal(2);
 
     const delta2 = roundTripDelta(multiMap.getAndResetDelta());
-    fromAnys(delta2.replicatedMultiMap.removed).should.have.deep.members([
+    fromAnys(delta2.replicatedMultiMap?.removed).should.have.deep.members([
       Example.create({ field1: 'key2' }),
     ]);
-    deltaEntries(delta2.replicatedMultiMap.updated).should.have.deep.members([
+    deltaEntries(delta2.replicatedMultiMap?.updated).should.have.deep.members([
       {
         key: Example.create({ field1: 'key3' }),
         delta: { removed: [Example.create({ field1: 'value4' })], added: [] },
       },
     ]);
-    delta2.replicatedMultiMap.cleared.should.be.false;
+    delta2.replicatedMultiMap?.cleared?.should.be.false;
   });
 
   it('should support json objects for keys and values', () => {
@@ -333,7 +349,7 @@ describe('ReplicatedMultiMap', () => {
     multiMap.putAll({ foo: 'key3' }, [{ foo: 'value3' }, { foo: 'value4' }]);
 
     const delta1 = roundTripDelta(multiMap.getAndResetDelta());
-    deltaEntries(delta1.replicatedMultiMap.updated).should.have.deep.members([
+    deltaEntries(delta1.replicatedMultiMap?.updated).should.have.deep.members([
       {
         key: { foo: 'key1' },
         delta: { removed: [], added: [{ foo: 'value1' }] },
@@ -347,8 +363,8 @@ describe('ReplicatedMultiMap', () => {
         delta: { removed: [], added: [{ foo: 'value3' }, { foo: 'value4' }] },
       },
     ]);
-    delta1.replicatedMultiMap.removed.should.be.empty;
-    delta1.replicatedMultiMap.cleared.should.be.false;
+    delta1.replicatedMultiMap?.removed?.should.be.empty;
+    delta1.replicatedMultiMap?.cleared?.should.be.false;
 
     multiMap.delete({ foo: 'key3' }, { foo: 'value4' });
     multiMap.deleteAll({ foo: 'key2' });
@@ -356,15 +372,15 @@ describe('ReplicatedMultiMap', () => {
     multiMap.size.should.equal(2);
 
     const delta2 = roundTripDelta(multiMap.getAndResetDelta());
-    fromAnys(delta2.replicatedMultiMap.removed).should.have.deep.members([
+    fromAnys(delta2.replicatedMultiMap?.removed).should.have.deep.members([
       { foo: 'key2' },
     ]);
-    deltaEntries(delta2.replicatedMultiMap.updated).should.have.deep.members([
+    deltaEntries(delta2.replicatedMultiMap?.updated).should.have.deep.members([
       {
         key: { foo: 'key3' },
         delta: { removed: [{ foo: 'value4' }], added: [] },
       },
     ]);
-    delta2.replicatedMultiMap.cleared.should.be.false;
+    delta2.replicatedMultiMap?.cleared?.should.be.false;
   });
 });

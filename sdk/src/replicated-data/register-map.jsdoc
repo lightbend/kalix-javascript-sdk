@@ -1,0 +1,79 @@
+/*
+ * Copyright 2021 Lightbend Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/**
+ * @classdesc A replicated map of registers.
+ *
+ * @constructor module:kalix.replicatedentity.ReplicatedRegisterMap
+ * @implements module:kalix.replicatedentity.ReplicatedData
+ */
+
+/**
+ * Get the value at the given key.
+ *
+ * @function module:kalix.replicatedentity.ReplicatedRegisterMap#get
+ * @param {module:kalix.Serializable} key The key to get.
+ * @returns {module:kalix.Serializable|undefined} The register value, or undefined if no value is defined at that key.
+ */
+
+/**
+ * Set the register at the given key to the given value.
+ *
+ * @function module:kalix.replicatedentity.ReplicatedRegisterMap#set
+ * @param {module:kalix.Serializable} key The key for the register.
+ * @param {module:kalix.Serializable} value The new value for the register.
+ * @param {module:kalix.replicatedentity.Clock} [clock=Clocks.DEFAULT] The register clock.
+ * @param {number} [customClockValue=0] Clock value when using custom clock, otherwise ignored.
+ * @returns {module:kalix.replicatedentity.ReplicatedRegisterMap} This register map.
+ */
+
+/**
+ * Check whether this map contains a value of the given key.
+ *
+ * @function module:kalix.replicatedentity.ReplicatedRegisterMap#has
+ * @param {module:kalix.Serializable} key The key to check.
+ * @returns {boolean} True if this register map contains a value for the given key.
+ */
+
+/**
+ * The number of elements in this map.
+ *
+ * @name module:kalix.replicatedentity.ReplicatedRegisterMap#size
+ * @type {number}
+ * @readonly
+ */
+
+/**
+ * Return an iterator of the keys of this register map.
+ *
+ * @function module:kalix.replicatedentity.ReplicatedRegisterMap#keys
+ * @returns {IterableIterator<module:kalix.Serializable>}
+ */
+
+/**
+ * Delete the register at the given key.
+ *
+ * @function module:kalix.replicatedentity.ReplicatedRegisterMap#delete
+ * @param {module:kalix.Serializable} key The key to delete.
+ * @return {module:kalix.replicatedentity.ReplicatedRegisterMap} This register map.
+ */
+
+/**
+ * Clear all registers from this register map.
+ *
+ * @function module:kalix.replicatedentity.ReplicatedRegisterMap#clear
+ * @return {module:kalix.replicatedentity.ReplicatedRegisterMap} This register map.
+ */

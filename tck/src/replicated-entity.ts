@@ -195,10 +195,6 @@ function applyUpdate(
             clock?.customClockValue as number, // FIXME
           );
         else registerMap.set(key, value);
-        registerMap.set(
-          update.replicatedRegisterMap.update.key,
-          update.replicatedRegisterMap.update.value,
-        );
       } else if (update.replicatedRegisterMap.remove)
         registerMap.delete(update.replicatedRegisterMap.remove);
       else if (update.replicatedRegisterMap.clear) registerMap.clear();

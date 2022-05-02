@@ -1,0 +1,140 @@
+/*
+ * Copyright 2021 Lightbend Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/**
+ * @classdesc A Replicated Map data type.
+ *
+ * ReplicatedMaps are a mapping of keys (which can be any {@link module:kalix.Serializable}) to
+ * Replicated Data types. Values of the map are merged together. Elements can be added and removed, however, when an
+ * element is removed and then added again, it's possible that the old value will be merged with the new, depending on
+ * whether the remove was replicated to all nodes before the add was.
+ *
+ * Note that while the map may contain different types of Replicated Data for different keys, a given key may not change
+ * its type, and doing so will likely result in the Replicated Data entering a non mergable state, from which it can't
+ * recover.
+ *
+ * @constructor module:kalix.replicatedentity.ReplicatedMap
+ * @implements module:kalix.replicatedentity.ReplicatedData
+ * @implements Iterable<Array<any>>
+ */
+
+/**
+ * Generator for default values.
+ *
+ * This is invoked by get when the current map has no Replicated Data defined for the key.
+ *
+ * If this returns a Replicated Data object, it will be added to the map.
+ *
+ * Care should be taken when using this, since it means that the get method can trigger elements to be created. If
+ * using default values, the get method should not be used in queries where an empty value for the Replicated Data
+ * means the value is not present.
+ *
+ * @name module:kalix.replicatedentity.ReplicatedMap#defaultValue
+ * @type {module:kalix.replicatedentity.ReplicatedMap~defaultValueCallback}
+ */
+
+/**
+ * Check whether this map contains a value of the given key.
+ *
+ * @function module:kalix.replicatedentity.ReplicatedMap#has
+ * @param {module:kalix.Serializable} key The key to check.
+ * @returns {boolean} True if this map contains a value of the given key.
+ */
+
+/**
+ * The number of elements in this map.
+ *
+ * @name module:kalix.replicatedentity.ReplicatedMap#size
+ * @type {number}
+ * @readonly
+ */
+
+/**
+ * Execute the given callback for each element.
+ *
+ * @function module:kalix.replicatedentity.ReplicatedMap#forEach
+ * @param {module:kalix.replicatedentity.ReplicatedMap~forEachCallback} callback The callback to handle each element.
+ */
+
+/**
+ * Return an iterator of the entries of this map.
+ *
+ * @function module:kalix.replicatedentity.ReplicatedMap#entries
+ * @returns {Iterator<Array>}
+ */
+
+/**
+ * Return an iterator of the entries of this map.
+ *
+ * @function module:kalix.replicatedentity.ReplicatedMap#iterator
+ * @returns {Iterator<Array>}
+ */
+
+/**
+ * Return an iterator of the values of this map.
+ *
+ * @function module:kalix.replicatedentity.ReplicatedMap#values
+ * @returns {Iterator<module:kalix.replicatedentity.ReplicatedData>}
+ */
+
+/**
+ * Return an iterator of the keys of this map.
+ *
+ * @function module:kalix.replicatedentity.ReplicatedMap#keys
+ * @returns {Iterator<module:kalix.Serializable>}
+ */
+
+/**
+ * Get the value at the given key.
+ *
+ * @function module:kalix.replicatedentity.ReplicatedMap#get
+ * @param {module:kalix.Serializable} key The key to get.
+ * @returns {undefined|module:kalix.replicatedentity.ReplicatedData} The Replicated Data value, or undefined if no value is defined at that key.
+ */
+
+/**
+ * A representation of this map as an object.
+ *
+ * All entries whose keys are strings will be properties of this object, and setting any property of the object will
+ * insert that property as a key into the map.
+ *
+ * @name module:kalix.replicatedentity.ReplicatedMap#asObject
+ * @type {Object<string, module:kalix.replicatedentity.ReplicatedData>}
+ */
+
+/**
+ * Set the given value for the given key.
+ *
+ * @function module:kalix.replicatedentity.ReplicatedMap#set
+ * @param {module:kalix.Serializable} key The key to set.
+ * @param {module:kalix.replicatedentity.ReplicatedData} value The value to set.
+ * @return {module:kalix.replicatedentity.ReplicatedMap} This map.
+ */
+
+/**
+ * Delete the value at the given key.
+ *
+ * @function module:kalix.replicatedentity.ReplicatedMap#delete
+ * @param {module:kalix.Serializable} key The key to delete.
+ * @return {module:kalix.replicatedentity.ReplicatedMap} This map.
+ */
+
+/**
+ * Clear all entries from this map.
+ *
+ * @function module:kalix.replicatedentity.ReplicatedMap#clear
+ * @return {module:kalix.replicatedentity.ReplicatedMap} This map.
+ */

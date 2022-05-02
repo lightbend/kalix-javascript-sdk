@@ -15,18 +15,29 @@
  */
 
 const should = require('chai').should();
-const Long = require('long');
-const ReplicatedCounter = require('../../src/replicated-data/counter');
-const protobufHelper = require('../../src/protobuf-helper');
+import Long from 'long';
+import ReplicatedCounter from '../../src/replicated-data/counter';
+import * as proto from '../proto/protobuf-bundle';
 
-const ReplicatedEntityDelta =
-  protobufHelper.moduleRoot.kalix.component.replicatedentity
-    .ReplicatedEntityDelta;
+namespace protocol {
+  export type Delta =
+    proto.kalix.component.replicatedentity.IReplicatedEntityDelta;
+  export const Delta =
+    proto.kalix.component.replicatedentity.ReplicatedEntityDelta;
+}
 
-function roundTripDelta(delta) {
-  return ReplicatedEntityDelta.decode(
-    ReplicatedEntityDelta.encode(delta).finish(),
-  );
+function counterDelta(delta: protocol.Delta | null): number {
+  return toNumber(roundTripDelta(delta).counter?.change);
+}
+
+function roundTripDelta(delta: protocol.Delta | null): protocol.Delta {
+  return delta
+    ? protocol.Delta.decode(protocol.Delta.encode(delta).finish())
+    : {};
+}
+
+function toNumber(n?: Long | number | null): number {
+  return Long.isLong(n) ? n.toNumber() : n ?? 0;
 }
 
 describe('ReplicatedCounter', () => {
@@ -61,17 +72,13 @@ describe('ReplicatedCounter', () => {
     const counter = new ReplicatedCounter();
     counter.increment(10);
     counter.value.should.equal(10);
-    roundTripDelta(counter.getAndResetDelta())
-      .counter.change.toNumber()
-      .should.equal(10);
+    counterDelta(counter.getAndResetDelta()).should.equal(10);
     should.equal(counter.getAndResetDelta(), null);
     counter.decrement(3);
     counter.value.should.equal(7);
     counter.decrement(4);
     counter.value.should.equal(3);
-    roundTripDelta(counter.getAndResetDelta())
-      .counter.change.toNumber()
-      .should.equal(-7);
+    counterDelta(counter.getAndResetDelta()).should.equal(-7);
     should.equal(counter.getAndResetDelta(), null);
   });
 
@@ -81,7 +88,7 @@ describe('ReplicatedCounter', () => {
     counter.increment(Number.MAX_SAFE_INTEGER);
     counter.increment(1);
     counter.longValue.should.eql(impossibleDouble);
-    roundTripDelta(counter.getAndResetDelta()).counter.change.should.eql(
+    roundTripDelta(counter.getAndResetDelta()).counter?.change?.should.eql(
       impossibleDouble,
     );
   });
@@ -91,7 +98,7 @@ describe('ReplicatedCounter', () => {
     const counter = new ReplicatedCounter();
     counter.increment(impossibleDouble);
     counter.longValue.should.eql(impossibleDouble);
-    roundTripDelta(counter.getAndResetDelta()).counter.change.should.eql(
+    roundTripDelta(counter.getAndResetDelta()).counter?.change?.should.eql(
       impossibleDouble,
     );
   });
@@ -100,8 +107,6 @@ describe('ReplicatedCounter', () => {
     const counter = new ReplicatedCounter();
     counter.value.should.equal(0);
     should.equal(counter.getAndResetDelta(), null);
-    roundTripDelta(counter.getAndResetDelta(/* initial = */ true))
-      .counter.change.toNumber()
-      .should.equal(0);
+    counterDelta(counter.getAndResetDelta(/* initial = */ true)).should.eql(0);
   });
 });

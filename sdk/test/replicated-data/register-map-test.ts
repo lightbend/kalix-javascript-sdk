@@ -15,17 +15,24 @@
  */
 
 const should = require('chai').should();
-const ReplicatedData = require('../../src/replicated-data');
+import * as ReplicatedData from '../../src/replicated-data';
 const ReplicatedRegisterMap = ReplicatedData.ReplicatedRegisterMap;
 const Clocks = ReplicatedData.Clocks;
-const path = require('path');
-const protobuf = require('protobufjs');
-const protobufHelper = require('../../src/protobuf-helper');
-const AnySupport = require('../../src/protobuf-any');
+import path from 'path';
+import protobuf from 'protobufjs';
+import AnySupport from '../../src/protobuf-any';
+import Long from 'long';
+import * as proto from '../proto/protobuf-bundle';
 
-const ReplicatedEntityDelta =
-  protobufHelper.moduleRoot.kalix.component.replicatedentity
-    .ReplicatedEntityDelta;
+namespace protocol {
+  export type Any = proto.google.protobuf.IAny;
+  export type Delta =
+    proto.kalix.component.replicatedentity.IReplicatedEntityDelta;
+  export const Delta =
+    proto.kalix.component.replicatedentity.ReplicatedEntityDelta;
+  export type EntryDelta =
+    proto.kalix.component.replicatedentity.IReplicatedRegisterMapEntryDelta;
+}
 
 const root = new protobuf.Root();
 root.loadSync(path.join(__dirname, '..', 'example.proto'));
@@ -33,41 +40,63 @@ root.resolveAll();
 const Example = root.lookupType('com.example.Example');
 const anySupport = new AnySupport(root);
 
-function roundTripDelta(delta) {
-  return ReplicatedEntityDelta.decode(
-    ReplicatedEntityDelta.encode(delta).finish(),
-  );
+function roundTripDelta(delta: protocol.Delta | null): protocol.Delta {
+  return delta
+    ? protocol.Delta.decode(protocol.Delta.encode(delta).finish())
+    : {};
 }
 
-function toAny(value) {
+function toAny(value: any): protocol.Any {
   return AnySupport.serialize(value, true, true);
 }
 
-function fromAnys(values) {
-  return values.map((any) => anySupport.deserialize(any));
+function fromAnys(values?: protocol.Any[] | null): any[] {
+  return values ? values.map((any) => anySupport.deserialize(any)) : [];
 }
 
-function deltaEntries(entries) {
-  return entries.map((entry) => {
-    return {
-      key: anySupport.deserialize(entry.key),
-      delta: anySupport.deserialize(entry.delta.value),
-    };
-  });
+function toNumber(n?: Long | number | null): number {
+  return Long.isLong(n) ? n.toNumber() : n ?? 0;
 }
 
-function deltaEntriesWithClocks(entries) {
-  return entries.map((entry) => {
-    return {
-      key: anySupport.deserialize(entry.key),
-      value: anySupport.deserialize(entry.delta.value),
-      clock: entry.delta.clock,
-      customClockValue: entry.delta.customClockValue.toNumber(),
-    };
-  });
+interface Entry {
+  key: any;
+  delta: any;
 }
 
-function registerDelta(key, value) {
+function deltaEntries(entries?: protocol.EntryDelta[] | null): Entry[] {
+  return entries
+    ? entries.map((entry) => {
+        return {
+          key: anySupport.deserialize(entry.key),
+          delta: anySupport.deserialize(entry.delta?.value),
+        };
+      })
+    : [];
+}
+
+interface EntryWithClock {
+  key: any;
+  value: any;
+  clock: ReplicatedData.Clock | null | undefined;
+  customClockValue: number;
+}
+
+function deltaEntriesWithClocks(
+  entries?: protocol.EntryDelta[] | null,
+): EntryWithClock[] {
+  return entries
+    ? entries.map((entry) => {
+        return {
+          key: anySupport.deserialize(entry.key),
+          value: anySupport.deserialize(entry.delta?.value),
+          clock: entry.delta?.clock,
+          customClockValue: toNumber(entry.delta?.customClockValue),
+        };
+      })
+    : [];
+}
+
+function registerDelta(key: any, value: any): protocol.EntryDelta {
   return { key: toAny(key), delta: { value: toAny(value) } };
 }
 
@@ -106,11 +135,11 @@ describe('ReplicatedRegisterMap', () => {
     registerMap.size.should.equal(1);
 
     const delta = roundTripDelta(registerMap.getAndResetDelta());
-    deltaEntries(delta.replicatedRegisterMap.updated).should.have.deep.members([
-      { key: 'one', delta: 1 },
-    ]);
-    delta.replicatedRegisterMap.removed.should.be.empty;
-    delta.replicatedRegisterMap.cleared.should.be.false;
+    deltaEntries(delta.replicatedRegisterMap?.updated).should.have.deep.members(
+      [{ key: 'one', delta: 1 }],
+    );
+    delta.replicatedRegisterMap?.removed?.should.be.empty;
+    delta.replicatedRegisterMap?.cleared?.should.be.false;
   });
 
   it('should generate a removed delta', () => {
@@ -124,9 +153,9 @@ describe('ReplicatedRegisterMap', () => {
     registerMap.has('two').should.be.true;
 
     const delta = roundTripDelta(registerMap.getAndResetDelta());
-    fromAnys(delta.replicatedRegisterMap.removed).should.have.members(['one']);
-    delta.replicatedRegisterMap.updated.should.be.empty;
-    delta.replicatedRegisterMap.cleared.should.be.false;
+    fromAnys(delta.replicatedRegisterMap?.removed).should.have.members(['one']);
+    delta.replicatedRegisterMap?.updated?.should.be.empty;
+    delta.replicatedRegisterMap?.cleared?.should.be.false;
   });
 
   it('should generate an updated delta', () => {
@@ -136,11 +165,11 @@ describe('ReplicatedRegisterMap', () => {
     registerMap.set('one', 'forty-two');
 
     const delta = roundTripDelta(registerMap.getAndResetDelta());
-    deltaEntries(delta.replicatedRegisterMap.updated).should.have.deep.members([
-      { key: 'one', delta: 'forty-two' },
-    ]);
-    delta.replicatedRegisterMap.removed.should.be.empty;
-    delta.replicatedRegisterMap.cleared.should.be.false;
+    deltaEntries(delta.replicatedRegisterMap?.updated).should.have.deep.members(
+      [{ key: 'one', delta: 'forty-two' }],
+    );
+    delta.replicatedRegisterMap?.removed?.should.be.empty;
+    delta.replicatedRegisterMap?.cleared?.should.be.false;
   });
 
   it('should generate a cleared delta', () => {
@@ -152,9 +181,9 @@ describe('ReplicatedRegisterMap', () => {
     registerMap.size.should.equal(0);
 
     const delta = roundTripDelta(registerMap.getAndResetDelta());
-    delta.replicatedRegisterMap.cleared.should.be.true;
-    delta.replicatedRegisterMap.updated.should.be.empty;
-    delta.replicatedRegisterMap.removed.should.be.empty;
+    delta.replicatedRegisterMap?.cleared?.should.be.true;
+    delta.replicatedRegisterMap?.updated?.should.be.empty;
+    delta.replicatedRegisterMap?.removed?.should.be.empty;
   });
 
   it('should generate a delta with clocks', () => {
@@ -165,14 +194,14 @@ describe('ReplicatedRegisterMap', () => {
 
     const delta = roundTripDelta(registerMap.getAndResetDelta());
     deltaEntriesWithClocks(
-      delta.replicatedRegisterMap.updated,
+      delta.replicatedRegisterMap?.updated,
     ).should.have.deep.members([
       { key: 1, value: 'foo', clock: Clocks.DEFAULT, customClockValue: 0 },
       { key: 2, value: 'bar', clock: Clocks.REVERSE, customClockValue: 0 },
       { key: 3, value: 'baz', clock: Clocks.CUSTOM, customClockValue: 42 },
     ]);
-    delta.replicatedRegisterMap.removed.should.be.empty;
-    delta.replicatedRegisterMap.cleared.should.be.false;
+    delta.replicatedRegisterMap?.removed?.should.be.empty;
+    delta.replicatedRegisterMap?.cleared?.should.be.false;
   });
 
   it('should reflect a delta with added entries', () => {
@@ -236,10 +265,12 @@ describe('ReplicatedRegisterMap', () => {
     registerMap.delete(Example.create({ field1: 'one' }));
     registerMap.size.should.equal(1);
     const delta = roundTripDelta(registerMap.getAndResetDelta());
-    delta.replicatedRegisterMap.removed.should.have.lengthOf(1);
-    fromAnys(delta.replicatedRegisterMap.removed)[0].field1.should.equal('one');
-    delta.replicatedRegisterMap.updated.should.be.empty;
-    delta.replicatedRegisterMap.cleared.should.be.false;
+    delta.replicatedRegisterMap?.removed?.should.have.lengthOf(1);
+    fromAnys(delta.replicatedRegisterMap?.removed)[0].field1.should.equal(
+      'one',
+    );
+    delta.replicatedRegisterMap?.updated?.should.be.empty;
+    delta.replicatedRegisterMap?.cleared?.should.be.false;
   });
 
   it('should support json objects for keys', () => {
@@ -250,9 +281,9 @@ describe('ReplicatedRegisterMap', () => {
     registerMap.delete({ foo: 'one' });
     registerMap.size.should.equal(1);
     const delta = roundTripDelta(registerMap.getAndResetDelta());
-    delta.replicatedRegisterMap.removed.should.have.lengthOf(1);
-    fromAnys(delta.replicatedRegisterMap.removed)[0].foo.should.equal('one');
-    delta.replicatedRegisterMap.updated.should.be.empty;
-    delta.replicatedRegisterMap.cleared.should.be.false;
+    delta.replicatedRegisterMap?.removed?.should.have.lengthOf(1);
+    fromAnys(delta.replicatedRegisterMap?.removed)[0].foo.should.equal('one');
+    delta.replicatedRegisterMap?.updated?.should.be.empty;
+    delta.replicatedRegisterMap?.cleared?.should.be.false;
   });
 });

@@ -15,15 +15,22 @@
  */
 
 const should = require('chai').should();
-const ReplicatedCounterMap = require('../../src/replicated-data/counter-map');
-const path = require('path');
-const protobuf = require('protobufjs');
-const protobufHelper = require('../../src/protobuf-helper');
-const AnySupport = require('../../src/protobuf-any');
+import ReplicatedCounterMap from '../../src/replicated-data/counter-map';
+import path from 'path';
+import protobuf from 'protobufjs';
+import AnySupport from '../../src/protobuf-any';
+import Long from 'long';
+import * as proto from '../proto/protobuf-bundle';
 
-const ReplicatedEntityDelta =
-  protobufHelper.moduleRoot.kalix.component.replicatedentity
-    .ReplicatedEntityDelta;
+namespace protocol {
+  export type Any = proto.google.protobuf.IAny;
+  export type Delta =
+    proto.kalix.component.replicatedentity.IReplicatedEntityDelta;
+  export const Delta =
+    proto.kalix.component.replicatedentity.ReplicatedEntityDelta;
+  export type EntryDelta =
+    proto.kalix.component.replicatedentity.IReplicatedCounterMapEntryDelta;
+}
 
 const root = new protobuf.Root();
 root.loadSync(path.join(__dirname, '..', 'example.proto'));
@@ -31,30 +38,41 @@ root.resolveAll();
 const Example = root.lookupType('com.example.Example');
 const anySupport = new AnySupport(root);
 
-function roundTripDelta(delta) {
-  return ReplicatedEntityDelta.decode(
-    ReplicatedEntityDelta.encode(delta).finish(),
-  );
+function roundTripDelta(delta: protocol.Delta | null): protocol.Delta {
+  return delta
+    ? protocol.Delta.decode(protocol.Delta.encode(delta).finish())
+    : {};
 }
 
-function toAny(value) {
+function toAny(value: any): protocol.Any {
   return AnySupport.serialize(value, true, true);
 }
 
-function fromAnys(values) {
-  return values.map((any) => anySupport.deserialize(any));
+function fromAnys(values?: protocol.Any[] | null): any[] {
+  return values ? values.map((any) => anySupport.deserialize(any)) : [];
 }
 
-function deltaEntries(entries) {
-  return entries.map((entry) => {
-    return {
-      key: anySupport.deserialize(entry.key),
-      delta: entry.delta.change.toNumber(),
-    };
-  });
+function toNumber(n?: Long | number | null): number {
+  return Long.isLong(n) ? n.toNumber() : n ?? 0;
 }
 
-function counterDelta(key, value) {
+interface Entry {
+  key: any;
+  delta: number;
+}
+
+function deltaEntries(entries?: protocol.EntryDelta[] | null): Entry[] {
+  return entries
+    ? entries.map((entry) => {
+        return {
+          key: anySupport.deserialize(entry.key),
+          delta: toNumber(entry.delta?.change),
+        };
+      })
+    : [];
+}
+
+function counterDelta(key: any, value: number): protocol.EntryDelta {
   return { key: toAny(key), delta: { change: value } };
 }
 
@@ -76,10 +94,10 @@ describe('ReplicatedCounterMap', () => {
       anySupport,
     );
     Array.from(counterMap.keys()).should.have.members(['one', 'two']);
-    counterMap.get('one').should.equal(1);
-    counterMap.get('two').should.equal(2);
-    counterMap.getLong('one').toNumber().should.equal(1);
-    counterMap.getLong('two').toNumber().should.equal(2);
+    counterMap.get('one')?.should.equal(1);
+    counterMap.get('two')?.should.equal(2);
+    counterMap.getLong('one')?.toNumber().should.equal(1);
+    counterMap.getLong('two')?.toNumber().should.equal(2);
     should.equal(counterMap.getAndResetDelta(), null);
   });
 
@@ -90,11 +108,11 @@ describe('ReplicatedCounterMap', () => {
     counterMap.size.should.equal(1);
 
     const delta = roundTripDelta(counterMap.getAndResetDelta());
-    deltaEntries(delta.replicatedCounterMap.updated).should.have.deep.members([
+    deltaEntries(delta.replicatedCounterMap?.updated).should.have.deep.members([
       { key: 'one', delta: 1 },
     ]);
-    delta.replicatedCounterMap.removed.should.be.empty;
-    delta.replicatedCounterMap.cleared.should.be.false;
+    delta.replicatedCounterMap?.removed?.should.be.empty;
+    delta.replicatedCounterMap?.cleared?.should.be.false;
   });
 
   it('should generate a removed delta', () => {
@@ -108,9 +126,9 @@ describe('ReplicatedCounterMap', () => {
     counterMap.has('two').should.be.true;
 
     const delta = roundTripDelta(counterMap.getAndResetDelta());
-    fromAnys(delta.replicatedCounterMap.removed).should.have.members(['one']);
-    delta.replicatedCounterMap.updated.should.be.empty;
-    delta.replicatedCounterMap.cleared.should.be.false;
+    fromAnys(delta.replicatedCounterMap?.removed).should.have.members(['one']);
+    delta.replicatedCounterMap?.updated?.should.be.empty;
+    delta.replicatedCounterMap?.cleared?.should.be.false;
   });
 
   it('should generate an updated delta', () => {
@@ -120,11 +138,11 @@ describe('ReplicatedCounterMap', () => {
     counterMap.increment('one', 42);
 
     const delta = roundTripDelta(counterMap.getAndResetDelta());
-    deltaEntries(delta.replicatedCounterMap.updated).should.have.deep.members([
+    deltaEntries(delta.replicatedCounterMap?.updated).should.have.deep.members([
       { key: 'one', delta: 42 },
     ]);
-    delta.replicatedCounterMap.removed.should.be.empty;
-    delta.replicatedCounterMap.cleared.should.be.false;
+    delta.replicatedCounterMap?.removed?.should.be.empty;
+    delta.replicatedCounterMap?.cleared?.should.be.false;
   });
 
   it('should generate a cleared delta', () => {
@@ -136,9 +154,9 @@ describe('ReplicatedCounterMap', () => {
     counterMap.size.should.equal(0);
 
     const delta = roundTripDelta(counterMap.getAndResetDelta());
-    delta.replicatedCounterMap.cleared.should.be.true;
-    delta.replicatedCounterMap.updated.should.be.empty;
-    delta.replicatedCounterMap.removed.should.be.empty;
+    delta.replicatedCounterMap?.cleared?.should.be.true;
+    delta.replicatedCounterMap?.updated?.should.be.empty;
+    delta.replicatedCounterMap?.removed?.should.be.empty;
   });
 
   it('should reflect a delta with added entries', () => {
@@ -155,7 +173,7 @@ describe('ReplicatedCounterMap', () => {
     );
     counterMap.size.should.equal(2);
     Array.from(counterMap.keys()).should.have.members(['one', 'two']);
-    counterMap.get('two').should.equal(2);
+    counterMap.get('two')?.should.equal(2);
     should.equal(counterMap.getAndResetDelta(), null);
   });
 
@@ -202,10 +220,10 @@ describe('ReplicatedCounterMap', () => {
     counterMap.delete(Example.create({ field1: 'one' }));
     counterMap.size.should.equal(1);
     const delta = roundTripDelta(counterMap.getAndResetDelta());
-    delta.replicatedCounterMap.removed.should.have.lengthOf(1);
-    fromAnys(delta.replicatedCounterMap.removed)[0].field1.should.equal('one');
-    delta.replicatedCounterMap.updated.should.be.empty;
-    delta.replicatedCounterMap.cleared.should.be.false;
+    delta.replicatedCounterMap?.removed?.should.have.lengthOf(1);
+    fromAnys(delta.replicatedCounterMap?.removed)[0].field1.should.equal('one');
+    delta.replicatedCounterMap?.updated?.should.be.empty;
+    delta.replicatedCounterMap?.cleared?.should.be.false;
   });
 
   it('should support json objects for keys', () => {
@@ -216,9 +234,9 @@ describe('ReplicatedCounterMap', () => {
     counterMap.delete({ foo: 'one' });
     counterMap.size.should.equal(1);
     const delta = roundTripDelta(counterMap.getAndResetDelta());
-    delta.replicatedCounterMap.removed.should.have.lengthOf(1);
-    fromAnys(delta.replicatedCounterMap.removed)[0].foo.should.equal('one');
-    delta.replicatedCounterMap.updated.should.be.empty;
-    delta.replicatedCounterMap.cleared.should.be.false;
+    delta.replicatedCounterMap?.removed?.should.have.lengthOf(1);
+    fromAnys(delta.replicatedCounterMap?.removed)[0].foo.should.equal('one');
+    delta.replicatedCounterMap?.updated?.should.be.empty;
+    delta.replicatedCounterMap?.cleared?.should.be.false;
   });
 });
