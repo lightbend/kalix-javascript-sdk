@@ -187,10 +187,6 @@ export class Reply {
   isEmpty(): boolean {
     return !this.message && !this.forward && !this.failure;
   }
-
-  emptyReply(): Reply {
-    return new Reply();
-  }
 }
 
 /**
