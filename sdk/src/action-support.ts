@@ -262,7 +262,7 @@ class ActionHandler {
       );
     } else {
       // no reply
-      ctx.write(null);
+      ctx.write(reply);
     }
   }
 
