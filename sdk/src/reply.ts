@@ -191,7 +191,6 @@ export class Reply {
   emptyReply(): Reply {
     return new Reply();
   }
-
 }
 
 /**
