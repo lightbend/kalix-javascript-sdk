@@ -15,7 +15,7 @@ particular the [JavaScript section](https://docs.kalix.io/javascript/index.html)
 No additional tooling is required for local development. To build and deploy to a cluster:
 
 - Docker; see https://docs.docker.com/engine/install/
-- Kalix CLI (`akkasls`); see https://docs.kalix.io/getting-started/set-up-development-env.html#_akka_serverless_cli
+- Kalix CLI (`kalix`); see https://docs.kalix.io/kalix/install-kalix.html
 
 ## Building
 

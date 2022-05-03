@@ -99,7 +99,7 @@ object EntityServiceSourceGenerator {
     val typedefPath =
       sourceDirectory.toAbsolutePath
         .relativize(generatedSourceDirectory.toAbsolutePath)
-        .resolve(service.fqn.name.toLowerCase())
+        .resolve(entity.fqn.name.toLowerCase())
         .toString
 
     val entityType = entity match {

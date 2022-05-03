@@ -14,15 +14,23 @@
  * limitations under the License.
  */
 
-const fs = require('fs');
-const protobufHelper = require('./protobuf-helper');
-const grpc = require('@grpc/grpc-js');
-const protoLoader = require('@grpc/proto-loader');
-const EventSourcedEntityServices = require('./event-sourced-entity-support');
-const Kalix = require('./kalix');
-const { GrpcUtil } = require('./grpc-util');
+/**
+ * Context for an event sourced command.
+ *
+ * @interface module:kalix.EventSourcedEntity.EventSourcedEntityCommandContext
+ * @extends module:kalix.CommandContext
+ * @extends module:kalix.EntityContext
+ */
 
-const eventSourcedEntityServices = new EventSourcedEntityServices();
+/**
+ * Persist an event.
+ *
+ * The event won't be persisted until the reply is sent to the proxy. Then, the event will be persisted
+ * before the reply is sent back to the client.
+ *
+ * @function module:kalix.EventSourcedEntity.EventSourcedEntityCommandContext#emit
+ * @param {module:kalix.Serializable} event The event to emit.
+ */
 
 /**
  * An event sourced entity command handler.
@@ -102,129 +110,82 @@ const eventSourcedEntityServices = new EventSourcedEntityServices();
  */
 
 /**
- * An event sourced entity.
+ * @classdesc Create a new event sourced entity.
  *
- * @memberOf module:kalix
+ * @class module:kalix.EventSourcedEntity
  * @implements module:kalix.Entity
+ * @param {string|string[]} desc A descriptor or list of descriptors to parse, containing the service to serve.
+ * @param {string} serviceName The fully qualified name of the service that provides this entities interface.
+ * @param {string} entityType The entity type name for all event source entities of this type. This will be prefixed
+ *                            onto the entityId when storing the events for this entity. Be aware that the
+ *                            chosen name must be stable through the entity lifecycle.  Never change it after deploying
+ *                            a service that stored data of this type
+ * @param {module:kalix.EventSourcedEntity~options=} options The options for this event sourced entity
  */
-class EventSourcedEntity {
-  /**
-   * Create a new event sourced entity.
-   *
-   * @constructs
-   * @param {string|string[]} desc A descriptor or list of descriptors to parse, containing the service to serve.
-   * @param {string} serviceName The fully qualified name of the service that provides this entities interface.
-   * @param {string} entityType The entity type name for all event source entities of this type. This will be prefixed
-   *                            onto the entityId when storing the events for this entity. Be aware that the
-   *                            chosen name must be stable through the entity lifecycle.  Never change it after deploying
-   *                            a service that stored data of this type
-   * @param {module:kalix.EventSourcedEntity~options=} options The options for this event sourced entity
-   */
-  constructor(desc, serviceName, entityType, options) {
-    /**
-     * @type {module:kalix.EventSourcedEntity~options}
-     */
-    this.options = {
-      ...{
-        entityType: entityType,
-        snapshotEvery: 100,
-        includeDirs: ['.'],
-        serializeAllowPrimitives: false,
-        serializeFallbackToJson: false,
-      },
-      ...options,
-    };
-    if (!entityType) throw Error('EntityType must contain a name');
 
-    const allIncludeDirs = protobufHelper.moduleIncludeDirs.concat(
-      this.options.includeDirs,
-    );
+/**
+ * @name module:kalix.EventSourcedEntity#options
+ * @type {module:kalix.EventSourcedEntity~options}
+ */
 
-    this.root = protobufHelper.loadSync(desc, allIncludeDirs);
+/**
+ * @name module:kalix.EventSourcedEntity#serviceName
+ * @type {string}
+ */
 
-    /**
-     * @type {string}
-     */
-    this.serviceName = serviceName;
+/**
+ * @name module:kalix.EventSourcedEntity#service
+ * @type {protobuf.Service}
+ */
 
-    // Eagerly lookup the service to fail early
-    /**
-     * @type {protobuf.Service}
-     */
-    this.service = this.root.lookupService(serviceName);
+/**
+ * Access to gRPC clients (with promisified unary methods).
+ *
+ * @name module:kalix.EventSourcedEntity#clients
+ * @type module:kalix.GrpcClientLookup
+ */
 
-    const packageDefinition = protoLoader.loadSync(desc, {
-      includeDirs: allIncludeDirs,
-    });
-    this.grpc = grpc.loadPackageDefinition(packageDefinition);
+/**
+ * @function module:kalix.EventSourcedEntity#componentType
+ * @return {string} event sourced entity component type.
+ */
 
-    /**
-     * Access to gRPC clients (with promisified unary methods).
-     *
-     * @type module:kalix.GrpcClientLookup
-     */
-    this.clients = GrpcUtil.clientCreators(this.root, this.grpc);
-  }
+/**
+ * Lookup a protobuf message type.
+ *
+ * This is provided as a convenience to lookup protobuf message types for use with events and snapshots.
+ *
+ * @function module:kalix.EventSourcedEntity#lookupType
+ * @param {string} messageType The fully qualified name of the type to lookup.
+ * @return {protobuf.Type} The protobuf message type.
+ */
 
-  /**
-   * @return {string} event sourced entity component type.
-   */
-  componentType() {
-    return eventSourcedEntityServices.componentType();
-  }
+/**
+ * The initial state callback.
+ *
+ * @name module:kalix.EventSourcedEntity#initial
+ * @type module:kalix.EventSourcedEntity~initialCallback
+ */
 
-  /**
-   * Lookup a protobuf message type.
-   *
-   * This is provided as a convenience to lookup protobuf message types for use with events and snapshots.
-   *
-   * @param {string} messageType The fully qualified name of the type to lookup.
-   * @return {protobuf.Type} The protobuf message type.
-   */
-  lookupType(messageType) {
-    return this.root.lookupType(messageType);
-  }
+/**
+ * Set the initial state callback.
+ *
+ * @function module:kalix.EventSourcedEntity#setInitial
+ * @param {module:kalix.EventSourcedEntity~initialCallback} callback The initial state callback.
+ * @return {module:kalix.EventSourcedEntity} This entity.
+ */
 
-  /**
-   * The initial state callback.
-   *
-   * @member module:kalix.EventSourcedEntity#initial
-   * @type module:kalix.EventSourcedEntity~initialCallback
-   */
+/**
+ * The behavior callback.
+ *
+ * @name module:kalix.EventSourcedEntity#behavior
+ * @type module:kalix.EventSourcedEntity~behaviorCallback
+ */
 
-  /**
-   * Set the initial state callback.
-   *
-   * @param {module:kalix.EventSourcedEntity~initialCallback} callback The initial state callback.
-   * @return {module:kalix.EventSourcedEntity} This entity.
-   */
-  setInitial(callback) {
-    this.initial = callback;
-    return this;
-  }
-
-  /**
-   * The behavior callback.
-   *
-   * @member module:kalix.EventSourcedEntity#behavior
-   * @type module:kalix.EventSourcedEntity~behaviorCallback
-   */
-
-  /**
-   * Set the behavior callback.
-   *
-   * @param {module:kalix.EventSourcedEntity~behaviorCallback} callback The behavior callback.
-   * @return {module:kalix.EventSourcedEntity} This entity.
-   */
-  setBehavior(callback) {
-    this.behavior = callback;
-    return this;
-  }
-
-  register(allComponents) {
-    eventSourcedEntityServices.addService(this, allComponents);
-    return eventSourcedEntityServices;
-  }
-}
-
-module.exports = EventSourcedEntity;
+/**
+ * Set the behavior callback.
+ *
+ * @function module:kalix.EventSourcedEntity#setBehavior
+ * @param {module:kalix.EventSourcedEntity~behaviorCallback} callback The behavior callback.
+ * @return {module:kalix.EventSourcedEntity} This entity.
+ */

@@ -82,7 +82,7 @@ export class MockValueEntity<S extends object> {
 
 /**
  * Generic mock CommandContext for any Kalix entity
- * @type { import("../lib/akkaserverless").CommandContext }
+ * @type { import("../lib/kalix").CommandContext }
  */
 export class MockCommandContext {
   effects: Array<any> = [];
@@ -119,7 +119,7 @@ export class MockCommandContext {
  * construct their own instance of this class, however for making assertions on
  * forwarding or emmitted effects you may provide your own.
  *
- * @type { import("../lib/akkaserverless").ValueEntityCommandContext<unknown> }
+ * @type { import("../lib/kalix").ValueEntityCommandContext<unknown> }
  */
 export class MockValueEntityCommandContext
   extends MockCommandContext

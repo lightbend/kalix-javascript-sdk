@@ -146,7 +146,7 @@ lazy val commonSettings =
            |
            |""".stripMargin)),
     // Publishing
-    publishTo := Some("Cloudsmith API".at("https://maven.cloudsmith.io/lightbend/akkaserverless/")),
+    publishTo := Some("Cloudsmith API".at("https://maven.cloudsmith.io/lightbend/kalix/")),
     pomIncludeRepository := { x => false },
     credentials += Credentials(
       "Cloudsmith API",

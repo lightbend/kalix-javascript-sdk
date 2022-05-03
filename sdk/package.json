@@ -4,8 +4,7 @@
   "description": "Kalix JavaScript SDK SDK",
   "keywords": [
     "kalix",
-    "serverless",
-    "akka serverless"
+    "serverless"
   ],
   "homepage": "https://github.com/lightbend/kalix-javascript-sdk",
   "bugs": {

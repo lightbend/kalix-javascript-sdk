@@ -17,15 +17,34 @@
 import * as protobufHelper from './protobuf-helper';
 import * as grpc from '@grpc/grpc-js';
 import * as protoLoader from '@grpc/proto-loader';
-import ActionSupport, { ActionCommandHandlers } from './action-support';
-import { GrpcClientLookup, GrpcUtil } from './grpc-util';
-import { ServiceMap } from './kalix';
+import ViewServices from './view-support';
+import { ComponentOptions, ServiceMap } from './kalix';
+import { Serializable } from './serializable';
+import { Metadata } from './metadata';
 
-const actionSupport = new ActionSupport();
+const viewServices = new ViewServices();
 
-export interface ActionOptions {
-  includeDirs?: string[];
-  forwardHeaders?: string[];
+namespace View {
+  export interface UpdateHandlerContext {
+    viewId: string;
+    eventSubject?: string;
+    commandName: string;
+    metadata: Metadata;
+  }
+
+  export type Handler = (
+    event: any,
+    state?: Serializable,
+    context?: UpdateHandlerContext,
+  ) => Serializable;
+
+  export type Handlers = {
+    [methodName: string]: Handler;
+  };
+
+  export interface Options extends ComponentOptions {
+    viewId?: string;
+  }
 }
 
 const defaultOptions = {
@@ -33,23 +52,27 @@ const defaultOptions = {
   forwardHeaders: [],
 };
 
-export default class Action {
-  readonly options: Required<ActionOptions>;
+class View {
+  readonly options: Required<View.Options>;
   readonly root: protobuf.Root;
   readonly serviceName: string;
   readonly service: protobuf.Service;
   readonly grpc: grpc.GrpcObject;
-  readonly clients: GrpcClientLookup;
-  commandHandlers: ActionCommandHandlers;
+  updateHandlers?: View.Handlers;
 
   constructor(
     desc: string | string[],
     serviceName: string,
-    options?: ActionOptions,
+    options?: View.Options,
   ) {
+    // default view id, name without package from service name
+    const defaultViewId = serviceName.split('.').pop() ?? serviceName;
+
     this.options = {
       ...defaultOptions,
+      ...{ viewId: defaultViewId },
       ...options,
+      ...{ entityType: options?.viewId ?? defaultViewId },
     };
 
     const allIncludeDirs = protobufHelper.moduleIncludeDirs.concat(
@@ -68,27 +91,25 @@ export default class Action {
     });
 
     this.grpc = grpc.loadPackageDefinition(packageDefinition);
-
-    this.clients = GrpcUtil.clientCreators(this.root, this.grpc);
-
-    this.commandHandlers = {};
   }
 
   componentType(): string {
-    return actionSupport.componentType();
+    return viewServices.componentType();
   }
 
   lookupType(messageType: string): protobuf.Type {
     return this.root.lookupType(messageType);
   }
 
-  setCommandHandlers(commandHandlers: ActionCommandHandlers): Action {
-    this.commandHandlers = commandHandlers;
+  setUpdateHandlers(handlers: View.Handlers): View {
+    this.updateHandlers = handlers;
     return this;
   }
 
-  register(allComponents: ServiceMap): ActionSupport {
-    actionSupport.addService(this, allComponents);
-    return actionSupport;
+  register(allComponents: ServiceMap): ViewServices {
+    viewServices.addService(this, allComponents);
+    return viewServices;
   }
 }
+
+export = View;

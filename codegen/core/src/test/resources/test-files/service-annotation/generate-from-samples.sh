@@ -5,9 +5,9 @@ IFS=$'\n\t'
 # Re-generates sample proto file descriptors from the source
 # Usage: ./generate-from-samples.sh /path/to/kalix-proxy
 
-if [ $# -lt 2 ]; then
+if [ $# -lt 1 ]; then
     echo "Required arguments not supplied"
-    echo "Usage: ./generate-from-samples.sh /path/to/kalix-proxy
+    echo "Usage: ./generate-from-samples.sh /path/to/kalix-proxy"
     exit 1
 fi
 

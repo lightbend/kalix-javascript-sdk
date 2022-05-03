@@ -117,7 +117,7 @@ export class MockValueEntity {
 
 /**
  * Generic mock CommandContext for any Kalix entity
- * @type { import("../lib/akkaserverless").CommandContext }
+ * @type { import("../lib/kalix").CommandContext }
  */
 export class MockCommandContext {
   effects = [];
@@ -154,7 +154,7 @@ export class MockCommandContext {
  * construct their own instance of this class, however for making assertions on
  * forwarding or emitted effects you may provide your own.
  *
- * @type { import("../lib/akkaserverless").EventSourcedCommandContext<unknown> }
+ * @type { import("../lib/kalix").EventSourcedCommandContext<unknown> }
  */
 export class MockEventSourcedCommandContext extends MockCommandContext {
   events = [];
@@ -171,7 +171,7 @@ export class MockEventSourcedCommandContext extends MockCommandContext {
  * construct their own instance of this class, however for making assertions on
  * forwarding or emitted effects you may provide your own.
  *
- * @type { import("../lib/akkaserverless").ValueEntityCommandContext<unknown> }
+ * @type { import("../lib/kalix").ValueEntityCommandContext<unknown> }
  */
 export class MockValueEntityCommandContext extends MockCommandContext {
   updatedState = undefined;

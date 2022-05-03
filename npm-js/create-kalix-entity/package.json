@@ -16,7 +16,7 @@
     "yargs": "^17.0.1"
   },
   "bin": {
-    "create-kalix-entity": ""
+    "create-kalix-entity": "create-kalix-entity.js"
   },
   "scripts": {
     "prepublishOnly": "npm version --no-git-tag-version $(../../sdk/bin/version.sh)"

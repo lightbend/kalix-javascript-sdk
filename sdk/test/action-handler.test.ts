@@ -640,7 +640,7 @@ describe('ActionHandler', () => {
       );
   });
 
-  it('should reply with Akkaserverless JSON for unary methods returning Any', () => {
+  it('should reply with Kalix JSON for unary methods returning Any', () => {
     let expectedReply = { arbitrary: 'object' };
     return callPublishJsonToTopic(
       createAction((_message: In) => {
