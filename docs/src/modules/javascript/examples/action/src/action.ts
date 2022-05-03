@@ -37,7 +37,7 @@ function processUnary(request: Request): replies.Reply {
 }
 
 function processStreamedIn(context: Action.StreamedInContext) {
-  let reply = replies.noReply();
+  let reply = replies.emptyReply();
   context.on("data", request => {
     const replyForThisRequest = createReplyForGroup(request.groups[0]);
     if (!replyForThisRequest.isEmpty()) {
@@ -82,7 +82,7 @@ function createReplies(request: Request): replies.Reply[] {
 }
 
 function createReplyForGroup(group: ProcessGroup): replies.Reply {
-  let reply = replies.noReply();
+  let reply = replies.emptyReply();
   group.steps?.forEach(step => {
     if (step.reply) {
       reply = replies.message(Response.create({ message: step.reply.message }));

@@ -241,11 +241,11 @@ export function failure(description: string, status?: GrpcStatus): Reply {
 /**
  * Create a reply that contains neither a message nor a forward nor a failure.
  *
- * This may be useful for emitting effects without sending a message.
+ * This may be useful for emitting effects while sending an empty message.
  *
  * @returns an empty reply
  */
-export function noReply(): Reply {
+export function emptyReply(): Reply {
   return new Reply();
 }
 

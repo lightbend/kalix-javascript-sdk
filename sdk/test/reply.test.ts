@@ -22,7 +22,7 @@ import { GrpcStatus } from '../src/kalix';
 
 describe('Replies', () => {
   it('should create an empty Reply', () => {
-    const reply = replies.noReply();
+    const reply = replies.emptyReply();
 
     expect(reply.isEmpty()).to.be.true;
     expect(reply.getMethod()).to.be.undefined;

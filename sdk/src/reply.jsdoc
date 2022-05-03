@@ -167,7 +167,7 @@
  *
  * This may be useful for emitting effects without sending a message.
  *
- * @function module:kalix.replies~noReply
+ * @function module:kalix.replies~emptyReply
  * @return {module:kalix.replies.Reply} An empty reply.
  */
 
