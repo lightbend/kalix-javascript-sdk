@@ -13,7 +13,7 @@ It's important to note that forwarded commands, and commands emitted as side eff
 
 If partial updates will cause problems, do not use forwarding and effects to update multiple entities at once. In this case emit an event that is (eventually) processed by all subscribers. 
 
-TIP: See the documentation on xref:topic-eventing.adoc[Publishing and subscribing].
+TIP: See the documentation on xref:actions-publishing-subscribing.adoc[Publishing and subscribing].
 
 ====
 

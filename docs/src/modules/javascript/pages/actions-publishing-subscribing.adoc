@@ -1,0 +1,94 @@
+include::ROOT:partial$include.adoc[]
+
+= Publishing and Subscribing with Actions
+
+A very common use case when building Microservices is to publish and subscribe to a stream of events. The source of events can be the journal of an event sourced entity, the value entity state changes, a https://cloud.google.com/pubsub/docs/overview[Google Cloud Pub/Sub] or Apache Kafka topic for asynchronous messaging between services.
+
+With Actions you can:
+
+- subscribe to events emitted by an event sourced entity within the same service.
+- subscribe to state changes emitted by a value entity within the same service.
+- subscribe to external events from https://cloud.google.com/pubsub/docs/overview[Google Cloud Pub/Sub] or Apache Kafka.
+- publish events to a Google Cloud Pub/Sub or Apache Kafka topic.
+
+Messages are guaranteed to be delivered at least once. This means that receivers must be able to handle duplicate messages.
+
+== Publishing Entity events to a Topic
+
+The Event Sourced Entity journal contains events that capture all state changes. By subscribing to the journal, with the Event Sourced Entity type name, another component can receive all events emitted of that type.
+
+.Use case: send asynchronous messages
+****
+By combining the processing of a journal with publishing to topics (see below), a service can trigger other services asynchronously via messaging.
+To achieve this, create an xref:actions.adoc[Action] that subscribes to a journal and publishes messages to a topic.
+****
+
+.Use case: external calls
+****
+A service might need to trigger other systems when certain events happened to an Entity. An Action can be connected to the Entity's journal and react on certain events to issue calls (eg. via HTTP or gRPC).
+To achieve this, create an xref:actions.adoc[Action] that subscribes to a journal and let the implementation call other services.
+****
+
+== Subscribing to state changes from a Value Entity
+
+To subscribe to an Event Sourced Entity log, define Protobuf rpc methods for each Journal event that you want to receive. Annotate these methods with the `(kalix.method).eventing` annotation and specify the Entity type name of the Event Sourced Entity.
+
+[source,protobuf,indent=0]
+----
+include::example$eventing-shopping-cart/proto/product/to_product_popularity.proto[tag=subscribing]
+----
+<1> create rpc methods for all Protobuf types in the journal
+<2> annotate the methods with `(kalix.method).eventing`
+<3> specify the Event Sourced Entity's type name as journal source
+
+There is nothing specific required in the implementation of these methods. The implementation usually is an Action that forwards a converted message to a different component (e.g. an Event Sourced Entity).
+
+== Subscribing to a Topic
+
+It's also possible to subscribe to a Pub/Sub topic. To receive messages from a Pub/Sub topic, annotate a service method in the Protobuf service definition with the `option (kalix.method).eventing.in` annotation and specify the topic name in the `topic` section of the annotation.
+
+include::partial$pubsub-note.adoc[]
+
+[source,protobuf,indent=0]
+----
+include::example$eventing-shopping-cart/proto/cart/shopping_cart_analytics.proto[tag=subscribing]
+----
+<1> annotate the Protobuf rpc method with `(kalix.method).eventing`
+<2> use `in` and `topic` to subscribe to a topic
+
+There is nothing specific required in the implementation of `ProcessAdded`. The implementation will in most cases be an Action and forward a converted message to a different component (eg. an Event Sourced Entity).
+
+== Receiving messages from an external Topic
+
+In the example above, we consumed Protobuf messages from a topic that we control ourselves. When consuming an external topic, it's very likely that the message format is not under your control and is not known by Kalix.
+
+In such case, the Action definition should receive a type depending on the type of the message payload. See xref:javascript:serialization.adoc[Handling Serialization] for more information on how to deal with data formats.
+
+== Subscribing and acting upon
+
+Another possible usage for Actions is to consume events and act upon.
+
+For example, you may consume events from one entity or from a topic, transform to commands and send to an another entity or an external system. This is similar to the usage explained in xref:forwarding.adoc[Forwarding and effects], except that the Action is driven by the flow of incoming events instead of external user requests.
+
+For that purpose, it's enough to add the `(kalix.method).eventing.in` and omit the `(kalix.method).eventing.out`.
+
+== Accessing the Entity ID
+
+For many use cases, a subscriber to an event log will trigger other services and needs to pass the entity ID to the receiver. The events of an Event Sourced entity, by design, do not include the entity ID, but it is made available to the subscriber via the CloudEvent metadata field `subject`, via the ActionContext and the CloudEvent metadata:
+
+[source]
+
+----
+context.metadata().asCloudEvent().subject()
+----
+
+== Ignoring events
+
+When listening to an event log, **all** events emitted by the Event Sourced entity must be matched by a Protobuf service method. In case your component is interested only in certain events, you may declare a method to receive all events that are not received by the other methods.
+
+[source,protobuf,indent=2]
+----
+include::example$eventing-shopping-cart/proto/product/to_product_popularity.proto[tag=catchOthers]
+----
+
+The corresponding implementation must exist in the component.

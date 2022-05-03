@@ -54,8 +54,7 @@ For more details and examples take a look at the following topics:
 * xref:javascript:value-entity.adoc[Implementing Value Entities]
 * xref:javascript:eventsourced.adoc[Implementing Event Sourced Entities]
 * xref:javascript:replicated-entity.adoc[Implementing Replicated Entities]
-* xref:javascript:entity-eventing.adoc[Subscribing to a journal]
-* xref:javascript:topic-eventing.adoc[Publishing and subscribing to topics on a broker]
+* xref:javascript:actions-publishing-subscribing.adoc[Publishing and Subscribing with Actions]
 
 [#_create_unit_tests]
 == Create unit tests
