@@ -29,7 +29,7 @@ A service might need to trigger other systems when certain events happened to an
 To achieve this, create an xref:actions.adoc[Action] that subscribes to a journal and let the implementation call other services.
 ****
 
-== Subscribing to state changes from a Value Entity
+== Subscribing to state changes from an Entity
 
 To subscribe to an Event Sourced Entity log, define Protobuf rpc methods for each Journal event that you want to receive. Annotate these methods with the `(kalix.method).eventing` annotation and specify the Entity type name of the Event Sourced Entity.
 
