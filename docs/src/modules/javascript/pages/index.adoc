@@ -140,6 +140,6 @@ This section includes information on the following topics:
 * xref:javascript:value-entity.adoc[]
 * xref:javascript:views.adoc[]
 * xref:forwarding.adoc[Forwarding and effects]
-* xref:javascript:topic-eventing.adoc[]
+* xref:javascript:actions-publishing-subscribing.adoc[]
 * xref:serialization.adoc[Serialization]
 * link:{attachmentsdir}/api/index.html[JavaScript API docs{tab-icon}, window="new"]
