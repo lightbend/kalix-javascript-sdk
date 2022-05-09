@@ -15,9 +15,9 @@
  */
 
 const should = require('chai').should();
-import protobuf from 'protobufjs';
-import path from 'path';
-import ReplicatedSet from '../../src/replicated-data/set';
+import * as protobuf from 'protobufjs';
+import * as path from 'path';
+import { ReplicatedSet } from '../../src/replicated-data/set';
 import AnySupport from '../../src/protobuf-any';
 import * as proto from '../proto/protobuf-bundle';
 

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import util from 'util';
+import * as util from 'util';
 import { ReplicatedData } from '.';
 import AnySupport, { Comparable } from '../protobuf-any';
 import { Serializable } from '../serializable';
@@ -22,6 +22,7 @@ import * as proto from '../../proto/protobuf-bundle';
 
 const debug = require('debug')('kalix-replicated-entity');
 
+/** @internal */
 namespace protocol {
   export type Any = proto.google.protobuf.IAny;
 
@@ -29,11 +30,24 @@ namespace protocol {
     proto.kalix.component.replicatedentity.IReplicatedEntityDelta;
 }
 
-namespace ReplicatedSet {
+/** @public */
+export namespace ReplicatedSet {
+  /**
+   * Callback for handling elements iterated through by {@link ReplicatedSet.forEach}.
+   *
+   * @param element - The element
+   */
   export type ForEachCallback = (element: Serializable) => void;
 }
 
-class ReplicatedSet implements ReplicatedData, Iterable<Serializable> {
+/**
+ * A Replicated Set data type.
+ *
+ * A ReplicatedSet is a set of {@link Serializable} values. Elements can be added and removed.
+ *
+ * @public
+ */
+export class ReplicatedSet implements ReplicatedData, Iterable<Serializable> {
   // Map of a comparable form (that compares correctly using ===) of the elements to the elements
   private currentValue = new Map<Comparable, Serializable>();
   private delta = {
@@ -42,26 +56,56 @@ class ReplicatedSet implements ReplicatedData, Iterable<Serializable> {
     cleared: false,
   };
 
+  /**
+   * Does this set contain the given element?
+   *
+   * @param element - The element to check
+   * @returns True if the set contains the element
+   */
   has = (element: Serializable): boolean => {
     return this.currentValue.has(AnySupport.toComparable(element));
   };
 
+  /**
+   * The number of elements in this set.
+   */
   get size(): number {
     return this.currentValue.size;
   }
 
+  /**
+   * Execute the given callback for each element.
+   *
+   * @param callback - The callback to handle each element
+   */
   forEach = (callback: ReplicatedSet.ForEachCallback): void => {
     return this.currentValue.forEach((value, _key) => callback(value));
   };
 
+  /**
+   * Create an iterator for this set.
+   *
+   * @returns iterator of elements
+   */
   [Symbol.iterator] = (): Iterator<Serializable> => {
     return this.currentValue.values();
   };
 
+  /**
+   * Get a copy of the current elements as a Set.
+   *
+   * @returns Set of elements
+   */
   elements = (): Set<Serializable> => {
     return new Set(this.currentValue.values());
   };
 
+  /**
+   * Add an element to this set.
+   *
+   * @param element - The element to add
+   * @returns This set
+   */
   add = (element: Serializable): ReplicatedSet => {
     const comparable = AnySupport.toComparable(element);
     if (!this.currentValue.has(comparable)) {
@@ -76,6 +120,12 @@ class ReplicatedSet implements ReplicatedData, Iterable<Serializable> {
     return this;
   };
 
+  /**
+   * Add multiple elements to this set.
+   *
+   * @param elements - The elements to add
+   * @returns This set
+   */
   addAll = (elements: Iterable<Serializable>): ReplicatedSet => {
     for (const element of elements) {
       this.add(element);
@@ -83,6 +133,12 @@ class ReplicatedSet implements ReplicatedData, Iterable<Serializable> {
     return this;
   };
 
+  /**
+   * Remove an element from this set.
+   *
+   * @param element - The element to delete
+   * @returns This set
+   */
   delete = (element: Serializable): ReplicatedSet => {
     const comparable = AnySupport.toComparable(element);
     if (this.currentValue.has(comparable)) {
@@ -101,6 +157,11 @@ class ReplicatedSet implements ReplicatedData, Iterable<Serializable> {
     return this;
   };
 
+  /**
+   * Remove all elements from this set.
+   *
+   * @returns This set
+   */
   clear = (): ReplicatedSet => {
     if (this.currentValue.size > 0) {
       this.delta.cleared = true;
@@ -111,6 +172,7 @@ class ReplicatedSet implements ReplicatedData, Iterable<Serializable> {
     return this;
   };
 
+  /** @internal */
   getAndResetDelta = (initial?: boolean): protocol.Delta | null => {
     if (
       this.delta.cleared ||
@@ -134,6 +196,7 @@ class ReplicatedSet implements ReplicatedData, Iterable<Serializable> {
     }
   };
 
+  /** @internal */
   applyDelta = (delta: protocol.Delta, anySupport: AnySupport): void => {
     if (!delta.replicatedSet) {
       throw new Error(
@@ -177,5 +240,3 @@ class ReplicatedSet implements ReplicatedData, Iterable<Serializable> {
     return `ReplicatedSet(${Array.from(this.currentValue).join(',')})`;
   };
 }
-
-export = ReplicatedSet;

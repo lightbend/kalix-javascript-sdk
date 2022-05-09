@@ -15,9 +15,9 @@
  */
 
 const should = require('chai').should();
-import protobuf from 'protobufjs';
-import path from 'path';
-import Long from 'long';
+import * as protobuf from 'protobufjs';
+import * as path from 'path';
+import * as Long from 'long';
 import * as grpc from '@grpc/grpc-js';
 import * as replicatedData from '../src/replicated-data';
 import AnySupport from '../src/protobuf-any';

@@ -14,41 +14,67 @@
  * limitations under the License.
  */
 
-import util from 'util';
+import * as util from 'util';
 import { ReplicatedData } from '.';
 import * as proto from '../../proto/protobuf-bundle';
 
+/** @internal */
 namespace protocol {
   export type Delta =
     proto.kalix.component.replicatedentity.IReplicatedEntityDelta;
 }
 
-class Vote implements ReplicatedData {
+/**
+ * A Vote Replicated Data type.
+ *
+ * A Vote Replicated Data type allows all nodes an a cluster to vote on a condition, such as whether a user is online.
+ *
+ * @public
+ */
+export class Vote implements ReplicatedData {
   private currentSelfVote = false;
   private currentVotesFor = 0;
   private currentTotalVoters = 1;
   private delta: boolean | null = null;
 
+  /**
+   * The number of nodes that have voted for this condition.
+   */
   get votesFor(): number {
     return this.currentVotesFor;
   }
 
+  /**
+   * The total number of nodes that have voted.
+   */
   get totalVoters(): number {
     return this.currentTotalVoters;
   }
 
+  /**
+   * Whether at least one node has voted for this condition.
+   */
   get atLeastOne(): boolean {
     return this.currentVotesFor > 0;
   }
 
+  /**
+   * Whether a majority of nodes have voted for this condition.
+   */
   get majority(): boolean {
     return this.currentVotesFor > this.currentTotalVoters / 2;
   }
 
+  /**
+   * Whether all of nodes have voted for this condition.
+   */
   get all(): boolean {
     return this.currentVotesFor === this.currentTotalVoters;
   }
 
+  /**
+   * Get or set the current node's vote.
+   */
   get vote(): boolean {
     return this.currentSelfVote;
   }
@@ -65,6 +91,7 @@ class Vote implements ReplicatedData {
     }
   }
 
+  /** @internal */
   getAndResetDelta = (initial?: boolean): protocol.Delta | null => {
     if (initial) {
       this.delta = this.currentSelfVote;
@@ -82,6 +109,7 @@ class Vote implements ReplicatedData {
     }
   };
 
+  /** @internal */
   applyDelta = (delta: protocol.Delta): void => {
     if (!delta.vote) {
       throw new Error(util.format('Cannot apply delta %o to Vote', delta));
@@ -95,5 +123,3 @@ class Vote implements ReplicatedData {
     return `Vote(${this.currentSelfVote})`;
   };
 }
-
-export = Vote;

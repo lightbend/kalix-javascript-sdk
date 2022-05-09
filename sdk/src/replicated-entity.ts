@@ -17,25 +17,73 @@
 import * as protobufHelper from './protobuf-helper';
 import * as grpc from '@grpc/grpc-js';
 import * as protoLoader from '@grpc/proto-loader';
-import * as replicatedData from './replicated-data';
+import { ReplicatedData } from './replicated-data';
 import { ReplicatedEntityServices } from './replicated-entity-support';
 import { GrpcClientLookup, GrpcUtil } from './grpc-util';
-import { EntityOptions, ReplicatedWriteConsistency, ServiceMap } from './kalix';
+import {
+  Entity,
+  EntityOptions,
+  ReplicatedWriteConsistency,
+  ServiceMap,
+} from './kalix';
 import { CommandContext, EntityContext, UserReply } from './command';
+
+export { ReplicatedData };
+
+export {
+  ReplicatedCounter,
+  ReplicatedSet,
+  ReplicatedRegister,
+  ReplicatedMap,
+  ReplicatedCounterMap,
+  ReplicatedRegisterMap,
+  ReplicatedMultiMap,
+  Vote,
+  Clock,
+  Clocks,
+} from './replicated-data';
 
 const replicatedEntityServices = new ReplicatedEntityServices();
 
+/**
+ * Context for a Replicated Entity command handler.
+ *
+ * @public
+ */
+export interface ReplicatedEntityCommandContext
+  extends StateManagementContext,
+    CommandContext,
+    EntityContext {}
+
+/**
+ * Context that allows managing a Replicated Entity's state.
+ *
+ * @public
+ */
+export interface StateManagementContext {
+  /**
+   * The Replicated Data state for a Replicated Entity.
+   *
+   * @remarks
+   * It may only be set once, if it's already set, an error will be thrown.
+   */
+  state: ReplicatedData;
+
+  /**
+   * Delete this Replicated Entity.
+   */
+  delete(): void;
+}
+
+/** @public */
 export namespace ReplicatedEntity {
-  export interface ReplicatedEntityCommandContext
-    extends StateManagementContext,
-      CommandContext,
-      EntityContext {}
-
-  export interface StateManagementContext {
-    state: replicatedData.ReplicatedData;
-    delete(): void;
-  }
-
+  /**
+   * A command handler callback.
+   *
+   * @param command - The command message, this will be of the type of the gRPC service call input type
+   * @param context - The command context
+   * @returns The message to reply with, which must match the gRPC service call output type for this command.
+   */
   export type CommandHandler = (
     command: any,
     context: ReplicatedEntityCommandContext,
@@ -45,13 +93,35 @@ export namespace ReplicatedEntity {
     [commandName: string]: CommandHandler;
   };
 
+  /**
+   * A state set handler callback.
+   *
+   * @remarks
+   *
+   * This is invoked whenever a new state is set on the Replicated Entity, to allow the state to be
+   * enriched with domain specific properties and methods. This may be due to the state being set
+   * explicitly from a command handler on the command context, or implicitly as the default value,
+   * or implicitly when a new state is received from the proxy.
+   *
+   * @param state - The Replicated Data state that was set
+   * @param entityId - The id of the entity
+   */
   export type OnStateSetCallback = (
-    state: replicatedData.ReplicatedData,
+    state: ReplicatedData,
     entityId: string,
   ) => void;
 
+  /**
+   * A callback that is invoked to create a default value if the Kalix proxy doesn't send an existing one.
+   *
+   * @param entityId - The id of the entity
+   * @returns The default value to use for this entity
+   */
   export type DefaultValueCallback = (entityId: string) => any;
 
+  /**
+   * Options for creating a Replicated Entity.
+   */
   export interface Options extends EntityOptions {}
 }
 
@@ -62,17 +132,54 @@ const defaultOptions = {
   replicatedWriteConsistency: ReplicatedWriteConsistency.LOCAL,
 };
 
-export class ReplicatedEntity {
-  readonly options: Required<ReplicatedEntity.Options>;
-  readonly root: protobuf.Root;
+/**
+ * Replicated Entity.
+ *
+ * @public
+ */
+export class ReplicatedEntity implements Entity {
   readonly serviceName: string;
   readonly service: protobuf.Service;
-  readonly grpc: grpc.GrpcObject;
+  readonly options: Required<ReplicatedEntity.Options>;
   readonly clients: GrpcClientLookup;
+
+  /** @internal */ readonly root: protobuf.Root;
+  /** @internal */ readonly grpc: grpc.GrpcObject;
+
+  /**
+   * The command handlers.
+   *
+   * @remarks
+   * The names of the properties must match the names of the service calls specified in the gRPC descriptor for this
+   * Replicated Entity service.
+   */
   commandHandlers: ReplicatedEntity.CommandHandlers;
+
+  /**
+   * A callback that is invoked whenever the Replicated Data state is set for this Replicated Entity.
+   *
+   * @remarks
+   *
+   * This is invoked whenever a new Replicated Data state is set on the Replicated Entity, to allow the state to be
+   * enriched with domain specific properties and methods. This may be due to the state being set explicitly from a
+   * command handler on the command context, or implicitly as the default value, or implicitly when a new state is
+   * received from the proxy.
+   */
   onStateSet: ReplicatedEntity.OnStateSetCallback;
+
+  /**
+   * A callback that is invoked to create a default value if the Kalix proxy doesn't send an existing one.
+   */
   defaultValue: ReplicatedEntity.DefaultValueCallback;
 
+  /**
+   * Create a Replicated Entity.
+   *
+   * @param desc - The file name of a protobuf descriptor or set of descriptors containing the Replicated Entity service
+   * @param serviceName - The fully qualified name of the gRPC service that this Replicated Entity implements
+   * @param entityType - The entity type name, used to namespace entities of different Replicated Data types in the same service
+   * @param options - The options for this entity
+   */
   constructor(
     desc: string | string[],
     serviceName: string,
@@ -113,6 +220,7 @@ export class ReplicatedEntity {
     this.defaultValue = (_entityId) => null;
   }
 
+  /** @internal */
   componentType(): string {
     return replicatedEntityServices.componentType();
   }
@@ -121,22 +229,9 @@ export class ReplicatedEntity {
     return this.root.lookupType(messageType);
   }
 
+  /** @internal */
   register(allComponents: ServiceMap) {
     replicatedEntityServices.addService(this, allComponents);
     return replicatedEntityServices;
   }
 }
-
-// retain old export approach for now
-export const exported = {
-  ReplicatedEntity: ReplicatedEntity,
-  ReplicatedCounter: replicatedData.ReplicatedCounter,
-  ReplicatedSet: replicatedData.ReplicatedSet,
-  ReplicatedRegister: replicatedData.ReplicatedRegister,
-  ReplicatedMap: replicatedData.ReplicatedMap,
-  ReplicatedCounterMap: replicatedData.ReplicatedCounterMap,
-  ReplicatedRegisterMap: replicatedData.ReplicatedRegisterMap,
-  ReplicatedMultiMap: replicatedData.ReplicatedMultiMap,
-  Vote: replicatedData.Vote,
-  Clocks: replicatedData.Clocks,
-};

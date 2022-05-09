@@ -16,12 +16,12 @@
 
 import { Method } from 'protobufjs';
 import { Metadata } from './metadata';
-import { GrpcStatus } from './kalix';
-
-// Note that there is a parallel reply.jsdoc that needs to be changed for API changes here to be visible
+import { GrpcStatus } from './grpc-status';
 
 /**
  * Side effect for a reply.
+ *
+ * @public
  */
 export class Effect {
   /**
@@ -40,6 +40,8 @@ export class Effect {
 
 /**
  * A return type to allow returning forwards or failures, and attaching effects to messages.
+ *
+ * @public
  */
 export class Reply {
   constructor(
@@ -195,6 +197,8 @@ export class Reply {
  * @param message - the message to reply with
  * @param metadata - optional metadata to pass with the reply
  * @returns a message reply
+ *
+ * @public
  */
 export function message(
   message: any,
@@ -211,6 +215,8 @@ export function message(
  * @param message - the message to forward
  * @param metadata -  optional metadata to pass with the forwarded message
  * @returns a forward reply
+ *
+ * @public
  */
 export function forward(
   method: protobuf.Method,
@@ -231,7 +237,9 @@ export function forward(
  *
  * @param description - description of the failure
  * @param status - the GRPC status, defaults to Unknown
- * @return a failure reply
+ * @returns a failure reply
+ *
+ * @public
  */
 export function failure(description: string, status?: GrpcStatus): Reply {
   const reply = new Reply().setFailure(description, status);
@@ -244,11 +252,14 @@ export function failure(description: string, status?: GrpcStatus): Reply {
  * This may be useful for emitting effects while sending an empty message.
  *
  * @returns an empty reply
+ *
+ * @public
  */
 export function emptyReply(): Reply {
   return new Reply();
 }
 
+/** @public */
 export class Failure {
   constructor(private description: string, private status?: GrpcStatus) {
     if (status !== undefined) {

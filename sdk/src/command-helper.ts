@@ -24,13 +24,15 @@ import {
 import { ContextFailure } from './context-failure';
 import { EffectMethod } from './effect';
 import EffectSerializer from './effect-serializer';
-import { GrpcStatus, ServiceMap } from './kalix';
-import Long from 'long';
+import { ServiceMap } from './kalix';
+import { GrpcStatus } from './grpc-status';
+import * as Long from 'long';
 import { Metadata } from './metadata';
 import { Reply } from './reply';
-import grpc from '@grpc/grpc-js';
+import * as grpc from '@grpc/grpc-js';
 import * as proto from '../proto/protobuf-bundle';
 
+/** @internal */
 namespace protocol {
   export type EntityCommand = proto.kalix.component.entity.ICommand;
   export type EntityStreamOut =
@@ -40,11 +42,8 @@ namespace protocol {
   export type Failure = proto.kalix.component.IFailure;
 }
 
-/**
- * Creates the base for context objects.
- * @private
- */
-class CommandHelper {
+/** @internal */
+export default class CommandHelper {
   private entityId: string;
   private service: protobuf.Service;
   private streamId: string;
@@ -71,12 +70,6 @@ class CommandHelper {
     this.handlerFactory = handlerFactory;
   }
 
-  /**
-   * Handle a command.
-   *
-   * @param command The command to handle.
-   * @private
-   */
   async handleCommand(command: protocol.EntityCommand): Promise<void> {
     try {
       const reply = await this.handleCommandLogic(command);
@@ -418,7 +411,7 @@ class CommandHelper {
           accessor.ensureActive();
           if (!internalCall)
             console.warn(
-              "WARNING: Command context 'forward' is deprecated. Please use 'ReplyFactory.forward' instead.",
+              "WARNING: Command context 'forward' is deprecated. Please use 'replies.forward' instead.",
             );
           accessor.forward = this.effectSerializer.serializeForward(
             method,
@@ -440,5 +433,3 @@ class CommandHelper {
     return accessor;
   }
 }
-
-export = CommandHelper;

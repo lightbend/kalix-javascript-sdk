@@ -15,19 +15,21 @@
  */
 
 import { ServiceMap } from './kalix';
-import protobuf from 'protobufjs';
+import * as protobuf from 'protobufjs';
 import AnySupport from './protobuf-any';
-import util from 'util';
+import * as util from 'util';
 import { EffectMethod } from './effect';
 import { Metadata } from './metadata';
 import * as proto from '../proto/protobuf-bundle';
 
+/** @internal */
 namespace protocol {
   export type Forward = proto.kalix.component.IForward;
   export type SideEffect = proto.kalix.component.ISideEffect;
 }
 
-class EffectSerializer {
+/** @internal */
+export default class EffectSerializer {
   private services: ServiceMap;
 
   constructor(services: ServiceMap) {
@@ -140,5 +142,3 @@ class EffectSerializer {
     return effect;
   }
 }
-
-export = EffectSerializer;

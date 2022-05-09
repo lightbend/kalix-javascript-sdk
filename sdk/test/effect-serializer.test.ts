@@ -16,8 +16,8 @@
 
 import { should as chaiShould } from 'chai';
 import EffectSerializer from '../src/effect-serializer';
-import protobuf from 'protobufjs';
-import path from 'path';
+import * as protobuf from 'protobufjs';
+import * as path from 'path';
 
 const should = chaiShould();
 const root = new protobuf.Root();

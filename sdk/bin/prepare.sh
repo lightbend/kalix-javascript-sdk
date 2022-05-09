@@ -36,16 +36,3 @@ fi
 
 # Compile protobuf
 ./bin/compile-protobuf.sh
-
-# Generate TS type definitions based on the JSDocs
-echo "Generating TS type definitions based on JSDocs"
-cp index.d.preamble.ts index.d.ts
-jsdoc -t ./node_modules/@lightbend/tsd-jsdoc/dist -c ./jsdoc.json -d .
-cat types.d.ts >> index.d.ts && rm -f types.d.ts
-echo "Applying search-replace to generated TS to fix 'module:' entries"
-# There replacements are quite dirty, but even the patched tsd-jsdoc generator can't deal with these (mostly module related) issues currently
-perl -i -pe 's/declare module \"kalix\"/declare module \"\@kalix-io\/kalix-javascript-sdk\"/g' index.d.ts
-perl -i -pe 's/module:kalix\.//g' index.d.ts
-perl -i -pe 's/import\("kalix"\).([a-zA-Z]*)/$1/g' index.d.ts
-perl -i -pe 's/import\("kalix\.([a-zA-Z.|]*)\"\).(?!default\W)([a-zA-Z]*)/$1.$2/g' index.d.ts
-perl -i -pe 's/import\("kalix\.([a-zA-Z.|]*)\"\).default/$1/g' index.d.ts

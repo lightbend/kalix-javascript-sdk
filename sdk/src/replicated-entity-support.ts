@@ -14,20 +14,24 @@
  * limitations under the License.
  */
 
-import path from 'path';
-import util from 'util';
+import * as path from 'path';
+import * as util from 'util';
 import * as grpc from '@grpc/grpc-js';
 import * as protoLoader from '@grpc/proto-loader';
 import AnySupport from './protobuf-any';
 import { CommandHandler, InternalContext } from './command';
 import CommandHelper from './command-helper';
 import * as replicatedData from './replicated-data';
-import { ReplicatedEntity } from './replicated-entity';
+import {
+  ReplicatedEntity,
+  ReplicatedEntityCommandContext,
+} from './replicated-entity';
 import { ServiceMap } from './kalix';
 import * as proto from '../proto/protobuf-bundle';
 
 const debug = require('debug')('kalix-replicated-entity');
 
+/** @internal */
 namespace protocol {
   export type StreamIn =
     proto.kalix.component.replicatedentity.IReplicatedEntityStreamIn;
@@ -51,20 +55,23 @@ namespace protocol {
   export type Call = grpc.ServerDuplexStream<StreamIn, StreamOut>;
 }
 
+/** @internal */
 interface ReplicatedEntityHandlers {
   commandHandlers: ReplicatedEntity.CommandHandlers;
   onStateSet: ReplicatedEntity.OnStateSetCallback;
   defaultValue: ReplicatedEntity.DefaultValueCallback;
 }
 
+/** @internal */
 interface InternalReplicatedEntityContext extends InternalContext {
-  context: ReplicatedEntity.ReplicatedEntityCommandContext;
+  context: ReplicatedEntityCommandContext;
   deleted: boolean;
   noState: boolean;
   defaultValue: boolean;
   reply: protocol.Reply;
 }
 
+/** @internal */
 export class ReplicatedEntityServices {
   private services: { [serviceName: string]: ReplicatedEntitySupport };
 
@@ -184,6 +191,7 @@ export class ReplicatedEntityServices {
   }
 }
 
+/** @internal */
 export class ReplicatedEntitySupport {
   readonly root: protobuf.Root;
   readonly service: protobuf.Service;
@@ -218,9 +226,7 @@ export class ReplicatedEntitySupport {
   }
 }
 
-/*
- * Handler for a single Replicated Entity.
- */
+/** @internal */
 export class ReplicatedEntityHandler {
   private entity: ReplicatedEntitySupport;
   private call: protocol.Call;

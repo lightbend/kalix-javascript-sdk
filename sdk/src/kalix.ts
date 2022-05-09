@@ -22,6 +22,7 @@ import * as discovery from '../proto/kalix/protocol/discovery_pb';
 import * as discovery_grpc from '../proto/kalix/protocol/discovery_grpc_pb';
 import * as google_protobuf_empty_pb from 'google-protobuf/google/protobuf/empty_pb';
 import { PackageInfo } from './package-info';
+import { GrpcClientLookup } from './grpc-util';
 
 function loadJson(filename: string) {
   return JSON.parse(fs.readFileSync(filename).toString());
@@ -29,23 +30,37 @@ function loadJson(filename: string) {
 
 const userPkgJson = path.join(process.cwd(), 'package.json');
 
+/**
+ * Options for the Kalix user function.
+ *
+ * @public
+ */
 export interface KalixOptions {
   /**
-   * The name of this service (defaults to name from package.json).
+   * The name of this service.
+   *
+   * @defaultValue Defaults to name from `package.json`
    */
   serviceName?: string;
+
   /**
-   * The version of this service (defaults to version from package.json).
+   * The version of this service.
+   *
+   * @defaultValue Defaults to version from `package.json`
    */
   serviceVersion?: string;
+
   /**
-   * Path to a Protobuf FileDescriptor set, as output by protoc --descriptor_set_out=somefile.desc.
+   * Path to a Protobuf FileDescriptor set, as output by protoc `--descriptor_set_out=somefile.desc`.
    * This file must contain all of the component services that this Kalix service serves.
    * See the `compile-descriptor` command for creating this file.
+   *
+   * @defaultValue `"user-function.desc"`
    */
   descriptorSetPath?: string;
 }
 
+/** @internal */
 class ServiceInfo {
   readonly name: string;
   readonly version: string;
@@ -67,7 +82,12 @@ class ServiceInfo {
   }
 }
 
-interface ServiceBinding {
+/**
+ * Service binding with address and port.
+ *
+ * @public
+ */
+export interface ServiceBinding {
   /**
    * The address to bind the Kalix service to.
    */
@@ -78,15 +98,29 @@ interface ServiceBinding {
   port?: number;
 }
 
-export interface ComponentService {
+/** @internal */
+export interface ComponentServices {
   componentType: () => string;
   register: (server: grpc.Server) => void;
 }
 
+/**
+ * Entity passivation strategy.
+ *
+ * @public
+ */
 export interface EntityPassivationStrategy {
+  /**
+   * Passivation timeout (in milliseconds).
+   */
   timeout?: number;
 }
 
+/**
+ * Replicated write consistency setting for replicated entities.
+ *
+ * @public
+ */
 export enum ReplicatedWriteConsistency {
   /**
    * Updates will only be written to the local replica immediately, and then asynchronously
@@ -104,58 +138,144 @@ export enum ReplicatedWriteConsistency {
   ALL,
 }
 
+/**
+ * Options for a {@link Component}.
+ *
+ * @public
+ */
 export interface ComponentOptions {
-  includeDirs?: Array<string>;
-  forwardHeaders?: Array<string>;
+  /**
+   * The entity type name for all entities of this type.
+   */
   entityType?: string;
+
+  /**
+   * The directories to include when looking up imported protobuf files.
+   *
+   * @defaultValue Defaults to the current directory `['.']`
+   */
+  includeDirs?: Array<string>;
+
+  /**
+   * Request headers to be forwarded as metadata to the component.
+   *
+   * @defaultValue Empty `[]`
+   */
+  forwardHeaders?: Array<string>;
 }
 
-export interface EntityOptions {
-  entityType: string;
-  includeDirs?: Array<string>;
+/**
+ * Options for an {@link Entity}.
+ *
+ * @public
+ */
+export interface EntityOptions extends ComponentOptions {
+  /**
+   * Entity passivation strategy to use.
+   */
   entityPassivationStrategy?: EntityPassivationStrategy;
-  forwardHeaders?: Array<string>;
   replicatedWriteConsistency?: ReplicatedWriteConsistency;
 }
 
+/**
+ * Kalix Component.
+ *
+ * @public
+ */
 export interface Component {
+  /**
+   * The gRPC service name for this component.
+   */
   serviceName: string;
-  desc?: string | string[];
-  service?: protobuf.Service;
+
+  /**
+   * The protobuf Service for this component.
+   */
+  service: protobuf.Service;
+
+  /**
+   * Options for this component.
+   */
   options: ComponentOptions | EntityOptions;
-  grpc?: grpc.GrpcObject;
-  componentType: () => string;
-  register?: (components: any) => ComponentService;
+
+  /**
+   * The loaded gRPC object for the protobuf definitions.
+   *
+   * @internal
+   */
+  grpc: grpc.GrpcObject;
+
+  /**
+   * Access to gRPC clients (with promisified unary methods).
+   */
+  clients?: GrpcClientLookup;
+
+  /**
+   * The component type.
+   *
+   * @internal
+   */
+  componentType(): string;
+
+  /**
+   * Lookup a protobuf message type.
+   *
+   * This is provided as a convenience to lookup protobuf message types.
+   *
+   * @param messageType - The fully qualified name of the type to lookup
+   * @returns The protobuf message type
+   */
+  lookupType(messageType: string): protobuf.Type;
+
+  /**
+   * Register a component.
+   *
+   * @param allComponents - all components mapped to their protobuf Service
+   *
+   * @internal
+   */
+  register(allComponents: ServiceMap): ComponentServices;
 }
 
+/**
+ * Kalix Entity.
+ *
+ * @public
+ */
+export interface Entity extends Component {
+  clients: GrpcClientLookup;
+}
+
+/** @internal */
 export interface ServiceMap {
   [key: string]: protobuf.Service;
 }
 
+/** @internal */
 class DocLink {
   private specificCodes: Map<string, string> = new Map([
-    ['AS-00112', 'javascript/views.html#changing'],
-    ['AS-00402', 'javascript/topic-eventing.html'],
-    ['AS-00406', 'javascript/topic-eventing.html'],
-    ['AS-00414', 'javascript/entity-eventing.html'],
+    ['KLX-00112', 'javascript/views.html#changing'],
+    ['KLX-00402', 'javascript/topic-eventing.html'],
+    ['KLX-00406', 'javascript/topic-eventing.html'],
+    ['KLX-00414', 'javascript/entity-eventing.html'],
     // TODO: docs for value entity eventing (https://github.com/lightbend/kalix-javascript-sdk/issues/103)
-    // ['AS-00415', 'javascript/entity-eventing.html'],
+    // ['KLX-00415', 'javascript/entity-eventing.html'],
   ]);
   private codeCategories: Map<string, string> = new Map([
-    ['AS-001', 'javascript/views.html'],
-    ['AS-002', 'javascript/value-entity.html'],
-    ['AS-003', 'javascript/eventsourced.html'],
-    ['AS-004', 'javascript/'], // no single page for eventing
-    ['AS-005', 'javascript/'], // no docs yet for replicated entities
-    ['AS-006', 'javascript/proto.html#_transcoding_http'], // all HTTP API errors
+    ['KLX-001', 'javascript/views.html'],
+    ['KLX-002', 'javascript/value-entity.html'],
+    ['KLX-003', 'javascript/eventsourced.html'],
+    ['KLX-004', 'javascript/'], // no single page for eventing
+    ['KLX-005', 'javascript/'], // no docs yet for replicated entities
+    ['KLX-006', 'javascript/proto.html#_transcoding_http'], // all HTTP API errors
   ]);
 
   constructor(private baseUrl: string = 'https://docs.kalix.io/') {
-    this.specificCodes.forEach((value, key) => key.length >= 6);
+    this.specificCodes.forEach((value, key) => key.length >= 7);
   }
 
   getLink(code: string) {
-    const shortCode = code.substr(0, 6);
+    const shortCode = code.substring(0, 7);
     if (this.specificCodes.has(code)) {
       return `${this.baseUrl}${this.specificCodes.get(code)}`;
     } else if (this.codeCategories.has(shortCode)) {
@@ -166,6 +286,7 @@ class DocLink {
   }
 }
 
+/** @internal */
 class SourceFormatter {
   constructor(private location: discovery.UserFunctionError.SourceLocation) {}
 
@@ -223,6 +344,8 @@ class SourceFormatter {
  * Kalix service.
  *
  * @param options - the options for starting the service
+ *
+ * @public
  */
 export class Kalix {
   private address: string = process.env.HOST || '127.0.0.1';
@@ -284,7 +407,7 @@ export class Kalix {
     return this.components;
   }
 
-  afterStart(port: number) {
+  private afterStart(port: number) {
     console.log('Kalix service started on ' + this.address + ':' + port);
 
     process.on('SIGTERM', () => {
@@ -303,6 +426,7 @@ export class Kalix {
 
   /**
    * Start the Kalix service.
+   *
    * @param binding - optional address/port binding to start the service on
    * @returns a Promise of the bound port for this service
    */
@@ -357,15 +481,17 @@ export class Kalix {
     });
   }
 
+  /** @internal */
   docLinkFor(code: string) {
     return this.docLink.getLink(code);
   }
 
+  /** @internal */
   formatSource(location: discovery.UserFunctionError.SourceLocation) {
     return new SourceFormatter(location).getLocationString(this.components);
   }
 
-  getDiscoveryServer() {
+  private getDiscoveryServer() {
     const that = this;
     const discoveryServer: discovery_grpc.IDiscoveryServer = {
       discover(
@@ -434,11 +560,13 @@ export class Kalix {
     this.server.tryShutdown(callback);
   }
 
+  /** @internal */
   terminate() {
     this.server.forceShutdown();
     process.exit(0);
   }
 
+  /** @internal */
   reportErrorLogic(
     code: string | undefined,
     message: string | undefined,
@@ -452,8 +580,7 @@ export class Kalix {
 
     if (code) {
       const docLink = this.docLink.getLink(code);
-      if (docLink.length > 0)
-        msg += `\nSee documentation: ${this.docLink.getLink(code)}`;
+      if (docLink.length > 0) msg += `\nSee documentation: ${docLink}`;
       for (const location of locations || []) {
         msg += `\n\n${this.formatSource(location)}`;
       }
@@ -463,13 +590,14 @@ export class Kalix {
   }
 
   // detect hybrid proxy version probes when protocol version 0.0 (or undefined)
-  isVersionProbe(proxyInfo: discovery.ProxyInfo) {
+  private isVersionProbe(proxyInfo: discovery.ProxyInfo) {
     return (
       !proxyInfo.getProtocolMajorVersion() &&
       !proxyInfo.getProtocolMinorVersion()
     );
   }
 
+  /** @internal */
   discoveryLogic(proxyInfo: discovery.ProxyInfo): discovery.Spec {
     const serviceInfo = new discovery.ServiceInfo()
       .setServiceName(this.service.name)
@@ -577,33 +705,10 @@ export class Kalix {
     return spec;
   }
 
-  proxyTerminatedLogic() {
+  private proxyTerminatedLogic() {
     this.proxyHasTerminated = true;
     if (this.waitingForProxyTermination) {
       this.terminate();
     }
   }
-}
-
-/**
- * The GRPC status codes.
- */
-export enum GrpcStatus {
-  Ok = 0,
-  Cancelled = 1,
-  Unknown = 2,
-  InvalidArgument = 3,
-  DeadlineExceeded = 4,
-  NotFound = 5,
-  AlreadyExists = 6,
-  PermissionDenied = 7,
-  ResourceExhausted = 8,
-  FailedPrecondition = 9,
-  Aborted = 10,
-  OutOfRange = 11,
-  Unimplemented = 12,
-  Internal = 13,
-  Unavailable = 14,
-  DataLoss = 15,
-  Unauthenticated = 16,
 }

@@ -15,15 +15,16 @@
  */
 
 import { ReplicatedData } from '.';
-import ReplicatedSet from './set';
+import { ReplicatedSet } from './set';
 import AnySupport, { Comparable } from '../protobuf-any';
 import { Serializable } from '../serializable';
-import iterators from './iterators';
-import util from 'util';
+import * as iterators from './iterators';
+import * as util from 'util';
 import * as proto from '../../proto/protobuf-bundle';
 
 const debug = require('debug')('kalix-replicated-entity');
 
+/** @internal */
 namespace protocol {
   export type Delta =
     proto.kalix.component.replicatedentity.IReplicatedEntityDelta;
@@ -37,23 +38,50 @@ interface Entry {
   values: ReplicatedSet;
 }
 
-class ReplicatedMultiMap implements ReplicatedData {
+/**
+ * A replicated multimap (map of sets).
+ *
+ * A replicated map that maps keys to values, where each key may be associated with multiple values.
+ *
+ * @public
+ */
+export class ReplicatedMultiMap implements ReplicatedData {
   private entries = new Map<Comparable, Entry>();
   private removed = new Map<Comparable, Serializable>();
   private cleared = false;
 
   private EmptySet = Object.freeze(new Set<Serializable>());
 
+  /**
+   * Get the values for the given key.
+   *
+   * @param key - The key of the entry
+   * @returns The current values at the given key, or an empty Set
+   */
   get = (key: Serializable): Set<Serializable> => {
     const entry = this.entries.get(AnySupport.toComparable(key));
     return entry !== undefined ? entry.values.elements() : this.EmptySet;
   };
 
+  /**
+   * Store a key-value pair.
+   *
+   * @param key - The key of the entry
+   * @param value - The value to add to the entry
+   * @returns This multimap
+   */
   put = (key: Serializable, value: Serializable): ReplicatedMultiMap => {
     this.getOrCreateValues(key).add(value);
     return this;
   };
 
+  /**
+   * Store multiple values for a key.
+   *
+   * @param key - The key of the entry
+   * @param values - The values to add to the entry
+   * @returns This multimap
+   */
   putAll = (
     key: Serializable,
     values: Iterable<Serializable>,
@@ -62,6 +90,13 @@ class ReplicatedMultiMap implements ReplicatedData {
     return this;
   };
 
+  /**
+   * Delete a single key-value pair for the given key and value.
+   *
+   * @param key - The key of the entry
+   * @param value - The value to remove from the entry
+   * @returns This multimap
+   */
   delete = (key: Serializable, value: Serializable): ReplicatedMultiMap => {
     const comparableKey = AnySupport.toComparable(key);
     const entry = this.entries.get(comparableKey);
@@ -72,6 +107,12 @@ class ReplicatedMultiMap implements ReplicatedData {
     return this;
   };
 
+  /**
+   * Delete all values associated with the given key.
+   *
+   * @param key - The key of the entry
+   * @returns This multimap
+   */
   deleteAll = (key: Serializable): ReplicatedMultiMap => {
     const comparableKey = AnySupport.toComparable(key);
     if (this.entries.has(comparableKey)) {
@@ -81,9 +122,23 @@ class ReplicatedMultiMap implements ReplicatedData {
     return this;
   };
 
+  /**
+   * Check whether this multimap contains at least one value for the given key.
+   *
+   * @param key - The key to check
+   * @returns True if this multimap contains any values for the given key
+   */
   has = (key: Serializable): boolean => {
     return this.entries.has(AnySupport.toComparable(key));
   };
+
+  /**
+   * Check whether this multimap contains the given value associated with the given key.
+   *
+   * @param key - The key to check
+   * @param value - The value to check
+   * @returns True if the key-value pair is in this multimap
+   */
 
   hasValue = (key: Serializable, value: Serializable): boolean => {
     const comparableKey = AnySupport.toComparable(key);
@@ -91,6 +146,9 @@ class ReplicatedMultiMap implements ReplicatedData {
     return entry ? entry.values.has(value) : false;
   };
 
+  /**
+   * The total number of values stored in the multimap.
+   */
   get size(): number {
     return Array.from(this.entries.values()).reduce(
       (sum, entry) => sum + entry.values.size,
@@ -98,14 +156,27 @@ class ReplicatedMultiMap implements ReplicatedData {
     );
   }
 
+  /**
+   * The number of keys with values stored in the multimap.
+   */
   get keysSize(): number {
     return this.entries.size;
   }
 
+  /**
+   * Return an (iterable) iterator of the keys of this multimap.
+   *
+   * @returns (iterable) iterator of multimap keys
+   */
   keys = (): IterableIterator<Serializable> => {
     return iterators.map(this.entries.values(), (entry) => entry.key);
   };
 
+  /**
+   * Clear all entries from this multimap.
+   *
+   * @returns This multimap
+   */
   clear = (): ReplicatedMultiMap => {
     if (this.entries.size > 0) {
       this.cleared = true;
@@ -127,6 +198,7 @@ class ReplicatedMultiMap implements ReplicatedData {
     }
   }
 
+  /** @internal */
   getAndResetDelta = (initial?: boolean): protocol.Delta | null => {
     const updated: protocol.EntryDelta[] = [];
     this.entries.forEach(({ key: key, values: values }, _comparableKey) => {
@@ -161,6 +233,7 @@ class ReplicatedMultiMap implements ReplicatedData {
     }
   };
 
+  /** @internal */
   applyDelta = (delta: protocol.Delta, anySupport: AnySupport): void => {
     if (!delta.replicatedMultiMap) {
       throw new Error(
@@ -205,5 +278,3 @@ class ReplicatedMultiMap implements ReplicatedData {
     );
   };
 }
-
-export = ReplicatedMultiMap;

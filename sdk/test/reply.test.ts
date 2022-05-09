@@ -15,10 +15,10 @@
  */
 
 import { expect } from 'chai';
-import protobuf from 'protobufjs';
+import * as protobuf from 'protobufjs';
 import { Metadata } from '../src/metadata';
 import * as replies from '../src/reply';
-import { GrpcStatus } from '../src/kalix';
+import { GrpcStatus } from '../src/grpc-status';
 
 describe('Replies', () => {
   it('should create an empty Reply', () => {

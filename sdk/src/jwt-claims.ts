@@ -20,10 +20,20 @@ const JwtClaimPrefix = '_kalix-jwt-claim-';
 
 /**
  * JWT claims that were part of the bearer token with this request.
+ *
+ * @public
  */
 export class JwtClaims {
+  /**
+   * The metadata backing this JWT claims object.
+   */
   readonly metadata: Metadata;
 
+  /**
+   * This exposes JWT claims that were extracted from the bearer token.
+   *
+   * @param metadata - The metadata that the JWT claims come from
+   */
   constructor(metadata: Metadata) {
     this.metadata = metadata;
   }
@@ -31,7 +41,7 @@ export class JwtClaims {
   /**
    * Get the issuer, that is, the <tt>iss</tt> claim, as described in RFC 7519 section 4.1.1.
    *
-   * @return the issuer, if present.
+   * @returns the issuer, if present.
    * @see {@link https://datatracker.ietf.org/doc/html/rfc7519#section-4.1.1 |RFC 7519 section 4.1.1}
    */
   get issuer(): string | undefined {
@@ -41,7 +51,7 @@ export class JwtClaims {
   /**
    * Get the subject, that is, the <tt>sub</tt> claim, as described in RFC 7519 section 4.1.2.
    *
-   * @return the subject, if present.
+   * @returns the subject, if present.
    * @see {@link https://datatracker.ietf.org/doc/html/rfc7519#section-4.1.2 |RFC 7519 section 4.1.2}
    */
   get subject(): string | undefined {
@@ -51,7 +61,7 @@ export class JwtClaims {
   /**
    * Get the audience, that is, the <tt>aud</tt> claim, as described in RFC 7519 section 4.1.3.
    *
-   * @return the audience, if present.
+   * @returns the audience, if present.
    * @see {@link https://datatracker.ietf.org/doc/html/rfc7519#section-4.1.3 |RFC 7519 section 4.1.3}
    */
   get audience(): string | undefined {
@@ -61,7 +71,7 @@ export class JwtClaims {
   /**
    * Get the expiration time, that is, the <tt>exp</tt> claim, as described in RFC 7519 section 4.1.4.
    *
-   * @return the expiration time, if present.
+   * @returns the expiration time, if present.
    * @see {@link https://datatracker.ietf.org/doc/html/rfc7519#section-4.1.4 |RFC 7519 section 4.1.4}
    */
   get expirationTime(): Date | undefined {
@@ -71,7 +81,7 @@ export class JwtClaims {
   /**
    * Get the not before, that is, the <tt>nbf</tt> claim, as described in RFC 7519 section 4.1.5.
    *
-   * @return the not before, if present.
+   * @returns the not before, if present.
    * @see {@link https://datatracker.ietf.org/doc/html/rfc7519#section-4.1.5 |RFC 7519 section 4.1.5}
    */
   get notBefore(): Date | undefined {
@@ -81,7 +91,7 @@ export class JwtClaims {
   /**
    * Get the issued at, that is, the <tt>iat</tt> claim, as described in RFC 7519 section 4.1.6.
    *
-   * @return the issued at, if present.
+   * @returns the issued at, if present.
    * @see {@link https://datatracker.ietf.org/doc/html/rfc7519#section-4.1.6 |RFC 7519 section 4.1.6}
    */
   get issuedAt(): Date | undefined {
@@ -91,7 +101,7 @@ export class JwtClaims {
   /**
    * Get the JWT ID, that is, the <tt>jti</tt> claim, as described in RFC 7519 section 4.1.7.
    *
-   * @return the JWT ID, if present.
+   * @returns the JWT ID, if present.
    * @see {@link https://datatracker.ietf.org/doc/html/rfc7519#section-4.1.7 |RFC 7519 section 4.1.7}
    */
   get jwtId(): string | undefined {
@@ -101,7 +111,7 @@ export class JwtClaims {
   /**
    * Get the string claim with the given name.
    *
-   * @param name The name of the claim.
+   * @param name - The name of the claim
    */
   getString(name: string): string | undefined {
     const value = this.metadata.asMap[JwtClaimPrefix + name];
@@ -114,7 +124,7 @@ export class JwtClaims {
   /**
    * Get the number claim with the given name.
    *
-   * @param name The name of the claim.
+   * @param name - The name of the claim
    */
   getNumber(name: string): number | undefined {
     const value = this.getString(name);
@@ -132,7 +142,7 @@ export class JwtClaims {
    *
    * Numeric dates are expressed as a number of seconds since epoch, as described in RFC 7519 section 2.
    *
-   * @param name The name of the claim.
+   * @param name - The name of the claim
    * @see {@link https://datatracker.ietf.org/doc/html/rfc7519#section-2 |RFC 7519 section 2}
    */
   getNumericDate(name: string): Date | undefined {
@@ -146,7 +156,7 @@ export class JwtClaims {
   /**
    * Get the boolean claim with the given name.
    *
-   * @param name The name of the claim.
+   * @param name - The name of the claim
    */
   getBoolean(name: string): boolean | undefined {
     const value = this.getString(name);
@@ -162,7 +172,7 @@ export class JwtClaims {
   /**
    * Get the object claim with the given name.
    *
-   * @param name The name of the claim.
+   * @param name - The name of the claim
    */
   getObject(name: string): any | undefined {
     const value = this.getString(name);
@@ -180,7 +190,7 @@ export class JwtClaims {
   /**
    * Get the string array claim with the given name.
    *
-   * @param name The name of the claim.
+   * @param name - The name of the claim
    */
   getStringArray(name: string): string[] | undefined {
     return this.getArray(name, (item: any) => typeof item === 'string');
@@ -189,7 +199,7 @@ export class JwtClaims {
   /**
    * Get the number array claim with the given name.
    *
-   * @param name The name of the claim.
+   * @param name - The name of the claim
    */
   getNumberArray(name: string): number[] | undefined {
     return this.getArray(name, (item: any) => typeof item === 'number');
@@ -198,7 +208,7 @@ export class JwtClaims {
   /**
    * Get the boolean array claim with the given name.
    *
-   * @param name The name of the claim.
+   * @param name - The name of the claim
    */
   getBooleanArray(name: string): boolean[] | undefined {
     return this.getArray(name, (item: any) => typeof item === 'boolean');
@@ -207,7 +217,7 @@ export class JwtClaims {
   /**
    * Get the object array claim with the given name.
    *
-   * @param name The name of the claim.
+   * @param name - The name of the claim
    */
   getObjectArray(name: string): any[] | undefined {
     return this.getArray(name, (item: any) => typeof item === 'object');
@@ -218,7 +228,7 @@ export class JwtClaims {
    *
    * Numeric dates are expressed as a number of seconds since epoch, as described in RFC 7519 section 2.
    *
-   * @param name The name of the claim.
+   * @param name - The name of the claim
    * @see {@link https://datatracker.ietf.org/doc/html/rfc7519#section-2 |RFC 7519 section 2}
    */
   getNumericDateArray(name: string): Date[] | undefined {

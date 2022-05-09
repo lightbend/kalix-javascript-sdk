@@ -15,13 +15,13 @@
  */
 
 const should = require('chai').should();
-import protobuf from 'protobufjs';
-import path from 'path';
+import * as protobuf from 'protobufjs';
+import * as path from 'path';
 import * as replicatedData from '../../src/replicated-data';
 const ReplicatedRegister = replicatedData.ReplicatedRegister;
 const Clocks = replicatedData.Clocks;
 import AnySupport from '../../src/protobuf-any';
-import Long from 'long';
+import * as Long from 'long';
 import * as proto from '../proto/protobuf-bundle';
 
 namespace protocol {

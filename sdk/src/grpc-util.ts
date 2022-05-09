@@ -15,44 +15,67 @@
  */
 
 import * as util from 'util';
-import * as Protobuf from 'protobufjs';
-import * as Grpc from '@grpc/grpc-js';
+import * as protobuf from 'protobufjs';
+import * as grpc from '@grpc/grpc-js';
 import { ServiceClientConstructor } from '@grpc/grpc-js/build/src/make-client';
 
-export interface GrpcClient extends Grpc.Client {
+/**
+ * gRPC client.
+ *
+ * @public
+ */
+export interface GrpcClient extends grpc.Client {
   [methodName: string]: Function;
 }
 
+/**
+ * gRPC client creator for a service.
+ *
+ * @public
+ */
 export interface GrpcClientCreator {
+  /**
+   * Create a new client for service.
+   *
+   * @param address - the address for the service
+   * @param credentials - the credentials for the connection
+   * @returns a new gRPC client for the service
+   */
   createClient(
     address: string,
-    credentials?: Grpc.ChannelCredentials,
+    credentials?: grpc.ChannelCredentials,
   ): GrpcClient;
 }
 
+/**
+ * gRPC client lookup, using fully qualified name for service.
+ *
+ * @public
+ */
 export interface GrpcClientLookup {
   [index: string]: GrpcClientLookup | GrpcClientCreator;
 }
 
+/** @public */
 export class GrpcUtil {
   /**
    * Create gRPC client creators for defined services, with promisified clients.
    */
   static clientCreators(
-    namespace: Protobuf.Namespace,
-    grpc: Grpc.GrpcObject,
+    namespace: protobuf.Namespace,
+    grpcObject: grpc.GrpcObject,
   ): GrpcClientLookup {
     const result: GrpcClientLookup = {};
     for (const serviceFqn of GrpcUtil.getServiceNames(namespace)) {
       let currentLookup = result;
-      let currentGrpc = grpc;
+      let currentGrpc = grpcObject;
       const nameComponents = serviceFqn.split('.');
       for (const packageName of nameComponents.slice(0, -1)) {
         if (!currentLookup[packageName]) {
           currentLookup[packageName] = {};
         }
         currentLookup = currentLookup[packageName] as GrpcClientLookup;
-        currentGrpc = currentGrpc[packageName] as Grpc.GrpcObject;
+        currentGrpc = currentGrpc[packageName] as grpc.GrpcObject;
       }
       const serviceName = nameComponents[nameComponents.length - 1];
       const serviceClientConstructor = currentGrpc[
@@ -60,9 +83,9 @@ export class GrpcUtil {
       ] as ServiceClientConstructor;
       const clientCreator = function (
         address: string,
-        credentials?: Grpc.ChannelCredentials,
+        credentials?: grpc.ChannelCredentials,
       ) {
-        const creds = credentials || Grpc.credentials.createInsecure();
+        const creds = credentials || grpc.credentials.createInsecure();
         const client = new serviceClientConstructor(address, creds);
         return GrpcUtil.promisifyClient(client);
       };
@@ -77,14 +100,14 @@ export class GrpcUtil {
    * Iterate through a (resolved) protobufjs reflection object to find services.
    */
   static getServiceNames(
-    obj: Protobuf.ReflectionObject,
+    obj: protobuf.ReflectionObject,
     parentName: string = '',
   ): Array<string> {
     const fullName = parentName === '' ? obj.name : parentName + '.' + obj.name;
-    if (obj instanceof Protobuf.Service) {
+    if (obj instanceof protobuf.Service) {
       return [fullName];
     } else if (
-      obj instanceof Protobuf.Namespace &&
+      obj instanceof protobuf.Namespace &&
       typeof obj.nestedArray !== 'undefined'
     ) {
       return obj.nestedArray

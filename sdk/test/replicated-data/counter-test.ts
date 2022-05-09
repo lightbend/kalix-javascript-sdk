@@ -15,8 +15,8 @@
  */
 
 const should = require('chai').should();
-import Long from 'long';
-import ReplicatedCounter from '../../src/replicated-data/counter';
+import * as Long from 'long';
+import { ReplicatedCounter } from '../../src/replicated-data/counter';
 import * as proto from '../proto/protobuf-bundle';
 
 namespace protocol {

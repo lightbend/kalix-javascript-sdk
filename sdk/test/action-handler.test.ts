@@ -23,15 +23,10 @@ chai.use(sinonChai);
 const expect = chai.expect;
 chai.should();
 
-import protobuf from 'protobufjs';
-import path from 'path';
-import Action from '../src/action';
-import ActionSupport, {
-  ActionCommandHandler,
-  UnaryCall,
-  UnaryCallback,
-  UnaryCommandContext,
-} from '../src/action-support';
+import * as protobuf from 'protobufjs';
+import * as path from 'path';
+import { Action } from '../src/action';
+import ActionSupport, { UnaryCall, UnaryCallback } from '../src/action-support';
 import AnySupport from '../src/protobuf-any';
 import { Message } from '../src/command';
 import { ServiceMap } from '../src/kalix';
@@ -110,7 +105,7 @@ class MockUnaryCall {
   }
 }
 
-function createAction(handler: ActionCommandHandler): ActionSupport {
+function createAction(handler: Action.CommandHandler): ActionSupport {
   const actionSupport = new ActionSupport();
   const allComponents: ServiceMap = {};
   allComponents[ExampleServiceName] = ExampleService;
@@ -148,7 +143,7 @@ function callPublishJsonToTopic(action: ActionSupport, message: Message) {
   return call;
 }
 
-function testActionHandler(value: string, handler: ActionCommandHandler) {
+function testActionHandler(value: string, handler: Action.CommandHandler) {
   return callDoSomething(createAction(handler), { field: value });
 }
 
@@ -191,7 +186,7 @@ describe('ActionHandler', () => {
   it('should reply with context written value (no return value)', () => {
     return testActionHandler(
       'something',
-      (message: In, context: UnaryCommandContext) => {
+      (message: In, context: Action.UnaryCommandContext) => {
         context.write({ field: 'wrote:' + message.field });
       },
     )
@@ -223,7 +218,7 @@ describe('ActionHandler', () => {
   it('should forward with (deprecated) context forwarded message (no return value)', () => {
     return testActionHandler(
       'message',
-      (message: In, context: UnaryCommandContext) => {
+      (message: In, context: Action.UnaryCommandContext) => {
         context.forward(ExampleService.methods.DoSomething, {
           field: 'forwarded:' + message.field,
         });
@@ -233,7 +228,7 @@ describe('ActionHandler', () => {
       .should.eventually.have.property('field', 'forwarded:message')
       .then(() => {
         console.warn.should.have.been.calledOnceWith(
-          "WARNING: Action context 'forward' is deprecated. Please use 'ReplyFactory.forward' instead.",
+          "WARNING: Action context 'forward' is deprecated. Please use 'replies.forward' instead.",
         );
       });
   });
@@ -261,7 +256,7 @@ describe('ActionHandler', () => {
   it('should side effect with (deprecated) context effects', async () => {
     const call = testActionHandler(
       'message',
-      (message: In, context: UnaryCommandContext) => {
+      (message: In, context: Action.UnaryCommandContext) => {
         context.effect(ExampleService.methods.DoSomething, {
           field: 'side effect',
         });
@@ -285,7 +280,7 @@ describe('ActionHandler', () => {
   it('should only reply with previously context written value and warn about returned value', () => {
     return testActionHandler(
       'something',
-      (message: In, context: UnaryCommandContext) => {
+      (message: In, context: Action.UnaryCommandContext) => {
         context.write({ field: 'wrote:' + message.field });
         return { field: 'returned:' + message.field }; // not used as already sent reply with context.write
       },
@@ -350,7 +345,7 @@ describe('ActionHandler', () => {
   it('should reply with context written value in returned promise', () => {
     return testActionHandler(
       'value',
-      (message: In, context: UnaryCommandContext) => {
+      (message: In, context: Action.UnaryCommandContext) => {
         return doSomethingAsync(message).then((something) => {
           context.write({ field: 'promised:wrote:' + something.field });
         });
@@ -363,7 +358,7 @@ describe('ActionHandler', () => {
   it('should reply with context written value in async function', () => {
     return testActionHandler(
       'value',
-      async (message: In, context: UnaryCommandContext) => {
+      async (message: In, context: Action.UnaryCommandContext) => {
         const something = await doSomethingAsync(message);
         context.write({ field: 'awaited:wrote:' + something.field });
       },
@@ -443,7 +438,7 @@ describe('ActionHandler', () => {
   it('should forward with (deprecated) context forwarded message in returned promise', () => {
     return testActionHandler(
       'message',
-      (message: In, context: UnaryCommandContext) => {
+      (message: In, context: Action.UnaryCommandContext) => {
         return doSomethingAsync(message).then((something) => {
           context.forward(ExampleService.methods.DoSomething, {
             field: 'forwarded:promised:' + something.field,
@@ -458,7 +453,7 @@ describe('ActionHandler', () => {
       )
       .then(() => {
         console.warn.should.have.been.calledOnceWith(
-          "WARNING: Action context 'forward' is deprecated. Please use 'ReplyFactory.forward' instead.",
+          "WARNING: Action context 'forward' is deprecated. Please use 'replies.forward' instead.",
         );
       });
   });
@@ -466,7 +461,7 @@ describe('ActionHandler', () => {
   it('should forward with (deprecated) context forwarded message in async function', () => {
     return testActionHandler(
       'message',
-      async (message: In, context: UnaryCommandContext) => {
+      async (message: In, context: Action.UnaryCommandContext) => {
         const something = await doSomethingAsync(message);
         context.forward(ExampleService.methods.DoSomething, {
           field: 'forwarded:awaited:' + something.field,
@@ -480,7 +475,7 @@ describe('ActionHandler', () => {
       )
       .then(() => {
         console.warn.should.have.been.calledOnceWith(
-          "WARNING: Action context 'forward' is deprecated. Please use 'ReplyFactory.forward' instead.",
+          "WARNING: Action context 'forward' is deprecated. Please use 'replies.forward' instead.",
         );
       });
   });
@@ -534,7 +529,7 @@ describe('ActionHandler', () => {
   it('should side effect with (deprecated) context effects in returned promise', async () => {
     const call = testActionHandler(
       'message',
-      (message: In, context: UnaryCommandContext) => {
+      (message: In, context: Action.UnaryCommandContext) => {
         return doSomethingAsync(message).then((something) => {
           context.effect(ExampleService.methods.DoSomething, {
             field: 'side effect',
@@ -563,7 +558,7 @@ describe('ActionHandler', () => {
   it('should side effect with (deprecated) context effects in returned promise', async () => {
     const call = testActionHandler(
       'message',
-      async (message: In, context: UnaryCommandContext) => {
+      async (message: In, context: Action.UnaryCommandContext) => {
         const something = await doSomethingAsync(message);
         context.effect(ExampleService.methods.DoSomething, {
           field: 'side effect',
@@ -588,7 +583,7 @@ describe('ActionHandler', () => {
   it('should only reply with previously context written value and warn about returned value in promise', () => {
     return testActionHandler(
       'something',
-      (message: In, context: UnaryCommandContext) => {
+      (message: In, context: Action.UnaryCommandContext) => {
         return doSomethingAsync(message).then((something) => {
           context.write({ field: 'wrote:promised:' + something.field });
           return { field: 'promised:' + something.field }; // not used as already sent reply with context.write
@@ -610,7 +605,7 @@ describe('ActionHandler', () => {
   it('should only reply with previously context written value and warn about returned async value', () => {
     return testActionHandler(
       'something',
-      async (message: In, context: UnaryCommandContext) => {
+      async (message: In, context: Action.UnaryCommandContext) => {
         const something = await doSomethingAsync(message);
         context.write({ field: 'wrote:awaited:' + something.field });
         return { field: 'promised:' + something.field }; // not used as already sent reply with context.write

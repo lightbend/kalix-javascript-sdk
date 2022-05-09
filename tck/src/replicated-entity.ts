@@ -105,7 +105,7 @@ function applyUpdate(
       else if (update.replicatedSet.remove)
         set.delete(update.replicatedSet.remove);
       else if (update.replicatedSet.clear) set.clear();
-    } else if (update.register) {
+    } else if (update.register?.value) {
       const register = state as replicatedentity.ReplicatedRegister;
       if (
         update.register.clock?.clockType ===
@@ -141,7 +141,7 @@ function applyUpdate(
           update.replicatedMap.add,
           createReplicatedData(update.replicatedMap.add),
         );
-      else if (update.replicatedMap.update)
+      else if (update.replicatedMap.update?.key)
         applyUpdate(
           update.replicatedMap.update.update,
           map.get(update.replicatedMap.update.key),
@@ -153,7 +153,7 @@ function applyUpdate(
       const counterMap = state as replicatedentity.ReplicatedCounterMap;
       if (update.replicatedCounterMap.add)
         counterMap.increment(update.replicatedCounterMap.add, 0);
-      else if (update.replicatedCounterMap.update)
+      else if (update.replicatedCounterMap.update?.key)
         counterMap.increment(
           update.replicatedCounterMap.update.key,
           update.replicatedCounterMap.update.change || 0,
@@ -165,7 +165,10 @@ function applyUpdate(
       const registerMap = state as replicatedentity.ReplicatedRegisterMap;
       if (update.replicatedRegisterMap.add)
         registerMap.set(update.replicatedRegisterMap.add, '');
-      else if (update.replicatedRegisterMap.update) {
+      else if (
+        update.replicatedRegisterMap.update?.key &&
+        update.replicatedRegisterMap.update?.value
+      ) {
         const key = update.replicatedRegisterMap.update.key;
         const value = update.replicatedRegisterMap.update.value;
         const clock = update.replicatedRegisterMap.update.clock;
@@ -200,7 +203,7 @@ function applyUpdate(
       else if (update.replicatedRegisterMap.clear) registerMap.clear();
     } else if (update.replicatedMultiMap) {
       const multiMap = state as replicatedentity.ReplicatedMultiMap;
-      if (update.replicatedMultiMap.update) {
+      if (update.replicatedMultiMap.update?.key) {
         const key = update.replicatedMultiMap.update.key;
         const value = update.replicatedMultiMap.update.update;
         if (value?.add) multiMap.put(key, value.add);

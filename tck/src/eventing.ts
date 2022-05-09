@@ -61,7 +61,7 @@ function emitEvent(
   _state: any,
   context: EventSourcedEntity.EventSourcedEntityCommandContext,
 ) {
-  context.emit(request.eventOne ? request.eventOne : request.eventTwo);
+  context.emit(request.eventOne ? request.eventOne : request.eventTwo ?? {});
   return Empty;
 }
 
@@ -114,7 +114,9 @@ function updateValue(
   _state: any,
   context: ValueEntity.ValueEntityCommandContext,
 ) {
-  context.updateState(request.valueOne ? request.valueOne : request.valueTwo);
+  context.updateState(
+    request.valueOne ? request.valueOne : request.valueTwo ?? {},
+  );
   return Empty;
 }
 
