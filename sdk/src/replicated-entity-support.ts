@@ -14,29 +14,65 @@
  * limitations under the License.
  */
 
-const path = require('path');
-const debug = require('debug')('kalix-replicated-entity');
-const util = require('util');
-const grpc = require('@grpc/grpc-js');
-const protoLoader = require('@grpc/proto-loader');
-const protoHelper = require('./protobuf-helper');
-const AnySupport = require('./protobuf-any');
-const replicatedData = require('./replicated-data');
-const CommandHelper = require('./command-helper');
-const { Metadata } = require('./metadata');
+import path from 'path';
+import util from 'util';
+import * as grpc from '@grpc/grpc-js';
+import * as protoLoader from '@grpc/proto-loader';
+import AnySupport from './protobuf-any';
+import { CommandHandler, InternalContext } from './command';
+import CommandHelper from './command-helper';
+import * as replicatedData from './replicated-data';
+import { ReplicatedEntity } from './replicated-entity';
+import { ServiceMap } from './kalix';
+import * as proto from '../proto/protobuf-bundle';
 
-class ReplicatedEntityServices {
+const debug = require('debug')('kalix-replicated-entity');
+
+namespace protocol {
+  export type StreamIn =
+    proto.kalix.component.replicatedentity.IReplicatedEntityStreamIn;
+  export const StreamIn =
+    proto.kalix.component.replicatedentity.ReplicatedEntityStreamIn;
+
+  export type Init =
+    proto.kalix.component.replicatedentity.IReplicatedEntityInit;
+
+  export type Delta =
+    proto.kalix.component.replicatedentity.IReplicatedEntityDelta;
+  export const Delta =
+    proto.kalix.component.replicatedentity.ReplicatedEntityDelta;
+
+  export type StreamOut =
+    proto.kalix.component.replicatedentity.IReplicatedEntityStreamOut;
+
+  export type Reply =
+    proto.kalix.component.replicatedentity.IReplicatedEntityReply;
+
+  export type Call = grpc.ServerDuplexStream<StreamIn, StreamOut>;
+}
+
+interface ReplicatedEntityHandlers {
+  commandHandlers: ReplicatedEntity.CommandHandlers;
+  onStateSet: ReplicatedEntity.OnStateSetCallback;
+  defaultValue: ReplicatedEntity.DefaultValueCallback;
+}
+
+interface InternalReplicatedEntityContext extends InternalContext {
+  context: ReplicatedEntity.ReplicatedEntityCommandContext;
+  deleted: boolean;
+  noState: boolean;
+  defaultValue: boolean;
+  reply: protocol.Reply;
+}
+
+export class ReplicatedEntityServices {
+  private services: { [serviceName: string]: ReplicatedEntitySupport };
+
   constructor() {
     this.services = {};
-    this.includeDirs = [
-      path.join(__dirname, '..', 'proto'),
-      path.join(__dirname, '..', 'protoc', 'include'),
-      path.join(__dirname, '..', '..', 'proto'),
-      path.join(__dirname, '..', '..', 'protoc', 'include'),
-    ];
   }
 
-  addService(entity, allComponents) {
+  addService(entity: ReplicatedEntity, allComponents: ServiceMap) {
     this.services[entity.serviceName] = new ReplicatedEntitySupport(
       entity.root,
       entity.service,
@@ -49,11 +85,17 @@ class ReplicatedEntityServices {
     );
   }
 
-  componentType() {
+  componentType(): string {
     return 'kalix.component.replicatedentity.ReplicatedEntities';
   }
 
-  register(server) {
+  register(server: grpc.Server): void {
+    const includeDirs = [
+      path.join(__dirname, '..', 'proto'),
+      path.join(__dirname, '..', 'protoc', 'include'),
+      path.join(__dirname, '..', '..', 'proto'),
+      path.join(__dirname, '..', '..', 'protoc', 'include'),
+    ];
     const packageDefinition = protoLoader.loadSync(
       path.join(
         'kalix',
@@ -62,29 +104,25 @@ class ReplicatedEntityServices {
         'replicated_entity.proto',
       ),
       {
-        includeDirs: this.includeDirs,
+        includeDirs: includeDirs,
       },
     );
     const grpcDescriptor = grpc.loadPackageDefinition(packageDefinition);
 
-    const entityService =
-      grpcDescriptor.kalix.component.replicatedentity.ReplicatedEntities
-        .service;
+    const entityService = (grpcDescriptor as any).kalix.component
+      .replicatedentity.ReplicatedEntities.service;
 
     server.addService(entityService, {
       handle: this.handle.bind(this),
     });
   }
 
-  handle(call) {
-    let service;
+  handle(call: protocol.Call): void {
+    let service: ReplicatedEntityHandler;
 
-    call.on('data', (replicatedEntityStreamIn) => {
+    call.on('data', (streamIn: protocol.StreamIn) => {
       // cycle through the ReplicatedEntityStreamIn type, this will ensure default values are initialised
-      replicatedEntityStreamIn =
-        protoHelper.moduleRoot.kalix.component.replicatedentity.ReplicatedEntityStreamIn.fromObject(
-          replicatedEntityStreamIn,
-        );
+      const replicatedEntityStreamIn = protocol.StreamIn.fromObject(streamIn);
 
       if (replicatedEntityStreamIn.init) {
         if (service != null) {
@@ -98,7 +136,10 @@ class ReplicatedEntityServices {
             },
           });
           call.end();
-        } else if (replicatedEntityStreamIn.init.serviceName in this.services) {
+        } else if (
+          replicatedEntityStreamIn.init.serviceName &&
+          replicatedEntityStreamIn.init.serviceName in this.services
+        ) {
           service = this.services[
             replicatedEntityStreamIn.init.serviceName
           ].create(call, replicatedEntityStreamIn.init);
@@ -143,8 +184,21 @@ class ReplicatedEntityServices {
   }
 }
 
-class ReplicatedEntitySupport {
-  constructor(root, service, handlers, allComponents) {
+export class ReplicatedEntitySupport {
+  readonly root: protobuf.Root;
+  readonly service: protobuf.Service;
+  readonly anySupport: AnySupport;
+  readonly commandHandlers: ReplicatedEntity.CommandHandlers;
+  readonly onStateSet: ReplicatedEntity.OnStateSetCallback;
+  readonly defaultValue: ReplicatedEntity.DefaultValueCallback;
+  readonly allComponents: ServiceMap;
+
+  constructor(
+    root: protobuf.Root,
+    service: protobuf.Service,
+    handlers: ReplicatedEntityHandlers,
+    allComponents: ServiceMap,
+  ) {
     this.root = root;
     this.service = service;
     this.anySupport = new AnySupport(this.root);
@@ -154,7 +208,8 @@ class ReplicatedEntitySupport {
     this.allComponents = allComponents;
   }
 
-  create(call, init) {
+  create(call: protocol.Call, init: protocol.Init): ReplicatedEntityHandler {
+    if (!init.entityId) throw Error('Entity id is required');
     const handler = new ReplicatedEntityHandler(this, call, init.entityId);
     if (init.delta) {
       handler.handleInitialDelta(init.delta);
@@ -166,15 +221,26 @@ class ReplicatedEntitySupport {
 /*
  * Handler for a single Replicated Entity.
  */
-class ReplicatedEntityHandler {
-  constructor(support, call, entityId) {
+export class ReplicatedEntityHandler {
+  private entity: ReplicatedEntitySupport;
+  private call: protocol.Call;
+  private entityId: string;
+  private streamId: string;
+  private commandHelper: CommandHelper;
+  private currentState: replicatedData.ReplicatedData | null;
+
+  constructor(
+    support: ReplicatedEntitySupport,
+    call: protocol.Call,
+    entityId: string,
+  ) {
     this.entity = support;
     this.call = call;
     this.entityId = entityId;
 
     this.currentState = null;
 
-    this.streamId = Math.random().toString(16).substr(2, 7);
+    this.streamId = Math.random().toString(16).substring(2, 7);
 
     this.commandHelper = new CommandHelper(
       this.entityId,
@@ -189,17 +255,13 @@ class ReplicatedEntityHandler {
     this.streamDebug('Started new stream');
   }
 
-  commandHandlerFactory(commandName, grpcMethod) {
+  commandHandlerFactory(commandName: string): CommandHandler | null {
     if (this.entity.commandHandlers.hasOwnProperty(commandName)) {
-      return async (command, ctx) => {
-        /**
-         * Context for a Replicated Entity command handler.
-         *
-         * @interface module:kalix.replicatedentity.ReplicatedEntityCommandContext
-         * @extends module:kalix.replicatedentity.StateManagementContext
-         * @extends module:kalix.CommandContext
-         * @extends module:kalix.EntityContext
-         */
+      return async (
+        command: protobuf.Message,
+        internalContext: InternalContext,
+      ) => {
+        const ctx = internalContext as InternalReplicatedEntityContext;
 
         this.addStateManagementToContext(ctx);
 
@@ -217,7 +279,7 @@ class ReplicatedEntityHandler {
     }
   }
 
-  setStateActionOnReply(ctx) {
+  setStateActionOnReply(ctx: InternalReplicatedEntityContext) {
     if (ctx.deleted) {
       ctx.commandDebug('Deleting entity');
       ctx.reply.stateAction = {
@@ -235,30 +297,19 @@ class ReplicatedEntityHandler {
     }
   }
 
-  addStateManagementToContext(ctx) {
+  addStateManagementToContext(ctx: InternalReplicatedEntityContext) {
     ctx.deleted = false;
     ctx.noState = this.currentState === null;
     ctx.defaultValue = false;
     if (ctx.noState) {
-      this.currentState = this.entity.defaultValue();
+      this.currentState = this.entity.defaultValue(this.entityId);
       if (this.currentState !== null) {
         this.entity.onStateSet(this.currentState, this.entityId);
         ctx.defaultValue = true;
       }
     }
 
-    /**
-     * Context that allows managing a Replicated Entity's state.
-     *
-     * @interface module:kalix.replicatedentity.StateManagementContext
-     */
-
-    /**
-     * Delete this Replicated Entity.
-     *
-     * @function module:kalix.replicatedentity.StateManagementContext#delete
-     */
-    ctx.context.delete = () => {
+    ctx.context.delete = (): void => {
       ctx.ensureActive();
       if (this.currentState === null) {
         throw new Error("Can't delete entity that hasn't been created.");
@@ -269,19 +320,12 @@ class ReplicatedEntityHandler {
       }
     };
 
-    /**
-     * The Replicated Data state for a Replicated Entity.
-     * It may only be set once, if it's already set, an error will be thrown.
-     *
-     * @name module:kalix.replicatedentity.StateManagementContext#state
-     * @type {module:kalix.replicatedentity.ReplicatedData}
-     */
     Object.defineProperty(ctx.context, 'state', {
       get: () => {
         ctx.ensureActive();
         return this.currentState;
       },
-      set: (state) => {
+      set: (state: replicatedData.ReplicatedData) => {
         ctx.ensureActive();
         if (this.currentState !== null) {
           throw new Error(
@@ -299,14 +343,14 @@ class ReplicatedEntityHandler {
     });
   }
 
-  streamDebug(msg, ...args) {
+  streamDebug(msg: string, ...args: any[]): void {
     debug('%s [%s] - ' + msg, ...[this.streamId, this.entityId].concat(args));
   }
 
-  handleInitialDelta(delta) {
+  handleInitialDelta(delta: protocol.Delta): void {
     this.streamDebug(
       'Handling initial delta for Replicated Data type %s',
-      delta.delta,
+      protocol.Delta.fromObject(delta).delta,
     );
     if (this.currentState === null) {
       this.currentState = replicatedData.createForDelta(delta);
@@ -319,7 +363,7 @@ class ReplicatedEntityHandler {
     this.entity.onStateSet(this.currentState, this.entityId);
   }
 
-  async onData(replicatedEntityStreamIn) {
+  async onData(replicatedEntityStreamIn: protocol.StreamIn): Promise<void> {
     try {
       await this.handleReplicatedEntityStreamIn(replicatedEntityStreamIn);
     } catch (err) {
@@ -339,19 +383,22 @@ class ReplicatedEntityHandler {
     }
   }
 
-  async handleReplicatedEntityStreamIn(replicatedEntityStreamIn) {
+  async handleReplicatedEntityStreamIn(
+    replicatedEntityStreamIn: protocol.StreamIn,
+  ): Promise<void> {
     if (replicatedEntityStreamIn.delta && this.currentState === null) {
-      await this.handleInitialDelta(replicatedEntityStreamIn.delta);
+      this.handleInitialDelta(replicatedEntityStreamIn.delta);
     } else if (replicatedEntityStreamIn.delta) {
       this.streamDebug(
         'Received delta for Replicated Data type %s',
-        replicatedEntityStreamIn.delta.delta,
+        protocol.Delta.fromObject(replicatedEntityStreamIn.delta).delta,
       );
-      this.currentState.applyDelta(
-        replicatedEntityStreamIn.delta,
-        this.entity.anySupport,
-        replicatedData.createForDelta,
-      );
+      if (this.currentState)
+        this.currentState.applyDelta(
+          replicatedEntityStreamIn.delta,
+          this.entity.anySupport,
+          replicatedData.createForDelta,
+        );
     } else if (replicatedEntityStreamIn.delete) {
       this.streamDebug('Received Replicated Entity delete');
       this.currentState = null;
@@ -376,9 +423,3 @@ class ReplicatedEntityHandler {
     this.call.end();
   }
 }
-
-module.exports = {
-  ReplicatedEntityServices: ReplicatedEntityServices,
-  ReplicatedEntitySupport: ReplicatedEntitySupport,
-  ReplicatedEntityHandler: ReplicatedEntityHandler,
-};

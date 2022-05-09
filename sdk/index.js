@@ -23,7 +23,7 @@
 module.exports.Kalix = require('./src/kalix').Kalix;
 module.exports.EventSourcedEntity = require('./src/event-sourced-entity');
 module.exports.ValueEntity = require('./src/value-entity');
-module.exports.replicatedentity = require('./src/replicated-entity');
+module.exports.replicatedentity = require('./src/replicated-entity').exported;
 module.exports.ReplicatedWriteConsistency =
   require('./src/kalix').ReplicatedWriteConsistency;
 module.exports.Action = require('./src/action').default;

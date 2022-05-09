@@ -15,20 +15,27 @@
  */
 
 const should = require('chai').should();
-const Vote = require('../../src/replicated-data/vote');
-const protobufHelper = require('../../src/protobuf-helper');
+import Vote from '../../src/replicated-data/vote';
+import * as proto from '../proto/protobuf-bundle';
 
-const ReplicatedEntityDelta =
-  protobufHelper.moduleRoot.kalix.component.replicatedentity
-    .ReplicatedEntityDelta;
-
-function roundTripDelta(delta) {
-  return ReplicatedEntityDelta.decode(
-    ReplicatedEntityDelta.encode(delta).finish(),
-  );
+namespace protocol {
+  export type Delta =
+    proto.kalix.component.replicatedentity.IReplicatedEntityDelta;
+  export const Delta =
+    proto.kalix.component.replicatedentity.ReplicatedEntityDelta;
 }
 
-function voteDelta(totalVoters, votesFor, selfVote) {
+function roundTripDelta(delta: protocol.Delta | null): protocol.Delta {
+  return delta
+    ? protocol.Delta.decode(protocol.Delta.encode(delta).finish())
+    : {};
+}
+
+function voteDelta(
+  totalVoters: number,
+  votesFor: number,
+  selfVote: boolean,
+): protocol.Delta {
   return roundTripDelta({
     vote: {
       totalVoters: totalVoters,
@@ -75,13 +82,13 @@ describe('Vote', () => {
   it('should generate deltas', () => {
     const vote = new Vote();
     vote.vote = true;
-    roundTripDelta(vote.getAndResetDelta()).vote.selfVote.should.be.true;
+    roundTripDelta(vote.getAndResetDelta()).vote?.selfVote?.should.be.true;
     should.equal(vote.getAndResetDelta(), null);
     vote.votesFor.should.equal(1);
     vote.vote.should.equal(true);
 
     vote.vote = false;
-    roundTripDelta(vote.getAndResetDelta()).vote.selfVote.should.be.false;
+    roundTripDelta(vote.getAndResetDelta()).vote?.selfVote?.should.be.false;
     should.equal(vote.getAndResetDelta(), null);
     vote.votesFor.should.equal(0);
     vote.vote.should.equal(false);
@@ -138,6 +145,6 @@ describe('Vote', () => {
     vote.vote.should.equal(false);
     should.equal(vote.getAndResetDelta(), null);
     const delta = roundTripDelta(vote.getAndResetDelta(/* initial = */ true));
-    delta.vote.selfVote.should.be.false;
+    delta.vote?.selfVote?.should.be.false;
   });
 });

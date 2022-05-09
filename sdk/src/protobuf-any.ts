@@ -46,6 +46,10 @@ const EmptyArray = Object.freeze(new Uint8Array(0));
 
 const KalixJson = 'json.kalix.io/';
 
+namespace AnySupport {
+  export type Comparable = string | number | boolean;
+}
+
 /**
  * @private
  */
@@ -121,7 +125,7 @@ class AnySupport {
    * - objects (based on stable JSON serialization)
    * @private
    */
-  static toComparable(obj: any): string | number | boolean {
+  static toComparable(obj: any): AnySupport.Comparable {
     // When outputting strings, we prefix with a letter for the type, to guarantee uniqueness of different types.
     if (typeof obj === 'string') {
       return 's' + obj;
