@@ -15,9 +15,9 @@
  */
 
 const should = require('chai').should();
-import ReplicatedMultiMap from '../../src/replicated-data/multi-map';
-import path from 'path';
-import protobuf from 'protobufjs';
+import { ReplicatedMultiMap } from '../../src/replicated-data/multi-map';
+import * as path from 'path';
+import * as protobuf from 'protobufjs';
 import AnySupport from '../../src/protobuf-any';
 import * as proto from '../proto/protobuf-bundle';
 

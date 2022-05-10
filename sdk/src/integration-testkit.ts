@@ -17,7 +17,6 @@
 import * as grpc from '@grpc/grpc-js';
 import * as settings from '../settings';
 import { GrpcUtil } from './grpc-util';
-
 import { Kalix, Component } from './kalix';
 import { GenericContainer, TestContainers, Wait } from 'testcontainers';
 
@@ -26,8 +25,27 @@ const defaultDockerImage = `gcr.io/kalix-public/kalix-proxy:${settings.framework
   '',
 )}`;
 
+/** @public */
+export namespace IntegrationTestkit {
+  /**
+   * Callback for start, accepting possible error.
+   *
+   * @param error - Error on starting the testkit.
+   */
+  export type StartCallback = (error?: Error) => void;
+
+  /**
+   * Callback for shutdown, accepting possible error.
+   *
+   * @param error - Error on shutting down the testkit.
+   */
+  export type ShutdownCallback = (error?: Error) => void;
+}
+
 /**
  * Integration Testkit.
+ *
+ * @public
  */
 export class IntegrationTestkit {
   private options: any = { dockerImage: defaultDockerImage };
@@ -35,6 +53,11 @@ export class IntegrationTestkit {
   private kalix: Kalix;
   private proxyContainer: any;
 
+  /**
+   * Integration Testkit.
+   *
+   * @param options - Options for the testkit and Kalix service
+   */
   constructor(options?: any) {
     if (options) {
       this.options = options;
@@ -65,7 +88,7 @@ export class IntegrationTestkit {
    *
    * @param callback - start callback, accepting possible error
    */
-  start(callback: any): void {
+  start(callback: IntegrationTestkit.StartCallback): void {
     const result = this.asyncStart();
     if (typeof callback === 'function') {
       result.then(
@@ -122,7 +145,7 @@ export class IntegrationTestkit {
    *
    * @param callback - shutdown callback, accepting possible error
    */
-  shutdown(callback: (error?: any) => void) {
+  shutdown(callback: IntegrationTestkit.ShutdownCallback) {
     Object.getOwnPropertyNames(this.clients).forEach((client) => {
       this.clients[client].close();
     });

@@ -14,40 +14,78 @@
  * limitations under the License.
  */
 
-import util from 'util';
-import Long from 'long';
+import * as util from 'util';
+import * as Long from 'long';
 import { ReplicatedData } from '.';
 import * as proto from '../../proto/protobuf-bundle';
 
+/** @internal */
 namespace protocol {
   export type Delta =
     proto.kalix.component.replicatedentity.IReplicatedEntityDelta;
 }
 
-class ReplicatedCounter implements ReplicatedData {
+/**
+ * A Replicated Counter data type.
+ *
+ * A counter that can be incremented and decremented.
+ *
+ * @remarks
+ *
+ * The value is stored as a 64-bit signed long, hence values over `2^63 - 1` and less than `2^63`
+ * can't be represented.
+ *
+ * @public
+ */
+export class ReplicatedCounter implements ReplicatedData {
   private currentValue = Long.ZERO;
   private delta = Long.ZERO;
 
-  get longValue(): Long {
+  /**
+   * The value as a long.
+   */
+  get longValue(): Long.Long {
     return this.currentValue;
   }
 
+  /**
+   * The value as a number.
+   *
+   * @remarks
+   *
+   * Note that once the value exceeds `2^53`, this will not be an accurate representation of the
+   * value. If you expect it to exceed `2^53`, {@link longValue} should be used
+   * instead.
+   */
   get value(): number {
     return this.currentValue.toNumber();
   }
 
-  increment = (increment: Long | number): ReplicatedCounter => {
+  /**
+   * Increment the counter by the given number.
+   *
+   * @param increment - The amount to increment the counter by. If negative, it will be decremented instead
+   * @returns This counter
+   */
+  increment = (increment: Long.Long | number): ReplicatedCounter => {
     this.currentValue = this.currentValue.add(increment);
     this.delta = this.delta.add(increment);
     return this;
   };
 
-  decrement = (decrement: Long | number): ReplicatedCounter => {
+  /**
+   * Decrement the counter by the given number.
+   *
+   * @param decrement - The amount to decrement the counter by. If negative, it will be incremented instead
+   * @returns This counter
+   */
+  decrement = (decrement: Long.Long | number): ReplicatedCounter => {
     this.currentValue = this.currentValue.subtract(decrement);
     this.delta = this.delta.subtract(decrement);
     return this;
   };
 
+  /** @internal */
   getAndResetDelta = (initial?: boolean): protocol.Delta | null => {
     if (!this.delta.isZero() || initial) {
       const currentDelta: protocol.Delta = {
@@ -62,6 +100,7 @@ class ReplicatedCounter implements ReplicatedData {
     }
   };
 
+  /** @internal */
   applyDelta = (delta: protocol.Delta): void => {
     if (!delta.counter) {
       throw new Error(
@@ -75,5 +114,3 @@ class ReplicatedCounter implements ReplicatedData {
     return `ReplicatedCounter(${this.currentValue})`;
   };
 }
-
-export = ReplicatedCounter;

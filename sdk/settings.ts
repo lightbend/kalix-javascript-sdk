@@ -14,14 +14,39 @@
  * limitations under the License.
  */
 
+/**
+ * Kalix framework version.
+ *
+ * @public
+ */
 export const frameworkVersion: string =
   require('./config.json').frameworkVersion;
 
-export const protocolVersion = function (): { major: string; minor: string } {
+/**
+ * Kalix protocol version.
+ *
+ * @public
+ */
+export interface ProtocolVersion {
+  major: string;
+  minor: string;
+}
+
+/**
+ * Kalix protocol version.
+ *
+ * @public
+ */
+export const protocolVersion = function (): ProtocolVersion {
   const versions = frameworkVersion.split(/[.-]/);
   return { major: versions[0], minor: versions[1] };
 };
 
+/**
+ * Kalix protocol base version.
+ *
+ * @public
+ */
 export const baseVersion = function (): string {
   const version = protocolVersion();
   return `${version.major}.${version.minor}`;

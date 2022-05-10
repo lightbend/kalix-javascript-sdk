@@ -15,16 +15,17 @@
  */
 
 import { ReplicatedData } from '.';
-import ReplicatedCounter from './counter';
+import { ReplicatedCounter } from './counter';
 import AnySupport, { Comparable } from '../protobuf-any';
 import { Serializable } from '../serializable';
-import iterators from './iterators';
-import Long from 'long';
-import util from 'util';
+import * as iterators from './iterators';
+import * as Long from 'long';
+import * as util from 'util';
 import * as proto from '../../proto/protobuf-bundle';
 
 const debug = require('debug')('kalix-replicated-entity');
 
+/** @internal */
 namespace protocol {
   export type Delta =
     proto.kalix.component.replicatedentity.IReplicatedEntityDelta;
@@ -38,48 +39,98 @@ interface Entry {
   counter: ReplicatedCounter;
 }
 
-class ReplicatedCounterMap implements ReplicatedData {
+/**
+ * A replicated map of counters.
+ *
+ * @public
+ */
+export class ReplicatedCounterMap implements ReplicatedData {
   private counters = new Map<Comparable, Entry>();
   private removed = new Map<Comparable, Serializable>();
   private cleared = false;
 
+  /**
+   * Get the value at the given key.
+   *
+   * @param key - The key to get
+   * @returns The counter value, or undefined if no value is defined at that key
+   */
   get = (key: Serializable): number | undefined => {
     const entry = this.counters.get(AnySupport.toComparable(key));
     return entry !== undefined ? entry.counter.value : undefined;
   };
 
-  getLong = (key: Serializable): Long | undefined => {
+  /**
+   * Get the value as a long at the given key.
+   *
+   * @param key - The key to get
+   * @returns The counter value as a long, or undefined if no value is defined at that key
+   */
+  getLong = (key: Serializable): Long.Long | undefined => {
     const entry = this.counters.get(AnySupport.toComparable(key));
     return entry !== undefined ? entry.counter.longValue : undefined;
   };
 
+  /**
+   * Increment the counter at the given key by the given number.
+   *
+   * @param key - The key for the counter to increment
+   * @param increment - The amount to increment the counter by. If negative, it will be decremented instead
+   * @returns This counter map
+   */
   increment = (
     key: Serializable,
-    increment: Long | number,
+    increment: Long.Long | number,
   ): ReplicatedCounterMap => {
     this.getOrCreateCounter(key).increment(increment);
     return this;
   };
 
+  /**
+   * Decrement the counter at the given key by the given number.
+   *
+   * @param key - The key for the counter to decrement
+   * @param decrement - The amount to decrement the counter by. If negative, it will be incremented instead.
+   * @returns This counter map
+   */
   decrement = (
     key: Serializable,
-    decrement: Long | number,
+    decrement: Long.Long | number,
   ): ReplicatedCounterMap => {
     this.getOrCreateCounter(key).decrement(decrement);
     return this;
   };
 
+  /**
+   * Check whether this map contains a value of the given key.
+   *
+   * @param key - The key to check
+   * @returns True if this counter map contains a value for the given key
+   */
   has = (key: Serializable): boolean => {
     return this.counters.has(AnySupport.toComparable(key));
   };
 
+  /**
+   * The number of elements in this map.
+   */
   get size(): number {
     return this.counters.size;
   }
 
+  /**
+   * Return an (iterable) iterator of the keys of this counter map.
+   */
   keys = (): IterableIterator<Serializable> => {
     return iterators.map(this.counters.values(), (entry) => entry.key);
   };
+
+  /**
+   * Delete the counter at the given key.
+   *
+   * @param key - The key to delete
+   * @returns This counter map
+   */
 
   delete = (key: Serializable): ReplicatedCounterMap => {
     const comparableKey = AnySupport.toComparable(key);
@@ -90,6 +141,11 @@ class ReplicatedCounterMap implements ReplicatedData {
     return this;
   };
 
+  /**
+   * Clear all counters from this counter map.
+   *
+   * @returns This counter map
+   */
   clear = (): ReplicatedCounterMap => {
     if (this.counters.size > 0) {
       this.cleared = true;
@@ -111,6 +167,7 @@ class ReplicatedCounterMap implements ReplicatedData {
     }
   }
 
+  /** @internal */
   getAndResetDelta = (initial?: boolean): protocol.Delta | null => {
     const updated: protocol.EntryDelta[] = [];
     this.counters.forEach(({ key: key, counter: counter }, _comparableKey) => {
@@ -145,6 +202,7 @@ class ReplicatedCounterMap implements ReplicatedData {
     }
   };
 
+  /** @internal */
   applyDelta = (delta: protocol.Delta, anySupport: AnySupport): void => {
     if (!delta.replicatedCounterMap) {
       throw new Error(
@@ -183,5 +241,3 @@ class ReplicatedCounterMap implements ReplicatedData {
     );
   };
 }
-
-export = ReplicatedCounterMap;

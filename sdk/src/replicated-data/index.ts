@@ -14,19 +14,20 @@
  * limitations under the License.
  */
 
-import util from 'util';
+import * as util from 'util';
 import AnySupport from '../protobuf-any';
 import * as proto from '../../proto/protobuf-bundle';
 
-import ReplicatedCounter from './counter';
-import ReplicatedSet from './set';
-import ReplicatedRegister from './register';
-import ReplicatedMap from './map';
-import ReplicatedCounterMap from './counter-map';
-import ReplicatedRegisterMap from './register-map';
-import ReplicatedMultiMap from './multi-map';
-import Vote from './vote';
+import { ReplicatedCounter } from './counter';
+import { ReplicatedSet } from './set';
+import { ReplicatedRegister } from './register';
+import { ReplicatedMap } from './map';
+import { ReplicatedCounterMap } from './counter-map';
+import { ReplicatedRegisterMap } from './register-map';
+import { ReplicatedMultiMap } from './multi-map';
+import { Vote } from './vote';
 
+/** @internal */
 namespace protocol {
   export const Empty = proto.google.protobuf.Empty;
 
@@ -40,8 +41,16 @@ namespace protocol {
     proto.kalix.component.replicatedentity.ReplicatedEntityClock;
 }
 
+/**
+ * A Replicated Data type.
+ *
+ * @public
+ */
 export interface ReplicatedData {
+  /** @internal */
   getAndResetDelta(initial?: boolean): protocol.Delta | null;
+
+  /** @internal */
   applyDelta(
     delta: protocol.Delta,
     anySupport: AnySupport,
@@ -60,19 +69,42 @@ export {
   Vote,
 };
 
-export type Clock = protocol.Clock;
+/**
+ * A clock that may be used by {@link ReplicatedRegister}.
+ *
+ * @public
+ */
+export type Clock = number;
 
-export const Clocks = (function () {
-  const values = {
-    DEFAULT: protocol.Clock.REPLICATED_ENTITY_CLOCK_DEFAULT_UNSPECIFIED,
-    REVERSE: protocol.Clock.REPLICATED_ENTITY_CLOCK_REVERSE,
-    CUSTOM: protocol.Clock.REPLICATED_ENTITY_CLOCK_CUSTOM,
-    CUSTOM_AUTO_INCREMENT:
-      protocol.Clock.REPLICATED_ENTITY_CLOCK_CUSTOM_AUTO_INCREMENT,
-  };
-  return Object.freeze(values);
-})();
+/**
+ * An enum of all clocks that can be used by {@link ReplicatedRegister}.
+ *
+ * @public
+ */
+export enum Clocks {
+  /**
+   * The default clock, uses the machines system time.
+   */
+  DEFAULT = protocol.Clock.REPLICATED_ENTITY_CLOCK_DEFAULT_UNSPECIFIED,
 
+  /**
+   * A reverse clock, for achieving first - write - wins semantics.
+   */
+  REVERSE = protocol.Clock.REPLICATED_ENTITY_CLOCK_REVERSE,
+
+  /**
+   * A custom clock.
+   */
+  CUSTOM = protocol.Clock.REPLICATED_ENTITY_CLOCK_CUSTOM,
+
+  /**
+   * A custom clock that automatically increments if the current clock value is less than the existing clock value.
+   */
+  CUSTOM_AUTO_INCREMENT = protocol.Clock
+    .REPLICATED_ENTITY_CLOCK_CUSTOM_AUTO_INCREMENT,
+}
+
+/** @internal */
 export function createForDelta(delta: protocol.Delta): ReplicatedData {
   if (delta.counter) {
     return new ReplicatedCounter();

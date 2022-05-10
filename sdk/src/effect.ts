@@ -14,8 +14,13 @@
  * limitations under the License.
  */
 
-import grpc from '@grpc/grpc-js';
+import * as grpc from '@grpc/grpc-js';
 
+/**
+ * Service method to call for an effect (forward or side effect).
+ *
+ * @public
+ */
 export type EffectMethod =
   | grpc.MethodDefinition<any, any>
   | protobuf.Method

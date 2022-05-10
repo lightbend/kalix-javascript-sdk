@@ -14,24 +14,26 @@
  * limitations under the License.
  */
 
-import { Kalix, ComponentOptions, EntityOptions } from '../src/kalix';
+import {
+  Kalix,
+  ComponentOptions,
+  EntityOptions,
+  Component,
+} from '../src/kalix';
 import discovery from '../proto/kalix/protocol/discovery_pb';
 import { should } from 'chai';
 should();
 
 describe('Kalix', () => {
   it('should generate working links based on error codes', () => {
-    // Arrange
-    const akkasls = new Kalix({
+    const kalix = new Kalix({
       descriptorSetPath: 'test/user-function-test.desc',
     });
 
-    // Act
-    const specificLink = akkasls.docLinkFor('AS-00112');
-    const componentLink = akkasls.docLinkFor('AS-001');
-    const unknownLink = akkasls.docLinkFor('???');
+    const specificLink = kalix.docLinkFor('KLX-00112');
+    const componentLink = kalix.docLinkFor('KLX-001');
+    const unknownLink = kalix.docLinkFor('???');
 
-    // Assert
     specificLink.should.equal(
       'https://docs.kalix.io/javascript/views.html#changing',
     );
@@ -40,8 +42,7 @@ describe('Kalix', () => {
   });
 
   it('format correctly the source code for errors', () => {
-    // Arrange
-    const akkasls = new Kalix({
+    const kalix = new Kalix({
       descriptorSetPath: 'test/user-function-test.desc',
     });
     const location = new discovery.UserFunctionError.SourceLocation();
@@ -61,12 +62,10 @@ describe('Kalix', () => {
         return 'my-type';
       },
     };
-    akkasls.addComponent(component);
+    kalix.addComponent(component as Component);
 
-    // Act
-    const errorMsg = akkasls.formatSource(location);
+    const errorMsg = kalix.formatSource(location);
 
-    // Assert
     const result = `At package.test.json:2:4:
   "name": "some-name",
   "version": "some-version"`;
@@ -74,8 +73,7 @@ describe('Kalix', () => {
   });
 
   it('report correctly errors', () => {
-    // Arrange
-    const akkasls = new Kalix({
+    const kalix = new Kalix({
       descriptorSetPath: 'test/user-function-test.desc',
     });
     const location = new discovery.UserFunctionError.SourceLocation();
@@ -95,24 +93,22 @@ describe('Kalix', () => {
         return 'my-type';
       },
     };
-    akkasls.addComponent(component);
+    kalix.addComponent(component as Component);
 
     const userError = new discovery.UserFunctionError();
-    userError.setCode('AS-00112');
+    userError.setCode('KLX-00112');
     userError.setDetail('test details');
     userError.setMessage('test message');
     userError.setSourceLocationsList([location]);
 
-    // Act
-    const errorMsg = akkasls.reportErrorLogic(
+    const errorMsg = kalix.reportErrorLogic(
       userError.getCode(),
       userError.getMessage(),
       userError.getDetail(),
       userError.getSourceLocationsList(),
     );
 
-    // Assert
-    const result = `Error reported from Kalix system: AS-00112 test message
+    const result = `Error reported from Kalix system: KLX-00112 test message
 
 test details
 See documentation: https://docs.kalix.io/javascript/views.html#changing
@@ -124,19 +120,16 @@ At package.test.json:2:4:
   });
 
   it('discovery service should return correct service info', () => {
-    // Arrange
-    const akkasls = new Kalix({
+    const kalix = new Kalix({
       descriptorSetPath: 'test/user-function-test.desc',
       serviceName: 'my-service',
       serviceVersion: '1.2.3',
     });
     const proxyInfo = new discovery.ProxyInfo();
 
-    // Act
-    const result = akkasls.discoveryLogic(proxyInfo);
+    const result = kalix.discoveryLogic(proxyInfo);
     const serviceInfo = result.getServiceInfo();
 
-    // Assert
     result.getProto().should.equal('');
     result.getComponentsList().length.should.equal(0);
     serviceInfo?.getProtocolMajorVersion().should.equal(1);
@@ -151,8 +144,7 @@ At package.test.json:2:4:
   });
 
   it('discovery service should return correct components', () => {
-    // Arrange
-    const akkasls = new Kalix({
+    const kalix = new Kalix({
       descriptorSetPath: 'test/user-function-test.desc',
     });
     const proxyInfo = new discovery.ProxyInfo();
@@ -179,12 +171,10 @@ At package.test.json:2:4:
       },
     };
 
-    // Act
-    akkasls.addComponent(entity);
-    akkasls.addComponent(action);
-    const result = akkasls.discoveryLogic(proxyInfo);
+    kalix.addComponent(entity as Component);
+    kalix.addComponent(action as Component);
+    const result = kalix.discoveryLogic(proxyInfo);
 
-    // Assert
     result.getComponentsList().length.should.equal(2);
     const entityResult = result.getComponentsList()[0];
     entityResult.getServiceName().should.equal('my-service');
@@ -211,8 +201,7 @@ At package.test.json:2:4:
   });
 
   it('discovery service should return correct components with passivation', () => {
-    // Arrange
-    const akkasls = new Kalix({
+    const kalix = new Kalix({
       descriptorSetPath: 'test/user-function-test.desc',
     });
     const proxyInfo = new discovery.ProxyInfo();
@@ -229,11 +218,9 @@ At package.test.json:2:4:
       },
     };
 
-    // Act
-    akkasls.addComponent(component);
-    const result = akkasls.discoveryLogic(proxyInfo);
+    kalix.addComponent(component as Component);
+    const result = kalix.discoveryLogic(proxyInfo);
 
-    // Assert
     result.getComponentsList().length.should.equal(1);
     const comp = result.getComponentsList()[0];
     comp

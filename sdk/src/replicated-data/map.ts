@@ -17,12 +17,13 @@
 import { ReplicatedData } from '.';
 import AnySupport, { Comparable } from '../protobuf-any';
 import { Serializable } from '../serializable';
-import iterators from './iterators';
-import util from 'util';
+import * as iterators from './iterators';
+import * as util from 'util';
 import * as proto from '../../proto/protobuf-bundle';
 
 const debug = require('debug')('kalix-replicated-entity');
 
+/** @internal */
 namespace protocol {
   export type Any = proto.google.protobuf.IAny;
 
@@ -38,11 +39,35 @@ interface Entry {
   value: ReplicatedData;
 }
 
-namespace ReplicatedMap {
+/** @public */
+export namespace ReplicatedMap {
+  /**
+   * Generator for default values.
+   *
+   * @remarks
+   *
+   * This is invoked by get when the current map has no Replicated Data defined for the key.
+   *
+   * If this returns a Replicated Data object, it will be added to the map.
+   *
+   * Care should be taken when using this, since it means that the get method can trigger elements to be created. If
+   * using default values, the get method should not be used in queries where an empty value for the Replicated Data
+   * means the value is not present.
+   *
+   * @param key - The key the default value is being generated for
+   * @returns The default value, or undefined if no default value should be returned
+   */
   export type DefaultValueCallback = (
     key: Serializable,
   ) => ReplicatedData | undefined;
 
+  /**
+   * Callback for handling elements iterated through by {@link ReplicatedMap.forEach}.
+   *
+   * @param value - The Replicated Data value
+   * @param key - The key
+   * @param map - This Replicated Map
+   */
   export type ForEachCallback = (
     value: ReplicatedData,
     key: Serializable,
@@ -50,7 +75,23 @@ namespace ReplicatedMap {
   ) => void;
 }
 
-class ReplicatedMap implements ReplicatedData {
+/**
+ * A Replicated Map data type.
+ *
+ * @remarks
+ *
+ * ReplicatedMaps are a mapping of keys (which can be any {@link Serializable}) to Replicated Data
+ * types. Values of the map are merged together. Elements can be added and removed, however, when an
+ * element is removed and then added again, it's possible that the old value will be merged with the
+ * new, depending on whether the remove was replicated to all nodes before the add was.
+ *
+ * Note that while the map may contain different types of Replicated Data for different keys, a
+ * given key may not change its type, and doing so will likely result in the Replicated Data
+ * entering a non mergable state, from which it can't recover.
+ *
+ * @public
+ */
+export class ReplicatedMap implements ReplicatedData, Iterable<any[]> {
   // Map of a comparable form (that compares correctly using ===) to an object that holds the
   // actual key and the value.
   private currentValue = new Map<Comparable, Entry>();
@@ -60,23 +101,55 @@ class ReplicatedMap implements ReplicatedData {
     cleared: false,
   };
 
+  /**
+   * Generator for default values.
+   *
+   * @remarks
+   *
+   * This is invoked by get when the current map has no Replicated Data defined for the key.
+   *
+   * If this returns a Replicated Data object, it will be added to the map.
+   *
+   * Care should be taken when using this, since it means that the get method can trigger elements to be created. If
+   * using default values, the get method should not be used in queries where an empty value for the Replicated Data
+   * means the value is not present.
+   */
   defaultValue: ReplicatedMap.DefaultValueCallback = (_key: Serializable) =>
     undefined;
 
+  /**
+   * Check whether this map contains a value of the given key.
+   *
+   * @param key - The key to check
+   * @returns True if this map contains a value of the given key
+   */
   has = (key: Serializable): boolean => {
     return this.currentValue.has(AnySupport.toComparable(key));
   };
 
+  /**
+   * The number of entries in this map.
+   */
   get size(): number {
     return this.currentValue.size;
   }
 
+  /**
+   * Execute the given callback for each element.
+   *
+   * @param callback - The callback to handle each element
+   */
   forEach = (callback: ReplicatedMap.ForEachCallback): void => {
     return this.currentValue.forEach((value, _key) =>
       callback(value.value, value.key, this),
     );
   };
 
+  /**
+   * Return an (iterable) iterator of the entries of this map.
+   *
+   * @returns (iterable) iterator of map entries
+   */
   entries = (): IterableIterator<any[]> => {
     // For some reason, these arrays are key, value, even though callbacks are passed value, key
     return iterators.map(this.currentValue.values(), (value) => [
@@ -85,18 +158,39 @@ class ReplicatedMap implements ReplicatedData {
     ]);
   };
 
+  /**
+   * Return an iterator of the entries of this map.
+   *
+   * @returns iterator of map entries
+   */
   [Symbol.iterator] = (): IterableIterator<any[]> => {
     return this.entries();
   };
 
+  /**
+   * Return an iterator of the values of this map.
+   *
+   * @returns iterator of map values
+   */
   values = (): IterableIterator<ReplicatedData> => {
     return iterators.map(this.currentValue.values(), (value) => value.value);
   };
 
+  /**
+   * Return an iterator of the keys of this map.
+   *
+   * @returns iterator of map keys
+   */
   keys = (): IterableIterator<Serializable> => {
     return iterators.map(this.currentValue.values(), (value) => value.key);
   };
 
+  /**
+   * Get the value at the given key.
+   *
+   * @param key - The key to get
+   * @returns The Replicated Data value, or undefined if no value is defined at that key
+   */
   get = (key: Serializable): ReplicatedData | undefined => {
     const value = this.currentValue.get(AnySupport.toComparable(key));
     if (value !== undefined) {
@@ -113,16 +207,16 @@ class ReplicatedMap implements ReplicatedData {
   private asObjectProxy = new Proxy(
     {},
     {
-      get: (target: {}, key: string | symbol): any => this.get(key),
-      set: (target: {}, key: string | symbol, value: any): boolean => {
+      get: (target: {}, key: string): any => this.get(key),
+      set: (target: {}, key: string, value: any): boolean => {
         this.set(key, value);
         return true;
       },
-      deleteProperty: (target: {}, key: string | symbol): boolean => {
+      deleteProperty: (target: {}, key: string): boolean => {
         this.delete(key);
         return true;
       },
-      ownKeys: (target: {}): ArrayLike<string | symbol> => {
+      ownKeys: (target: {}): ArrayLike<string> => {
         const keys: string[] = [];
         this.forEach((value, key) => {
           if (typeof key === 'string') {
@@ -131,7 +225,7 @@ class ReplicatedMap implements ReplicatedData {
         });
         return keys;
       },
-      has: (target: {}, key: string | symbol): boolean => this.has(key),
+      has: (target: {}, key: string): boolean => this.has(key),
       defineProperty: (): boolean => {
         throw new Error(
           'ReplicatedMap.asObject does not support defining properties',
@@ -139,7 +233,7 @@ class ReplicatedMap implements ReplicatedData {
       },
       getOwnPropertyDescriptor: (
         target: {},
-        key: string | symbol,
+        key: string,
       ): PropertyDescriptor | undefined => {
         const value = this.get(key);
         return value
@@ -154,10 +248,26 @@ class ReplicatedMap implements ReplicatedData {
     },
   );
 
+  /**
+   * A representation of this map as an object.
+   *
+   * @remarks
+   *
+   * All entries whose keys are strings will be properties of this object, and setting any property of the object will
+   * insert that property as a key into the map.
+   */
+
   get asObject(): { [key: string]: ReplicatedData } {
     return this.asObjectProxy;
   }
 
+  /**
+   * Set the given value for the given key.
+   *
+   * @param key - The key to set
+   * @param value - The value to set
+   * @returns This map
+   */
   set = (key: Serializable, value: ReplicatedData): ReplicatedMap => {
     if (
       !(
@@ -198,6 +308,12 @@ class ReplicatedMap implements ReplicatedData {
     return this;
   };
 
+  /**
+   * Delete the value at the given key.
+   *
+   * @param key - The key to delete.
+   * @returns This map
+   */
   delete = (key: Serializable): ReplicatedMap => {
     const comparable = AnySupport.toComparable(key);
     if (this.currentValue.has(comparable)) {
@@ -212,6 +328,11 @@ class ReplicatedMap implements ReplicatedData {
     return this;
   };
 
+  /**
+   * Clear all entries from this map.
+   *
+   * @returns This map
+   */
   clear = (): ReplicatedMap => {
     if (this.currentValue.size > 0) {
       this.delta.cleared = true;
@@ -222,6 +343,7 @@ class ReplicatedMap implements ReplicatedData {
     return this;
   };
 
+  /** @internal */
   getAndResetDelta = (initial?: boolean): protocol.Delta | null => {
     const updateDeltas: protocol.EntryDelta[] = [];
     const addedDeltas: protocol.EntryDelta[] = [];
@@ -266,6 +388,7 @@ class ReplicatedMap implements ReplicatedData {
     }
   };
 
+  /** @internal */
   applyDelta = (
     delta: protocol.Delta,
     anySupport: AnySupport,
@@ -347,5 +470,3 @@ class ReplicatedMap implements ReplicatedData {
     );
   };
 }
-
-export = ReplicatedMap;

@@ -39,7 +39,7 @@ function processUnary(request: Request) {
 
 function processStreamedIn(context: Action.StreamedInContext) {
   let reply = replies.emptyReply();
-  context.on('data', (request) => {
+  context.on('data', (request: Request) => {
     const replyForThisRequest = createReplyForGroup(request.groups[0]);
     if (!replyForThisRequest.isEmpty()) {
       // keep the last type of reply but pass along the effects
@@ -67,7 +67,7 @@ function processStreamedOut(
 }
 
 function processStreamed(context: Action.StreamedCommandContext) {
-  context.on('data', (request) => {
+  context.on('data', (request: Request) => {
     createReplies(request).forEach((reply) =>
       // imperative send of Reply (since we could have 1:* for the incoming, and they can happen async?)
       context.reply(reply),

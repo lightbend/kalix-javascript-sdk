@@ -18,10 +18,10 @@ const should = require('chai').should();
 import * as ReplicatedData from '../../src/replicated-data';
 const ReplicatedRegisterMap = ReplicatedData.ReplicatedRegisterMap;
 const Clocks = ReplicatedData.Clocks;
-import path from 'path';
-import protobuf from 'protobufjs';
+import * as path from 'path';
+import * as protobuf from 'protobufjs';
 import AnySupport from '../../src/protobuf-any';
-import Long from 'long';
+import * as Long from 'long';
 import * as proto from '../proto/protobuf-bundle';
 
 namespace protocol {
@@ -122,8 +122,8 @@ describe('ReplicatedRegisterMap', () => {
       anySupport,
     );
     Array.from(registerMap.keys()).should.have.members(['one', 'two', 'three']);
-    registerMap.get('one').should.equal(1);
-    registerMap.get('two').should.equal('foo');
+    registerMap.get('one')?.should.equal(1);
+    registerMap.get('two')?.should.equal('foo');
     registerMap.get('three').field1.should.equal('bar');
     should.equal(registerMap.getAndResetDelta(), null);
   });
@@ -218,7 +218,7 @@ describe('ReplicatedRegisterMap', () => {
     );
     registerMap.size.should.equal(2);
     Array.from(registerMap.keys()).should.have.members(['one', 'two']);
-    registerMap.get('two').should.equal(2);
+    registerMap.get('two')?.should.equal(2);
     should.equal(registerMap.getAndResetDelta(), null);
   });
 

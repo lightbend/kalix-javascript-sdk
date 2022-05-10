@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-import util from 'util';
+import * as util from 'util';
 import AnySupport from '../protobuf-any';
 import { ReplicatedData, Clock, Clocks } from '.';
 import { Serializable } from '../serializable';
 import * as proto from '../../proto/protobuf-bundle';
 
+/** @internal */
 namespace protocol {
   export type Any = proto.google.protobuf.IAny;
 
@@ -30,10 +31,29 @@ namespace protocol {
     proto.kalix.component.replicatedentity.IReplicatedRegisterDelta;
 }
 
-class ReplicatedRegister implements ReplicatedData {
+/**
+ * A Replicated Register data type.
+ *
+ * @remarks
+ *
+ * A ReplicatedRegister uses a clock to determine which of two concurrent updates should win. The
+ * last write wins. The clock is represented as a number. The default clock uses the proxies system
+ * time, custom clocks can supply a custom number to be used. If two clock values are equal, the
+ * write from the node with the lowest address wins.
+ *
+ * @public
+ */
+export class ReplicatedRegister implements ReplicatedData {
   private currentValue: Serializable;
   private delta: protocol.RegisterDelta;
 
+  /**
+   * Create a new Replicated Register.
+   *
+   * @param value - A value to hold in the register
+   * @param clock - The clock to use, otherwise default clock
+   * @param customClockValue - The custom clock value, if using a custom clock
+   */
   constructor(
     value: Serializable,
     clock: Clock = Clocks.DEFAULT,
@@ -55,6 +75,11 @@ class ReplicatedRegister implements ReplicatedData {
     };
   }
 
+  /**
+   * Get or set the value of this register.
+   *
+   * @remarks Sets with the default clock.
+   */
   get value(): Serializable {
     return this.currentValue;
   }
@@ -63,6 +88,13 @@ class ReplicatedRegister implements ReplicatedData {
     this.setWithClock(value);
   }
 
+  /**
+   * Set the value using a custom clock.
+   *
+   * @param value - The value to set
+   * @param clock - The clock, otherwise the default clock
+   * @param customClockValue - Custom clock value, or ignored if a custom clock isn't specified
+   */
   setWithClock = (
     value: Serializable,
     clock: Clock = Clocks.DEFAULT,
@@ -85,6 +117,7 @@ class ReplicatedRegister implements ReplicatedData {
     };
   }
 
+  /** @internal */
   getAndResetDelta = (): protocol.Delta | null => {
     if (this.delta.value !== null) {
       const toReturn = this.delta;
@@ -97,6 +130,7 @@ class ReplicatedRegister implements ReplicatedData {
     }
   };
 
+  /** @internal */
   applyDelta = (delta: protocol.Delta, anySupport: AnySupport): void => {
     if (!delta.register) {
       throw new Error(
@@ -111,5 +145,3 @@ class ReplicatedRegister implements ReplicatedData {
     return `ReplicatedRegister(${this.currentValue})`;
   };
 }
-
-export = ReplicatedRegister;

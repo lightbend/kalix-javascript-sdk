@@ -14,20 +14,21 @@
  * limitations under the License.
  */
 
-import path from 'path';
+import * as path from 'path';
 import * as grpc from '@grpc/grpc-js';
 import * as protoLoader from '@grpc/proto-loader';
 import AnySupport from './protobuf-any';
 import { CommandHandler, InternalContext } from './command';
 import CommandHelper from './command-helper';
 import { ServiceMap } from './kalix';
-import ValueEntity from './value-entity';
+import { ValueEntity } from './value-entity';
 import * as proto from '../proto/protobuf-bundle';
 
 const debug = require('debug')('kalix-value-entity');
 // Bind to stdout
 debug.log = console.log.bind(console);
 
+/** @internal */
 namespace protocol {
   export type Any = proto.google.protobuf.IAny;
 
@@ -46,6 +47,7 @@ namespace protocol {
   export type Call = grpc.ServerDuplexStream<StreamIn, StreamOut>;
 }
 
+/** @internal */
 class ValueEntitySupport {
   readonly root: protobuf.Root;
   readonly service: protobuf.Service;
@@ -91,10 +93,7 @@ class ValueEntitySupport {
   }
 }
 
-/**
- * Handler for a single event sourced entity.
- * @private
- */
+/** @internal */
 class ValueEntityHandler {
   private entity: ValueEntitySupport;
   private call: protocol.Call;
@@ -242,7 +241,8 @@ class ValueEntityHandler {
   }
 }
 
-class ValueEntityServices {
+/** @internal */
+export default class ValueEntityServices {
   private services: { [serviceName: string]: ValueEntitySupport };
 
   constructor() {
@@ -351,5 +351,3 @@ class ValueEntityServices {
     });
   }
 }
-
-export = ValueEntityServices;

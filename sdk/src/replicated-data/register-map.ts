@@ -15,15 +15,16 @@
  */
 
 import { Clocks, ReplicatedData } from '.';
-import ReplicatedRegister from './register';
+import { ReplicatedRegister } from './register';
 import AnySupport, { Comparable } from '../protobuf-any';
 import { Serializable } from '../serializable';
-import iterators from './iterators';
-import util from 'util';
+import * as iterators from './iterators';
+import * as util from 'util';
 import * as proto from '../../proto/protobuf-bundle';
 
 const debug = require('debug')('kalix-replicated-entity');
 
+/** @internal */
 namespace protocol {
   export type Delta =
     proto.kalix.component.replicatedentity.IReplicatedEntityDelta;
@@ -37,16 +38,36 @@ interface Entry {
   register: ReplicatedRegister;
 }
 
-class ReplicatedRegisterMap implements ReplicatedData {
+/**
+ * A replicated map of registers.
+ *
+ * @public
+ */
+export class ReplicatedRegisterMap implements ReplicatedData {
   private registers = new Map<Comparable, Entry>();
   private removed = new Map<Comparable, Serializable>();
   private cleared = false;
 
-  get = (key: Serializable): Serializable => {
+  /**
+   * Get the value at the given key.
+   *
+   * @param key - The key to get
+   * @returns The register value, or undefined if no value is defined at that key
+   */
+  get = (key: Serializable): Serializable | undefined => {
     const entry = this.registers.get(AnySupport.toComparable(key));
     return entry !== undefined ? entry.register.value : undefined;
   };
 
+  /**
+   * Set the register at the given key to the given value.
+   *
+   * @param key - The key for the register
+   * @param value - The new value for the register
+   * @param clock - The register clock, otherwise default clock
+   * @param customClockValue - Clock value when using custom clock, otherwise ignored
+   * @returns This register map
+   */
   set = (
     key: Serializable,
     value: Serializable,
@@ -57,18 +78,38 @@ class ReplicatedRegisterMap implements ReplicatedData {
     return this;
   };
 
+  /**
+   * Check whether this map contains a value of the given key.
+   *
+   * @param key - The key to check
+   * @returns True if this register map contains a value for the given key
+   */
   has = (key: Serializable): boolean => {
     return this.registers.has(AnySupport.toComparable(key));
   };
 
+  /**
+   * The number of elements in this map.
+   */
   get size(): number {
     return this.registers.size;
   }
 
+  /**
+   * Return an (iterable) iterator of the keys of this register map.
+   *
+   * @returns (iterable) iterator of the map keys
+   */
   keys = (): IterableIterator<Serializable> => {
     return iterators.map(this.registers.values(), (entry) => entry.key);
   };
 
+  /**
+   * Delete the register at the given key.
+   *
+   * @param key - The key to delete
+   * @returns This register map
+   */
   delete = (key: Serializable): ReplicatedRegisterMap => {
     const comparableKey = AnySupport.toComparable(key);
     if (this.registers.has(comparableKey)) {
@@ -78,6 +119,11 @@ class ReplicatedRegisterMap implements ReplicatedData {
     return this;
   };
 
+  /**
+   * Clear all registers from this register map.
+   *
+   * @returns This register map
+   */
   clear = (): ReplicatedRegisterMap => {
     if (this.registers.size > 0) {
       this.cleared = true;
@@ -99,6 +145,7 @@ class ReplicatedRegisterMap implements ReplicatedData {
     }
   }
 
+  /** @internal */
   getAndResetDelta = (initial?: boolean): protocol.Delta | null => {
     const updated: protocol.EntryDelta[] = [];
     this.registers.forEach(
@@ -135,6 +182,7 @@ class ReplicatedRegisterMap implements ReplicatedData {
     }
   };
 
+  /** @internal */
   applyDelta = (delta: protocol.Delta, anySupport: AnySupport): void => {
     if (!delta.replicatedRegisterMap) {
       throw new Error(
@@ -176,5 +224,3 @@ class ReplicatedRegisterMap implements ReplicatedData {
     );
   };
 }
-
-export = ReplicatedRegisterMap;

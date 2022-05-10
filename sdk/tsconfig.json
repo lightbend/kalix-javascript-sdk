@@ -3,10 +3,10 @@
     "target": "es6",
     "module": "commonjs",
     "moduleResolution": "node",
-    "declaration": false,
+    "declaration": true,
     "composite": false,
     "strict": true,
-    "allowJs": true,
+    "allowJs": false,
     "noImplicitAny": true /* Raise error on expressions and declarations with an implied 'any' type. */,
     "strictNullChecks": true /* Enable strict null checks. */,
     "strictFunctionTypes": true /* Enable strict checking of function types. */,
@@ -18,13 +18,24 @@
     "importHelpers": true,
     "skipLibCheck": true,
     "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true,
     "experimentalDecorators": true,
     "sourceMap": true,
+    "stripInternal": true,
     "rootDir": "./",
     "outDir": "./dist",
-    "lib": ["ES6"]
+    "lib": [
+      "ES6"
+    ]
   },
-  "include": ["src/**/*", "./config.json", "./settings.ts", "./package.json", "./index.js", "proto"],
-  "exclude": ["node_modules"]
+  "include": [
+    "src/**/*",
+    "./index.ts",
+    "./settings.ts",
+    "./config.json",
+    "./package.json",
+    "proto"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
 }

@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-import path from 'path';
+import * as path from 'path';
 import * as grpc from '@grpc/grpc-js';
 import * as protoLoader from '@grpc/proto-loader';
 import AnySupport from './protobuf-any';
 import { CommandHandler, InternalContext } from './command';
 import CommandHelper from './command-helper';
-import EventSourcedEntity from './event-sourced-entity';
-import Long from 'long';
+import { EventSourcedEntity } from './event-sourced-entity';
+import * as Long from 'long';
 import { ServiceMap } from './kalix';
 import { Reply } from './reply';
 import { Serializable } from './serializable';
@@ -31,6 +31,7 @@ const debug = require('debug')('kalix-event-sourced-entity');
 // Bind to stdout
 debug.log = console.log.bind(console);
 
+/** @internal */
 namespace protocol {
   export type Any = proto.google.protobuf.IAny;
 
@@ -51,11 +52,13 @@ namespace protocol {
   export type Call = grpc.ServerDuplexStream<StreamIn, StreamOut>;
 }
 
+/** @internal */
 interface InternalEventSourcedEntityContext extends InternalContext {
   context: EventSourcedEntity.EventSourcedEntityCommandContext;
   events: protocol.Any[];
 }
 
+/** @internal */
 class EventSourcedEntitySupport {
   readonly root: protobuf.Root;
   readonly service: protobuf.Service;
@@ -111,10 +114,7 @@ class EventSourcedEntitySupport {
   }
 }
 
-/**
- * Handler for a single event sourced entity.
- * @private
- */
+/** @internal */
 class EventSourcedEntityHandler {
   private entity: EventSourcedEntitySupport;
   private call: protocol.Call;
@@ -347,7 +347,8 @@ class EventSourcedEntityHandler {
   }
 }
 
-class EventSourcedEntityServices {
+/** @internal */
+export default class EventSourcedEntityServices {
   private services: { [serviceName: string]: EventSourcedEntitySupport };
 
   constructor() {
@@ -461,5 +462,3 @@ class EventSourcedEntityServices {
     });
   }
 }
-
-export = EventSourcedEntityServices;

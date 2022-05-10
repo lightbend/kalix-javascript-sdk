@@ -14,10 +14,24 @@
  * limitations under the License.
  */
 
+/**
+ * Any type that has a `type` property on it can be serialized as JSON, with the value of the type
+ * property describing the type of the value.
+ *
+ * @public
+ */
 export interface TypedJson {
+  /**
+   * The type of the object.
+   */
   type: string;
 }
 
+/**
+ * A type that is serializable.
+ *
+ * @public
+ */
 export type Serializable =
   | protobuf.Message
   | TypedJson

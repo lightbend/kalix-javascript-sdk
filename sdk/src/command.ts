@@ -16,11 +16,12 @@
 
 import { ContextFailure } from './context-failure';
 import { EffectMethod } from './effect';
-import { GrpcStatus } from './kalix';
+import { GrpcStatus } from './grpc-status';
 import { Metadata } from './metadata';
 import { Reply } from './reply';
 import * as proto from '../proto/protobuf-bundle';
 
+/** @internal */
 namespace protocol {
   export type EntityCommand = proto.kalix.component.entity.ICommand;
   export type EntityReply =
@@ -32,8 +33,14 @@ namespace protocol {
   export type Failure = proto.kalix.component.IFailure;
 }
 
+/**
+ * A message object.
+ *
+ * @public
+ */
 export type Message = { [key: string]: any };
 
+/** @internal */
 export interface InternalContext {
   commandId: Long;
   active: boolean;
@@ -47,15 +54,50 @@ export interface InternalContext {
   commandDebug(msg: string, ...args: any[]): void;
 }
 
+/**
+ * Context for an entity.
+ *
+ * @public
+ */
 export interface EntityContext {
+  /**
+   * The id of the entity that the command is for.
+   */
   entityId: string;
+
+  /**
+   * The id of the command.
+   */
   commandId: Long;
+
+  /**
+   * The metadata to send with a reply.
+   */
   replyMetadata: Metadata;
 }
 
+/**
+ * Effect context.
+ *
+ * @public
+ */
 export interface EffectContext {
+  /**
+   * The metadata associated with the command.
+   */
   readonly metadata: Metadata;
 
+  /**
+   * DEPRECATED. Emit an effect after processing this command.
+   *
+   * @deprecated Use {@link Reply.addEffect} instead.
+   *
+   * @param method - The entity service method to invoke
+   * @param message - The message to send to that service
+   * @param synchronous - Whether the effect should be execute synchronously or not
+   * @param metadata - Metadata to send with the effect
+   * @param internalCall - For internal calls to this deprecated function
+   */
   effect(
     method: EffectMethod,
     message: Message,
@@ -64,17 +106,54 @@ export interface EffectContext {
     internalCall?: boolean,
   ): void;
 
+  /**
+   * Fail handling this command.
+   *
+   * @remarks
+   *
+   * An alternative to using this is to return a failed Reply created with {@link replies.failure}.
+   *
+   * @param msg - The failure message
+   * @param grpcStatus - The grpcStatus
+   * @throws An error that captures the failure message. Note that even if you
+   *         catch the error thrown by this method, the command will still be
+   *         failed with the given message.
+   */
   fail(msg: string, grpcStatus?: GrpcStatus): void;
 }
 
+/**
+ * Context for a command.
+ *
+ * @public
+ */
 export interface CommandContext extends EffectContext {
   // FIXME: remove for version 0.8 (https://github.com/lightbend/kalix-proxy/issues/410)
+  /**
+   * DEPRECATED. Forward this command to another service component call.
+   *
+   * @deprecated Use {@link replies.forward} instead.
+   *
+   * @param method - The service component method to invoke
+   * @param message - The message to send to that service component
+   * @param metadata - Metadata to send with the forward
+   */
   thenForward(
     method: EffectMethod,
     message: Message,
     metadata?: Metadata,
   ): void;
 
+  /**
+   * DEPRECATED. Forward this command to another service component call.
+   *
+   * @deprecated Use {@link replies.forward} instead.
+   *
+   * @param method - The service component method to invoke
+   * @param message - The message to send to that service component
+   * @param metadata - Metadata to send with the forward
+   * @param internalCall - For internal calls to this deprecated function
+   */
   forward(
     method: EffectMethod,
     message: Message,
@@ -83,12 +162,19 @@ export interface CommandContext extends EffectContext {
   ): void;
 }
 
+/**
+ * User reply types.
+ *
+ * @public
+ */
 export type UserReply = Reply | Message | undefined;
 
+/** @internal */
 export interface CommandHandler {
   (message: protobuf.Message, context: InternalContext): Promise<UserReply>;
 }
 
+/** @internal */
 export interface CommandHandlerFactory {
   (commandName: string): CommandHandler | null;
 }

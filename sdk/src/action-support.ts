@@ -14,15 +14,16 @@
  * limitations under the License.
  */
 
-import path from 'path';
+import * as path from 'path';
 import * as grpc from '@grpc/grpc-js';
 import * as protoLoader from '@grpc/proto-loader';
-import Action from './action';
+import { Action } from './action';
 import AnySupport from './protobuf-any';
-import { CommandContext, Message } from './command';
+import { Message } from './command';
 import { EffectMethod } from './effect';
 import EffectSerializer from './effect-serializer';
-import { GrpcStatus, ServiceMap } from './kalix';
+import { ServiceMap } from './kalix';
+import { GrpcStatus } from './grpc-status';
 import { Metadata } from './metadata';
 import { Reply } from './reply';
 import * as proto from '../proto/protobuf-bundle';
@@ -31,6 +32,7 @@ const debug = require('debug')('kalix-action');
 // Bind to stdout
 debug.log = console.log.bind(console);
 
+/** @internal */
 namespace protocol {
   export type Command = proto.kalix.component.action.IActionCommand;
   export type Response = proto.kalix.component.action.IActionResponse;
@@ -39,98 +41,48 @@ namespace protocol {
   export type Failure = proto.kalix.component.IFailure;
 }
 
+/** @internal */
 export type Call = UnaryCall | StreamedInCall | StreamedOutCall | StreamedCall;
 
+/** @internal */
 export type UnaryCall = grpc.ServerUnaryCall<
   protocol.Command,
   protocol.Response
 >;
 
+/** @internal */
 export type UnaryCallback = grpc.sendUnaryData<protocol.Response>;
 
+/** @internal */
 export type StreamedInCall = grpc.ServerReadableStream<
   protocol.Command,
   protocol.Response
 >;
 
+/** @internal */
 export type StreamedOutCall = grpc.ServerWritableStream<
   protocol.Command,
   protocol.Response
 >;
 
+/** @internal */
 export type StreamedCall = grpc.ServerDuplexStream<
   protocol.Command,
   protocol.Response
 >;
 
-export interface ActionContext {
-  readonly cancelled: boolean;
-  readonly metadata: Metadata;
-  on: (eventType: string, callback: Function) => void;
-}
-
-export interface ActionCommandContext extends ActionContext, CommandContext {
-  write: (message: any, metadata?: Metadata) => void;
-}
-
-export interface UnaryCommandContext extends ActionCommandContext {
-  alreadyReplied: boolean;
-}
-
-export interface StreamedInContext extends ActionCommandContext {
-  cancel: () => void;
-}
-
-export interface StreamedInCommandContext extends StreamedInContext {}
-
-export interface StreamedOutContext extends ActionCommandContext {
-  reply: (reply: Reply) => void;
-  end: () => void;
-}
-
-export interface StreamedOutCommandContext extends StreamedOutContext {}
-
-export interface StreamedCommandContext
-  extends StreamedInContext,
-    StreamedOutContext {}
-
-export type ActionCommandHandler =
-  | UnaryCommandHandler
-  | StreamedInCommandHandler
-  | StreamedOutCommandHandler
-  | StreamedCommandHandler;
-
-export type UnaryCommandHandler = (
-  message: any,
-  context: UnaryCommandContext,
-) => Reply | any | Promise<any> | undefined;
-
-export type StreamedInCommandHandler = (
-  context: StreamedInCommandContext,
-) => any | Promise<any> | undefined;
-
-export type StreamedOutCommandHandler = (
-  message: any,
-  context: StreamedOutCommandContext,
-) => void;
-
-export type StreamedCommandHandler = (context: StreamedCommandContext) => void;
-
-export type ActionCommandHandlers = {
-  [commandName: string]: ActionCommandHandler;
-};
-
+/** @internal */
 class ActionService {
   readonly root: protobuf.Root;
   readonly service: protobuf.Service;
-  readonly commandHandlers: ActionCommandHandlers;
+  readonly commandHandlers: Action.CommandHandlers;
   readonly anySupport: AnySupport;
   readonly effectSerializer: EffectSerializer;
 
   constructor(
     root: protobuf.Root,
     service: protobuf.Service,
-    commandHandlers: ActionCommandHandlers,
+    commandHandlers: Action.CommandHandlers,
     allComponents: ServiceMap,
   ) {
     this.root = root;
@@ -141,13 +93,11 @@ class ActionService {
   }
 }
 
-/**
- * @private
- */
+/** @internal */
 class ActionHandler {
   private actionService: ActionService;
   private grpcMethod: protobuf.Method;
-  private commandHandler: ActionCommandHandler;
+  private commandHandler: Action.CommandHandler;
   private call: Call;
   private grpcCallback: UnaryCallback | null;
 
@@ -156,16 +106,16 @@ class ActionHandler {
   private callbacks: { [eventType: string]: Function };
 
   private ctx:
-    | ActionContext
-    | UnaryCommandContext
-    | StreamedInCommandContext
-    | StreamedOutCommandContext
-    | StreamedCommandContext;
+    | Action.ActionContext
+    | Action.UnaryCommandContext
+    | Action.StreamedInCommandContext
+    | Action.StreamedOutCommandContext
+    | Action.StreamedCommandContext;
 
   constructor(
     actionService: ActionService,
     grpcMethod: protobuf.Method,
-    commandHandler: ActionCommandHandler,
+    commandHandler: Action.CommandHandler,
     call: Call,
     grpcCallback: UnaryCallback | null,
     metadata?: protocol.Metadata | null,
@@ -194,10 +144,10 @@ class ActionHandler {
     );
   }
 
-  createContext(metadata?: protocol.Metadata | null): ActionContext {
+  createContext(metadata?: protocol.Metadata | null): Action.ActionContext {
     const call = this.call;
     const metadataObject = Metadata.fromProtocol(metadata);
-    const ctx: ActionContext = {
+    const ctx: Action.ActionContext = {
       get cancelled() {
         return call.cancelled;
       },
@@ -233,7 +183,10 @@ class ActionHandler {
     }
   }
 
-  passReplyThroughContext(ctx: ActionCommandContext, reply: Reply): void {
+  passReplyThroughContext(
+    ctx: Action.ActionCommandContext,
+    reply: Reply,
+  ): void {
     // effects need to go first to end up in reply
     if (reply.getEffects()) {
       reply.getEffects().forEach(function (effect) {
@@ -267,7 +220,7 @@ class ActionHandler {
   }
 
   handleSingleReturn(value: any): void {
-    const ctx = this.ctx as UnaryCommandContext;
+    const ctx = this.ctx as Action.UnaryCommandContext;
     if (value) {
       if (ctx.alreadyReplied) {
         console.warn(
@@ -316,7 +269,7 @@ class ActionHandler {
           this.grpcMethod.name,
         );
       } else {
-        const ctx = this.ctx as ActionCommandContext;
+        const ctx = this.ctx as Action.ActionCommandContext;
         if (typeof userReturn.then === 'function') {
           userReturn.then(ctx.write, ctx.fail);
         } else {
@@ -347,7 +300,7 @@ class ActionHandler {
   }
 
   setupUnaryOutContext() {
-    const ctx = this.ctx as UnaryCommandContext;
+    const ctx = this.ctx as Action.UnaryCommandContext;
 
     const effects: protocol.SideEffect[] = [];
 
@@ -374,7 +327,7 @@ class ActionHandler {
       ctx.alreadyReplied = true;
       if (!internalCall)
         console.warn(
-          "WARNING: Action context 'forward' is deprecated. Please use 'ReplyFactory.forward' instead.",
+          "WARNING: Action context 'forward' is deprecated. Please use 'replies.forward' instead.",
         );
       const forward = this.actionService.effectSerializer.serializeEffect(
         method,
@@ -460,16 +413,16 @@ class ActionHandler {
   }
 
   setupStreamedOutContext() {
-    const ctx = this.ctx as StreamedOutContext;
+    const ctx = this.ctx as Action.StreamedOutContext;
     const call = this.call as StreamedOutCall | StreamedCall;
 
     let effects: protocol.SideEffect[] = [];
 
-    this.supportedEvents.push('cancelled');
+    this.supportedEvents.push(Action.StreamedOutContext.cancelled);
 
     this.call.on('cancelled', () => {
       this.streamDebug('Received stream cancelled');
-      this.invokeCallback('cancelled', ctx);
+      this.invokeCallback(Action.StreamedOutContext.cancelled, ctx);
     });
 
     ctx.reply = (reply: Reply): void => {
@@ -581,23 +534,30 @@ class ActionHandler {
   }
 
   setupStreamedInContext() {
-    const ctx = this.ctx as StreamedInContext;
+    const ctx = this.ctx as Action.StreamedInContext;
     const call = this.call as StreamedInCall | StreamedCall;
 
-    this.supportedEvents.push('data');
-    this.supportedEvents.push('end');
+    this.supportedEvents.push(Action.StreamedInContext.data);
+    this.supportedEvents.push(Action.StreamedInContext.end);
 
     this.call.on('data', (data) => {
       this.streamDebug('Received data in');
       const deserializedCommand = this.actionService.anySupport.deserialize(
         data.payload,
       );
-      this.invokeCallback('data', deserializedCommand, this.ctx);
+      this.invokeCallback(
+        Action.StreamedInContext.data,
+        deserializedCommand,
+        this.ctx,
+      );
     });
 
     this.call.on('end', () => {
       this.streamDebug('Received stream end');
-      const userReturn = this.invokeCallback('end', this.ctx);
+      const userReturn = this.invokeCallback(
+        Action.StreamedInContext.end,
+        this.ctx,
+      );
       if (userReturn instanceof Reply) {
         this.passReplyThroughContext(ctx, userReturn);
       } else {
@@ -664,6 +624,7 @@ class ActionHandler {
   }
 }
 
+/** @internal */
 export default class ActionSupport {
   private actionServices: { [serviceName: string]: ActionService };
 

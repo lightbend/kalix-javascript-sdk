@@ -17,19 +17,37 @@
 import { Metadata } from './metadata';
 
 /**
- * CloudEvent data.
+ * Cloudevent data.
+ *
+ * This exposes Cloudevent data from {@link Metadata}. Changes made to the
+ * Cloudevent are reflected in the backing metadata, as are changes to the
+ * backing metadata reflected in this Cloudevent.
+ *
+ * @public
  */
 export class Cloudevent {
+  /**
+   * The metadata backing this Cloudevent.
+   */
   readonly metadata: Metadata;
 
+  /**
+   * @param metadata - The metadata backing this Cloudevent
+   */
   constructor(metadata: Metadata) {
     this.metadata = metadata;
   }
 
+  /**
+   * Get the spec version.
+   */
   get specversion(): string | undefined {
     return this.getString('ce-specversion');
   }
 
+  /**
+   * Get or set the id.
+   */
   get id(): string | undefined {
     return this.getString('ce-id');
   }
@@ -42,6 +60,9 @@ export class Cloudevent {
     }
   }
 
+  /**
+   * Get or set the source.
+   */
   get source(): string | undefined {
     return this.getString('ce-source');
   }
@@ -54,6 +75,9 @@ export class Cloudevent {
     }
   }
 
+  /**
+   * Get or set the type.
+   */
   get type(): string | undefined {
     return this.getString('ce-type');
   }
@@ -66,6 +90,9 @@ export class Cloudevent {
     }
   }
 
+  /**
+   * Get or set the datacontenttype.
+   */
   get datacontenttype(): string | undefined {
     return this.getString('Content-Type');
   }
@@ -78,6 +105,9 @@ export class Cloudevent {
     }
   }
 
+  /**
+   * Get or set the dataschema.
+   */
   get dataschema(): string | undefined {
     return this.getString('ce-dataschema');
   }
@@ -90,6 +120,9 @@ export class Cloudevent {
     }
   }
 
+  /**
+   * Get or set the subject.
+   */
   get subject(): string | undefined {
     return this.getString('ce-subject');
   }
@@ -102,6 +135,9 @@ export class Cloudevent {
     }
   }
 
+  /**
+   * Get or set the time.
+   */
   get time(): Date | undefined {
     const value = this.metadata.asMap['ce-time'];
     if (typeof value === 'string') {

@@ -15,7 +15,7 @@
  */
 
 const should = require('chai').should();
-import Vote from '../../src/replicated-data/vote';
+import { Vote } from '../../src/replicated-data/vote';
 import * as proto from '../proto/protobuf-bundle';
 
 namespace protocol {

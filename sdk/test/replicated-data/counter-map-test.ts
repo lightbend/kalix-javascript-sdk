@@ -15,11 +15,11 @@
  */
 
 const should = require('chai').should();
-import ReplicatedCounterMap from '../../src/replicated-data/counter-map';
-import path from 'path';
-import protobuf from 'protobufjs';
+import { ReplicatedCounterMap } from '../../src/replicated-data/counter-map';
+import * as path from 'path';
+import * as protobuf from 'protobufjs';
 import AnySupport from '../../src/protobuf-any';
-import Long from 'long';
+import * as Long from 'long';
 import * as proto from '../proto/protobuf-bundle';
 
 namespace protocol {
