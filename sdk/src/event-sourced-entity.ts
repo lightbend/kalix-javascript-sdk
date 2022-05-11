@@ -99,7 +99,7 @@ export namespace EventSourcedEntity {
    * @param state - The entity state
    * @returns The new entity state
    */
-  export type BehaviorCallback = (state: Serializable) => Behavior;
+  export type BehaviorCallback = (state: any) => Behavior;
 
   /**
    * Initial state callback.

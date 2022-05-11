@@ -20,7 +20,7 @@ import * as path from 'path';
 import * as protobuf from 'protobufjs';
 import AnySupport from '../../src/protobuf-any';
 import * as Long from 'long';
-import * as proto from '../proto/protobuf-bundle';
+import * as proto from '../proto/test-protobuf-bundle';
 
 namespace protocol {
   export type Any = proto.google.protobuf.IAny;
@@ -35,8 +35,11 @@ namespace protocol {
 const root = new protobuf.Root();
 root.loadSync(path.join(__dirname, '..', 'example.proto'));
 root.resolveAll();
-const Example = root.lookupType('com.example.Example');
 const anySupport = new AnySupport(root);
+
+// serialized state needs to be reflective type
+type Example = proto.com.example.IExample & protobuf.Message;
+const Example = root.lookupType('com.example.Example');
 
 function roundTripDelta(delta: protocol.Delta | null): protocol.Delta {
   return delta
@@ -102,7 +105,7 @@ describe('ReplicatedCounterMap', () => {
   });
 
   it('should generate an added delta', () => {
-    const counterMap = new ReplicatedCounterMap();
+    const counterMap = new ReplicatedCounterMap<string>();
     counterMap.increment('one', 1);
     counterMap.has('one').should.be.true;
     counterMap.size.should.equal(1);
@@ -116,7 +119,7 @@ describe('ReplicatedCounterMap', () => {
   });
 
   it('should generate a removed delta', () => {
-    const counterMap = new ReplicatedCounterMap();
+    const counterMap = new ReplicatedCounterMap<string>();
     counterMap.increment('one', 1);
     counterMap.increment('two', 2);
     counterMap.getAndResetDelta();
@@ -132,7 +135,7 @@ describe('ReplicatedCounterMap', () => {
   });
 
   it('should generate an updated delta', () => {
-    const counterMap = new ReplicatedCounterMap();
+    const counterMap = new ReplicatedCounterMap<string>();
     counterMap.increment('one', 1);
     counterMap.getAndResetDelta();
     counterMap.increment('one', 42);
@@ -146,7 +149,7 @@ describe('ReplicatedCounterMap', () => {
   });
 
   it('should generate a cleared delta', () => {
-    const counterMap = new ReplicatedCounterMap();
+    const counterMap = new ReplicatedCounterMap<string>();
     counterMap.increment('one', 1);
     counterMap.increment('two', 2);
     counterMap.getAndResetDelta();
@@ -160,7 +163,7 @@ describe('ReplicatedCounterMap', () => {
   });
 
   it('should reflect a delta with added entries', () => {
-    const counterMap = new ReplicatedCounterMap();
+    const counterMap = new ReplicatedCounterMap<string>();
     counterMap.increment('one', 1);
     counterMap.getAndResetDelta();
     counterMap.applyDelta(
@@ -178,7 +181,7 @@ describe('ReplicatedCounterMap', () => {
   });
 
   it('should reflect a delta with removed entries', () => {
-    const counterMap = new ReplicatedCounterMap();
+    const counterMap = new ReplicatedCounterMap<string>();
     counterMap.increment('one', 1);
     counterMap.increment('two', 2);
     counterMap.getAndResetDelta();
@@ -196,7 +199,7 @@ describe('ReplicatedCounterMap', () => {
   });
 
   it('should reflect a delta with cleared entries', () => {
-    const counterMap = new ReplicatedCounterMap();
+    const counterMap = new ReplicatedCounterMap<string>();
     counterMap.increment('one', 1);
     counterMap.increment('two', 2);
     counterMap.getAndResetDelta();
@@ -213,7 +216,7 @@ describe('ReplicatedCounterMap', () => {
   });
 
   it('should support protobuf messages for keys', () => {
-    const counterMap = new ReplicatedCounterMap();
+    const counterMap = new ReplicatedCounterMap<Example>();
     counterMap.increment(Example.create({ field1: 'one' }), 1);
     counterMap.increment(Example.create({ field1: 'two' }), 2);
     counterMap.getAndResetDelta();
@@ -227,7 +230,7 @@ describe('ReplicatedCounterMap', () => {
   });
 
   it('should support json objects for keys', () => {
-    const counterMap = new ReplicatedCounterMap();
+    const counterMap = new ReplicatedCounterMap<{ foo: string }>();
     counterMap.increment({ foo: 'one' }, 1);
     counterMap.increment({ foo: 'two' }, 2);
     counterMap.getAndResetDelta();

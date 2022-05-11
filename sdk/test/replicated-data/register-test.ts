@@ -22,7 +22,7 @@ const ReplicatedRegister = replicatedData.ReplicatedRegister;
 const Clocks = replicatedData.Clocks;
 import AnySupport from '../../src/protobuf-any';
 import * as Long from 'long';
-import * as proto from '../proto/protobuf-bundle';
+import * as proto from '../proto/test-protobuf-bundle';
 
 namespace protocol {
   export type Any = proto.google.protobuf.IAny;
@@ -35,8 +35,11 @@ namespace protocol {
 const root = new protobuf.Root();
 root.loadSync(path.join(__dirname, '..', 'example.proto'));
 root.resolveAll();
-const Example = root.lookupType('com.example.Example');
 const anySupport = new AnySupport(root);
+
+// serialized state needs to be reflective type
+type Example = proto.com.example.IExample & protobuf.Message;
+const Example = root.lookupType('com.example.Example');
 
 function roundTripDelta(delta: protocol.Delta | null): protocol.Delta {
   return delta
@@ -58,15 +61,19 @@ function toNumber(n?: Long | number | null): number {
 
 describe('ReplicatedRegister', () => {
   it('should be instantiated with a value', () => {
-    const register = new ReplicatedRegister(Example.create({ field1: 'foo' }));
-    register.value.field1.should.equal('foo');
+    const register = new ReplicatedRegister<Example>(
+      Example.create({ field1: 'foo' }),
+    );
+    register.value.field1?.should.equal('foo');
     const initial = roundTripDelta(register.getAndResetDelta()).register;
     fromAny(initial?.value).field1.should.equal('foo');
     initial?.clock?.should.eql(Clocks.DEFAULT);
   });
 
   it('should reflect an initial delta', () => {
-    const register = new ReplicatedRegister(Example.create({ field1: 'bar' }));
+    const register = new ReplicatedRegister<Example>(
+      Example.create({ field1: 'bar' }),
+    );
     register.applyDelta(
       roundTripDelta({
         register: {
@@ -75,14 +82,16 @@ describe('ReplicatedRegister', () => {
       }),
       anySupport,
     );
-    register.value.field1.should.equal('foo');
+    register.value.field1?.should.equal('foo');
     should.equal(register.getAndResetDelta(), null);
   });
 
   it('should generate a delta', () => {
-    const register = new ReplicatedRegister(Example.create({ field1: 'foo' }));
+    const register = new ReplicatedRegister<Example>(
+      Example.create({ field1: 'foo' }),
+    );
     register.value = Example.create({ field1: 'bar' });
-    register.value.field1.should.equal('bar');
+    register.value.field1?.should.equal('bar');
     const delta = roundTripDelta(register.getAndResetDelta()).register;
     fromAny(delta?.value).field1.should.equal('bar');
     delta?.clock?.should.eql(Clocks.DEFAULT);
@@ -90,9 +99,11 @@ describe('ReplicatedRegister', () => {
   });
 
   it('should generate deltas with a custom clock', () => {
-    const register = new ReplicatedRegister(Example.create({ field1: 'foo' }));
+    const register = new ReplicatedRegister<Example>(
+      Example.create({ field1: 'foo' }),
+    );
     register.setWithClock(Example.create({ field1: 'bar' }), Clocks.CUSTOM, 10);
-    register.value.field1.should.equal('bar');
+    register.value.field1?.should.equal('bar');
     const delta = roundTripDelta(register.getAndResetDelta()).register;
     fromAny(delta?.value).field1.should.equal('bar');
     delta?.clock?.should.eql(Clocks.CUSTOM);
@@ -101,7 +112,9 @@ describe('ReplicatedRegister', () => {
   });
 
   it('should reflect a delta update', () => {
-    const register = new ReplicatedRegister(Example.create({ field1: 'foo' }));
+    const register = new ReplicatedRegister<Example>(
+      Example.create({ field1: 'foo' }),
+    );
     register.applyDelta(
       roundTripDelta({
         register: {
@@ -110,12 +123,12 @@ describe('ReplicatedRegister', () => {
       }),
       anySupport,
     );
-    register.value.field1.should.equal('bar');
+    register.value.field1?.should.equal('bar');
     should.equal(register.getAndResetDelta(), null);
   });
 
   it('should work with primitive types', () => {
-    const register = new ReplicatedRegister('blah');
+    const register = new ReplicatedRegister<string>('blah');
     register.value.should.equal('blah');
     register.value = 'hello';
     register.value.should.equal('hello');

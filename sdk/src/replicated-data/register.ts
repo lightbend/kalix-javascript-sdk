@@ -41,10 +41,14 @@ namespace protocol {
  * time, custom clocks can supply a custom number to be used. If two clock values are equal, the
  * write from the node with the lowest address wins.
  *
+ * @typeParam Value - Type of value stored by the register
+ *
  * @public
  */
-export class ReplicatedRegister implements ReplicatedData {
-  private currentValue: Serializable;
+export class ReplicatedRegister<Value extends Serializable = Serializable>
+  implements ReplicatedData
+{
+  private currentValue: Value;
   private delta: protocol.RegisterDelta;
 
   /**
@@ -55,7 +59,7 @@ export class ReplicatedRegister implements ReplicatedData {
    * @param customClockValue - The custom clock value, if using a custom clock
    */
   constructor(
-    value: Serializable,
+    value: Value,
     clock: Clock = Clocks.DEFAULT,
     customClockValue: number | Long = 0,
   ) {
@@ -80,11 +84,11 @@ export class ReplicatedRegister implements ReplicatedData {
    *
    * @remarks Sets with the default clock.
    */
-  get value(): Serializable {
+  get value(): Value {
     return this.currentValue;
   }
 
-  set value(value: Serializable) {
+  set value(value: Value) {
     this.setWithClock(value);
   }
 
@@ -96,10 +100,10 @@ export class ReplicatedRegister implements ReplicatedData {
    * @param customClockValue - Custom clock value, or ignored if a custom clock isn't specified
    */
   setWithClock = (
-    value: Serializable,
+    value: Value,
     clock: Clock = Clocks.DEFAULT,
     customClockValue: number | Long = 0,
-  ): ReplicatedRegister => {
+  ): ReplicatedRegister<Value> => {
     this.delta = {
       value: AnySupport.serialize(value, true, true),
       clock: clock,

@@ -19,7 +19,7 @@ import * as protobuf from 'protobufjs';
 import * as path from 'path';
 import { ReplicatedSet } from '../../src/replicated-data/set';
 import AnySupport from '../../src/protobuf-any';
-import * as proto from '../proto/protobuf-bundle';
+import * as proto from '../proto/test-protobuf-bundle';
 
 namespace protocol {
   export type Any = proto.google.protobuf.IAny;
@@ -32,8 +32,11 @@ namespace protocol {
 const root = new protobuf.Root();
 root.loadSync(path.join(__dirname, '..', 'example.proto'));
 root.resolveAll();
-const Example = root.lookupType('com.example.Example');
 const anySupport = new AnySupport(root);
+
+// serialized state needs to be reflective type
+type Example = proto.com.example.IExample & protobuf.Message;
+const Example = root.lookupType('com.example.Example');
 
 function roundTripDelta(delta: protocol.Delta | null): protocol.Delta {
   return delta
@@ -57,7 +60,7 @@ describe('ReplicatedSet', () => {
   });
 
   it('should reflect an initial delta', () => {
-    const set = new ReplicatedSet();
+    const set = new ReplicatedSet<string>();
     should.equal(set.getAndResetDelta(), null);
     set.applyDelta(
       roundTripDelta({
@@ -73,7 +76,7 @@ describe('ReplicatedSet', () => {
   });
 
   it('should generate an add delta', () => {
-    const set = new ReplicatedSet().add('one');
+    const set = new ReplicatedSet<string>().add('one');
     set.has('one').should.be.true;
     set.size.should.equal(1);
     const delta1 = roundTripDelta(set.getAndResetDelta());
@@ -93,7 +96,7 @@ describe('ReplicatedSet', () => {
   });
 
   it('should generate a remove delta', () => {
-    const set = new ReplicatedSet().add('one').add('two').add('three');
+    const set = new ReplicatedSet<string>().add('one').add('two').add('three');
     set.getAndResetDelta();
     set.has('one').should.be.true;
     set.has('two').should.be.true;
@@ -114,7 +117,7 @@ describe('ReplicatedSet', () => {
   });
 
   it('should generate a clear delta', () => {
-    const set = new ReplicatedSet().add('one').add('two');
+    const set = new ReplicatedSet<string>().add('one').add('two');
     set.getAndResetDelta();
     set.clear().size.should.equal(0);
     const delta = roundTripDelta(set.getAndResetDelta());
@@ -123,7 +126,7 @@ describe('ReplicatedSet', () => {
   });
 
   it('should generate a clear delta when everything is removed', () => {
-    const set = new ReplicatedSet().add('one').add('two');
+    const set = new ReplicatedSet<string>().add('one').add('two');
     set.getAndResetDelta();
     set.delete('one').delete('two').size.should.equal(0);
     const delta = roundTripDelta(set.getAndResetDelta());
@@ -132,21 +135,21 @@ describe('ReplicatedSet', () => {
   });
 
   it('should not generate a delta when an added element is removed', () => {
-    const set = new ReplicatedSet().add('one');
+    const set = new ReplicatedSet<string>().add('one');
     set.getAndResetDelta();
     set.add('two').delete('two').size.should.equal(1);
     should.equal(set.getAndResetDelta(), null);
   });
 
   it('should not generate a delta when a removed element is added', () => {
-    const set = new ReplicatedSet().add('one').add('two');
+    const set = new ReplicatedSet<string>().add('one').add('two');
     set.getAndResetDelta();
     set.delete('two').add('two').size.should.equal(2);
     should.equal(set.getAndResetDelta(), null);
   });
 
   it('should not generate a delta when an already existing element is added', () => {
-    const set = new ReplicatedSet().add('one');
+    const set = new ReplicatedSet<string>().add('one');
     set.getAndResetDelta();
     set.add('one').size.should.equal(1);
     should.equal(set.getAndResetDelta(), null);
@@ -160,7 +163,7 @@ describe('ReplicatedSet', () => {
   });
 
   it('clear all other deltas when the set is cleared', () => {
-    const set = new ReplicatedSet().add('one');
+    const set = new ReplicatedSet<string>().add('one');
     set.getAndResetDelta();
     set.add('two').delete('one').clear().size.should.equal(0);
     const delta = roundTripDelta(set.getAndResetDelta());
@@ -170,7 +173,7 @@ describe('ReplicatedSet', () => {
   });
 
   it('should reflect a delta add', () => {
-    const set = new ReplicatedSet().add('one');
+    const set = new ReplicatedSet<string>().add('one');
     const delta1 = roundTripDelta(set.getAndResetDelta());
     delta1.replicatedSet?.added?.should.have.lengthOf(1);
     fromAnys(delta1.replicatedSet?.added).should.include('one');
@@ -188,7 +191,7 @@ describe('ReplicatedSet', () => {
   });
 
   it('should reflect a delta remove', () => {
-    const set = new ReplicatedSet().add('one').add('two');
+    const set = new ReplicatedSet<string>().add('one').add('two');
     const delta1 = roundTripDelta(set.getAndResetDelta());
     delta1.replicatedSet?.added?.should.have.lengthOf(2);
     fromAnys(delta1.replicatedSet?.added).should.include('one', 'two');
@@ -206,7 +209,7 @@ describe('ReplicatedSet', () => {
   });
 
   it('should reflect a delta clear', () => {
-    const set = new ReplicatedSet().add('one').add('two');
+    const set = new ReplicatedSet<string>().add('one').add('two');
     const delta1 = roundTripDelta(set.getAndResetDelta());
     delta1.replicatedSet?.added?.should.have.lengthOf(2);
     fromAnys(delta1.replicatedSet?.added).should.include('one', 'two');
@@ -223,7 +226,7 @@ describe('ReplicatedSet', () => {
   });
 
   it('should work with protobuf types', () => {
-    const set = new ReplicatedSet()
+    const set = new ReplicatedSet<Example>()
       .add(Example.create({ field1: 'one' }))
       .add(Example.create({ field1: 'two' }));
     set.getAndResetDelta();
@@ -235,7 +238,9 @@ describe('ReplicatedSet', () => {
   });
 
   it('should work with json types', () => {
-    const set = new ReplicatedSet().add({ foo: 'bar' }).add({ foo: 'baz' });
+    const set = new ReplicatedSet<{ foo: string }>()
+      .add({ foo: 'bar' })
+      .add({ foo: 'baz' });
     set.getAndResetDelta();
     set.delete({ foo: 'bar' });
     set.size.should.equal(1);

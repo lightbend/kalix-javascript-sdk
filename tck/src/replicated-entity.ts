@@ -17,11 +17,11 @@
 import {
   replicatedentity,
   ReplicatedWriteConsistency,
-  Serializable,
 } from '@kalix-io/kalix-javascript-sdk';
 import protocol from '../generated/tck';
 
 type Request = protocol.kalix.tck.model.replicatedentity.Request;
+type Response = protocol.kalix.tck.model.replicatedentity.Response;
 type IUpdate = protocol.kalix.tck.model.replicatedentity.IUpdate;
 type IState = protocol.kalix.tck.model.replicatedentity.IState;
 
@@ -49,7 +49,10 @@ function createReplicatedData(name: string) {
     case 'ReplicatedRegister':
       return new replicatedentity.ReplicatedRegister('');
     case 'ReplicatedMap':
-      const map = new replicatedentity.ReplicatedMap();
+      const map = new replicatedentity.ReplicatedMap<
+        string,
+        replicatedentity.ReplicatedData
+      >();
       map.defaultValue = (key) => createReplicatedData(key);
       return map;
     case 'ReplicatedCounterMap':
@@ -68,7 +71,7 @@ function createReplicatedData(name: string) {
 function process(
   request: Request,
   context: replicatedentity.ReplicatedEntityCommandContext,
-) {
+): Response {
   if (context.state === null)
     context.state = createReplicatedData(context.entityId);
   request.actions.forEach((action) => {
@@ -122,7 +125,7 @@ function applyUpdate(
         register.setWithClock(
           update.register.value,
           replicatedentity.Clocks.CUSTOM,
-          update.register.clock?.customClockValue as number, // FIXME
+          update.register.clock?.customClockValue ?? 0,
         );
       else if (
         update.register.clock?.clockType ===
@@ -131,7 +134,7 @@ function applyUpdate(
         register.setWithClock(
           update.register.value,
           replicatedentity.Clocks.CUSTOM_AUTO_INCREMENT,
-          update.register.clock?.customClockValue as number, // FIXME
+          update.register.clock?.customClockValue ?? 0,
         );
       else register.value = update.register.value;
     } else if (update.replicatedMap) {
@@ -219,7 +222,7 @@ function applyUpdate(
   }
 }
 
-function responseValue(state: replicatedentity.ReplicatedData) {
+function responseValue(state: replicatedentity.ReplicatedData): Response {
   return Response.create(state ? { state: replicatedDataState(state) } : {});
 }
 
@@ -272,7 +275,7 @@ function replicatedDataState(state: replicatedentity.ReplicatedData): IState {
   else return {};
 }
 
-function sortedElements(elements: Iterable<Serializable>): string[] {
+function sortedElements(elements: Iterable<any>): string[] {
   return Array.from(elements).sort();
 }
 
@@ -287,10 +290,7 @@ function sortedEntries(
   return converted.sort((a, b) => a.key.localeCompare(b.key));
 }
 
-function sortedEntriesFromKeys(
-  keys: Iterable<Serializable>,
-  get: (key: Serializable) => Serializable,
-) {
+function sortedEntriesFromKeys(keys: Iterable<any>, get: (key: any) => any) {
   const entries = Array.from(keys, (key) => {
     const value = get(key);
     return value ? { key: key, value: value } : { key: key };

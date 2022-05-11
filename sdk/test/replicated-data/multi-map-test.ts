@@ -19,7 +19,7 @@ import { ReplicatedMultiMap } from '../../src/replicated-data/multi-map';
 import * as path from 'path';
 import * as protobuf from 'protobufjs';
 import AnySupport from '../../src/protobuf-any';
-import * as proto from '../proto/protobuf-bundle';
+import * as proto from '../proto/test-protobuf-bundle';
 
 namespace protocol {
   export type Any = proto.google.protobuf.IAny;
@@ -34,8 +34,10 @@ namespace protocol {
 const root = new protobuf.Root();
 root.loadSync(path.join(__dirname, '..', 'example.proto'));
 root.resolveAll();
-const Example = root.lookupType('com.example.Example');
 const anySupport = new AnySupport(root);
+
+// serialized state needs to be reflective type
+const Example = root.lookupType('com.example.Example');
 
 function roundTripDelta(delta: protocol.Delta | null): protocol.Delta {
   return delta
@@ -110,7 +112,7 @@ describe('ReplicatedMultiMap', () => {
   });
 
   it('should generate a delta with added entries', () => {
-    const multiMap = new ReplicatedMultiMap();
+    const multiMap = new ReplicatedMultiMap<string, string>();
     multiMap.put('key1', 'value1');
     multiMap.putAll('key2', ['value2', 'value3']);
 
@@ -159,7 +161,7 @@ describe('ReplicatedMultiMap', () => {
   });
 
   it('should generate a delta with updated entries', () => {
-    const multiMap = new ReplicatedMultiMap();
+    const multiMap = new ReplicatedMultiMap<string, string>();
     multiMap.put('key1', 'value1');
     multiMap.putAll('key2', ['value2', 'value3']);
     multiMap.keysSize.should.equal(2);
@@ -213,7 +215,7 @@ describe('ReplicatedMultiMap', () => {
   });
 
   it('should reflect a delta with added entries', () => {
-    const multiMap = new ReplicatedMultiMap();
+    const multiMap = new ReplicatedMultiMap<string, string>();
     multiMap.put('key1', 'value1');
     multiMap.getAndResetDelta();
 
@@ -343,7 +345,7 @@ describe('ReplicatedMultiMap', () => {
   });
 
   it('should support json objects for keys and values', () => {
-    const multiMap = new ReplicatedMultiMap();
+    const multiMap = new ReplicatedMultiMap<{ foo: string }, { foo: string }>();
     multiMap.put({ foo: 'key1' }, { foo: 'value1' });
     multiMap.put({ foo: 'key2' }, { foo: 'value2' });
     multiMap.putAll({ foo: 'key3' }, [{ foo: 'value3' }, { foo: 'value4' }]);
