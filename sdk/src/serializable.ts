@@ -35,7 +35,7 @@ export interface TypedJson {
 export type Serializable =
   | protobuf.Message
   | TypedJson
-  | any
+  | object
   | string
   | number
   | boolean

@@ -22,7 +22,7 @@ import * as path from 'path';
 import * as protobuf from 'protobufjs';
 import AnySupport from '../../src/protobuf-any';
 import * as Long from 'long';
-import * as proto from '../proto/protobuf-bundle';
+import * as proto from '../proto/test-protobuf-bundle';
 
 namespace protocol {
   export type Any = proto.google.protobuf.IAny;
@@ -37,8 +37,11 @@ namespace protocol {
 const root = new protobuf.Root();
 root.loadSync(path.join(__dirname, '..', 'example.proto'));
 root.resolveAll();
-const Example = root.lookupType('com.example.Example');
 const anySupport = new AnySupport(root);
+
+// serialized state needs to be reflective type
+type Example = proto.com.example.IExample & protobuf.Message;
+const Example = root.lookupType('com.example.Example');
 
 function roundTripDelta(delta: protocol.Delta | null): protocol.Delta {
   return delta
@@ -124,12 +127,12 @@ describe('ReplicatedRegisterMap', () => {
     Array.from(registerMap.keys()).should.have.members(['one', 'two', 'three']);
     registerMap.get('one')?.should.equal(1);
     registerMap.get('two')?.should.equal('foo');
-    registerMap.get('three').field1.should.equal('bar');
+    (registerMap.get('three') as Example)?.field1?.should.equal('bar');
     should.equal(registerMap.getAndResetDelta(), null);
   });
 
   it('should generate an added delta', () => {
-    const registerMap = new ReplicatedRegisterMap();
+    const registerMap = new ReplicatedRegisterMap<string, number>();
     registerMap.set('one', 1);
     registerMap.has('one').should.be.true;
     registerMap.size.should.equal(1);
@@ -143,7 +146,7 @@ describe('ReplicatedRegisterMap', () => {
   });
 
   it('should generate a removed delta', () => {
-    const registerMap = new ReplicatedRegisterMap();
+    const registerMap = new ReplicatedRegisterMap<string, number | string>();
     registerMap.set('one', 1);
     registerMap.set('two', 'foo');
     registerMap.getAndResetDelta();
@@ -187,7 +190,7 @@ describe('ReplicatedRegisterMap', () => {
   });
 
   it('should generate a delta with clocks', () => {
-    const registerMap = new ReplicatedRegisterMap();
+    const registerMap = new ReplicatedRegisterMap<number, string>();
     registerMap.set(1, 'foo');
     registerMap.set(2, 'bar', Clocks.REVERSE);
     registerMap.set(3, 'baz', Clocks.CUSTOM, 42);
@@ -258,7 +261,7 @@ describe('ReplicatedRegisterMap', () => {
   });
 
   it('should support protobuf messages for keys', () => {
-    const registerMap = new ReplicatedRegisterMap();
+    const registerMap = new ReplicatedRegisterMap<Example, number>();
     registerMap.set(Example.create({ field1: 'one' }), 1);
     registerMap.set(Example.create({ field1: 'two' }), 2);
     registerMap.getAndResetDelta();
@@ -274,7 +277,7 @@ describe('ReplicatedRegisterMap', () => {
   });
 
   it('should support json objects for keys', () => {
-    const registerMap = new ReplicatedRegisterMap();
+    const registerMap = new ReplicatedRegisterMap<{ foo: string }>();
     registerMap.set({ foo: 'one' }, 1);
     registerMap.set({ foo: 'two' }, 2);
     registerMap.getAndResetDelta();

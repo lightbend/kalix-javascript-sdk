@@ -33,19 +33,26 @@ namespace protocol {
     proto.kalix.component.replicatedentity.IReplicatedRegisterMapEntryDelta;
 }
 
-interface Entry {
-  key: Serializable;
-  register: ReplicatedRegister;
+interface Entry<Key extends Serializable, Value extends Serializable> {
+  key: Key;
+  register: ReplicatedRegister<Value>;
 }
 
 /**
  * A replicated map of registers.
  *
+ * @typeParam Key - Type of keys for the Replicated Register Map
+ * @typeParam Value - Type of values for the Replicated Register Map
+ *
  * @public
  */
-export class ReplicatedRegisterMap implements ReplicatedData {
-  private registers = new Map<Comparable, Entry>();
-  private removed = new Map<Comparable, Serializable>();
+export class ReplicatedRegisterMap<
+  Key extends Serializable = Serializable,
+  Value extends Serializable = Serializable,
+> implements ReplicatedData
+{
+  private registers = new Map<Comparable, Entry<Key, Value>>();
+  private removed = new Map<Comparable, Key>();
   private cleared = false;
 
   /**
@@ -54,7 +61,7 @@ export class ReplicatedRegisterMap implements ReplicatedData {
    * @param key - The key to get
    * @returns The register value, or undefined if no value is defined at that key
    */
-  get = (key: Serializable): Serializable | undefined => {
+  get = (key: Key): Value | undefined => {
     const entry = this.registers.get(AnySupport.toComparable(key));
     return entry !== undefined ? entry.register.value : undefined;
   };
@@ -69,11 +76,11 @@ export class ReplicatedRegisterMap implements ReplicatedData {
    * @returns This register map
    */
   set = (
-    key: Serializable,
-    value: Serializable,
+    key: Key,
+    value: Value,
     clock = Clocks.DEFAULT,
-    customClockValue = 0,
-  ): ReplicatedRegisterMap => {
+    customClockValue: number | Long = 0,
+  ): ReplicatedRegisterMap<Key, Value> => {
     this.getOrCreateRegister(key).setWithClock(value, clock, customClockValue);
     return this;
   };
@@ -84,7 +91,7 @@ export class ReplicatedRegisterMap implements ReplicatedData {
    * @param key - The key to check
    * @returns True if this register map contains a value for the given key
    */
-  has = (key: Serializable): boolean => {
+  has = (key: Key): boolean => {
     return this.registers.has(AnySupport.toComparable(key));
   };
 
@@ -100,7 +107,7 @@ export class ReplicatedRegisterMap implements ReplicatedData {
    *
    * @returns (iterable) iterator of the map keys
    */
-  keys = (): IterableIterator<Serializable> => {
+  keys = (): IterableIterator<Key> => {
     return iterators.map(this.registers.values(), (entry) => entry.key);
   };
 
@@ -110,7 +117,7 @@ export class ReplicatedRegisterMap implements ReplicatedData {
    * @param key - The key to delete
    * @returns This register map
    */
-  delete = (key: Serializable): ReplicatedRegisterMap => {
+  delete = (key: Key): ReplicatedRegisterMap<Key, Value> => {
     const comparableKey = AnySupport.toComparable(key);
     if (this.registers.has(comparableKey)) {
       this.registers.delete(comparableKey);
@@ -124,7 +131,7 @@ export class ReplicatedRegisterMap implements ReplicatedData {
    *
    * @returns This register map
    */
-  clear = (): ReplicatedRegisterMap => {
+  clear = (): ReplicatedRegisterMap<Key, Value> => {
     if (this.registers.size > 0) {
       this.cleared = true;
       this.registers.clear();
@@ -133,13 +140,13 @@ export class ReplicatedRegisterMap implements ReplicatedData {
     return this;
   };
 
-  private getOrCreateRegister(key: Serializable): ReplicatedRegister {
+  private getOrCreateRegister(key: Key): ReplicatedRegister<Value> {
     const comparableKey = AnySupport.toComparable(key);
     const entry = this.registers.get(comparableKey);
     if (entry) {
       return entry.register;
     } else {
-      const register = new ReplicatedRegister({});
+      const register = new ReplicatedRegister({} as Value);
       this.registers.set(comparableKey, { key: key, register: register });
       return register;
     }

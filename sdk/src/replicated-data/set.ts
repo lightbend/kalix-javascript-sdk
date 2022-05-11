@@ -35,9 +35,12 @@ export namespace ReplicatedSet {
   /**
    * Callback for handling elements iterated through by {@link ReplicatedSet.forEach}.
    *
+   * @typeParam Element - Type of elements in the Replicated Set
    * @param element - The element
    */
-  export type ForEachCallback = (element: Serializable) => void;
+  export type ForEachCallback<Element extends Serializable> = (
+    element: Element,
+  ) => void;
 }
 
 /**
@@ -45,11 +48,15 @@ export namespace ReplicatedSet {
  *
  * A ReplicatedSet is a set of {@link Serializable} values. Elements can be added and removed.
  *
+ * @typeParam Element - Type of elements in the Replicated Set
+ *
  * @public
  */
-export class ReplicatedSet implements ReplicatedData, Iterable<Serializable> {
+export class ReplicatedSet<Element extends Serializable = Serializable>
+  implements ReplicatedData, Iterable<Element>
+{
   // Map of a comparable form (that compares correctly using ===) of the elements to the elements
-  private currentValue = new Map<Comparable, Serializable>();
+  private currentValue = new Map<Comparable, Element>();
   private delta = {
     added: new Map<Comparable, protocol.Any>(),
     removed: new Map<Comparable, protocol.Any>(),
@@ -62,7 +69,7 @@ export class ReplicatedSet implements ReplicatedData, Iterable<Serializable> {
    * @param element - The element to check
    * @returns True if the set contains the element
    */
-  has = (element: Serializable): boolean => {
+  has = (element: Element): boolean => {
     return this.currentValue.has(AnySupport.toComparable(element));
   };
 
@@ -78,7 +85,7 @@ export class ReplicatedSet implements ReplicatedData, Iterable<Serializable> {
    *
    * @param callback - The callback to handle each element
    */
-  forEach = (callback: ReplicatedSet.ForEachCallback): void => {
+  forEach = (callback: ReplicatedSet.ForEachCallback<Element>): void => {
     return this.currentValue.forEach((value, _key) => callback(value));
   };
 
@@ -87,7 +94,7 @@ export class ReplicatedSet implements ReplicatedData, Iterable<Serializable> {
    *
    * @returns iterator of elements
    */
-  [Symbol.iterator] = (): Iterator<Serializable> => {
+  [Symbol.iterator] = (): Iterator<Element> => {
     return this.currentValue.values();
   };
 
@@ -96,7 +103,7 @@ export class ReplicatedSet implements ReplicatedData, Iterable<Serializable> {
    *
    * @returns Set of elements
    */
-  elements = (): Set<Serializable> => {
+  elements = (): Set<Element> => {
     return new Set(this.currentValue.values());
   };
 
@@ -106,7 +113,7 @@ export class ReplicatedSet implements ReplicatedData, Iterable<Serializable> {
    * @param element - The element to add
    * @returns This set
    */
-  add = (element: Serializable): ReplicatedSet => {
+  add = (element: Element): ReplicatedSet<Element> => {
     const comparable = AnySupport.toComparable(element);
     if (!this.currentValue.has(comparable)) {
       if (this.delta.removed.has(comparable)) {
@@ -126,7 +133,7 @@ export class ReplicatedSet implements ReplicatedData, Iterable<Serializable> {
    * @param elements - The elements to add
    * @returns This set
    */
-  addAll = (elements: Iterable<Serializable>): ReplicatedSet => {
+  addAll = (elements: Iterable<Element>): ReplicatedSet<Element> => {
     for (const element of elements) {
       this.add(element);
     }
@@ -139,7 +146,7 @@ export class ReplicatedSet implements ReplicatedData, Iterable<Serializable> {
    * @param element - The element to delete
    * @returns This set
    */
-  delete = (element: Serializable): ReplicatedSet => {
+  delete = (element: Element): ReplicatedSet<Element> => {
     const comparable = AnySupport.toComparable(element);
     if (this.currentValue.has(comparable)) {
       if (this.currentValue.size === 1) {
@@ -162,7 +169,7 @@ export class ReplicatedSet implements ReplicatedData, Iterable<Serializable> {
    *
    * @returns This set
    */
-  clear = (): ReplicatedSet => {
+  clear = (): ReplicatedSet<Element> => {
     if (this.currentValue.size > 0) {
       this.delta.cleared = true;
       this.delta.added.clear();

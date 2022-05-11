@@ -33,9 +33,9 @@ namespace protocol {
     proto.kalix.component.replicatedentity.IReplicatedMultiMapEntryDelta;
 }
 
-interface Entry {
-  key: Serializable;
-  values: ReplicatedSet;
+interface Entry<Key extends Serializable, Value extends Serializable> {
+  key: Key;
+  values: ReplicatedSet<Value>;
 }
 
 /**
@@ -43,14 +43,21 @@ interface Entry {
  *
  * A replicated map that maps keys to values, where each key may be associated with multiple values.
  *
+ * @typeParam Key - Type of keys for the Replicated Multi-Map
+ * @typeParam Value - Type of values for the Replicated Multi-Map
+ *
  * @public
  */
-export class ReplicatedMultiMap implements ReplicatedData {
-  private entries = new Map<Comparable, Entry>();
-  private removed = new Map<Comparable, Serializable>();
+export class ReplicatedMultiMap<
+  Key extends Serializable = Serializable,
+  Value extends Serializable = Serializable,
+> implements ReplicatedData
+{
+  private entries = new Map<Comparable, Entry<Key, Value>>();
+  private removed = new Map<Comparable, Key>();
   private cleared = false;
 
-  private EmptySet = Object.freeze(new Set<Serializable>());
+  private EmptySet = Object.freeze(new Set<Value>());
 
   /**
    * Get the values for the given key.
@@ -58,7 +65,7 @@ export class ReplicatedMultiMap implements ReplicatedData {
    * @param key - The key of the entry
    * @returns The current values at the given key, or an empty Set
    */
-  get = (key: Serializable): Set<Serializable> => {
+  get = (key: Key): Set<Value> => {
     const entry = this.entries.get(AnySupport.toComparable(key));
     return entry !== undefined ? entry.values.elements() : this.EmptySet;
   };
@@ -70,7 +77,7 @@ export class ReplicatedMultiMap implements ReplicatedData {
    * @param value - The value to add to the entry
    * @returns This multimap
    */
-  put = (key: Serializable, value: Serializable): ReplicatedMultiMap => {
+  put = (key: Key, value: Value): ReplicatedMultiMap<Key, Value> => {
     this.getOrCreateValues(key).add(value);
     return this;
   };
@@ -83,9 +90,9 @@ export class ReplicatedMultiMap implements ReplicatedData {
    * @returns This multimap
    */
   putAll = (
-    key: Serializable,
-    values: Iterable<Serializable>,
-  ): ReplicatedMultiMap => {
+    key: Key,
+    values: Iterable<Value>,
+  ): ReplicatedMultiMap<Key, Value> => {
     this.getOrCreateValues(key).addAll(values);
     return this;
   };
@@ -97,7 +104,7 @@ export class ReplicatedMultiMap implements ReplicatedData {
    * @param value - The value to remove from the entry
    * @returns This multimap
    */
-  delete = (key: Serializable, value: Serializable): ReplicatedMultiMap => {
+  delete = (key: Key, value: Value): ReplicatedMultiMap<Key, Value> => {
     const comparableKey = AnySupport.toComparable(key);
     const entry = this.entries.get(comparableKey);
     if (entry) {
@@ -113,7 +120,7 @@ export class ReplicatedMultiMap implements ReplicatedData {
    * @param key - The key of the entry
    * @returns This multimap
    */
-  deleteAll = (key: Serializable): ReplicatedMultiMap => {
+  deleteAll = (key: Key): ReplicatedMultiMap<Key, Value> => {
     const comparableKey = AnySupport.toComparable(key);
     if (this.entries.has(comparableKey)) {
       this.entries.delete(comparableKey);
@@ -128,7 +135,7 @@ export class ReplicatedMultiMap implements ReplicatedData {
    * @param key - The key to check
    * @returns True if this multimap contains any values for the given key
    */
-  has = (key: Serializable): boolean => {
+  has = (key: Key): boolean => {
     return this.entries.has(AnySupport.toComparable(key));
   };
 
@@ -140,7 +147,7 @@ export class ReplicatedMultiMap implements ReplicatedData {
    * @returns True if the key-value pair is in this multimap
    */
 
-  hasValue = (key: Serializable, value: Serializable): boolean => {
+  hasValue = (key: Key, value: Value): boolean => {
     const comparableKey = AnySupport.toComparable(key);
     const entry = this.entries.get(comparableKey);
     return entry ? entry.values.has(value) : false;
@@ -168,7 +175,7 @@ export class ReplicatedMultiMap implements ReplicatedData {
    *
    * @returns (iterable) iterator of multimap keys
    */
-  keys = (): IterableIterator<Serializable> => {
+  keys = (): IterableIterator<Key> => {
     return iterators.map(this.entries.values(), (entry) => entry.key);
   };
 
@@ -177,7 +184,7 @@ export class ReplicatedMultiMap implements ReplicatedData {
    *
    * @returns This multimap
    */
-  clear = (): ReplicatedMultiMap => {
+  clear = (): ReplicatedMultiMap<Key, Value> => {
     if (this.entries.size > 0) {
       this.cleared = true;
       this.entries.clear();
@@ -186,13 +193,13 @@ export class ReplicatedMultiMap implements ReplicatedData {
     return this;
   };
 
-  private getOrCreateValues(key: Serializable): ReplicatedSet {
+  private getOrCreateValues(key: Key): ReplicatedSet<Value> {
     const comparableKey = AnySupport.toComparable(key);
     const entry = this.entries.get(comparableKey);
     if (entry) {
       return entry.values;
     } else {
-      const values = new ReplicatedSet();
+      const values = new ReplicatedSet<Value>();
       this.entries.set(comparableKey, { key: key, values: values });
       return values;
     }

@@ -34,19 +34,23 @@ namespace protocol {
     proto.kalix.component.replicatedentity.IReplicatedCounterMapEntryDelta;
 }
 
-interface Entry {
-  key: Serializable;
+interface Entry<Key extends Serializable> {
+  key: Key;
   counter: ReplicatedCounter;
 }
 
 /**
  * A replicated map of counters.
  *
+ * @typeParam Key - Type of keys for the Replicated Counter Map
+ *
  * @public
  */
-export class ReplicatedCounterMap implements ReplicatedData {
-  private counters = new Map<Comparable, Entry>();
-  private removed = new Map<Comparable, Serializable>();
+export class ReplicatedCounterMap<Key extends Serializable = Serializable>
+  implements ReplicatedData
+{
+  private counters = new Map<Comparable, Entry<Key>>();
+  private removed = new Map<Comparable, Key>();
   private cleared = false;
 
   /**
@@ -55,7 +59,7 @@ export class ReplicatedCounterMap implements ReplicatedData {
    * @param key - The key to get
    * @returns The counter value, or undefined if no value is defined at that key
    */
-  get = (key: Serializable): number | undefined => {
+  get = (key: Key): number | undefined => {
     const entry = this.counters.get(AnySupport.toComparable(key));
     return entry !== undefined ? entry.counter.value : undefined;
   };
@@ -66,7 +70,7 @@ export class ReplicatedCounterMap implements ReplicatedData {
    * @param key - The key to get
    * @returns The counter value as a long, or undefined if no value is defined at that key
    */
-  getLong = (key: Serializable): Long.Long | undefined => {
+  getLong = (key: Key): Long.Long | undefined => {
     const entry = this.counters.get(AnySupport.toComparable(key));
     return entry !== undefined ? entry.counter.longValue : undefined;
   };
@@ -79,9 +83,9 @@ export class ReplicatedCounterMap implements ReplicatedData {
    * @returns This counter map
    */
   increment = (
-    key: Serializable,
+    key: Key,
     increment: Long.Long | number,
-  ): ReplicatedCounterMap => {
+  ): ReplicatedCounterMap<Key> => {
     this.getOrCreateCounter(key).increment(increment);
     return this;
   };
@@ -94,9 +98,9 @@ export class ReplicatedCounterMap implements ReplicatedData {
    * @returns This counter map
    */
   decrement = (
-    key: Serializable,
+    key: Key,
     decrement: Long.Long | number,
-  ): ReplicatedCounterMap => {
+  ): ReplicatedCounterMap<Key> => {
     this.getOrCreateCounter(key).decrement(decrement);
     return this;
   };
@@ -107,7 +111,7 @@ export class ReplicatedCounterMap implements ReplicatedData {
    * @param key - The key to check
    * @returns True if this counter map contains a value for the given key
    */
-  has = (key: Serializable): boolean => {
+  has = (key: Key): boolean => {
     return this.counters.has(AnySupport.toComparable(key));
   };
 
@@ -121,7 +125,7 @@ export class ReplicatedCounterMap implements ReplicatedData {
   /**
    * Return an (iterable) iterator of the keys of this counter map.
    */
-  keys = (): IterableIterator<Serializable> => {
+  keys = (): IterableIterator<Key> => {
     return iterators.map(this.counters.values(), (entry) => entry.key);
   };
 
@@ -132,7 +136,7 @@ export class ReplicatedCounterMap implements ReplicatedData {
    * @returns This counter map
    */
 
-  delete = (key: Serializable): ReplicatedCounterMap => {
+  delete = (key: Key): ReplicatedCounterMap<Key> => {
     const comparableKey = AnySupport.toComparable(key);
     if (this.counters.has(comparableKey)) {
       this.counters.delete(comparableKey);
@@ -146,7 +150,7 @@ export class ReplicatedCounterMap implements ReplicatedData {
    *
    * @returns This counter map
    */
-  clear = (): ReplicatedCounterMap => {
+  clear = (): ReplicatedCounterMap<Key> => {
     if (this.counters.size > 0) {
       this.cleared = true;
       this.counters.clear();
@@ -155,7 +159,7 @@ export class ReplicatedCounterMap implements ReplicatedData {
     return this;
   };
 
-  private getOrCreateCounter(key: Serializable): ReplicatedCounter {
+  private getOrCreateCounter(key: Key): ReplicatedCounter {
     const comparableKey = AnySupport.toComparable(key);
     const entry = this.counters.get(comparableKey);
     if (entry) {

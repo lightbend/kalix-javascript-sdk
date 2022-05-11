@@ -36,8 +36,10 @@ namespace protocol {
 const root = new protobuf.Root();
 root.loadSync(path.join(__dirname, '..', 'example.proto'));
 root.resolveAll();
-const Example = root.lookupType('com.example.Example');
 const anySupport = new AnySupport(root);
+
+// serialized state needs to be reflective type
+const Example = root.lookupType('com.example.Example');
 
 function roundTripDelta(delta: protocol.Delta | null): protocol.Delta {
   return delta
@@ -85,7 +87,7 @@ describe('ReplicatedMap', () => {
   });
 
   it('should reflect an initial delta', () => {
-    const map = new ReplicatedMap();
+    const map = new ReplicatedMap<string, replicatedData.ReplicatedCounter>();
     map.applyDelta(
       roundTripDelta({
         replicatedMap: {
@@ -107,10 +109,10 @@ describe('ReplicatedMap', () => {
   });
 
   it('should generate an add delta', () => {
-    const map = new ReplicatedMap().set(
-      'one',
-      new replicatedData.ReplicatedCounter(),
-    );
+    const map = new ReplicatedMap<
+      string,
+      replicatedData.ReplicatedCounter
+    >().set('one', new replicatedData.ReplicatedCounter());
     map.has('one').should.be.true;
     map.size.should.equal(1);
     const delta1 = roundTripDelta(map.getAndResetDelta());
