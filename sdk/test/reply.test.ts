@@ -64,24 +64,23 @@ describe('Replies', () => {
   });
 
   it('should create a forward Reply', () => {
-    // Arrange
-    const reply = replies.forward(
-      new protobuf.Method('my-method', 'rpc', 'my-request', 'my-response'),
-      'my-msg',
-      new Metadata(),
+    const method = new protobuf.Method(
+      'my-method',
+      'rpc',
+      'my-request',
+      'my-response',
     );
+    const reply = replies.forward(method, 'my-msg', new Metadata());
 
-    // Act
     const forward = reply.getForward();
 
-    // Assert
     expect(reply.isEmpty()).to.be.false;
     expect(reply.getMethod()).to.be.undefined;
     expect(reply.getMessage()).to.be.undefined;
     expect(reply.getMetadata()).to.be.undefined;
     expect(reply.getFailure()).to.be.undefined;
     expect(reply.getEffects()).to.be.empty;
-    expect(forward?.getMethod()?.name).to.be.eq('my-method');
+    expect(forward?.getMethod()).to.be.eq(method);
     expect(forward?.getMessage()).to.be.eq('my-msg');
   });
 
@@ -98,39 +97,35 @@ describe('Replies', () => {
   });
 
   it('should add synchronous effects to a message', () => {
-    // Arrange
     const reply = replies.message('my-msg', new Metadata());
 
-    // Act
-    reply.addEffect(
-      new protobuf.Method('my-method', 'rpc', 'my-request', 'my-response'),
-      'my-msg',
-      true,
-      new Metadata(),
+    const method = new protobuf.Method(
+      'my-method',
+      'rpc',
+      'my-request',
+      'my-response',
     );
+    reply.addEffect(method, 'my-msg', true, new Metadata());
     const effect = reply.getEffects()[0];
 
-    // Assert
-    expect(effect.method.name).to.be.eq('my-method');
+    expect(effect.method).to.be.eq(method);
     expect(effect.message).to.be.eq('my-msg');
     expect(effect.synchronous).to.be.true;
   });
 
   it('should add not synchronous effects to a message', () => {
-    // Arrange
     const reply = replies.message('my-msg', new Metadata());
 
-    // Act
-    reply.addEffect(
-      new protobuf.Method('my-method', 'rpc', 'my-request', 'my-response'),
-      'my-msg',
-      false,
-      new Metadata(),
+    const method = new protobuf.Method(
+      'my-method',
+      'rpc',
+      'my-request',
+      'my-response',
     );
+    reply.addEffect(method, 'my-msg', false, new Metadata());
     const effect = reply.getEffects()[0];
 
-    // Assert
-    expect(effect.method.name).to.be.eq('my-method');
+    expect(effect.method).to.be.eq(method);
     expect(effect.message).to.be.eq('my-msg');
     expect(effect.synchronous).to.be.false;
   });

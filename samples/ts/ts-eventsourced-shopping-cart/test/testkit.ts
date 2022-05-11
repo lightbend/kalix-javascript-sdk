@@ -14,10 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  Metadata,
-  EventSourcedEntity
-} from "@kalix-io/kalix-javascript-sdk";
+import { Metadata, EventSourcedEntity } from "@kalix-io/kalix-javascript-sdk";
 
 /**
  * Mocks the behaviour of a single Kalix EventSourcedEntity.
