@@ -60,6 +60,7 @@ export { Serializable, TypedJson } from './src/serializable';
 
 import * as replies from './src/reply';
 export { replies };
+export { Reply } from './src/reply';
 
 export { GrpcStatus } from './src/grpc-status';
 export {

@@ -15,10 +15,11 @@
  */
 
 import { ValueEntity } from '@kalix-io/kalix-javascript-sdk';
-import { replies } from '@kalix-io/kalix-javascript-sdk';
+import { Reply, replies } from '@kalix-io/kalix-javascript-sdk';
 import protocol from '../generated/tck';
 
 type Request = protocol.kalix.tck.model.valueentity.Request;
+type Response = protocol.kalix.tck.model.valueentity.Response;
 
 const { Request, Response } = protocol.kalix.tck.model.valueentity;
 
@@ -43,8 +44,8 @@ function process(
   request: Request,
   state: Persisted,
   context: ValueEntity.ValueEntityCommandContext,
-): replies.Reply {
-  let reply: replies.Reply | undefined,
+): Reply<Response> {
+  let reply: Reply<Response> | undefined,
     effects: replies.Effect[] = [];
   request.actions.forEach((action) => {
     if (action.update) {
@@ -54,7 +55,7 @@ function process(
       state.value = undefined;
       context.deleteState();
     } else if (action.forward) {
-      reply = replies.forward(two.service.methods.Call, {
+      reply = Reply.forward(two.service.methods.Call, {
         id: action.forward.id,
       });
     } else if (action.effect) {
@@ -66,11 +67,11 @@ function process(
         ),
       );
     } else if (action.fail) {
-      reply = replies.failure(action.fail.message || '');
+      reply = Reply.failure(action.fail.message || '');
     }
   });
   if (!reply)
-    reply = replies.message(
+    reply = Reply.message(
       Response.create(state.value ? { message: state.value } : {}),
     );
   reply.addEffects(effects);

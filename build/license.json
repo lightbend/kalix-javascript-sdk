@@ -10,7 +10,7 @@
     "**/Dockerfile",
     "**/*.md",
     "**/*.yml",
-    "samples/*/lib/generated",
+    "samples/*/*/lib/generated",
     "sdk/test/*.desc",
     "tck/generated"
   ],

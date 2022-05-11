@@ -14,10 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  Metadata,
-  ValueEntity
-} from "@kalix-io/kalix-javascript-sdk";
+import { Metadata, ValueEntity } from "@kalix-io/kalix-javascript-sdk";
 import { Message } from "protobufjs";
 
 /**

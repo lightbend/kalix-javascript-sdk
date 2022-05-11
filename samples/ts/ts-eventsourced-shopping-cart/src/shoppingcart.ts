@@ -14,21 +14,21 @@
  * limitations under the License.
  */
 
-import {
-  EventSourcedEntity,
-  replies
-} from "@kalix-io/kalix-javascript-sdk";
+import { EventSourcedEntity, Reply } from "@kalix-io/kalix-javascript-sdk";
 import * as proto from "../lib/generated/proto";
 
 type Context = EventSourcedEntity.EventSourcedEntityCommandContext;
 
 type State = proto.com.example.shoppingcart.domain.Cart;
 
+type Cart = proto.com.example.shoppingcart.Cart;
 type AddLineItem = proto.com.example.shoppingcart.AddLineItem;
 type RemoveLineItem = proto.com.example.shoppingcart.RemoveLineItem;
 type GetShoppingCart = proto.com.example.shoppingcart.GetShoppingCart;
 type ItemAdded = proto.com.example.shoppingcart.domain.ItemAdded;
 type ItemRemoved = proto.com.example.shoppingcart.domain.ItemRemoved;
+
+type Empty = proto.google.protobuf.Empty;
 
 /**
  * Type definitions.
@@ -104,11 +104,11 @@ function addItem(
   addItem: AddLineItem,
   cart: State,
   ctx: Context
-): replies.Reply {
+): Reply<Empty> {
   // Validation:
   // Make sure that it is not possible to add negative quantities
   if (addItem.quantity < 1) {
-    return replies.failure(
+    return Reply.failure(
       "Quantity for item " + addItem.productId + " must be greater than zero."
     );
   }
@@ -123,7 +123,7 @@ function addItem(
   });
   // Emit the event.
   ctx.emit(itemAdded);
-  return replies.message({});
+  return Reply.empty();
 }
 
 /**
@@ -133,7 +133,7 @@ function removeItem(
   removeItem: RemoveLineItem,
   cart: State,
   ctx: Context
-): replies.Reply {
+): Reply<Empty> {
   // Validation:
   // Check that the item that we're removing actually exists.
   const existing = cart.items.find(item => {
@@ -142,7 +142,7 @@ function removeItem(
 
   // If not, fail the command.
   if (!existing) {
-    return replies.failure("Item " + removeItem.productId + " not in cart");
+    return Reply.failure("Item " + removeItem.productId + " not in cart");
   }
 
   // Otherwise, emit an item removed event.
@@ -150,15 +150,15 @@ function removeItem(
     productId: removeItem.productId
   });
   ctx.emit(itemRemoved);
-  return replies.message({});
+  return Reply.empty();
 }
 
 /**
  * Handler for get cart commands.
  */
-function getCart(request: GetShoppingCart, cart: State): replies.Reply {
+function getCart(request: GetShoppingCart, cart: State): Reply<Cart> {
   // Simply return the shopping cart as is.
-  return replies.message(cart);
+  return Reply.message(cart);
 }
 
 /**

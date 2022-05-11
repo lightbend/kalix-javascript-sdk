@@ -14,11 +14,8 @@
  * limitations under the License.
  */
 
-import {
-  EventSourcedEntity,
-  replies
-} from "@kalix-io/kalix-javascript-sdk";
-import { customer as customerApi } from "../lib/generated/customer_api";
+import { EventSourcedEntity, Reply } from "@kalix-io/kalix-javascript-sdk";
+import { customer as customerApi, google } from "../lib/generated/customer_api";
 import { customer as customerDomain } from "../lib/generated/customer_domain";
 
 type Context = EventSourcedEntity.EventSourcedEntityCommandContext;
@@ -32,6 +29,8 @@ type Customer = customerApi.api.Customer;
 type ChangeNameRequest = customerApi.api.ChangeNameRequest;
 type ChangeAddressRequest = customerApi.api.ChangeAddressRequest;
 type GetCustomerRequest = customerApi.api.GetCustomerRequest;
+
+type Empty = google.protobuf.Empty;
 
 const entity: EventSourcedEntity = new EventSourcedEntity(
   ["customer_api.proto", "customer_domain.proto"],
@@ -48,9 +47,9 @@ const domain = {
     domainPkg + "CustomerAddressChanged"
   )
 };
-const apiPkg = "customer.api.";
+
 const api = {
-  Customer: entity.lookupType(apiPkg + "Customer")
+  Customer: customerApi.api.Customer
 };
 
 entity.setInitial(customerId =>
@@ -77,26 +76,26 @@ function create(
   customerRequest: Customer,
   customer: State,
   ctx: Context
-): replies.Reply {
+): Reply<Empty> {
   const domainCustomer = apiCustomerToCustomerState(customerRequest);
   ctx.emit(domain.CustomerCreated.create({ customer: domainCustomer }));
-  return replies.message({});
+  return Reply.message({});
 }
 
 function changeName(
   changeNameRequest: ChangeNameRequest,
   customer: State,
   ctx: Context
-): replies.Reply {
+): Reply<Empty> {
   if (!customer.name && !customer.email) {
-    return replies.failure(
+    return Reply.failure(
       "Customer must be created before name can be changed."
     );
   } else {
     ctx.emit(
       domain.CustomerNameChanged.create({ newName: changeNameRequest.newName })
     );
-    return replies.message({});
+    return Reply.message({});
   }
 }
 
@@ -104,9 +103,9 @@ function changeAddress(
   changeAddressRequest: ChangeAddressRequest,
   customer: State,
   ctx: Context
-): replies.Reply {
+): Reply<Empty> {
   if (!customer.address) {
-    return replies.failure(
+    return Reply.failure(
       "Customer must be created before address can be changed."
     );
   } else {
@@ -115,16 +114,16 @@ function changeAddress(
         newAddress: changeAddressRequest.newAddress
       })
     );
-    return replies.message({});
+    return Reply.message({});
   }
 }
 
 function getCustomer(
   getCustomerRequest: GetCustomerRequest,
   state: State
-): replies.Reply {
+): Reply<Customer> {
   const apiCustomer = customerStateToApiCustomer(state);
-  return replies.message(apiCustomer);
+  return Reply.message(apiCustomer);
 }
 
 function customerCreated(event: CustomerCreated): State {
