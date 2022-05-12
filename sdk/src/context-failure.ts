@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+/** @internal */
 export class ContextFailure extends Error {
   readonly name: string = 'ContextFailure';
   readonly msg: string;

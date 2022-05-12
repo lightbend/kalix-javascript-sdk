@@ -15,11 +15,11 @@
  */
 
 import { should } from 'chai';
-import protobuf from 'protobufjs';
-import path from 'path';
+import * as protobuf from 'protobufjs';
+import * as path from 'path';
 import AnySupport from '../src/protobuf-any';
-import Long from 'long';
-import * as protobufHelper from '../src/protobuf-helper';
+import * as Long from 'long';
+import * as proto from '../proto/protobuf-bundle';
 
 should();
 
@@ -28,7 +28,7 @@ root.loadSync(path.join(__dirname, 'example.proto'));
 const anySupport = new AnySupport(root);
 const Example = root.lookupType('com.example.Example');
 const PrimitiveLike = root.lookupType('com.example.PrimitiveLike');
-const Any = protobufHelper.moduleRoot.google.protobuf.Any;
+const Any = proto.google.protobuf.Any;
 
 describe('AnySupport', () => {
   it('should support serializing strings', () => {

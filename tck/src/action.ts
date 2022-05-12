@@ -19,6 +19,7 @@ import { replies } from '@kalix-io/kalix-javascript-sdk';
 import protocol from '../generated/tck';
 
 type Request = protocol.kalix.tck.model.action.Request;
+type Response = protocol.kalix.tck.model.action.Response;
 type IProcessGroup = protocol.kalix.tck.model.action.IProcessGroup;
 
 const { Request, Response } = protocol.kalix.tck.model.action;
@@ -33,13 +34,13 @@ export const tckModel = new Action(
   ProcessStreamed: processStreamed,
 });
 
-function processUnary(request: Request) {
+function processUnary(request: Request): replies.Reply<Response> {
   return createReplyForGroup(request.groups[0]);
 }
 
 function processStreamedIn(context: Action.StreamedInContext) {
   let reply = replies.emptyReply();
-  context.on('data', (request) => {
+  context.on('data', (request: Request) => {
     const replyForThisRequest = createReplyForGroup(request.groups[0]);
     if (!replyForThisRequest.isEmpty()) {
       // keep the last type of reply but pass along the effects
@@ -67,7 +68,7 @@ function processStreamedOut(
 }
 
 function processStreamed(context: Action.StreamedCommandContext) {
-  context.on('data', (request) => {
+  context.on('data', (request: Request) => {
     createReplies(request).forEach((reply) =>
       // imperative send of Reply (since we could have 1:* for the incoming, and they can happen async?)
       context.reply(reply),
@@ -76,12 +77,12 @@ function processStreamed(context: Action.StreamedCommandContext) {
   context.on('end', () => context.end());
 }
 
-function createReplies(request: Request): replies.Reply[] {
+function createReplies(request: Request): replies.Reply<Response>[] {
   return request.groups.map(createReplyForGroup);
 }
 
-function createReplyForGroup(group: IProcessGroup): replies.Reply {
-  let reply = replies.emptyReply();
+function createReplyForGroup(group: IProcessGroup): replies.Reply<Response> {
+  let reply = replies.emptyReply<Response>();
   group.steps?.forEach((step) => {
     if (step.reply) {
       reply = replies.message(Response.create({ message: step.reply.message }));

@@ -13,8 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import pkg from '../package.json';
+import * as pkg from '../package.json';
 
+/** @internal */
 export class PackageInfo {
   readonly name: string;
   readonly version: string;

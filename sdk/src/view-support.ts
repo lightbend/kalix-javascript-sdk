@@ -20,20 +20,22 @@ import * as protoLoader from '@grpc/proto-loader';
 import AnySupport from './protobuf-any';
 import { Metadata } from './metadata';
 import { ServiceMap } from './kalix';
-import View from './view';
+import { View } from './view';
 import * as proto from '../proto/protobuf-bundle';
 
 const debug = require('debug')('kalix-view');
 // Bind to stdout
 debug.log = console.log.bind(console);
 
+/** @internal */
 namespace protocol {
   export type StreamIn = proto.kalix.component.view.IViewStreamIn;
   export type StreamOut = proto.kalix.component.view.IViewStreamOut;
   export type Call = grpc.ServerDuplexStream<StreamIn, StreamOut>;
 }
 
-class ViewServices {
+/** @internal */
+export default class ViewServices {
   private services: { [serviceName: string]: View };
 
   constructor() {
@@ -177,5 +179,3 @@ class ViewServices {
     });
   }
 }
-
-export = ViewServices;

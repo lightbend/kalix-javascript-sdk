@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-import util from 'util';
-import * as protobufHelper from './protobuf-helper';
-import protobuf from 'protobufjs';
-import Long from 'long';
-import stableJsonStringify from 'json-stable-stringify';
+import * as util from 'util';
+import * as protobuf from 'protobufjs';
+import * as Long from 'long';
+import stableJsonStringify = require('json-stable-stringify');
+import * as proto from '../proto/protobuf-bundle';
 
-type IAny = protobufHelper.moduleRoot.google.protobuf.IAny;
-type Any = protobufHelper.moduleRoot.google.protobuf.Any;
-const Any = protobufHelper.moduleRoot.google.protobuf.Any;
+type IAny = proto.google.protobuf.IAny;
+type Any = proto.google.protobuf.Any;
+const Any = proto.google.protobuf.Any;
 
 // To allow primitive types to be stored, Kalix defines a number of primitive type URLs, based on protobuf types.
 // The serialized values are valid protobuf messages that contain a value of that type as their single field at index
@@ -46,10 +46,10 @@ const EmptyArray = Object.freeze(new Uint8Array(0));
 
 const KalixJson = 'json.kalix.io/';
 
-/**
- * @private
- */
-class AnySupport {
+export type Comparable = string | number | boolean;
+
+/** @internal */
+export default class AnySupport {
   private root: protobuf.Root;
 
   constructor(root: protobuf.Root) {
@@ -119,9 +119,8 @@ class AnySupport {
    * - Longs
    * - any protobufjs types
    * - objects (based on stable JSON serialization)
-   * @private
    */
-  static toComparable(obj: any): string | number | boolean {
+  static toComparable(obj: any): Comparable {
     // When outputting strings, we prefix with a letter for the type, to guarantee uniqueness of different types.
     if (typeof obj === 'string') {
       return 's' + obj;
@@ -161,7 +160,6 @@ class AnySupport {
    *        is not a protobuf, but defines a type property.
    * @param requireJsonType If fallbackToJson is true, then if this is true, a property
    *        called type is required.
-   * @private
    */
   static serialize(
     obj: any,
@@ -226,7 +224,6 @@ class AnySupport {
    * Deserialize an any using the given protobufjs root object.
    *
    * @param any The any.
-   * @private
    */
   deserialize(any?: IAny | null): any {
     if (!any?.type_url) throw Error('No type URL specified for Any');
@@ -302,5 +299,3 @@ class AnySupport {
     return this.primitiveDefaultValue(type);
   }
 }
-
-export = AnySupport;

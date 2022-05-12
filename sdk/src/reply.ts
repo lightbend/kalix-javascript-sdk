@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-import { Method } from 'protobufjs';
+import { EffectMethod } from './effect';
 import { Metadata } from './metadata';
-import { GrpcStatus } from './kalix';
-
-// Note that there is a parallel reply.jsdoc that needs to be changed for API changes here to be visible
+import { GrpcStatus } from './grpc-status';
 
 /**
  * Side effect for a reply.
+ *
+ * @public
  */
 export class Effect {
   /**
@@ -31,7 +31,7 @@ export class Effect {
    * @param metadata - metadata to send with the effect
    */
   constructor(
-    readonly method: Method,
+    readonly method: EffectMethod,
     readonly message: any,
     readonly synchronous: boolean = false,
     readonly metadata?: Metadata,
@@ -40,11 +40,15 @@ export class Effect {
 
 /**
  * A return type to allow returning forwards or failures, and attaching effects to messages.
+ *
+ * @typeParam Message - the type of the reply message
+ *
+ * @public
  */
-export class Reply {
+export class Reply<Message = any> {
   constructor(
-    private method?: Method,
-    private message?: any,
+    private method?: EffectMethod,
+    private message?: Message,
     private metadata?: Metadata,
     private forward?: Reply,
     private failure?: Failure,
@@ -52,19 +56,87 @@ export class Reply {
   ) {}
 
   /**
+   * Create a message reply.
+   *
+   * @typeParam Message - the type of the reply message
+   * @param message - the message to reply with
+   * @param metadata - optional metadata to pass with the reply
+   * @returns a message reply
+   */
+  static message<Message>(
+    message: Message,
+    metadata?: Metadata,
+  ): Reply<Message> {
+    const reply = new Reply<Message>()
+      .setMessage(message)
+      .setMetadata(metadata);
+    return reply;
+  }
+
+  /**
+   * Create a forward reply.
+   *
+   * @typeParam Message - the type of the reply message
+   * @param method - the service call representing the forward
+   * @param message - the message to forward
+   * @param metadata -  optional metadata to pass with the forwarded message
+   * @returns a forward reply
+   */
+  static forward<Message>(
+    method: EffectMethod,
+    message: any,
+    metadata?: Metadata,
+  ): Reply<Message> {
+    const forward = new Reply()
+      .setMethod(method)
+      .setMessage(message)
+      .setMetadata(metadata);
+    const reply = new Reply<Message>().setForward(forward);
+    return reply;
+  }
+
+  /**
+   * Create a failure reply.
+   *
+   * @typeParam Message - the type of the reply message
+   * @param description - description of the failure
+   * @param status - the GRPC status, defaults to Unknown
+   * @returns a failure reply
+   */
+  static failure<Message>(
+    description: string,
+    status?: GrpcStatus,
+  ): Reply<Message> {
+    const reply = new Reply<Message>().setFailure(description, status);
+    return reply;
+  }
+
+  /**
+   * Create a reply that contains neither a message nor a forward nor a failure.
+   *
+   * This may be useful for emitting effects while sending an empty message.
+   *
+   * @typeParam Message - the type of the reply message
+   * @returns an empty reply
+   */
+  static empty<Message>(): Reply<Message> {
+    return new Reply<Message>();
+  }
+
+  /**
    * @returns the protobuf method for a forwarding reply
    */
-  getMethod(): Method | undefined {
+  getMethod(): EffectMethod | undefined {
     return this.method;
   }
 
   /**
-   * Set the protobuf method for a forwarding reply.
+   * Set the protobuf service method for a forwarding reply.
    *
-   * @param method - the protobuf method
+   * @param method - the protobuf service method
    * @returns the updated reply
    */
-  setMethod(method: Method): Reply {
+  setMethod(method: EffectMethod): Reply<Message> {
     this.method = method;
     return this;
   }
@@ -72,7 +144,7 @@ export class Reply {
   /**
    * @returns the reply message
    */
-  getMessage(): any {
+  getMessage(): Message | undefined {
     return this.message;
   }
 
@@ -81,7 +153,7 @@ export class Reply {
    * @param message - the reply message
    * @returns the updated reply
    */
-  setMessage(message: any): Reply {
+  setMessage(message: Message): Reply<Message> {
     this.message = message;
     return this;
   }
@@ -99,7 +171,7 @@ export class Reply {
    * @param metadata - metadata to send with the reply
    * @returns the updated reply
    */
-  setMetadata(metadata?: Metadata): Reply {
+  setMetadata(metadata?: Metadata): Reply<Message> {
     this.metadata = metadata;
     return this;
   }
@@ -117,7 +189,7 @@ export class Reply {
    * @param forward - the forward reply
    * @returns the updated reply
    */
-  setForward(forward: Reply): Reply {
+  setForward(forward: Reply): Reply<Message> {
     this.forward = forward;
     return this;
   }
@@ -136,7 +208,7 @@ export class Reply {
    * @param status - the status code to fail with, defaults to Unknown.
    * @returns the updated reply
    */
-  setFailure(description: string, status?: GrpcStatus): Reply {
+  setFailure(description: string, status?: GrpcStatus): Reply<Message> {
     this.failure = new Failure(description, status);
     return this;
   }
@@ -158,11 +230,11 @@ export class Reply {
    * @returns this reply after adding the effect
    */
   addEffect(
-    method: Method,
+    method: EffectMethod,
     message: any,
     synchronous: boolean = false,
     metadata: Metadata | undefined = undefined,
-  ): Reply {
+  ): Reply<Message> {
     this.addEffects([new Effect(method, message, synchronous, metadata)]);
     return this;
   }
@@ -173,7 +245,7 @@ export class Reply {
    * @param effects - service calls to execute as side effects
    * @returns this reply after adding the effects
    */
-  addEffects(effects: Effect[]): Reply {
+  addEffects(effects: Effect[]): Reply<Message> {
     if (this.effects) this.effects.push(...effects);
     else this.effects = effects;
     return this;
@@ -192,50 +264,60 @@ export class Reply {
 /**
  * Create a message reply.
  *
+ * @typeParam Message - the type of the reply message
  * @param message - the message to reply with
  * @param metadata - optional metadata to pass with the reply
  * @returns a message reply
+ *
+ * @see also provided by {@link Reply.message}
+ *
+ * @public
  */
-export function message(
-  message: any,
-  metadata: Metadata | undefined = undefined,
-): Reply {
-  const reply = new Reply().setMessage(message).setMetadata(metadata);
-  return reply;
+export function message<Message>(
+  message: Message,
+  metadata?: Metadata,
+): Reply<Message> {
+  return Reply.message(message, metadata);
 }
 
 /**
  * Create a forward reply.
  *
+ * @typeParam Message - the type of the reply message
  * @param method - the service call representing the forward
  * @param message - the message to forward
  * @param metadata -  optional metadata to pass with the forwarded message
  * @returns a forward reply
+ *
+ * @see also provided by {@link Reply.forward}
+ *
+ * @public
  */
-export function forward(
-  method: protobuf.Method,
+export function forward<Message>(
+  method: EffectMethod,
   message: any,
-  metadata: Metadata | undefined = undefined,
-): Reply {
-  const forward = new Reply()
-    .setMethod(method)
-    .setMessage(message)
-    .setMetadata(metadata);
-
-  const reply = new Reply().setForward(forward);
-  return reply;
+  metadata?: Metadata,
+): Reply<Message> {
+  return Reply.forward<Message>(method, message, metadata);
 }
 
 /**
  * Create a failure reply.
  *
+ * @typeParam Message - the type of the reply message
  * @param description - description of the failure
  * @param status - the GRPC status, defaults to Unknown
- * @return a failure reply
+ * @returns a failure reply
+ *
+ * @see also provided by {@link Reply.failure}
+ *
+ * @public
  */
-export function failure(description: string, status?: GrpcStatus): Reply {
-  const reply = new Reply().setFailure(description, status);
-  return reply;
+export function failure<Message>(
+  description: string,
+  status?: GrpcStatus,
+): Reply<Message> {
+  return Reply.failure<Message>(description, status);
 }
 
 /**
@@ -243,12 +325,18 @@ export function failure(description: string, status?: GrpcStatus): Reply {
  *
  * This may be useful for emitting effects while sending an empty message.
  *
+ * @typeParam Message - the type of the reply message
  * @returns an empty reply
+ *
+ * @see also provided by {@link Reply.empty}
+ *
+ * @public
  */
-export function emptyReply(): Reply {
-  return new Reply();
+export function emptyReply<Message>(): Reply<Message> {
+  return Reply.empty<Message>();
 }
 
+/** @public */
 export class Failure {
   constructor(private description: string, private status?: GrpcStatus) {
     if (status !== undefined) {

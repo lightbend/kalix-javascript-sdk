@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 // tag::entity-class[]
-import { ValueEntity, replies } from "@kalix-io/kalix-javascript-sdk";
+import { ValueEntity, Reply } from "@kalix-io/kalix-javascript-sdk";
 import * as proto from "../lib/generated/proto";
 
 /**
@@ -53,6 +53,9 @@ type DecreaseValue = proto.com.example.DecreaseValue;
 type ResetValue = proto.com.example.ResetValue;
 type GetCounter = proto.com.example.GetCounter;
 
+type Empty = proto.google.protobuf.IEmpty;
+type CurrentCounter = proto.com.example.ICurrentCounter;
+
 // tag::lookup-type[]
 const CounterState = entity.lookupType("com.example.domain.CounterState");
 // end::lookup-type[]
@@ -73,15 +76,15 @@ function increase(
   command: IncreaseValue,
   counter: State,
   ctx: Context
-): replies.Reply {
+): Reply<Empty> {
   if (command.value < 0) {
-    return replies.failure(
+    return Reply.failure(
       `Increase requires a positive value. It was [${command.value}].`
     );
   }
   counter.value += command.value;
   ctx.updateState(counter);
-  return replies.message({});
+  return Reply.message({});
 }
 // end::increase[]
 
@@ -89,30 +92,33 @@ function decrease(
   command: DecreaseValue,
   counter: State,
   ctx: Context
-): replies.Reply {
+): Reply<Empty> {
   if (command.value < 0) {
-    return replies.failure(
+    return Reply.failure(
       `Decrease requires a positive value. It was [${command.value}].`
     );
   }
   counter.value -= command.value;
   ctx.updateState(counter);
-  return replies.message({});
+  return Reply.message({});
 }
 
 function reset(
   command: ResetValue,
   counter: State,
   ctx: Context
-): replies.Reply {
+): Reply<Empty> {
   counter.value = 0;
   ctx.updateState(counter);
-  return replies.message({});
+  return Reply.message({});
 }
 
 // tag::get-current[]
-function getCurrentCounter(command: GetCounter, counter: State): replies.Reply {
-  return replies.message({ value: counter.value });
+function getCurrentCounter(
+  command: GetCounter,
+  counter: State
+): Reply<CurrentCounter> {
+  return Reply.message({ value: counter.value });
 }
 // end::get-current[]
 

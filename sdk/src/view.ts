@@ -18,31 +18,74 @@ import * as protobufHelper from './protobuf-helper';
 import * as grpc from '@grpc/grpc-js';
 import * as protoLoader from '@grpc/proto-loader';
 import ViewServices from './view-support';
-import { ComponentOptions, ServiceMap } from './kalix';
+import { Component, ComponentOptions, ServiceMap } from './kalix';
 import { Serializable } from './serializable';
 import { Metadata } from './metadata';
+import { Message } from './command';
 
 const viewServices = new ViewServices();
 
-namespace View {
+/** @public */
+export namespace View {
+  /**
+   * Context for a view update event.
+   */
   export interface UpdateHandlerContext {
+    /**
+     * The view id.
+     */
     viewId: string;
+
+    /**
+     * The event subject.
+     */
     eventSubject?: string;
+
+    /**
+     * The update command name.
+     */
     commandName: string;
+
+    /**
+     * Metadata for the event.
+     */
     metadata: Metadata;
   }
 
+  /**
+   * A handler for transforming an incoming event and the previous view state into a new state
+   *
+   * @param event - The event, this will be of the type of the gRPC event handler input type
+   * @param state - The previous view state or 'undefined' if no previous state was stored
+   * @param context - The view handler context
+   * @returns The state to store in the view or undefined to not update/store state for the event
+   */
   export type Handler = (
     event: any,
-    state?: Serializable,
-    context?: UpdateHandlerContext,
-  ) => Serializable;
+    state: any,
+    context: UpdateHandlerContext,
+  ) => Message | undefined;
 
+  /**
+   * View update handlers.
+   *
+   * @remarks
+   * The names of the properties must match the names of all the view methods specified in the gRPC
+   * descriptor.
+   */
   export type Handlers = {
     [methodName: string]: Handler;
   };
 
+  /**
+   * Options for a view.
+   */
   export interface Options extends ComponentOptions {
+    /**
+     * The id for the view, used for persisting the view.
+     *
+     * @defaultValue Defaults to the service name
+     */
     viewId?: string;
   }
 }
@@ -52,14 +95,35 @@ const defaultOptions = {
   forwardHeaders: [],
 };
 
-class View {
-  readonly options: Required<View.Options>;
-  readonly root: protobuf.Root;
+/**
+ * View.
+ *
+ * @public
+ */
+export class View implements Component {
   readonly serviceName: string;
   readonly service: protobuf.Service;
-  readonly grpc: grpc.GrpcObject;
+  readonly options: Required<View.Options>;
+
+  /** @internal */ readonly root: protobuf.Root;
+  /** @internal */ readonly grpc: grpc.GrpcObject;
+
+  /**
+   * View update handlers.
+   *
+   * @remarks
+   * The names of the properties must match the names of all the view methods specified in the gRPC
+   * descriptor.
+   */
   updateHandlers?: View.Handlers;
 
+  /**
+   * Create a new view.
+   *
+   * @param desc - A descriptor or list of descriptors to parse, containing the service to serve
+   * @param serviceName - The fully qualified name of the service that provides this interface
+   * @param options - The options for this view
+   */
   constructor(
     desc: string | string[],
     serviceName: string,
@@ -93,6 +157,7 @@ class View {
     this.grpc = grpc.loadPackageDefinition(packageDefinition);
   }
 
+  /** @internal */
   componentType(): string {
     return viewServices.componentType();
   }
@@ -101,15 +166,24 @@ class View {
     return this.root.lookupType(messageType);
   }
 
+  /**
+   * Set the update handlers of the view.
+   *
+   * @remarks
+   * Only used for updates where event transformation is enabled through
+   * `"transform_updates: true"` in the grpc descriptor.
+   *
+   * @param handlers - The handler callbacks
+   * @returns This view
+   */
   setUpdateHandlers(handlers: View.Handlers): View {
     this.updateHandlers = handlers;
     return this;
   }
 
+  /** @internal */
   register(allComponents: ServiceMap): ViewServices {
     viewServices.addService(this, allComponents);
     return viewServices;
   }
 }
-
-export = View;

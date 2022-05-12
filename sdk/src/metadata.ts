@@ -18,20 +18,43 @@ import { Cloudevent } from './cloudevent';
 import { JwtClaims } from './jwt-claims';
 import * as proto from '../proto/protobuf-bundle';
 
+/** @internal */
 namespace protocol {
   export type Metadata = proto.kalix.component.IMetadata;
 }
 
-type MetadataValue = string | Buffer;
+/**
+ * A metadata value. Can either be a string or a buffer.
+ *
+ * @public
+ */
+export type MetadataValue = string | Buffer;
 
 // Using an interface for compatibility with legacy JS code
+/**
+ * A metadata entry.
+ *
+ * @public
+ */
 export interface MetadataEntry {
+  /**
+   * The key for this metadata entry.
+   */
   readonly key: string;
+
+  /**
+   * The entry value as bytes.
+   */
   readonly bytesValue: Buffer | undefined;
+
+  /**
+   * The entry value as a string.
+   */
   readonly stringValue: string | undefined;
 }
 
-interface MetadataMap {
+/** @public */
+export interface MetadataMap {
   [key: string]: string | Buffer | undefined;
 }
 
@@ -143,11 +166,15 @@ class MetadataMapProxyHandler implements ProxyHandler<MetadataMap> {
  * a string using toString.
  *
  * @param entries - the list of entries
+ *
+ * @public
  */
 export class Metadata {
   readonly entries: MetadataEntry[];
   /**
    * The metadata expressed as an object/map.
+   *
+   * @remarks
    *
    * The map is backed by the this Metadata object - changes to this map will be reflected in this metadata object and
    * changes to this object will be reflected in the map.
@@ -164,6 +191,7 @@ export class Metadata {
   /**
    * The Cloudevent data from this Metadata.
    *
+   * @remarks
    * This object is backed by this Metadata, changes to the Cloudevent will be reflected in the Metadata.
    */
   readonly cloudevent: Cloudevent = new Cloudevent(this);
@@ -177,6 +205,14 @@ export class Metadata {
     this.entries = entries;
   }
 
+  /**
+   * Create Metadata from the SDK protocol.
+   *
+   * @param metadata - protocol Metadata
+   * @returns created Metadata
+   *
+   * @internal
+   */
   static fromProtocol(metadata?: protocol.Metadata | null): Metadata {
     if (metadata && metadata.entries) {
       const entries: MetadataEntry[] = metadata.entries.map((entry) => ({
@@ -193,14 +229,15 @@ export class Metadata {
   }
 
   /**
-   * If this metadata object is being returned as the metadata for an HTTP transcoded response, this will set the
-   * HTTP status code for the response.
+   * Set the HTTP status code for the response when sending a successful response using HTTP transcoding.
    *
-   * This will have no impact on gRPC responses.
+   * @remarks
+   * This will only apply to responses that are being transcoded to plain HTTP from gRPC using the protobuf HTTP
+   * annotations. When gRPC is being used, calling this has no effect.
    *
-   * @param code The status code to set.
+   * @param code - The HTTP status code to set
    */
-  setHttpStatusCode(code: number) {
+  setHttpStatusCode(code: number): void {
     if (code < 100 || code >= 600) {
       throw new Error('Invalid HTTP status code: ' + code);
     }
@@ -208,8 +245,11 @@ export class Metadata {
   }
 
   /**
+   * Get the CloudEvent subject from the metadata.
+   *
    * @returns CloudEvent subject value
-   * @deprecated Use cloudevent.subject instead.
+   *
+   * @deprecated Use {@link Cloudevent.subject} via {@link Metadata.cloudevent} instead.
    */
   getSubject(): MetadataValue | undefined {
     const subject = this.get('ce-subject');
@@ -254,6 +294,7 @@ export class Metadata {
   /**
    * Get all the values for the given key.
    *
+   * @remarks
    * The key is case insensitive.
    *
    * @param key - the key to get
@@ -275,6 +316,7 @@ export class Metadata {
   /**
    * Set a given key value.
    *
+   * @remarks
    * This will append the key value to the metadata, it won't replace any existing values for existing keys.
    *
    * @param key - the key to set
@@ -289,6 +331,7 @@ export class Metadata {
   /**
    * Delete all values with the given key.
    *
+   * @remarks
    * The key is case insensitive.
    *
    * @param key - the key to delete
@@ -310,6 +353,7 @@ export class Metadata {
   /**
    * Whether there exists a metadata value for the given key.
    *
+   * @remarks
    * The key is case insensitive.
    *
    * @param key - the key to check

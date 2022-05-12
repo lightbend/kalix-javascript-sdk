@@ -1,0 +1,9 @@
+{
+  "$schema": "https://typedoc.org/schema.json",
+  "entryPoints": [
+    "./index.ts"
+  ],
+  "excludeInternal": true,
+  "excludePrivate": true,
+  "out": "apidocs"
+}

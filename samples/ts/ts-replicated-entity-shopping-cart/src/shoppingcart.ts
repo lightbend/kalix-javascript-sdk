@@ -32,6 +32,8 @@ type RemoveShoppingCart = proto.com.example.shoppingcart.RemoveShoppingCart;
 
 type Context = replicatedentity.ReplicatedEntityCommandContext;
 
+type Product = proto.com.example.shoppingcart.domain.IProduct & protobuf.Message;
+
 // end::types[]
 // tag::class[]
 const entity = new replicatedentity.ReplicatedEntity( // <1>
@@ -45,7 +47,7 @@ const entity = new replicatedentity.ReplicatedEntity( // <1>
 // end::class[]
 
 // tag::defaultValue[]
-entity.defaultValue = () => new replicatedentity.ReplicatedCounterMap(); // <1>
+entity.defaultValue = () => new replicatedentity.ReplicatedCounterMap<Product>(); // <1>
 // end::defaultValue[]
 
 // tag::types[]
@@ -69,7 +71,7 @@ function addItem(addLineItem: AddLineItem, context: Context) {
     return replies.failure(`Quantity for item ${addLineItem.productId} must be greater than zero`); // <1>
   }
 
-  const cart = context.state as replicatedentity.ReplicatedCounterMap; // <2>
+  const cart = context.state as replicatedentity.ReplicatedCounterMap<Product>; // <2>
 
   const product = Product.create({
     id: addLineItem.productId, // <3>
@@ -83,7 +85,7 @@ function addItem(addLineItem: AddLineItem, context: Context) {
 // end::addItem[]
 
 function removeItem(removeLineItem: RemoveLineItem, context: Context) {
-  const cart = context.state as replicatedentity.ReplicatedCounterMap;
+  const cart = context.state as replicatedentity.ReplicatedCounterMap<Product>;
 
   const product = Product.create({
     id: removeLineItem.productId,
@@ -101,7 +103,7 @@ function removeItem(removeLineItem: RemoveLineItem, context: Context) {
 
 // tag::getCart[]
 function getCart(getShoppingCart: GetShoppingCart, context: Context) {
-  const cart = context.state as replicatedentity.ReplicatedCounterMap; // <1>
+  const cart = context.state as replicatedentity.ReplicatedCounterMap<Product>; // <1>
 
   const items = Array.from(cart.keys()) // <2>
     .map(product => ({

@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-import fs from 'fs';
-import path from 'path';
-import protobuf from 'protobufjs';
+import * as fs from 'fs';
+import * as path from 'path';
+import * as protobuf from 'protobufjs';
 
+/** @internal */
 export function loadSync(
   desc: string | string[],
   includeDirs: string[],
@@ -40,11 +41,10 @@ export function loadSync(
   return root;
 }
 
+/** @internal */
 export const moduleIncludeDirs = [
   path.join(__dirname, '..', 'proto'),
   path.join(__dirname, '..', 'protoc', 'include'),
   path.join(__dirname, '..', '..', 'proto'),
   path.join(__dirname, '..', '..', 'protoc', 'include'),
 ];
-
-export * as moduleRoot from '../proto/protobuf-bundle';

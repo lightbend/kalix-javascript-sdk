@@ -15,10 +15,11 @@
  */
 
 import { EventSourcedEntity } from '@kalix-io/kalix-javascript-sdk';
-import { replies } from '@kalix-io/kalix-javascript-sdk';
+import { Reply, replies } from '@kalix-io/kalix-javascript-sdk';
 import protocol from '../generated/tck';
 
 type Request = protocol.kalix.tck.model.eventsourcedentity.Request;
+type Response = protocol.kalix.tck.model.eventsourcedentity.Response;
 
 const { Request, Response } = protocol.kalix.tck.model.eventsourcedentity;
 
@@ -53,8 +54,8 @@ function process(
   request: Request,
   state: Persisted,
   context: EventSourcedEntity.EventSourcedEntityCommandContext,
-) {
-  let reply: replies.Reply | undefined,
+): Reply<Response> {
+  let reply: Reply<Response> | undefined,
     effects: replies.Effect[] = [];
   request.actions.forEach((action) => {
     if (action.emit) {
@@ -63,7 +64,7 @@ function process(
       // events are not emitted immediately, so we also update the function local state directly for responses
       state = persisted(event, state);
     } else if (action.forward) {
-      reply = replies.forward(two.service.methods.Call, {
+      reply = Reply.forward(two.service.methods.Call, {
         id: action.forward.id,
       });
     } else if (action.effect) {
@@ -75,12 +76,12 @@ function process(
         ),
       );
     } else if (action.fail) {
-      reply = replies.failure(action.fail.message || '');
+      reply = Reply.failure(action.fail.message || '');
     }
   });
   // if we don't already have a reply from the actions
   if (!reply)
-    reply = replies.message(
+    reply = Reply.message(
       Response.create(state.value ? { message: state.value } : {}),
     );
   reply.addEffects(effects);

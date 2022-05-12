@@ -37,6 +37,24 @@ $PROTOC \
 rm -rf test/proto
 cp -r proto test/
 
+pbjs -t static-module -w commonjs \
+  -o ./test/proto/test-protobuf-bundle.js \
+  -p ./proto -p ./protoc/include \
+  ./proto/kalix/*.proto \
+  ./proto/kalix/protocol/*.proto \
+  ./proto/kalix/component/*.proto \
+  ./proto/kalix/component/*/*.proto \
+  ./test/*.proto
+
+pbjs -t static-module \
+  -p ./proto -p ./protoc/include \
+  ./proto/kalix/*.proto \
+  ./proto/kalix/protocol/*.proto \
+  ./proto/kalix/component/*.proto \
+  ./proto/kalix/component/*/*.proto \
+  ./test/*.proto \
+  | pbts -o ./test/proto/test-protobuf-bundle.d.ts -
+
 OUT_DIR="${PWD}/test/proto"
 TS_OUT_DIR="${PWD}/test/proto"
 

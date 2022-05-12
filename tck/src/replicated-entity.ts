@@ -17,11 +17,11 @@
 import {
   replicatedentity,
   ReplicatedWriteConsistency,
-  Serializable,
 } from '@kalix-io/kalix-javascript-sdk';
 import protocol from '../generated/tck';
 
 type Request = protocol.kalix.tck.model.replicatedentity.Request;
+type Response = protocol.kalix.tck.model.replicatedentity.Response;
 type IUpdate = protocol.kalix.tck.model.replicatedentity.IUpdate;
 type IState = protocol.kalix.tck.model.replicatedentity.IState;
 
@@ -49,7 +49,10 @@ function createReplicatedData(name: string) {
     case 'ReplicatedRegister':
       return new replicatedentity.ReplicatedRegister('');
     case 'ReplicatedMap':
-      const map = new replicatedentity.ReplicatedMap();
+      const map = new replicatedentity.ReplicatedMap<
+        string,
+        replicatedentity.ReplicatedData
+      >();
       map.defaultValue = (key) => createReplicatedData(key);
       return map;
     case 'ReplicatedCounterMap':
@@ -68,7 +71,7 @@ function createReplicatedData(name: string) {
 function process(
   request: Request,
   context: replicatedentity.ReplicatedEntityCommandContext,
-) {
+): Response {
   if (context.state === null)
     context.state = createReplicatedData(context.entityId);
   request.actions.forEach((action) => {
@@ -105,7 +108,7 @@ function applyUpdate(
       else if (update.replicatedSet.remove)
         set.delete(update.replicatedSet.remove);
       else if (update.replicatedSet.clear) set.clear();
-    } else if (update.register) {
+    } else if (update.register?.value) {
       const register = state as replicatedentity.ReplicatedRegister;
       if (
         update.register.clock?.clockType ===
@@ -122,7 +125,7 @@ function applyUpdate(
         register.setWithClock(
           update.register.value,
           replicatedentity.Clocks.CUSTOM,
-          update.register.clock?.customClockValue as number, // FIXME
+          update.register.clock?.customClockValue ?? 0,
         );
       else if (
         update.register.clock?.clockType ===
@@ -131,7 +134,7 @@ function applyUpdate(
         register.setWithClock(
           update.register.value,
           replicatedentity.Clocks.CUSTOM_AUTO_INCREMENT,
-          update.register.clock?.customClockValue as number, // FIXME
+          update.register.clock?.customClockValue ?? 0,
         );
       else register.value = update.register.value;
     } else if (update.replicatedMap) {
@@ -141,7 +144,7 @@ function applyUpdate(
           update.replicatedMap.add,
           createReplicatedData(update.replicatedMap.add),
         );
-      else if (update.replicatedMap.update)
+      else if (update.replicatedMap.update?.key)
         applyUpdate(
           update.replicatedMap.update.update,
           map.get(update.replicatedMap.update.key),
@@ -153,7 +156,7 @@ function applyUpdate(
       const counterMap = state as replicatedentity.ReplicatedCounterMap;
       if (update.replicatedCounterMap.add)
         counterMap.increment(update.replicatedCounterMap.add, 0);
-      else if (update.replicatedCounterMap.update)
+      else if (update.replicatedCounterMap.update?.key)
         counterMap.increment(
           update.replicatedCounterMap.update.key,
           update.replicatedCounterMap.update.change || 0,
@@ -165,7 +168,10 @@ function applyUpdate(
       const registerMap = state as replicatedentity.ReplicatedRegisterMap;
       if (update.replicatedRegisterMap.add)
         registerMap.set(update.replicatedRegisterMap.add, '');
-      else if (update.replicatedRegisterMap.update) {
+      else if (
+        update.replicatedRegisterMap.update?.key &&
+        update.replicatedRegisterMap.update?.value
+      ) {
         const key = update.replicatedRegisterMap.update.key;
         const value = update.replicatedRegisterMap.update.value;
         const clock = update.replicatedRegisterMap.update.clock;
@@ -195,16 +201,12 @@ function applyUpdate(
             clock?.customClockValue as number, // FIXME
           );
         else registerMap.set(key, value);
-        registerMap.set(
-          update.replicatedRegisterMap.update.key,
-          update.replicatedRegisterMap.update.value,
-        );
       } else if (update.replicatedRegisterMap.remove)
         registerMap.delete(update.replicatedRegisterMap.remove);
       else if (update.replicatedRegisterMap.clear) registerMap.clear();
     } else if (update.replicatedMultiMap) {
       const multiMap = state as replicatedentity.ReplicatedMultiMap;
-      if (update.replicatedMultiMap.update) {
+      if (update.replicatedMultiMap.update?.key) {
         const key = update.replicatedMultiMap.update.key;
         const value = update.replicatedMultiMap.update.update;
         if (value?.add) multiMap.put(key, value.add);
@@ -220,7 +222,7 @@ function applyUpdate(
   }
 }
 
-function responseValue(state: replicatedentity.ReplicatedData) {
+function responseValue(state: replicatedentity.ReplicatedData): Response {
   return Response.create(state ? { state: replicatedDataState(state) } : {});
 }
 
@@ -273,7 +275,7 @@ function replicatedDataState(state: replicatedentity.ReplicatedData): IState {
   else return {};
 }
 
-function sortedElements(elements: Iterable<Serializable>): string[] {
+function sortedElements(elements: Iterable<any>): string[] {
   return Array.from(elements).sort();
 }
 
@@ -288,10 +290,7 @@ function sortedEntries(
   return converted.sort((a, b) => a.key.localeCompare(b.key));
 }
 
-function sortedEntriesFromKeys(
-  keys: Iterable<Serializable>,
-  get: (key: Serializable) => Serializable,
-) {
+function sortedEntriesFromKeys(keys: Iterable<any>, get: (key: any) => any) {
   const entries = Array.from(keys, (key) => {
     const value = get(key);
     return value ? { key: key, value: value } : { key: key };

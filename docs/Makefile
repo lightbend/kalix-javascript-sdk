@@ -36,7 +36,7 @@ attributes:
 		>> "${managed_partials}/attributes.adoc"
 
 apidocs:
-	cd ../sdk && npm ci && npm run jsdoc
+	cd ../sdk && npm ci && npm run typedoc
 	mkdir -p "${managed_attachments}"
 	rsync -a ../sdk/apidocs/ "${managed_attachments}/api/"
 	bin/version.sh | xargs -0  printf "%s" > "${managed_attachments}/latest-version.txt"

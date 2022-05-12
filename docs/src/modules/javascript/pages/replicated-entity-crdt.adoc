@@ -54,7 +54,7 @@ include::example$js-replicated-entity-shopping-cart/proto/shoppingcart_api.proto
 
 == Implementing behavior
 
-A Replicated Entity is implemented with the link:{attachmentsdir}/api/module-kalix.replicatedentity.ReplicatedEntity.html[ReplicatedEntity{tab-icon}, window="new"] class:
+A Replicated Entity is implemented with the link:{attachmentsdir}/api/classes/replicatedentity.ReplicatedEntity-1.html[ReplicatedEntity{tab-icon}, window="new"] class:
 
 [.tabset]
 JavaScript::
@@ -102,7 +102,7 @@ NOTE: Each Replicated Entity is associated with one underlying Replicated Data t
 
 === Using protobuf types
 
-To create protobuf messages, for responses or the replicated state, first lookup the protobuf type constructors using the Replicated Entity link:{attachmentsdir}/api/module-kalix.replicatedentity.ReplicatedEntity.html#lookupType[`lookupType`{tab-icon}, window="new"] helper. For TypeScript, the protobuf types used in command handlers can be added using the statically generated type declarations.
+To create protobuf messages, for responses or the replicated state, first lookup the protobuf type constructors using the Replicated Entity link:{attachmentsdir}/api/classes/replicatedentity.ReplicatedEntity-1.html#lookupType[`lookupType`{tab-icon}, window="new"] helper. For TypeScript, the protobuf types used in command handlers can be added using the statically generated type declarations.
 
 [.tabset]
 JavaScript::
@@ -124,9 +124,9 @@ NOTE: Each protobuf type constructor has a `create` method for creating a protob
 
 === Defining command handlers
 
-We need to implement all methods our Replicated Entity offers as https://docs.kalix.io/reference/glossary.html#command_handler[_command handlers_]. A link:{attachmentsdir}/api/module-kalix.replicatedentity.ReplicatedEntity.html#~commandHandler[`command handler`{tab-icon}, window="new"] is a function that takes a command and a link:{attachmentsdir}/api/module-kalix.replicatedentity.ReplicatedEntityCommandContext.html[`ReplicatedEntityCommandContext`{tab-icon}, window="new"]. The command is the input message type for the gRPC service call, and the command handler must return a message of the same type as the output type of the gRPC service call.
+We need to implement all methods our Replicated Entity offers as https://docs.kalix.io/reference/glossary.html#command_handler[_command handlers_]. A link:{attachmentsdir}/api/modules/replicatedentity.ReplicatedEntity.html#CommandHandler[`command handler`{tab-icon}, window="new"] is a function that takes a command and a link:{attachmentsdir}/api/interfaces/replicatedentity.ReplicatedEntityCommandContext.html[`ReplicatedEntityCommandContext`{tab-icon}, window="new"]. The command is the input message type for the gRPC service call, and the command handler must return a message of the same type as the output type of the gRPC service call.
 
-We map each method to a command handler function using link:{attachmentsdir}/api/module-kalix.replicatedentity.ReplicatedEntity.html#commandHandlers[`commandHandlers`{tab-icon}, window="new"].
+We map each method to a command handler function using link:{attachmentsdir}/api/classes/replicatedentity.ReplicatedEntity-1.html#commandHandlers[`commandHandlers`{tab-icon}, window="new"].
 
 [.tabset]
 JavaScript::
@@ -148,7 +148,7 @@ include::example$ts-replicated-entity-shopping-cart/src/shoppingcart.ts[tag=comm
 
 In the example below, the `AddItem` service call uses the request message `AddLineItem` to update items in the shopping cart.
 
-The current Replicated Data value can be accessed using the link:{attachmentsdir}/api/module-kalix.replicatedentity.ReplicatedEntityCommandContext.html#state[`state`{tab-icon}, window="new"] method on the provided context.
+The current Replicated Data value can be accessed using the link:{attachmentsdir}/api/interfaces/replicatedentity.ReplicatedEntityCommandContext.html#state[`state`{tab-icon}, window="new"] method on the provided context.
 
 [.tabset]
 JavaScript::
@@ -176,7 +176,7 @@ include::example$ts-replicated-entity-shopping-cart/src/shoppingcart.ts[tags=imp
 
 The following example shows the implementation of the `GetCart` command handler. This command handler is a read-only command handler--it doesn't update the state, it just returns it.
 
-The current Replicated Data value can be accessed using the link:{attachmentsdir}/api/module-kalix.replicatedentity.ReplicatedEntityCommandContext.html#state[`state`{tab-icon}, window="new"] method on the provided context.
+The current Replicated Data value can be accessed using the link:{attachmentsdir}/api/interfaces/replicatedentity.ReplicatedEntityCommandContext.html#state[`state`{tab-icon}, window="new"] method on the provided context.
 
 IMPORTANT: The state of Replicated Entities is eventually consistent. An individual Replicated Entity instance may have an out-of-date value, if there are concurrent modifications made by another instance.
 
@@ -203,7 +203,7 @@ include::example$ts-replicated-entity-shopping-cart/src/shoppingcart.ts[tags=imp
 
 === Deleting state
 
-The following example shows the implementation of the `RemoveCart` command handler. Replicated Entity instances for a particular entity identifier can be deleted, using the link:{attachmentsdir}/api/module-kalix.replicatedentity.ReplicatedEntityCommandContext.html#delete[`delete`{tab-icon}, window="new"] method on the provided context. Once deleted, an entity instance cannot be recreated, and all subsequent commands for that entity identifier will be rejected with an error.
+The following example shows the implementation of the `RemoveCart` command handler. Replicated Entity instances for a particular entity identifier can be deleted, using the link:{attachmentsdir}/api/interfaces/replicatedentity.ReplicatedEntityCommandContext.html#delete[`delete`{tab-icon}, window="new"] method on the provided context. Once deleted, an entity instance cannot be recreated, and all subsequent commands for that entity identifier will be rejected with an error.
 
 IMPORTANT: Caution should be taken with creating and deleting Replicated Entities, as Kalix maintains the replicated state in memory and also retains tombstones for each deleted entity. Over time, if many Replicated Entities are created and deleted, this will result in hitting memory limits.
 
@@ -263,7 +263,7 @@ NOTE: The current value for a Replicated Data object may not be the most up-to-d
 
 === Replicated Counter
 
-A link:{attachmentsdir}/api/module-kalix.replicatedentity.ReplicatedCounter.html[ReplicatedCounter{tab-icon}, window="new"] can be incremented and decremented.
+A link:{attachmentsdir}/api/classes/replicatedentity.ReplicatedCounter.html[ReplicatedCounter{tab-icon}, window="new"] can be incremented and decremented.
 
 // TODO: add codegen protobuf when avaliable for Replicated Entities
 
@@ -273,7 +273,7 @@ When implementing a Replicated Counter entity, the state can be updated by calli
 
 === Replicated Register
 
-A link:{attachmentsdir}/api/module-kalix.replicatedentity.ReplicatedRegister.html[ReplicatedRegister{tab-icon}, window="new"] can contain any (serializable) value. Updates to the value are replicated using last-write-wins semantics, where concurrent modifications are resolved by using the update with the highest timestamp.
+A link:{attachmentsdir}/api/classes/replicatedentity.ReplicatedRegister.html[ReplicatedRegister{tab-icon}, window="new"] can contain any (serializable) value. Updates to the value are replicated using last-write-wins semantics, where concurrent modifications are resolved by using the update with the highest timestamp.
 
 // TODO: configuring clocks for register replication
 
@@ -285,7 +285,7 @@ When creating a Replicated Register, an initial or empty value needs to be defin
 
 === Replicated Set
 
-A link:{attachmentsdir}/api/module-kalix.replicatedentity.ReplicatedSet.html[ReplicatedSet{tab-icon}, window="new"] is a set of (serializable) values, where elements can be added or removed.
+A link:{attachmentsdir}/api/classes/replicatedentity.ReplicatedSet-1.html[ReplicatedSet{tab-icon}, window="new"] is a set of (serializable) values, where elements can be added or removed.
 
 // TODO: add codegen protobuf when avaliable for Replicated Entities
 
@@ -297,7 +297,7 @@ IMPORTANT: Care needs to be taken to ensure that the serialized values for eleme
 
 === Replicated Counter Map
 
-A link:{attachmentsdir}/api/module-kalix.replicatedentity.ReplicatedCounterMap.html[ReplicatedCounterMap{tab-icon}, window="new"] maps (serializable) keys to replicated counters, where each value can be incremented and decremented.
+A link:{attachmentsdir}/api/classes/replicatedentity.ReplicatedCounterMap.html[ReplicatedCounterMap{tab-icon}, window="new"] maps (serializable) keys to replicated counters, where each value can be incremented and decremented.
 
 // TODO: add codegen protobuf when avaliable for Replicated Entities
 
@@ -307,7 +307,7 @@ When implementing a Replicated Counter Map entity, the value of an entry can be 
 
 === Replicated Register Map
 
-A link:{attachmentsdir}/api/module-kalix.replicatedentity.ReplicatedRegisterMap.html[ReplicatedRegisterMap{tab-icon}, window="new"] maps (serializable) keys to replicated registers of (serializable) values. Updates to values are replicated using last-write-wins semantics, where concurrent modifications are resolved by using the update with the highest timestamp.
+A link:{attachmentsdir}/api/classes/replicatedentity.ReplicatedRegisterMap.html[ReplicatedRegisterMap{tab-icon}, window="new"] maps (serializable) keys to replicated registers of (serializable) values. Updates to values are replicated using last-write-wins semantics, where concurrent modifications are resolved by using the update with the highest timestamp.
 
 // TODO: configuring clocks for register replication
 
@@ -319,7 +319,7 @@ When implementing a Replicated Register Map entity, the value of an entry can be
 
 === Replicated Multi-Map
 
-A link:{attachmentsdir}/api/module-kalix.replicatedentity.ReplicatedMultiMap.html[ReplicatedMultiMap{tab-icon}, window="new"] maps (serializable) keys to replicated sets of (serializable) values, providing a multi-map interface that can associate multiple values with each key.
+A link:{attachmentsdir}/api/classes/replicatedentity.ReplicatedMultiMap.html[ReplicatedMultiMap{tab-icon}, window="new"] maps (serializable) keys to replicated sets of (serializable) values, providing a multi-map interface that can associate multiple values with each key.
 
 // TODO: add codegen protobuf when avaliable for Replicated Entities
 
@@ -329,7 +329,7 @@ When implementing a Replicated Multi-Map entity, the values of an entry can be u
 
 === Replicated Map
 
-A link:{attachmentsdir}/api/module-kalix.replicatedentity.ReplicatedMap.html[ReplicatedMap{tab-icon}, window="new"] maps (serializable) keys to any other Replicated Data types, allowing a heterogeneous map where values can be of any Replicated Data type.
+A link:{attachmentsdir}/api/classes/replicatedentity.ReplicatedMap-1.html[ReplicatedMap{tab-icon}, window="new"] maps (serializable) keys to any other Replicated Data types, allowing a heterogeneous map where values can be of any Replicated Data type.
 
 NOTE: Prefer to use the specialized replicated maps (<<_replicated_counter_map>>, <<_replicated_register_map>>, or <<_replicated_multi_map>>) whenever the values of the map are of the same type -- counters, registers, or sets.
 
