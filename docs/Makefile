@@ -39,6 +39,7 @@ apidocs:
 	cd ../sdk && npm ci && npm run typedoc
 	mkdir -p "${managed_attachments}"
 	rsync -a ../sdk/apidocs/ "${managed_attachments}/api/"
+	bin/version.sh > "${managed_attachments}/latest-version.txt"
 
 examples:
 	mkdir -p "${managed_examples}"
