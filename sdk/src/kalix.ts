@@ -694,6 +694,7 @@ export class Kalix {
               componentOptions.forwardHeaders,
             );
           }
+          res.setComponent(componentSettings);
         }
 
         return res;
