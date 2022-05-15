@@ -47,3 +47,7 @@ const entity: EventSourcedEntity = new EventSourcedEntity(
   }
 );
 ----
+
+include::partial$topic-eventing-cloudevent.adoc[]
+
+include::partial$json.adoc[]

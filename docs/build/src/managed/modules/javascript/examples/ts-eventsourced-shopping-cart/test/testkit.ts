@@ -14,10 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  Metadata,
-  EventSourcedEntity
-} from "@kalix-io/kalix-javascript-sdk";
+import { Metadata, EventSourcedEntity } from "@kalix-io/kalix-javascript-sdk";
 
 /**
  * Mocks the behaviour of a single Kalix EventSourcedEntity.
@@ -88,7 +85,7 @@ export class MockEventSourcedEntity<S> {
 
 /**
  * Generic mock CommandContext for any Kalix entity
- * @type { import("../lib/akkaserverless").CommandContext }
+ * @type { import("../lib/kalix").CommandContext }
  */
 export class MockCommandContext {
   effects: Array<any> = [];
@@ -125,7 +122,7 @@ export class MockCommandContext {
  * construct their own instance of this class, however for making assertions on
  * forwarding or emmitted effects you may provide your own.
  *
- * @type { import("../lib/akkaserverless").EventSourcedCommandContext<unknown> }
+ * @type { import("../lib/kalix").EventSourcedCommandContext<unknown> }
  */
 export class MockEventSourcedCommandContext
   extends MockCommandContext

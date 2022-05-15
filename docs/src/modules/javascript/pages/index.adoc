@@ -95,7 +95,7 @@ By default, the descriptor is written to `user-function.desc`, if you wish to ch
 
 === Create and start the gRPC server
 
-There are two ways to create and start a Kalix gRPC server. The first is to create an link:{attachmentsdir}/api/module-kalix.Entity.html[`Entity`{tab-icon}, window="new"], and invoke link:{attachmentsdir}/api/module-kalix.Entity.html#start[`start`{tab-icon}, window="new"] on it. This allows creating a server that serves a single entity, with the default options. We'll look at this more in the subsequent pages. Alternatively, you can use the link:{attachmentsdir}/api/module-kalix.Kalix.html[`Kalix`{tab-icon}, window="new"] class, add one or more entities to it, and then invoke link:{attachmentsdir}/api/module-kalix.kalix.html#start[`start`{tab-icon}, window="new"], like so:
+Use the link:{attachmentsdir}/api/classes/Kalix.html[`Kalix`{tab-icon}, window="new"] class, add one or more link:{attachmentsdir}/api/interfaces/Component.html[`Components`{tab-icon}, window="new"] to it, and then invoke link:{attachmentsdir}/api/classes/Kalix.html#start[`start`{tab-icon}, window="new"], like so:
 
 [.tabset]
 JavaScript::
@@ -140,6 +140,6 @@ This section includes information on the following topics:
 * xref:javascript:value-entity.adoc[]
 * xref:javascript:views.adoc[]
 * xref:forwarding.adoc[Forwarding and effects]
-* xref:javascript:topic-eventing.adoc[]
+* xref:javascript:actions-publishing-subscribing.adoc[]
 * xref:serialization.adoc[Serialization]
 * link:{attachmentsdir}/api/index.html[JavaScript API docs{tab-icon}, window="new"]

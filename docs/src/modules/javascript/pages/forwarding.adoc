@@ -9,7 +9,7 @@ ifdef::todo[TODO: add more complete examples.]
 
 ifdef::todo[TODO: update to use replies.forward instead of context.forward, with examples]
 
-The link:{attachmentsdir}/api/module-kalix.CommandContext.html[`CommandContext`{tab-icon}, window="new"] can call the method link:{attachmentsdir}/api/module-kalix.CommandContext.html#forward[`forward`{tab-icon}, window="new"] to forward the command to another entity service call.
+The link:{attachmentsdir}/api/interfaces/CommandContext.html[`CommandContext`{tab-icon}, window="new"] can call the method link:{attachmentsdir}/api/interfaces/CommandContext.html#forward[`forward`{tab-icon}, window="new"] to forward the command to another entity service call.
 
 include::partial$forwarding-effects.adoc[]
 
@@ -17,4 +17,4 @@ include::partial$forwarding-effects.adoc[]
 
 ifdef::todo[TODO: update to use Reply.addEffect instead of context.effect, with examples]
 
-The link:{attachmentsdir}/api/module-kalix.CommandContext.html[`CommandContext`{tab-icon}, window="new"] for each entity type implements link:{attachmentsdir}/api/module-kalix.EffectContext.html[`EffectContext`{tab-icon}, window="new"], which is able to emit an effect after processing the command by invoking the method link:{attachmentsdir}/api/module-kalix.EffectContext.html#effect[`effect`{tab-icon}, window="new"]
+The link:{attachmentsdir}/api/interfaces/CommandContext.html[`CommandContext`{tab-icon}, window="new"] for each entity type implements link:{attachmentsdir}/api/interfaces/EffectContext.html[`EffectContext`{tab-icon}, window="new"], which is able to emit an effect after processing the command by invoking the method link:{attachmentsdir}/api/interfaces/EffectContext.html#effect[`effect`{tab-icon}, window="new"]

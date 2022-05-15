@@ -22,4 +22,4 @@ To listen to an Event Sourced Entity's journal, an Action can be set up for Even
 The Event Sourced Entity journal contains events that capture all state changes.
 By subscribing to the journal with the Event Sourced Entity name, another component can receive all events of that type emitted by an Event Sourced Entity.
 
-Together with xref:topic-eventing.adoc[Topic publishing], this may be used to inform other services asynchronously about certain events.
+Together with xref:actions-publishing-subscribing.adoc[Topic publishing], this may be used to inform other services asynchronously about certain events.
