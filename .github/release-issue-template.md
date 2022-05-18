@@ -33,7 +33,7 @@ You can see the proxy version on prod [on grafana](https://lightbendcloud.grafan
 
 ### Announcements
 
-- [ ] Announce in [the forum](https://discuss.lightbend.com/c/akka-serverless/40)
+- [ ] Announce in [the forum](https://discuss.kalix.io)
     - tag with Kalix, releases and announcement
 - [ ] Inform Lightbend marketing and engineering if it's a noteworthy release
 - [ ] Close this issue
