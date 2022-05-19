@@ -22,10 +22,7 @@ import AnySupport from './protobuf-any';
 import { CommandHandler, InternalContext } from './command';
 import CommandHelper from './command-helper';
 import * as replicatedData from './replicated-data';
-import {
-  ReplicatedEntity,
-  ReplicatedEntityCommandContext,
-} from './replicated-entity';
+import { ReplicatedEntity } from './replicated-entity';
 import { ServiceMap } from './kalix';
 import * as proto from '../proto/protobuf-bundle';
 
@@ -64,7 +61,7 @@ interface ReplicatedEntityHandlers {
 
 /** @internal */
 interface InternalReplicatedEntityContext extends InternalContext {
-  context: ReplicatedEntityCommandContext;
+  context: ReplicatedEntity.CommandContext;
   deleted: boolean;
   noState: boolean;
   defaultValue: boolean;
@@ -79,7 +76,7 @@ export class ReplicatedEntityServices {
     this.services = {};
   }
 
-  addService(entity: ReplicatedEntity, allComponents: ServiceMap) {
+  addService(entity: ReplicatedEntity<any>, allComponents: ServiceMap) {
     this.services[entity.serviceName] = new ReplicatedEntitySupport(
       entity.root,
       entity.service,

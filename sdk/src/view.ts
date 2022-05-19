@@ -19,9 +19,7 @@ import * as grpc from '@grpc/grpc-js';
 import * as protoLoader from '@grpc/proto-loader';
 import ViewServices from './view-support';
 import { Component, ComponentOptions, ServiceMap } from './kalix';
-import { Serializable } from './serializable';
 import { Metadata } from './metadata';
-import { Message } from './command';
 
 const viewServices = new ViewServices();
 
@@ -55,16 +53,22 @@ export namespace View {
   /**
    * A handler for transforming an incoming event and the previous view state into a new state
    *
+   * @typeParam State - the type of the stored state
+   * @typeParam Events - the type of all update events, based on the gRPC method input type
    * @param event - The event, this will be of the type of the gRPC event handler input type
    * @param state - The previous view state or 'undefined' if no previous state was stored
    * @param context - The view handler context
    * @returns The state to store in the view or undefined to not update/store state for the event
    */
-  export type Handler = (
-    event: any,
-    state: any,
-    context: UpdateHandlerContext,
-  ) => Message | undefined;
+  export type Handler<State extends object = any, Events extends object = any> =
+    // use distributive conditional to convert (possible) union of event types into union of event handlers
+    Events extends any
+      ? (
+          event: Events,
+          state: State | undefined,
+          context: UpdateHandlerContext,
+        ) => State | undefined
+      : never;
 
   /**
    * View update handlers.
@@ -72,9 +76,15 @@ export namespace View {
    * @remarks
    * The names of the properties must match the names of all the view methods specified in the gRPC
    * descriptor.
+   *
+   * @typeParam State - the type of the stored state
+   * @typeParam Events - the type of all update events, based on the gRPC method input types
    */
-  export type Handlers = {
-    [methodName: string]: Handler;
+  export type Handlers<
+    State extends object = any,
+    Events extends object = any,
+  > = {
+    [methodName: string]: Handler<State, Events>;
   };
 
   /**
@@ -98,9 +108,20 @@ const defaultOptions = {
 /**
  * View.
  *
+ * @typeParam State - the type of the stored state
+ * @typeParam Events - the type of all update events, based on the gRPC method input types
+ *
  * @public
  */
-export class View implements Component {
+export class View<
+  State extends object = any,
+  Events extends object = any,
+  UpdateHandlers extends View.Handlers<State, Events> = View.Handlers<
+    State,
+    Events
+  >,
+> implements Component
+{
   readonly serviceName: string;
   readonly service: protobuf.Service;
   readonly options: Required<View.Options>;
@@ -115,7 +136,7 @@ export class View implements Component {
    * The names of the properties must match the names of all the view methods specified in the gRPC
    * descriptor.
    */
-  updateHandlers?: View.Handlers;
+  updateHandlers?: UpdateHandlers;
 
   /**
    * Create a new view.
@@ -176,7 +197,9 @@ export class View implements Component {
    * @param handlers - The handler callbacks
    * @returns This view
    */
-  setUpdateHandlers(handlers: View.Handlers): View {
+  setUpdateHandlers(
+    handlers: UpdateHandlers,
+  ): View<State, Events, UpdateHandlers> {
     this.updateHandlers = handlers;
     return this;
   }

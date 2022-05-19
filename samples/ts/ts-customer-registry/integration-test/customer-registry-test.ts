@@ -25,12 +25,20 @@ import { customer as customerView } from "../lib/generated/customer_view";
 type CustomerService = customerApi.api.CustomerService;
 type CustomersResponseByName = customerView.view.CustomersResponseByName;
 
+type ServiceMethods<S extends protobuf.rpc.Service> = {
+  [M in keyof S]: S[M] extends (x: any) => Promise<any> ? M : never;
+}[keyof S];
+
 type CustomerServiceAsync = {
-  [K in keyof CustomerService as `${K}Async`]: CustomerService[K];
+  [M in ServiceMethods<CustomerService> as `${M}Async`]: (
+    ...args: Parameters<CustomerService[M]>
+  ) => ReturnType<CustomerService[M]>;
 };
 
 type CustomersResponseByNameAsync = {
-  [K in keyof CustomersResponseByName as `${K}Async`]: CustomersResponseByName[K];
+  [M in ServiceMethods<CustomersResponseByName> as `${M}Async`]: (
+    ...args: Parameters<CustomersResponseByName[M]>
+  ) => ReturnType<CustomersResponseByName[M]>;
 };
 
 const testkit = new IntegrationTestkit()
@@ -38,14 +46,12 @@ const testkit = new IntegrationTestkit()
   .addComponent(customerValueEntityView);
 
 function client(): CustomerServiceAsync {
-  // @ts-ignore
   return testkit.clients.CustomerService;
 }
 // end::client[]
 
 // tag::view[]
 function view(): CustomersResponseByNameAsync {
-  // @ts-ignore
   return testkit.clients.CustomersResponseByName;
 }
 
@@ -55,7 +61,7 @@ describe("Customer registry service", function () {
   before(done => testkit.start(done));
   after(done => testkit.shutdown(done));
 
-  this.retries(2); // in case view has not updated yet
+  this.retries(10); // in case view has not updated yet
   beforeEach(function (done) {
     // add a delay between retries
     // @ts-ignore

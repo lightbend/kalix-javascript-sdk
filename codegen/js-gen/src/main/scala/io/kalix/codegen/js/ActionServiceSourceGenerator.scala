@@ -86,9 +86,9 @@ object ActionServiceSourceGenerator {
           dquotes(service.fqn.fullName) <> comma <> line <>
           braces(nest(line <>
           ssep(
-            (if (sourceDirectory != protobufSourceDirectory)
-               List("includeDirs" <> colon <+> brackets(dquotes(protobufSourceDirectory.toString)))
-             else List.empty) ++ List("serializeFallbackToJson" <> colon <+> "true"),
+            if (sourceDirectory != protobufSourceDirectory)
+              List("includeDirs" <> colon <+> brackets(dquotes(protobufSourceDirectory.toString)))
+            else List.empty,
             comma <> line)) <> line)) <> line) <> semi <> line <>
       line <>
       "action.commandHandlers" <+> equal <+> braces(
@@ -101,43 +101,49 @@ object ActionServiceSourceGenerator {
           },
           comma <> line)) <> line) <> semi <> line <>
       line <>
-      "export default action;")
+      "export default action;" <> line)
   }
 
   private[codegen] def typedefSource(service: ModelBuilder.ActionService): Document =
     pretty(
       managedCodeComment <> line <> line <>
-      "import" <+> braces(nest(line <>
-      "TypedAction" <> comma <> line <>
-      "ActionCommandContext" <> comma <> line <>
-      "StreamedInCommandContext" <> comma <> line <>
-      "StreamedOutCommandContext") <> line) <+> "from" <+> dquotes("../kalix") <> semi <> line <>
-      "import" <+> ProtoNs <+> "from" <+> dquotes("./proto") <> semi <> line <>
+      "import" <+> braces(space <> "Action, CommandReply" <> space) <+> "from" <+> dquotes(
+        "@kalix-io/kalix-javascript-sdk") <> semi <> line <>
+      "import * as" <+> ProtoNs <+> "from" <+> dquotes("./proto") <> semi <> line <>
       line <>
-      "export type CommandHandlers" <+> equal <+> braces(nest(line <>
-      ssep(
-        service.commands.toSeq.map { command =>
-          command.fqn.name <> colon <+> parens(nest(line <>
-          (if (command.streamedInput) emptyDoc
-           else {
-             "request" <> colon <+> typeReference(command.inputType) <> comma <> line
-           }) <>
-          "ctx" <> colon <+> ssep(
-            Seq(text("ActionCommandContext")) ++
-            Seq("StreamedInCommandContext" <> angles(typeReference(command.inputType)))
-              .filter(_ => command.streamedInput)
-            ++
-            Seq("StreamedOutCommandContext" <> angles(typeReference(command.outputType)))
-              .filter(_ => command.streamedOutput),
-            " & ")) <> line) <+> "=>" <+>
-          ssep(
-            (if (command.streamedOutput) Seq(text("void"))
-             else Seq(typeReference(command.outputType), text("void"))).flatMap(returnType =>
-              Seq(returnType, "Promise" <> angles(returnType))),
-            " | ") <> semi
-        },
-        line)) <> line) <> semi <> line <>
+      apiTypes(service) <>
       line <>
-      "export type" <+> service.fqn.name <+> equal <+>
-      "TypedAction" <> angles("CommandHandlers") <> semi <> line)
+      "export declare namespace" <+> service.fqn.name <+> braces(
+        nest(line <>
+        "type CommandHandlers" <+> equal <+> braces(nest(line <>
+        ssep(
+          service.commands.toSeq.map { command =>
+            command.fqn.name <> colon <+> parens(nest(line <>
+            (if (command.streamedInput) emptyDoc
+             else {
+               "command" <> colon <+> apiClass(command.inputType) <> comma <> line
+             }) <>
+            "ctx" <> colon <+> (
+              if (command.streamedInput && command.streamedOutput)
+                "Action.StreamedCommandContext" <> angles(
+                  apiClass(command.inputType) <> comma <+> apiInterface(command.outputType))
+              else if (command.streamedInput)
+                "Action.StreamedInCommandContext" <> angles(
+                  apiClass(command.inputType) <> comma <+> apiInterface(command.outputType))
+              else if (command.streamedOutput)
+                "Action.StreamedOutCommandContext" <> angles(apiInterface(command.outputType))
+              else "Action.UnaryCommandContext" <> angles(apiInterface(command.outputType))
+            ) <> line)) <+> "=>" <+>
+            ssep(
+              if (command.streamedOutput) Seq(text("void"))
+              else
+                Seq(
+                  "CommandReply" <> angles(apiInterface(command.outputType)),
+                  "Promise" <> angles("CommandReply" <> angles(apiInterface(command.outputType)))),
+              " | ") <> semi
+          },
+          line)) <> line) <> semi) <> line) <> line <>
+      line <>
+      "export declare type" <+> service.fqn.name <+> equal <+>
+      "Action" <> angles(s"${service.fqn.name}.CommandHandlers") <> semi <> line)
 }

@@ -53,8 +53,7 @@ class ActionServiceSourceGeneratorSuite extends munit.FunSuite {
         |  ],
         |  "com.example.service.MyService",
         |  {
-        |    includeDirs: ["./src/proto"],
-        |    serializeFallbackToJson: true
+        |    includeDirs: ["./src/proto"]
         |  }
         |);
         |
@@ -73,7 +72,8 @@ class ActionServiceSourceGeneratorSuite extends munit.FunSuite {
         |  }
         |};
         |
-        |export default action;""".stripMargin)
+        |export default action;
+        |""".stripMargin)
   }
 
   test("typedef source") {
@@ -89,32 +89,34 @@ class ActionServiceSourceGeneratorSuite extends munit.FunSuite {
         | * DO NOT EDIT
         | */
         |
-        |import {
-        |  TypedAction,
-        |  ActionCommandContext,
-        |  StreamedInCommandContext,
-        |  StreamedOutCommandContext
-        |} from "../kalix";
-        |import proto from "./proto";
+        |import { Action, CommandReply } from "@kalix-io/kalix-javascript-sdk";
+        |import * as proto from "./proto";
         |
-        |export type CommandHandlers = {
-        |  Simple: (
-        |    request: proto.com.example.service.persistence.IRequest,
-        |    ctx: ActionCommandContext
-        |  ) => proto.com.example.service.IResponse | Promise<proto.com.example.service.IResponse> | void | Promise<void>;
-        |  StreamedIn: (
-        |    ctx: ActionCommandContext & StreamedInCommandContext<proto.com.example.service.persistence.IRequest>
-        |  ) => proto.com.example.service.IResponse | Promise<proto.com.example.service.IResponse> | void | Promise<void>;
-        |  StreamedOut: (
-        |    request: proto.com.example.service.persistence.IRequest,
-        |    ctx: ActionCommandContext & StreamedOutCommandContext<proto.com.example.service.IResponse>
-        |  ) => void | Promise<void>;
-        |  FullyStreamed: (
-        |    ctx: ActionCommandContext & StreamedInCommandContext<proto.com.example.service.persistence.IRequest> & StreamedOutCommandContext<proto.com.example.service.IResponse>
-        |  ) => void | Promise<void>;
-        |};
+        |export declare namespace api {
+        |  type Request = proto.com.example.service.persistence.Request;
+        |  type IResponse = proto.com.example.service.IResponse;
+        |}
         |
-        |export type MyService = TypedAction<CommandHandlers>;
+        |export declare namespace MyService {
+        |  type CommandHandlers = {
+        |    Simple: (
+        |      command: api.Request,
+        |      ctx: Action.UnaryCommandContext<api.IResponse>
+        |      ) => CommandReply<api.IResponse> | Promise<CommandReply<api.IResponse>>;
+        |    StreamedIn: (
+        |      ctx: Action.StreamedInCommandContext<api.Request, api.IResponse>
+        |      ) => CommandReply<api.IResponse> | Promise<CommandReply<api.IResponse>>;
+        |    StreamedOut: (
+        |      command: api.Request,
+        |      ctx: Action.StreamedOutCommandContext<api.IResponse>
+        |      ) => void;
+        |    FullyStreamed: (
+        |      ctx: Action.StreamedCommandContext<api.Request, api.IResponse>
+        |      ) => void;
+        |  };
+        |}
+        |
+        |export declare type MyService = Action<MyService.CommandHandlers>;
         |""".stripMargin)
   }
 }

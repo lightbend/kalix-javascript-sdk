@@ -34,19 +34,12 @@ class EntityServiceSourceGeneratorSuite extends munit.FunSuite {
         | * You are free to make changes to this file.
         | */
         |
-        |import kalix from "@kalix-io/kalix-javascript-sdk";
-        |const EventSourcedEntity = kalix.EventSourcedEntity;
+        |import { EventSourcedEntity, Reply } from "@kalix-io/kalix-javascript-sdk";
         |
         |/**
         | * Type definitions.
         | * These types have been generated based on your proto source.
         | * A TypeScript aware editor such as VS Code will be able to leverage them to provide hinting and validation.
-        | * 
-        | * State; the serialisable and persistable state of the entity
-        | * @typedef { import("../../lib/generated/myentity").State } State
-        | * 
-        | * Event; the union of all possible event types
-        | * @typedef { import("../../lib/generated/myentity").Event } Event
         | * 
         | * MyService; a strongly typed extension of EventSourcedEntity derived from your proto source
         | * @typedef { import("../../lib/generated/myentity").MyService } MyService
@@ -63,20 +56,21 @@ class EntityServiceSourceGeneratorSuite extends munit.FunSuite {
         |  "com.example.service.MyService",
         |  "my-eventsourcedentity-persistence",
         |  {
-        |    includeDirs: ["./src/proto"],
-        |    serializeFallbackToJson: true
+        |    includeDirs: ["./src/proto"]
         |  }
         |);
         |
-        |entity.setInitial(entityId => ({}));
+        |const MyState = entity.lookupType("com.example.service.persistence.MyState");
+        |
+        |entity.setInitial(entityId => MyState.create({}));
         |
         |entity.setBehavior(state => ({
         |  commandHandlers: {
         |    Set(command, state, ctx) {
-        |      return ctx.fail("The command handler for `Set` is not implemented, yet");
+        |      return Reply.failure("The command handler for `Set` is not implemented, yet");
         |    },
         |    Get(command, state, ctx) {
-        |      return ctx.fail("The command handler for `Get` is not implemented, yet");
+        |      return Reply.failure("The command handler for `Get` is not implemented, yet");
         |    }
         |  },
         |  
@@ -87,7 +81,8 @@ class EntityServiceSourceGeneratorSuite extends munit.FunSuite {
         |  }
         |}));
         |
-        |export default entity;""".stripMargin)
+        |export default entity;
+        |""".stripMargin)
   }
 
   test("ValueEntity source") {
@@ -115,16 +110,12 @@ class EntityServiceSourceGeneratorSuite extends munit.FunSuite {
         | * You are free to make changes to this file.
         | */
         |
-        |import kalix from "@kalix-io/kalix-javascript-sdk";
-        |const ValueEntity = kalix.ValueEntity;
+        |import { ValueEntity, Reply } from "@kalix-io/kalix-javascript-sdk";
         |
         |/**
         | * Type definitions.
         | * These types have been generated based on your proto source.
         | * A TypeScript aware editor such as VS Code will be able to leverage them to provide hinting and validation.
-        | * 
-        | * State; the serialisable and persistable state of the entity
-        | * @typedef { import("../../lib/generated/myvalueentity").State } State
         | * 
         | * MyService; a strongly typed extension of ValueEntity derived from your proto source
         | * @typedef { import("../../lib/generated/myvalueentity").MyService } MyService
@@ -141,23 +132,25 @@ class EntityServiceSourceGeneratorSuite extends munit.FunSuite {
         |  "com.example.service.MyService",
         |  "my-valueentity-persistence",
         |  {
-        |    includeDirs: ["./src/proto"],
-        |    serializeFallbackToJson: true
+        |    includeDirs: ["./src/proto"]
         |  }
         |);
         |
-        |entity.setInitial(entityId => ({}));
+        |const MyState = entity.lookupType("com.example.service.persistence.MyState");
+        |
+        |entity.setInitial(entityId => MyState.create({}));
         |
         |entity.setCommandHandlers({
         |  Set(command, state, ctx) {
-        |    return ctx.fail("The command handler for `Set` is not implemented, yet");
+        |    return Reply.failure("The command handler for `Set` is not implemented, yet");
         |  },
         |  Get(command, state, ctx) {
-        |    return ctx.fail("The command handler for `Get` is not implemented, yet");
+        |    return Reply.failure("The command handler for `Get` is not implemented, yet");
         |  }
         |});
         |
-        |export default entity;""".stripMargin)
+        |export default entity;
+        |""".stripMargin)
   }
 
   test("EventSourcedEntity typedef source") {
@@ -174,42 +167,57 @@ class EntityServiceSourceGeneratorSuite extends munit.FunSuite {
         | * DO NOT EDIT
         | */
         |
-        |import {
-        |  TypedEventSourcedEntity,
-        |  EventSourcedCommandContext
-        |} from "../kalix";
-        |import proto from "./proto";
+        |import { EventSourcedEntity , CommandReply } from "@kalix-io/kalix-javascript-sdk";
+        |import * as proto from "./proto";
         |
-        |export type State = proto.com.example.service.persistence.IMyState;
-        |export type Event = proto.com.example.service.persistence.ISetEvent;
-        |export type Command =
-        |  | proto.com.example.service.ISetValue
-        |  | proto.com.example.service.IGetValue;
+        |export declare namespace api {
+        |  type SetValue = proto.com.example.service.SetValue;
+        |  type GetValue = proto.com.example.service.GetValue;
+        |  type IEmpty = proto.google.protobuf.IEmpty;
+        |  type IMyState = proto.com.example.service.IMyState;
+        |}
         |
-        |export type EventHandlers = {
-        |  SetEvent: (
-        |    event: proto.com.example.service.persistence.ISetEvent,
-        |    state: State
-        |  ) => State;
-        |};
+        |export declare namespace domain {
+        |  type MyState = proto.com.example.service.persistence.IMyState &
+        |    protobuf.Message<proto.com.example.service.persistence.IMyState>;
+        |  
+        |  type SetEvent = proto.com.example.service.persistence.ISetEvent &
+        |    protobuf.Message<proto.com.example.service.persistence.ISetEvent>;
+        |}
         |
-        |export type CommandHandlers = {
-        |  Set: (
-        |    command: proto.com.example.service.ISetValue,
-        |    state: State,
-        |    ctx: EventSourcedCommandContext<Event>
-        |  ) => void;
-        |  Get: (
-        |    command: proto.com.example.service.IGetValue,
-        |    state: State,
-        |    ctx: EventSourcedCommandContext<Event>
-        |  ) => proto.com.example.service.IMyState;
-        |};
+        |export declare namespace MyService {
+        |  type State = domain.MyState;
+        |  
+        |  type Events = domain.SetEvent;
+        |  
+        |  type EventHandlers = {
+        |    SetEvent: (
+        |      event: domain.SetEvent,
+        |      state: State
+        |    ) => State;
+        |  };
+        |  
+        |  type CommandContext = EventSourcedEntity.CommandContext<Events>;
+        |  
+        |  type CommandHandlers = {
+        |    Set: (
+        |      command: api.SetValue,
+        |      state: State,
+        |      ctx: CommandContext
+        |    ) => CommandReply<api.IEmpty>;
+        |    Get: (
+        |      command: api.GetValue,
+        |      state: State,
+        |      ctx: CommandContext
+        |    ) => CommandReply<api.IMyState>;
+        |  };
+        |}
         |
-        |export type MyService = TypedEventSourcedEntity<
-        |  State,
-        |  EventHandlers,
-        |  CommandHandlers
+        |export declare type MyService = EventSourcedEntity<
+        |  MyService.State,
+        |  MyService.Events,
+        |  MyService.CommandHandlers,
+        |  MyService.EventHandlers
         |>;
         |""".stripMargin)
   }
@@ -228,33 +236,43 @@ class EntityServiceSourceGeneratorSuite extends munit.FunSuite {
         | * DO NOT EDIT
         | */
         |
-        |import {
-        |  TypedValueEntity,
-        |  ValueEntityCommandContext
-        |} from "../kalix";
-        |import proto from "./proto";
+        |import { ValueEntity , CommandReply } from "@kalix-io/kalix-javascript-sdk";
+        |import * as proto from "./proto";
         |
-        |export type State = proto.com.example.service.persistence.IMyState;
-        |export type Command =
-        |  | proto.com.example.service.ISetValue
-        |  | proto.com.example.service.IGetValue;
+        |export declare namespace api {
+        |  type SetValue = proto.com.example.service.SetValue;
+        |  type GetValue = proto.com.example.service.GetValue;
+        |  type IEmpty = proto.google.protobuf.IEmpty;
+        |  type IMyState = proto.com.example.service.IMyState;
+        |}
         |
-        |export type CommandHandlers = {
-        |  Set: (
-        |    command: proto.com.example.service.ISetValue,
-        |    state: State,
-        |    ctx: ValueEntityCommandContext<State>
-        |  ) => void;
-        |  Get: (
-        |    command: proto.com.example.service.IGetValue,
-        |    state: State,
-        |    ctx: ValueEntityCommandContext<State>
-        |  ) => proto.com.example.service.IMyState;
-        |};
+        |export declare namespace domain {
+        |  type MyState = proto.com.example.service.persistence.IMyState &
+        |    protobuf.Message<proto.com.example.service.persistence.IMyState>;
+        |}
         |
-        |export type MyService = TypedValueEntity<
-        |  State,
-        |  CommandHandlers
+        |export declare namespace MyService {
+        |  type State = domain.MyState;
+        |  
+        |  type CommandContext = ValueEntity.CommandContext<State>;
+        |  
+        |  type CommandHandlers = {
+        |    Set: (
+        |      command: api.SetValue,
+        |      state: State,
+        |      ctx: CommandContext
+        |    ) => CommandReply<api.IEmpty>;
+        |    Get: (
+        |      command: api.GetValue,
+        |      state: State,
+        |      ctx: CommandContext
+        |    ) => CommandReply<api.IMyState>;
+        |  };
+        |}
+        |
+        |export declare type MyService = ValueEntity<
+        |  MyService.State,
+        |  MyService.CommandHandlers
         |>;
         |""".stripMargin)
   }

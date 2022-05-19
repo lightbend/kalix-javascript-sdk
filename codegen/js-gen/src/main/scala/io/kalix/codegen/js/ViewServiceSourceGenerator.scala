@@ -88,9 +88,7 @@ object ViewServiceSourceGenerator {
           ssep(
             (if (sourceDirectory != protobufSourceDirectory)
                List("includeDirs" <> colon <+> brackets(dquotes(protobufSourceDirectory.toString)))
-             else List.empty) ++ List(
-              "serializeFallbackToJson" <> colon <+> "true",
-              "viewId" <> colon <+> dquotes(service.viewId)),
+             else List.empty) ++ List("viewId" <> colon <+> dquotes(service.viewId)),
             comma <> line)) <> line)) <> line) <> semi <> line <>
       line <> service.transformedUpdates.headOption.fold(emptyDoc)(_ =>
         "view.setUpdateHandlers" <> parens(braces(nest(line <>
@@ -102,27 +100,48 @@ object ViewServiceSourceGenerator {
           },
           comma <> line)) <> line)) <> semi <> line <>
         line) <>
-      "export default view;")
+      "export default view;" <> line)
   }
 
-  private[codegen] def typedefSource(service: ModelBuilder.ViewService): Document =
+  private[codegen] def typedefSource(service: ModelBuilder.ViewService): Document = {
+    // note: transformedUpdates always non-empty if generating for a view
+    val state = service.transformedUpdates.toSeq.map(_.outputType).headOption.getOrElse(sys.error("Expected state"))
+    val events = service.transformedUpdates.toSeq.map(_.inputType).distinct
     pretty(
       managedCodeComment <> line <> line <>
-      "import" <+> braces(nest(line <>
-      "TypedView" <> comma <> line <>
-      "ViewUpdateHandlerContext") <> line) <+> "from" <+> dquotes("../kalix") <> semi <> line <>
-      "import" <+> ProtoNs <+> "from" <+> dquotes("./proto") <> semi <> line <>
+      "import" <+> braces(" View ") <+> "from" <+> dquotes("@kalix-io/kalix-javascript-sdk") <> semi <> line <>
+      "import * as" <+> ProtoNs <+> "from" <+> dquotes("./proto") <> semi <> line <>
       line <>
-      "export type UpdateHandlers" <+> equal <+> braces(nest(line <>
-      ssep(
-        service.transformedUpdates.toSeq.map { update =>
-          update.fqn.name <> colon <+> parens(nest(line <>
-          "event" <> colon <+> typeReference(update.inputType) <> comma <> line <>
-          "state?" <> colon <+> typeReference(update.outputType) <> comma <> line <>
-          "ctx" <> colon <+> "ViewUpdateHandlerContext") <> line) <+> "=>" <+> typeReference(update.outputType) <> semi
-        },
-        line)) <> line) <> semi <> line <>
+      "export declare namespace domain" <+> braces(
+        nest(line <>
+        "type" <+> state.name <+> equal <+> messageType(state) <> semi <> line <>
+        ssep(
+          events.map(event => line <> "type" <+> event.name <+> equal <+> messageType(event) <> semi),
+          line)) <> line) <> line <>
       line <>
-      "export type" <+> service.fqn.name <+> equal <+>
-      "TypedView" <> angles("UpdateHandlers") <> semi <> line)
+      "export declare namespace" <+> service.fqn.name <+> braces(
+        nest(
+          line <>
+          "type" <+> "State" <+> equal <+> domainType(state) <> semi <> line <>
+          line <>
+          "type Events" <+> equal <> typeUnion(events.map(domainType)) <> semi <> line <>
+          line <>
+          "type UpdateHandlers" <+> equal <+> braces(nest(line <>
+          ssep(
+            service.transformedUpdates.toSeq.map { update =>
+              update.fqn.name <> colon <+> parens(nest(line <>
+              "event" <> colon <+> domainType(update.inputType) <> comma <> line <>
+              "state" <> colon <+> "State | undefined" <> comma <> line <>
+              "ctx" <> colon <+> "View.UpdateHandlerContext") <> line) <+> "=>" <+> "State" <> semi
+            },
+            line)) <> line) <> semi) <> line) <> line <>
+      line <>
+      "export declare type" <+> service.fqn.name <+> equal <+>
+      "View" <> angles(
+        nest(
+          line <>
+          ssep(
+            Seq(s"${service.fqn.name}.State", s"${service.fqn.name}.Events", s"${service.fqn.name}.UpdateHandlers"),
+            comma <> line)) <> line) <> semi <> line)
+  }
 }

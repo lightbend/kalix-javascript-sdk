@@ -54,7 +54,7 @@ namespace protocol {
 
 /** @internal */
 interface InternalEventSourcedEntityContext extends InternalContext {
-  context: EventSourcedEntity.EventSourcedEntityCommandContext;
+  context: EventSourcedEntity.CommandContext;
   events: protocol.Any[];
 }
 

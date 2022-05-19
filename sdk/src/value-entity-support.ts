@@ -145,7 +145,7 @@ class ValueEntityHandler {
           let updatedAnyState = null as protocol.Any | null;
           let deleted = false;
 
-          const context = ctx.context as ValueEntity.ValueEntityCommandContext;
+          const context = ctx.context as ValueEntity.CommandContext;
 
           context.updateState = (newState) => {
             ctx.ensureActive();

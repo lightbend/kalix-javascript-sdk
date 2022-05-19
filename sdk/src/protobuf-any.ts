@@ -213,7 +213,7 @@ export default class AnySupport {
       throw new Error(
         util.format(
           "Object %o is not a protobuf object, and hence can't be dynamically " +
-            'serialized. Try passing the object to the protobuf classes create function.',
+            "serialized. Try passing the object to the protobuf class's create function.",
           obj,
         ),
       );

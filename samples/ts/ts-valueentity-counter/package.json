@@ -40,7 +40,7 @@
     "start": "node dist/index.js",
     "test": "ts-mocha test/**/*.test.ts",
     "integration-test": "ts-mocha integration-test/**/*.test.ts",
-    "build": "kalix-scripts build && rimraf {src,test,integration-test}/**/*.js && rimraf lib/**/*{kalix,counter,index}.{js,d.ts} && tsc",
+    "build": "kalix-scripts build && rimraf {src,test,integration-test}/**/*.js && rimraf lib/generated/index.js && tsc",
     "package": "kalix-scripts package",
     "deploy": "kalix-scripts deploy"
   }

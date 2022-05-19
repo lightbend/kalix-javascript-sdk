@@ -49,7 +49,7 @@ export namespace IntegrationTestkit {
  */
 export class IntegrationTestkit {
   private options: any = { dockerImage: defaultDockerImage };
-  private clients: any;
+  private componentClients: { [serviceName: string]: any };
   private kalix: Kalix;
   private proxyContainer: any;
 
@@ -66,8 +66,15 @@ export class IntegrationTestkit {
       }
     }
 
-    this.clients = {};
+    this.componentClients = {};
     this.kalix = new Kalix(options);
+  }
+
+  /**
+   * Get promisified gRPC clients, by service name.
+   */
+  get clients(): { [serviceName: string]: any } {
+    return this.componentClients;
   }
 
   /**
@@ -132,10 +139,8 @@ export class IntegrationTestkit {
           'localhost:' + proxyPort,
           grpc.credentials.createInsecure(),
         );
-        this.clients[parts[parts.length - 1]] = GrpcUtil.promisifyClient(
-          client,
-          'Async',
-        );
+        this.componentClients[parts[parts.length - 1]] =
+          GrpcUtil.promisifyClient(client, 'Async');
       }
     });
   }
@@ -146,8 +151,8 @@ export class IntegrationTestkit {
    * @param callback - shutdown callback, accepting possible error
    */
   shutdown(callback: IntegrationTestkit.ShutdownCallback) {
-    Object.getOwnPropertyNames(this.clients).forEach((client) => {
-      this.clients[client].close();
+    Object.getOwnPropertyNames(this.componentClients).forEach((client) => {
+      this.componentClients[client].close();
     });
     let proxyContainerStopped: Promise<void>;
     if (this.proxyContainer !== undefined) {

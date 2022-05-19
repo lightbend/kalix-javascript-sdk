@@ -66,7 +66,7 @@ function addItem(addLineItem, context) {
   });
 
   cart.increment(product, addLineItem.quantity); // <4>
-  
+
   return replies.message(Empty.create()); // <5>
 }
 // end::addItem[]

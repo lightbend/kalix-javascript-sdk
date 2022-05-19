@@ -21,18 +21,29 @@ import EventSourcedEntityServices from './event-sourced-entity-support';
 import { Entity, EntityOptions, ServiceMap } from './kalix';
 import { GrpcClientLookup, GrpcUtil } from './grpc-util';
 import { Serializable } from './serializable';
-import { CommandContext, EntityContext, UserReply } from './command';
+import { EntityCommandContext, CommandReply } from './command';
 
 const eventSourcedEntityServices = new EventSourcedEntityServices();
 
 /** @public */
 export namespace EventSourcedEntity {
+  // re-export under old name
   /**
    * Context for an event sourced command.
+   *
+   * @typeParam Event - the type of {@link Serializable} events
    */
-  export interface EventSourcedEntityCommandContext
-    extends CommandContext,
-      EntityContext {
+  export type EventSourcedEntityCommandContext<
+    Event extends Serializable = any,
+  > = CommandContext<Event>;
+
+  /**
+   * Context for an event sourced command.
+   *
+   * @typeParam Events - the type of all {@link Serializable} events
+   */
+  export interface CommandContext<Events extends Serializable = any>
+    extends EntityCommandContext {
     /**
      * Persist an event.
      *
@@ -43,51 +54,112 @@ export namespace EventSourcedEntity {
      *
      * @param event - The event to emit
      */
-    emit(event: Serializable): void;
+    emit(event: Events): void;
   }
 
   /**
    * An event sourced entity command handler.
    *
+   * @typeParam State - the type of {@link Serializable} state
+   * @typeParam Events - the type of all {@link Serializable} events
    * @param command - The command message, this will be of the type of the gRPC service call input type
    * @param state - The entity state
    * @param context - The command context
    * @returns The message to reply with, it must match the gRPC service call output type for this
    *          command, or if a Reply is returned, contain an object that matches the output type
    */
-  export type CommandHandler = (
+  export type CommandHandler<
+    State extends Serializable = any,
+    Events extends Serializable = any,
+  > = (
     command: any,
-    state: any,
-    context: EventSourcedEntityCommandContext,
-  ) => Promise<UserReply> | UserReply;
+    state: State,
+    context: CommandContext<Events>,
+  ) => Promise<CommandReply> | CommandReply;
+
+  /**
+   * Event sourced entity command handlers.
+   *
+   * @remarks
+   * The names of the properties must match the names of the service calls specified in the gRPC
+   * descriptor for this event sourced entity's service.
+   *
+   * @typeParam State - the type of {@link Serializable} state
+   * @typeParam Events - the type of all {@link Serializable} events
+   */
+  export type CommandHandlers<
+    State extends Serializable = any,
+    Events extends Serializable = any,
+  > = {
+    [commandName: string]: CommandHandler<State, Events>;
+  };
 
   /**
    * An event sourced entity event handler.
    *
+   * @typeParam State - the type of {@link Serializable} state
+   * @typeParam Events - the type of all {@link Serializable} events
    * @param event - The event
    * @param state - The entity state
    * @returns The new entity state
    */
-  export type EventHandler = (event: any, state: any) => Serializable;
+  export type EventHandler<
+    State extends Serializable = any,
+    Events extends Serializable = any,
+  > =
+    // use distributive conditional to convert (possible) union of event types into union of event handlers
+    Events extends any ? (event: Events, state: State) => State : never;
+
+  /**
+   * Event sourced entity event handlers.
+   *
+   * @remarks
+   * The names of the properties must match the short names of the events.
+   *
+   * @typeParam State - the type of {@link Serializable} state
+   * @typeParam Events - the type of all {@link Serializable} events
+   */
+  export type EventHandlers<
+    State extends Serializable = any,
+    Events extends Serializable = any,
+  > = {
+    [eventName: string]: EventHandler<State, Events>;
+  };
 
   /**
    * An event sourced entity behavior.
+   *
+   * @typeParam State - the type of {@link Serializable} state
+   * @typeParam Events - the type of all {@link Serializable} events
+   * @typeParam CommandHandlers - optional type of {@link EventSourcedEntity.CommandHandlers}
+   * @typeParam EventHandlers - optional type of {@link EventSourcedEntity.EventHandlers}
    */
-  export type Behavior = {
+  export type Behavior<
+    State extends Serializable = any,
+    Events extends Serializable = any,
+    CommandHandlers extends EventSourcedEntity.CommandHandlers<
+      State,
+      Events
+    > = EventSourcedEntity.CommandHandlers<State, Events>,
+    EventHandlers extends EventSourcedEntity.EventHandlers<
+      State,
+      Events
+    > = EventSourcedEntity.EventHandlers<State, Events>,
+  > = {
     /**
      * The command handlers.
      *
      * The names of the properties must match the names of the service calls specified in the gRPC
-     * descriptor for this event sourced entities service.
+     * descriptor for this event sourced entity's service.
      */
-    commandHandlers: { [commandName: string]: CommandHandler };
+    commandHandlers: CommandHandlers;
 
     /**
      * The event handlers.
      *
      * The names of the properties must match the short names of the events.
      */
-    eventHandlers: { [eventName: string]: EventHandler };
+    eventHandlers: EventHandlers;
   };
 
   /**
@@ -96,20 +168,38 @@ export namespace EventSourcedEntity {
    * This callback takes the current entity state, and returns a set of handlers to handle commands
    * and events for it.
    *
+   * @typeParam State - the type of {@link Serializable} state
+   * @typeParam Events - the type of all {@link Serializable} events
+   * @typeParam CommandHandlers - optional type of {@link EventSourcedEntity.CommandHandlers}
+   * @typeParam EventHandlers - optional type of {@link EventSourcedEntity.EventHandlers}
    * @param state - The entity state
    * @returns The new entity state
    */
-  export type BehaviorCallback = (state: any) => Behavior;
+  export type BehaviorCallback<
+    State extends Serializable = any,
+    Events extends Serializable = any,
+    CommandHandlers extends EventSourcedEntity.CommandHandlers<
+      State,
+      Events
+    > = EventSourcedEntity.CommandHandlers<State, Events>,
+    EventHandlers extends EventSourcedEntity.EventHandlers<
+      State,
+      Events
+    > = EventSourcedEntity.EventHandlers<State, Events>,
+  > = (state: State) => Behavior<State, Events, CommandHandlers, EventHandlers>;
 
   /**
    * Initial state callback.
    *
    * This is invoked if the entity is started with no snapshot.
    *
+   * @typeParam State - the type of {@link Serializable} state
    * @param entityId - The entity id
    * @returns The entity state
    */
-  export type InitialCallback = (entityId: string) => Serializable;
+  export type InitialCallback<State extends Serializable = any> = (
+    entityId: string,
+  ) => State;
 
   /**
    * Options for an event sourced entity.
@@ -159,9 +249,26 @@ const defaultOptions = {
 /**
  * Event Sourced Entity.
  *
+ * @typeParam State - the type of {@link Serializable} state
+ * @typeParam Events - the type of all {@link Serializable} events
+ * @typeParam CommandHandlers - optional type of {@link EventSourcedEntity.CommandHandlers}
+ * @typeParam EventHandlers - optional type of {@link EventSourcedEntity.EventHandlers}
+ *
  * @public
  */
-export class EventSourcedEntity implements Entity {
+export class EventSourcedEntity<
+  State extends Serializable = any,
+  Events extends Serializable = any,
+  CommandHandlers extends EventSourcedEntity.CommandHandlers<
+    State,
+    Events
+  > = EventSourcedEntity.CommandHandlers<State, Events>,
+  EventHandlers extends EventSourcedEntity.EventHandlers<
+    State,
+    Events
+  > = EventSourcedEntity.EventHandlers<State, Events>,
+> implements Entity
+{
   readonly serviceName: string;
   readonly service: protobuf.Service;
   readonly options: Required<EventSourcedEntity.Options>;
@@ -173,12 +280,17 @@ export class EventSourcedEntity implements Entity {
   /**
    * The initial state callback.
    */
-  initial?: EventSourcedEntity.InitialCallback;
+  initial?: EventSourcedEntity.InitialCallback<State>;
 
   /**
    * The behavior callback.
    */
-  behavior?: EventSourcedEntity.BehaviorCallback;
+  behavior?: EventSourcedEntity.BehaviorCallback<
+    State,
+    Events,
+    CommandHandlers,
+    EventHandlers
+  >;
 
   /**
    * Create a new event sourced entity.
@@ -243,7 +355,9 @@ export class EventSourcedEntity implements Entity {
    * @param callback - The initial state callback
    * @returns This entity
    */
-  setInitial(callback: EventSourcedEntity.InitialCallback): EventSourcedEntity {
+  setInitial(
+    callback: EventSourcedEntity.InitialCallback<State>,
+  ): EventSourcedEntity<State, Events, CommandHandlers, EventHandlers> {
     this.initial = callback;
     return this;
   }
@@ -255,8 +369,13 @@ export class EventSourcedEntity implements Entity {
    * @returns This entity
    */
   setBehavior(
-    callback: EventSourcedEntity.BehaviorCallback,
-  ): EventSourcedEntity {
+    callback: EventSourcedEntity.BehaviorCallback<
+      State,
+      Events,
+      CommandHandlers,
+      EventHandlers
+    >,
+  ): EventSourcedEntity<State, Events, CommandHandlers, EventHandlers> {
     this.behavior = callback;
     return this;
   }

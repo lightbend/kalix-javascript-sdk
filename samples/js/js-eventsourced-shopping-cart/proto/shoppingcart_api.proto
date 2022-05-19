@@ -21,7 +21,7 @@ package com.example.shoppingcart;
 import "google/api/annotations.proto";
 import "google/protobuf/empty.proto";
 import "kalix/annotations.proto";
-// end::declarations[] 
+// end::declarations[]
 
 // tag::messages1[]
 message Cart {

@@ -108,25 +108,14 @@ object EntityServiceSourceGenerator {
     }
     pretty(
       initialisedCodeComment <> line <> line <>
-      "import" <+> "kalix" <+> "from" <+> dquotes("@kalix-io/kalix-javascript-sdk") <> semi <> line <>
-      "const" <+> entityType <+> equal <+> "kalix." <> entityType
-      <> semi <> line <>
+      "import" <+> braces(space <> entityType <> comma <+> "Reply" <> space) <+> "from" <+> dquotes(
+        "@kalix-io/kalix-javascript-sdk") <> semi <> line <>
       line <>
       blockComment(Seq[Doc](
         "Type definitions.",
         "These types have been generated based on your proto source.",
         "A TypeScript aware editor such as VS Code will be able to leverage them to provide hinting and validation.",
-        emptyDoc,
-        "State; the serialisable and persistable state of the entity",
-        typedef("import" <> parens(dquotes(typedefPath)) <> dot <> "State", "State"),
-        emptyDoc) ++ (entity match {
-        case _: ModelBuilder.EventSourcedEntity =>
-          Seq[Doc](
-            "Event; the union of all possible event types",
-            typedef("import" <> parens(dquotes(typedefPath)) <> dot <> "Event", "Event"),
-            emptyDoc)
-        case _ => Seq.empty
-      }) ++ Seq[Doc](
+        emptyDoc) ++ Seq[Doc](
         service.fqn.name <> semi <+> "a strongly typed extension of" <+> entityType <+> "derived from your proto source",
         typedef("import" <> parens(dquotes(typedefPath)) <> dot <> service.fqn.name, service.fqn.name)): _*) <> line <>
       line <>
@@ -140,12 +129,16 @@ object EntityServiceSourceGenerator {
           dquotes(entity.entityType) <> comma <> line <>
           braces(nest(line <>
           ssep(
-            (if (sourceDirectory != protobufSourceDirectory)
-               List("includeDirs" <> colon <+> brackets(dquotes(protobufSourceDirectory.toString)))
-             else List.empty) ++ List("serializeFallbackToJson" <> colon <+> "true"),
+            if (sourceDirectory != protobufSourceDirectory)
+              List("includeDirs" <> colon <+> brackets(dquotes(protobufSourceDirectory.toString)))
+            else List.empty,
             comma <> line)) <> line)) <> line) <> semi <> line <>
       line <>
-      "entity.setInitial" <> parens("entityId => " <> parens("{}")) <> semi <> line <>
+      "const" <+> entity.state.fqn.name <+> equal <+> "entity.lookupType" <> parens(
+        dquotes(entity.state.fqn.fullName)) <> semi <> line <>
+      line <>
+      "entity.setInitial" <> parens(
+        "entityId => " <> entity.state.fqn.name <> ".create" <> parens("{}")) <> semi <> line <>
       line <>
       (entity match {
         case ModelBuilder.EventSourcedEntity(_, _, _, events) =>
@@ -156,7 +149,7 @@ object EntityServiceSourceGenerator {
               ssep(
                 service.commands.toSeq.map { command =>
                   command.fqn.name <> parens("command, state, ctx") <+> braces(nest(line <>
-                  "return ctx.fail(\"The command handler for `" <> command.fqn.name <> "` is not implemented, yet\")" <> semi) <> line)
+                  "return Reply.failure(\"The command handler for `" <> command.fqn.name <> "` is not implemented, yet\")" <> semi) <> line)
                 },
                 comma <> line)) <> line) <> comma <>
               line <>
@@ -174,72 +167,92 @@ object EntityServiceSourceGenerator {
             ssep(
               service.commands.toSeq.map { command =>
                 command.fqn.name <> parens("command, state, ctx") <+> braces(nest(line <>
-                "return ctx.fail(\"The command handler for `" <> command.fqn.name <> "` is not implemented, yet\")" <> semi) <> line)
+                "return Reply.failure(\"The command handler for `" <> command.fqn.name <> "` is not implemented, yet\")" <> semi) <> line)
               },
               comma <> line)) <> line)) <> semi
       }) <> line <>
       line <>
-      "export default entity;")
+      "export default entity;" <> line)
   }
 
   private[codegen] def typedefSource(service: ModelBuilder.Service, entity: ModelBuilder.Entity): Document =
     pretty(
       managedCodeComment <> line <> line <>
-      "import" <+> braces(nest(line <> (entity match {
+      "import" <+> braces(space <> (entity match {
+        case _: ModelBuilder.EventSourcedEntity => "EventSourcedEntity"
+        case _: ModelBuilder.ValueEntity        => "ValueEntity"
+      }) <+> comma <+> "CommandReply" <> space) <+> "from" <+> dquotes(
+        "@kalix-io/kalix-javascript-sdk") <> semi <> line <>
+      "import * as" <+> ProtoNs <+> "from" <+> dquotes("./proto") <> semi <> line <>
+      line <>
+      apiTypes(service) <>
+      line <>
+      domainTypes(entity) <>
+      line <>
+      "export declare namespace" <+> service.fqn.name <+> braces(
+        nest(
+          line <>
+          "type" <+> "State" <+> equal <+> domainType(entity.state.fqn) <> semi <> line <>
+          line <>
+          (entity match {
+            case ModelBuilder.EventSourcedEntity(_, _, _, events) =>
+              "type Events" <+> equal <> typeUnion(events.toSeq.map(event => domainType(event.fqn))) <> semi <> line <>
+                line <>
+                "type EventHandlers" <+> equal <+> braces(nest(line <>
+                ssep(
+                  events.toSeq.map { event =>
+                    event.fqn.name <> colon <+> parens(nest(line <>
+                    "event" <> colon <+> domainType(event.fqn) <> comma <> line <>
+                    "state" <> colon <+> "State") <> line) <+> "=>" <+> "State" <> semi
+                  },
+                  line)) <> line) <> semi <> line <> line
+            case _: ModelBuilder.ValueEntity => emptyDoc
+          }) <>
+          "type CommandContext" <+> equal <+> (entity match {
+            case _: ModelBuilder.EventSourcedEntity => "EventSourcedEntity.CommandContext<Events>"
+            case _: ModelBuilder.ValueEntity        => "ValueEntity.CommandContext<State>"
+          }) <> semi <> line <>
+          line <>
+          "type CommandHandlers" <+> equal <+> braces(nest(line <>
+          ssep(
+            service.commands.toSeq.map { command =>
+              command.fqn.name <> colon <+> parens(nest(line <>
+              "command" <> colon <+> apiClass(command.inputType) <> comma <> line <>
+              "state" <> colon <+> "State" <> comma <> line <>
+              "ctx" <> colon <+> "CommandContext") <> line) <+> "=>" <+> "CommandReply" <> angles(
+                apiInterface(command.outputType)) <> semi
+            },
+            line)) <> line) <> semi) <> line) <> line <>
+      line <>
+      "export declare type" <+> service.fqn.name <+> equal <+> (entity match {
         case _: ModelBuilder.EventSourcedEntity =>
-          "TypedEventSourcedEntity" <> comma <> line <>
-            "EventSourcedCommandContext"
+          "EventSourcedEntity" <> angles(
+            nest(line <>
+            ssep(
+              Seq(
+                s"${service.fqn.name}.State",
+                s"${service.fqn.name}.Events",
+                s"${service.fqn.name}.CommandHandlers",
+                s"${service.fqn.name}.EventHandlers"),
+              comma <> line)) <> line)
         case _: ModelBuilder.ValueEntity =>
-          "TypedValueEntity" <> comma <> line <>
-            "ValueEntityCommandContext"
-      })) <> line) <+> "from" <+> dquotes("../kalix") <> semi <> line <>
-      "import" <+> ProtoNs <+> "from" <+> dquotes("./proto") <> semi <> line <>
-      line <>
-      (entity match {
-        case ModelBuilder.EventSourcedEntity(_, _, state, events) =>
-          "export type State" <+> equal <+> state
-            .map(state => typeReference(state.fqn))
-            .getOrElse(text("unknown")) <> semi <> line <>
-            "export type Event" <+> equal <> typeUnion(events.toSeq.map(_.fqn)) <> semi
-        case ModelBuilder.ValueEntity(_, _, state) =>
-          "export type State" <+> equal <+> typeReference(state.fqn) <> semi
-      }) <> line <>
-      "export type Command" <+> equal <> typeUnion(service.commands.toSeq.map(_.inputType)) <> semi <> line <>
-      line <>
+          "ValueEntity" <> angles(nest(line <>
+          ssep(Seq(s"${service.fqn.name}.State", s"${service.fqn.name}.CommandHandlers"), comma <> line)) <> line)
+      }) <> semi <> line)
+
+  private[codegen] def domainTypes(entity: ModelBuilder.Entity): Doc = {
+    "export declare namespace domain" <+> braces(
+      nest(line <>
+      "type" <+> entity.state.fqn.name <+> equal <+> messageType(entity.state.fqn) <> semi <>
       (entity match {
         case ModelBuilder.EventSourcedEntity(_, _, _, events) =>
-          "export type EventHandlers" <+> equal <+> braces(nest(line <>
-          ssep(
-            events.toSeq.map { event =>
-              event.fqn.name <> colon <+> parens(nest(line <>
-              "event" <> colon <+> typeReference(event.fqn) <> comma <> line <>
-              "state" <> colon <+> "State") <> line) <+> "=>" <+> "State" <> semi
-            },
-            line)) <> line) <> semi <> line <>
-            line
+          line <>
+            ssep(
+              events.toSeq.map(event => line <> "type" <+> event.fqn.name <+> equal <+> messageType(event.fqn) <> semi),
+              line)
         case _: ModelBuilder.ValueEntity => emptyDoc
-      }) <>
-      "export type CommandHandlers" <+> equal <+> braces(nest(line <>
-      ssep(
-        service.commands.toSeq.map { command =>
-          command.fqn.name <> colon <+> parens(nest(line <>
-          "command" <> colon <+> typeReference(command.inputType) <> comma <> line <>
-          "state" <> colon <+> "State" <> comma <> line <>
-          "ctx" <> colon <+> (entity match {
-            case _: ModelBuilder.EventSourcedEntity => "EventSourcedCommandContext<Event>"
-            case _: ModelBuilder.ValueEntity        => "ValueEntityCommandContext<State>"
-          })) <> line) <+> "=>" <+> typeReference(command.outputType) <> semi
-        },
-        line)) <> line) <> semi <> line <>
-      line <>
-      "export type" <+> service.fqn.name <+> equal <+> (entity match {
-        case _: ModelBuilder.EventSourcedEntity =>
-          "TypedEventSourcedEntity" <> angles(nest(line <>
-          ssep(Seq("State", "EventHandlers", "CommandHandlers"), comma <> line)) <> line)
-        case _: ModelBuilder.ValueEntity =>
-          "TypedValueEntity" <> angles(nest(line <>
-          ssep(Seq("State", "CommandHandlers"), comma <> line)) <> line)
-      }) <> semi <> line)
+      })) <> line) <> line
+  }
 
   private[codegen] def testSource(
       service: ModelBuilder.Service,

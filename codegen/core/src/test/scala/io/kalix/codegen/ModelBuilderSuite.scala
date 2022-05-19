@@ -108,7 +108,7 @@ abstract class ModelBuilderSuite(val config: ModelBuilderSuite.Config) extends m
         ModelBuilder.EventSourcedEntity(
           FullyQualifiedName("ShoppingCart", derivedEntityPackage),
           "shopping-cart",
-          Some(ModelBuilder.State(FullyQualifiedName("Cart", domainPackage))),
+          ModelBuilder.State(FullyQualifiedName("Cart", domainPackage)),
           List(
             ModelBuilder.Event(FullyQualifiedName("ItemAdded", domainPackage)),
             ModelBuilder.Event(FullyQualifiedName("ItemRemoved", domainPackage))))
@@ -398,7 +398,7 @@ class ModelBuilderWithCodegenAnnotationSuite extends ModelBuilderSuite(ModelBuil
           // this is the name as defined in the proto file
           FullyQualifiedName("ShoppingCartServiceEntity", shoppingCartPackage),
           "shopping-cart",
-          Some(ModelBuilder.State(FullyQualifiedName("Cart", domainPackage))),
+          ModelBuilder.State(FullyQualifiedName("Cart", domainPackage)),
           List(
             ModelBuilder.Event(FullyQualifiedName("ItemAdded", domainPackage)),
             ModelBuilder.Event(FullyQualifiedName("ItemRemoved", domainPackage))))

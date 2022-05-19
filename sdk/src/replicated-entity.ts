@@ -26,7 +26,7 @@ import {
   ReplicatedWriteConsistency,
   ServiceMap,
 } from './kalix';
-import { CommandContext, EntityContext, UserReply } from './command';
+import { EntityCommandContext, CommandReply } from './command';
 
 export { ReplicatedData };
 
@@ -45,52 +45,81 @@ export {
 
 const replicatedEntityServices = new ReplicatedEntityServices();
 
+// re-export under old name
 /**
  * Context for a Replicated Entity command handler.
  *
- * @public
- */
-export interface ReplicatedEntityCommandContext
-  extends StateManagementContext,
-    CommandContext,
-    EntityContext {}
-
-/**
- * Context that allows managing a Replicated Entity's state.
+ * @typeParam State - the type of {@link ReplicatedData} state
  *
  * @public
  */
-export interface StateManagementContext {
-  /**
-   * The Replicated Data state for a Replicated Entity.
-   *
-   * @remarks
-   * It may only be set once, if it's already set, an error will be thrown.
-   */
-  state: ReplicatedData;
+export type ReplicatedEntityCommandContext<
+  State extends ReplicatedData = ReplicatedData,
+> = ReplicatedEntity.CommandContext<State>;
 
-  /**
-   * Delete this Replicated Entity.
-   */
-  delete(): void;
-}
+// re-export under old name
+/**
+ * Context that allows managing a Replicated Entity's state.
+ *
+ * @typeParam State - the type of {@link ReplicatedData} state
+ *
+ * @public
+ */
+export type StateManagementContext<
+  State extends ReplicatedData = ReplicatedData,
+> = ReplicatedEntity.StateContext<State>;
 
 /** @public */
 export namespace ReplicatedEntity {
   /**
+   * Context for a Replicated Entity command handler.
+   *
+   * @typeParam State - the type of {@link ReplicatedData} state
+   */
+  export interface CommandContext<State extends ReplicatedData = ReplicatedData>
+    extends StateContext<State>,
+      EntityCommandContext {}
+
+  /**
+   * Context that allows managing a Replicated Entity's state.
+   *
+   * @typeParam State - the type of {@link ReplicatedData} state
+   */
+  export interface StateContext<State extends ReplicatedData = ReplicatedData> {
+    /**
+     * The Replicated Data state for a Replicated Entity.
+     *
+     * @remarks
+     * It may only be set once, if it's already set, an error will be thrown.
+     */
+    state: State;
+
+    /**
+     * Delete this Replicated Entity.
+     */
+    delete(): void;
+  }
+
+  /**
    * A command handler callback.
    *
+   * @typeParam State - the type of {@link ReplicatedData} state
    * @param command - The command message, this will be of the type of the gRPC service call input type
    * @param context - The command context
    * @returns The message to reply with, which must match the gRPC service call output type for this command.
    */
-  export type CommandHandler = (
+  export type CommandHandler<State extends ReplicatedData = ReplicatedData> = (
     command: any,
-    context: ReplicatedEntityCommandContext,
-  ) => Promise<UserReply> | UserReply;
+    context: CommandContext<State>,
+  ) => Promise<CommandReply> | CommandReply;
 
-  export type CommandHandlers = {
-    [commandName: string]: CommandHandler;
+  /**
+   * Replicated entity command handlers.
+   *
+   * @typeParam State - the type of {@link ReplicatedData} state
+   */
+  export type CommandHandlers<State extends ReplicatedData = ReplicatedData> = {
+    [commandName: string]: CommandHandler<State>;
   };
 
   /**
@@ -103,21 +132,24 @@ export namespace ReplicatedEntity {
    * explicitly from a command handler on the command context, or implicitly as the default value,
    * or implicitly when a new state is received from the proxy.
    *
+   * @typeParam State - the type of {@link ReplicatedData} state
    * @param state - The Replicated Data state that was set
    * @param entityId - The id of the entity
    */
-  export type OnStateSetCallback = (
-    state: ReplicatedData,
-    entityId: string,
-  ) => void;
+  export type OnStateSetCallback<
+    State extends ReplicatedData = ReplicatedData,
+  > = (state: State, entityId: string) => void;
 
   /**
    * A callback that is invoked to create a default value if the Kalix proxy doesn't send an existing one.
    *
+   * @typeParam State - the type of {@link ReplicatedData} state
    * @param entityId - The id of the entity
    * @returns The default value to use for this entity
    */
-  export type DefaultValueCallback = (entityId: string) => any;
+  export type DefaultValueCallback<
+    State extends ReplicatedData = ReplicatedData,
+  > = (entityId: string) => State | null;
 
   /**
    * Options for creating a Replicated Entity.
@@ -135,9 +167,13 @@ const defaultOptions = {
 /**
  * Replicated Entity.
  *
+ * @typeParam State - the type of {@link ReplicatedData} state
+ *
  * @public
  */
-export class ReplicatedEntity implements Entity {
+export class ReplicatedEntity<State extends ReplicatedData = ReplicatedData>
+  implements Entity
+{
   readonly serviceName: string;
   readonly service: protobuf.Service;
   readonly options: Required<ReplicatedEntity.Options>;
@@ -153,7 +189,7 @@ export class ReplicatedEntity implements Entity {
    * The names of the properties must match the names of the service calls specified in the gRPC descriptor for this
    * Replicated Entity service.
    */
-  commandHandlers: ReplicatedEntity.CommandHandlers;
+  commandHandlers: ReplicatedEntity.CommandHandlers<State>;
 
   /**
    * A callback that is invoked whenever the Replicated Data state is set for this Replicated Entity.
@@ -165,12 +201,12 @@ export class ReplicatedEntity implements Entity {
    * command handler on the command context, or implicitly as the default value, or implicitly when a new state is
    * received from the proxy.
    */
-  onStateSet: ReplicatedEntity.OnStateSetCallback;
+  onStateSet: ReplicatedEntity.OnStateSetCallback<State>;
 
   /**
    * A callback that is invoked to create a default value if the Kalix proxy doesn't send an existing one.
    */
-  defaultValue: ReplicatedEntity.DefaultValueCallback;
+  defaultValue: ReplicatedEntity.DefaultValueCallback<State>;
 
   /**
    * Create a Replicated Entity.

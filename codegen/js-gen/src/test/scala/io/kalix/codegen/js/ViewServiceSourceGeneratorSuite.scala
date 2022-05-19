@@ -54,7 +54,6 @@ class ViewServiceSourceGeneratorSuite extends munit.FunSuite {
         |  "com.example.service.MyService",
         |  {
         |    includeDirs: ["./src/proto"],
-        |    serializeFallbackToJson: true,
         |    viewId: "my-view-id"
         |  }
         |);
@@ -68,7 +67,8 @@ class ViewServiceSourceGeneratorSuite extends munit.FunSuite {
         |  }
         |});
         |
-        |export default view;""".stripMargin)
+        |export default view;
+        |""".stripMargin)
   }
   test("source without transformations") {
     val protoRef = TestData.serviceProto()
@@ -117,12 +117,12 @@ class ViewServiceSourceGeneratorSuite extends munit.FunSuite {
         |  "com.example.service.MyService",
         |  {
         |    includeDirs: ["./src/proto"],
-        |    serializeFallbackToJson: true,
         |    viewId: "my-view-id"
         |  }
         |);
         |
-        |export default view;""".stripMargin)
+        |export default view;
+        |""".stripMargin)
   }
 
   test("typedef source") {
@@ -138,26 +138,46 @@ class ViewServiceSourceGeneratorSuite extends munit.FunSuite {
         | * DO NOT EDIT
         | */
         |
-        |import {
-        |  TypedView,
-        |  ViewUpdateHandlerContext
-        |} from "../kalix";
-        |import proto from "./proto";
+        |import { View } from "@kalix-io/kalix-javascript-sdk";
+        |import * as proto from "./proto";
         |
-        |export type UpdateHandlers = {
-        |  Created: (
-        |    event: proto.com.example.service.persistence.IEntityCreated,
-        |    state?: proto.com.example.service.IViewState,
-        |    ctx: ViewUpdateHandlerContext
-        |  ) => proto.com.example.service.IViewState;
-        |  Updated: (
-        |    event: proto.com.example.service.persistence.IEntityUpdated,
-        |    state?: proto.com.example.service.IViewState,
-        |    ctx: ViewUpdateHandlerContext
-        |  ) => proto.com.example.service.IViewState;
-        |};
+        |export declare namespace domain {
+        |  type ViewState = proto.com.example.service.IViewState &
+        |    protobuf.Message<proto.com.example.service.IViewState>;
+        |  
+        |  type EntityCreated = proto.com.example.service.persistence.IEntityCreated &
+        |    protobuf.Message<proto.com.example.service.persistence.IEntityCreated>;
+        |  
+        |  type EntityUpdated = proto.com.example.service.persistence.IEntityUpdated &
+        |    protobuf.Message<proto.com.example.service.persistence.IEntityUpdated>;
+        |}
         |
-        |export type MyService = TypedView<UpdateHandlers>;
+        |export declare namespace MyService {
+        |  type State = domain.ViewState;
+        |  
+        |  type Events =
+        |    | domain.EntityCreated
+        |    | domain.EntityUpdated;
+        |  
+        |  type UpdateHandlers = {
+        |    Created: (
+        |      event: domain.EntityCreated,
+        |      state: State | undefined,
+        |      ctx: View.UpdateHandlerContext
+        |    ) => State;
+        |    Updated: (
+        |      event: domain.EntityUpdated,
+        |      state: State | undefined,
+        |      ctx: View.UpdateHandlerContext
+        |    ) => State;
+        |  };
+        |}
+        |
+        |export declare type MyService = View<
+        |  MyService.State,
+        |  MyService.Events,
+        |  MyService.UpdateHandlers
+        |>;
         |""".stripMargin)
   }
 }

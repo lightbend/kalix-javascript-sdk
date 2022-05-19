@@ -17,20 +17,15 @@
 import { MockValueEntity } from "./testkit";
 import { expect } from "chai";
 import counterEntity from "../src/counter";
-import * as proto from "../lib/generated/proto";
 
-type State = proto.com.example.domain.CounterState;
-
-const CounterState = counterEntity.lookupType(
-  "com.example.domain.CounterState"
-);
+const CounterState = counterEntity.lookupType("com.example.domain.CounterState");
 
 describe("CounterService", () => {
   const entityId = "entityId";
 
   describe("Increase", () => {
     it("should increase the value with no prior state", () => {
-      const entity = new MockValueEntity<State>(counterEntity, entityId);
+      const entity = new MockValueEntity(counterEntity, entityId);
       const result = entity.handleCommand("Increase", {
         entityId: entityId,
         value: 42
@@ -42,7 +37,7 @@ describe("CounterService", () => {
     });
 
     it("should increase the value with some prior state", () => {
-      const entity = new MockValueEntity<State>(counterEntity, entityId);
+      const entity = new MockValueEntity(counterEntity, entityId);
       entity.state = CounterState.create({ value: 13 });
       const result = entity.handleCommand("Increase", {
         entityId: entityId,
@@ -51,28 +46,24 @@ describe("CounterService", () => {
 
       expect(result).to.deep.equal({});
       expect(entity.error).to.be.undefined;
-      expect(entity.state).to.deep.equal(
-        CounterState.create({ value: 13 + 42 })
-      );
+      expect(entity.state).to.deep.equal(CounterState.create({ value: 13 + 42 }));
     });
 
     it("should fail on negative values", () => {
-      const entity = new MockValueEntity<State>(counterEntity, entityId);
+      const entity = new MockValueEntity(counterEntity, entityId);
       const result = entity.handleCommand("Increase", {
         entityId: entityId,
         value: -2
       });
 
       expect(result).to.deep.equal({});
-      expect(entity.error).to.be.equal(
-        `Increase requires a positive value. It was [-2].`
-      );
+      expect(entity.error).to.be.equal(`Increase requires a positive value. It was [-2].`);
     });
   });
 
   describe("Decrease", () => {
     it("should decrease the value with no prior state.", () => {
-      const entity = new MockValueEntity<State>(counterEntity, entityId);
+      const entity = new MockValueEntity(counterEntity, entityId);
       const result = entity.handleCommand("Decrease", {
         entityId: entityId,
         value: 42
@@ -86,7 +77,7 @@ describe("CounterService", () => {
 
   describe("Reset", () => {
     it("should reset the entity value to 0", () => {
-      const entity = new MockValueEntity<State>(counterEntity, entityId);
+      const entity = new MockValueEntity(counterEntity, entityId);
       entity.state = CounterState.create({ value: 13 });
       const result = entity.handleCommand("Reset", { entityId: entityId });
 
@@ -98,7 +89,7 @@ describe("CounterService", () => {
 
   describe("GetCurrentCounter", () => {
     it("should return the current state", () => {
-      const entity = new MockValueEntity<State>(counterEntity, entityId);
+      const entity = new MockValueEntity(counterEntity, entityId);
       entity.state = CounterState.create({ value: 13 });
       const result = entity.handleCommand("GetCurrentCounter", {
         entityId: entityId
