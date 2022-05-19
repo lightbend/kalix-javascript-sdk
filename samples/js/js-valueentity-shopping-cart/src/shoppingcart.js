@@ -20,12 +20,10 @@ import { ValueEntity } from "@kalix-io/kalix-javascript-sdk";
  * Type definitions.
  * These types have been generated based on your proto source.
  * A TypeScript aware editor such as VS Code will be able to leverage them to provide hinting and validation.
- * 
- * State; the serialisable and persistable state of the entity
- * @typedef { import("../lib/generated/shoppingcartservice").State } State
- * 
+ *
  * ShoppingCartService; a strongly typed extension of ValueEntity derived from your proto source
- * @typedef { import("../lib/generated/shoppingcartservice").ShoppingCartService } ShoppingCartService
+ * @typedef { import("../lib/generated/shoppingcart").ShoppingCartService } ShoppingCartService
+ * @typedef { import("../lib/generated/shoppingcart").ShoppingCartService.CommandHandlers } CommandHandlers
  */
 
 /**
@@ -74,9 +72,10 @@ entity.setCommandHandlers({
   RemoveCart: removeCart
 });
 
-
 /**
  * Handler for add item commands.
+ *
+ * @type CommandHandlers['AddItem']
  */
 function addItem(addItem, cart, ctx) {
   // Validation:
@@ -102,6 +101,8 @@ function addItem(addItem, cart, ctx) {
 
 /**
  * Handler for remove item commands.
+ *
+ * @type CommandHandlers['RemoveItem']
  */
 function removeItem(removeItem, cart, ctx) {
   // Validation:
@@ -127,16 +128,20 @@ function removeItem(removeItem, cart, ctx) {
 
 /**
  * Handler for get cart commands.
+ *
+ * @type CommandHandlers['GetCart']
  */
-function getCart(request, cart, ctx) {
+function getCart(_request, cart) {
   // Simply return the shopping cart as is.
   return cart;
 }
 
 /**
  * Handler for remove cart commands.
+ *
+ * @type CommandHandlers['RemoveCart']
  */
-function removeCart(request, cart, ctx) {
+function removeCart(_request, _cart, ctx) {
   ctx.deleteState();
   return {};
 }

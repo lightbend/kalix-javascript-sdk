@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 
+import { Reply } from '@kalix-io/kalix-javascript-sdk';
+
 /**
- * Mocks the behaviour of a single Kalix EventSourcedEntity.
+ * Mocks the behaviour of a single Kalix Event Sourced Entity.
  *
  * Handles any commands and events, internally tracking the state and maintaining an event log.
  *
@@ -32,7 +34,7 @@ export class MockEventSourcedEntity {
     this.entityId = entityId;
     this.state = entity.initial(entityId);
     this.grpcService = entity.serviceName
-      .split(".")
+      .split('.')
       .reduce((obj, part) => obj[part], entity.grpc).service;
   }
 
@@ -47,19 +49,24 @@ export class MockEventSourcedEntity {
   handleCommand(
     commandName,
     command,
-    ctx = new MockEventSourcedCommandContext()
+    ctx = new MockEventSourcedCommandContext(),
   ) {
     const behaviors = this.entity.behavior(this.state);
     const handler = behaviors.commandHandlers[commandName];
     const grpcMethod = this.grpcService[commandName];
 
     const request = grpcMethod.requestDeserialize(
-      grpcMethod.requestSerialize(command)
+      grpcMethod.requestSerialize(command),
     );
 
-    const result = handler(request, this.state, ctx);
+    const reply = handler(request, this.state, ctx);
+    const result = reply instanceof Reply ? reply.getMessage() : reply;
+
     ctx.events.forEach((event) => this.handleEvent(event));
-    this.error = ctx.error;
+
+    if (reply instanceof Reply && reply.getFailure())
+      this.error = reply.getFailure().getDescription();
+    else this.error = ctx.error;
 
     return grpcMethod.responseDeserialize(grpcMethod.responseSerialize(result));
   }
@@ -79,7 +86,7 @@ export class MockEventSourcedEntity {
 }
 
 /**
- * Mocks the behaviour of a single Kalix Value entity.
+ * Mocks the behaviour of a single Kalix Value Entity.
  *
  * Handles any commands, internally maintaining the state.
  *
@@ -95,7 +102,7 @@ export class MockValueEntity {
     this.entityId = entityId;
     this.state = entity.initial(entityId);
     this.grpcService = entity.serviceName
-      .split(".")
+      .split('.')
       .reduce((obj, part) => obj[part], entity.grpc).service;
   }
 
@@ -110,22 +117,27 @@ export class MockValueEntity {
   handleCommand(
     commandName,
     command,
-    ctx = new MockValueEntityCommandContext()
+    ctx = new MockValueEntityCommandContext(),
   ) {
     const handler = this.entity.commandHandlers[commandName];
     const grpcMethod = this.grpcService[commandName];
 
     const request = grpcMethod.requestDeserialize(
-      grpcMethod.requestSerialize(command)
+      grpcMethod.requestSerialize(command),
     );
 
-    const result = handler(request, this.state, ctx);
+    const reply = handler(request, this.state, ctx);
+    const result = reply instanceof Reply ? reply.getMessage() : reply;
+
     if (ctx.delete) {
       this.state = this.entity.initial(this.entityId);
     } else if (ctx.updatedState) {
       this.state = ctx.updatedState;
     }
-    this.error = ctx.error;
+
+    if (reply instanceof Reply && reply.getFailure())
+      this.error = reply.getFailure().getDescription();
+    else this.error = ctx.error;
 
     return grpcMethod.responseDeserialize(grpcMethod.responseSerialize(result));
   }
@@ -133,7 +145,7 @@ export class MockValueEntity {
 
 /**
  * Generic mock CommandContext for any Kalix entity
- * @type { import("../lib/kalix").CommandContext }
+ * @type { import("@kalix-io/kalix-javascript-sdk").CommandContext }
  */
 export class MockCommandContext {
   effects = [];
@@ -143,7 +155,7 @@ export class MockCommandContext {
   /**
    * Set the `thenForward` callback for this context.
    * This allows tests handling both failure and success cases for forwarded commands.
-   * @param  handler the thenForward callback to set
+   * @param {{(): void}} handler the thenForward callback to set
    */
   onForward(handler) {
     this.thenForward = handler;
@@ -170,7 +182,7 @@ export class MockCommandContext {
  * construct their own instance of this class, however for making assertions on
  * forwarding or emitted effects you may provide your own.
  *
- * @type { import("../lib/kalix").EventSourcedCommandContext<unknown> }
+ * @type { import("@kalix-io/kalix-javascript-sdk").EventSourcedEntity.CommandContext }
  */
 export class MockEventSourcedCommandContext extends MockCommandContext {
   events = [];
@@ -187,7 +199,7 @@ export class MockEventSourcedCommandContext extends MockCommandContext {
  * construct their own instance of this class, however for making assertions on
  * forwarding or emitted effects you may provide your own.
  *
- * @type { import("../lib/kalix").ValueEntityCommandContext<unknown> }
+ * @type { import("@kalix-io/kalix-javascript-sdk").ValueEntity.CommandContext }
  */
 export class MockValueEntityCommandContext extends MockCommandContext {
   updatedState = undefined;

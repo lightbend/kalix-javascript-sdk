@@ -21,12 +21,8 @@
     "url": "https://github.com/lightbend/kalix-javascript-sdk",
     "directory": "samples/js/js-customer-registry"
   },
-  "//": "https://npm.community/t/npm-install-does-not-install-transitive-dependencies-of-local-dependency/2264",
   "dependencies": {
-    "@grpc/proto-loader": "^0.1.0",
-    "@kalix-io/kalix-javascript-sdk": "file:../../../sdk/kalix-io-kalix-javascript-sdk-0.0.0.tgz",
-    "google-protobuf": "^3.11.4",
-    "grpc": "^1.24.9"
+    "@kalix-io/kalix-javascript-sdk": "1.0.0-M6"
   },
   "devDependencies": {
     "chai": "4.2.0",

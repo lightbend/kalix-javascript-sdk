@@ -74,5 +74,4 @@ describe("Shopping cart service", function () {
     }
   });
 
-
 });

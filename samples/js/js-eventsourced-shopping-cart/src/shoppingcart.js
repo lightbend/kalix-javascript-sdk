@@ -14,21 +14,17 @@
  * limitations under the License.
  */
 // tag::imports[]
-import {EventSourcedEntity} from "@kalix-io/kalix-javascript-sdk";
+import { EventSourcedEntity } from "@kalix-io/kalix-javascript-sdk";
 // end::imports[]
 /**
  * Type definitions.
  * These types have been generated based on your proto source.
  * A TypeScript aware editor such as VS Code will be able to leverage them to provide hinting and validation.
  *
- * State; the serialisable and persistable state of the entity
- * @typedef { import("../lib/generated/shoppingcartservice").State } State
- *
- * Event; the union of all possible event types
- * @typedef { import("../lib/generated/shoppingcartservice").Event } Event
- *
  * ShoppingCartService; a strongly typed extension of EventSourcedEntity derived from your proto source
- * @typedef { import("../lib/generated/shoppingcartservice").ShoppingCartService } ShoppingCartService
+ * @typedef { import("../lib/generated/shoppingcart").ShoppingCartService } ShoppingCartService
+ * @typedef { import("../lib/generated/shoppingcart").ShoppingCartService.CommandHandlers } CommandHandlers
+ * @typedef { import("../lib/generated/shoppingcart").ShoppingCartService.EventHandlers } EventHandlers
  */
 
 /**
@@ -43,8 +39,7 @@ const entity = new EventSourcedEntity(
   "com.example.shoppingcart.ShoppingCartService",
   "eventsourced-shopping-cart",
   {
-    includeDirs: ["./proto"],
-    serializeFallbackToJson: true
+    includeDirs: ["./proto"]
   }
 );
 // end::esentity[]
@@ -91,12 +86,13 @@ entity.setBehavior(cart => {
 });
 // end::behavior[]
 
-
 /**
  * Handler for add item commands.
+ *
+ * @type CommandHandlers['AddItem']
  */
 // tag::additem[]
-function addItem(addItem, cart, ctx) {
+function addItem(addItem, _cart, ctx) {
   // Validation:
   // Make sure that it is not possible to add negative quantities
   if (addItem.quantity < 1) {
@@ -118,6 +114,8 @@ function addItem(addItem, cart, ctx) {
 // end::additem[]
 /**
  * Handler for remove item commands.
+ *
+ * @type CommandHandlers['RemoveItem']
  */
 // tag::removeitem[]
 function removeItem(removeItem, cart, ctx) {
@@ -142,15 +140,19 @@ function removeItem(removeItem, cart, ctx) {
 // end::removeitem[]
 /**
  * Handler for get cart commands.
+ *
+ * @type CommandHandlers['GetCart']
  */
 // tag::getcart[]
-function getCart(request, cart) {
+function getCart(_request, cart) {
   // Simply return the shopping cart as is.
   return cart;
 }
 // end::getcart[]
 /**
  * Handler for item added events.
+ *
+ * @type EventHandlers['ItemAdded']
  */
 // tag::itemadded[]
 function itemAdded(added, cart) {
@@ -172,6 +174,8 @@ function itemAdded(added, cart) {
 // end::itemadded[]
 /**
  * Handler for item removed events.
+ *
+ * @type EventHandlers['ItemRemoved']
  */
 // tag::itemremoved[]
 function itemRemoved(removed, cart) {
