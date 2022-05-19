@@ -42,7 +42,7 @@ export {
   EffectContext,
   EntityContext,
   Message,
-  UserReply,
+  CommandReply,
 } from './src/command';
 
 export { EffectMethod } from './src/effect';

@@ -18,7 +18,7 @@ import * as protobufHelper from './protobuf-helper';
 import * as grpc from '@grpc/grpc-js';
 import * as protoLoader from '@grpc/proto-loader';
 import ActionSupport from './action-support';
-import { CommandContext } from './command';
+import { CommandContext, CommandReply } from './command';
 import { GrpcClientLookup, GrpcUtil } from './grpc-util';
 import { Metadata } from './metadata';
 import { Reply } from './reply';
@@ -36,7 +36,10 @@ const defaultOptions = {
  *
  * @public
  */
-export class Action implements Component {
+export class Action<
+  CommandHandlers extends Action.CommandHandlers = Action.CommandHandlers,
+> implements Component
+{
   readonly serviceName: string;
   readonly service: protobuf.Service;
   readonly options: Required<Action.Options>;
@@ -51,7 +54,7 @@ export class Action implements Component {
    * @remarks
    * The names of the properties must match the names of the service calls specified in the gRPC descriptor.
    */
-  commandHandlers: Action.CommandHandlers;
+  commandHandlers: CommandHandlers;
 
   /**
    * Create a new action.
@@ -89,7 +92,7 @@ export class Action implements Component {
 
     this.clients = GrpcUtil.clientCreators(this.root, this.grpc);
 
-    this.commandHandlers = {};
+    this.commandHandlers = {} as CommandHandlers;
   }
 
   /**
@@ -119,7 +122,9 @@ export class Action implements Component {
    * @param commandHandlers - The command handlers
    * @returns This action
    */
-  setCommandHandlers(commandHandlers: Action.CommandHandlers): Action {
+  setCommandHandlers(
+    commandHandlers: CommandHandlers,
+  ): Action<CommandHandlers> {
     this.commandHandlers = commandHandlers;
     return this;
   }
@@ -151,38 +156,71 @@ export namespace Action {
      *
      * @param eventType - The type of the event
      * @param callback - The callback to handle the event
+     * @returns nothing or a Reply for {@link StreamedInContext.end} events
      */
-    on: (eventType: string, callback: Function) => void;
+    on(eventType: string, callback: (...args: any[]) => Reply | void): void;
   }
 
   /**
    * Context for an action command.
+   *
+   * @typeParam Response - The type of the response message
    */
-  export interface ActionCommandContext extends ActionContext, CommandContext {
+  export interface ActionCommandContext<Response extends object = any>
+    extends ActionContext,
+      CommandContext {
     /**
      * Write a message.
      *
      * @param message - The protobuf message to write
      * @param metadata - The metadata associated with the message
      */
-    write: (message: any, metadata?: Metadata) => void;
+    write: (message: Response, metadata?: Metadata) => void;
   }
 
   /**
    * Context for a unary action command.
+   *
+   * @typeParam Response - The type of the response message
    */
-  export interface UnaryCommandContext extends ActionCommandContext {
+  export interface UnaryCommandContext<Response extends object = any>
+    extends ActionCommandContext<Response> {
     /** @internal */ alreadyReplied: boolean;
   }
 
   /**
    * Context for an action command that handles streamed messages in.
+   *
+   * @typeParam Request - The type of the request message
+   * @typeParam Response - The type of the response message
    */
-  export interface StreamedInContext extends ActionCommandContext {
+  export interface StreamedInContext<
+    Request extends object = any,
+    Response extends object = any,
+  > extends ActionCommandContext<Response> {
     /**
      * Cancel the incoming stream of messages.
      */
     cancel: () => void;
+
+    /**
+     * Register an event handler for {@link StreamedInContext.data} events.
+     *
+     * @param eventType - 'data'
+     * @param callback - the callback for each new message
+     * @see {@link StreamedInContext.data}
+     */
+    on(eventType: 'data', callback: (message: Request) => void): void;
+
+    /**
+     * Register an event handler for {@link StreamedInContext.end} events.
+     *
+     * @param eventType - 'end'
+     * @param callback - the callback for when the input stream ends
+     * @returns nothing or a Reply that is returned as the response from the action
+     * @see {@link StreamedInContext.end}
+     */
+    on(eventType: 'end', callback: () => Reply<Response> | void): void;
   }
 
   export namespace StreamedInContext {
@@ -210,13 +248,22 @@ export namespace Action {
 
   /**
    * Context for a streamed in action command.
+   *
+   * @typeParam Request - The type of the request message
+   * @typeParam Response - The type of the response message
    */
-  export interface StreamedInCommandContext extends StreamedInContext {}
+  export interface StreamedInCommandContext<
+    Request extends object = any,
+    Response extends object = any,
+  > extends StreamedInContext<Request, Response> {}
 
   /**
    * Context for an action command that returns a streamed message out.
+   *
+   * @typeParam Response - The type of the response message
    */
-  export interface StreamedOutContext extends ActionCommandContext {
+  export interface StreamedOutContext<Response extends object = any>
+    extends ActionCommandContext<Response> {
     /**
      * Send a reply
      *
@@ -228,6 +275,15 @@ export namespace Action {
      * Terminate the outgoing stream of messages.
      */
     end: () => void;
+
+    /**
+     * Register an event handler for {@link StreamedOutContext.cancelled} events.
+     *
+     * @param eventType - 'cancelled'
+     * @param callback - the callback for when the stream is cancelled
+     * @see {@link StreamedInContext.cancelled}
+     */
+    on(eventType: 'cancelled', callback: () => void): void;
   }
 
   export namespace StreamedOutContext {
@@ -241,15 +297,51 @@ export namespace Action {
 
   /**
    * Context for a streamed out action command.
+   *
+   * @typeParam Response - The type of the response message
    */
-  export interface StreamedOutCommandContext extends StreamedOutContext {}
+  export interface StreamedOutCommandContext<Response extends object = any>
+    extends StreamedOutContext<Response> {}
 
   /**
    * Context for a streamed action command.
+   *
+   * @typeParam Request - The type of the request message
+   * @typeParam Response - The type of the response message
    */
-  export interface StreamedCommandContext
-    extends StreamedInContext,
-      StreamedOutContext {}
+  export interface StreamedCommandContext<
+    Request extends object = any,
+    Response extends object = any,
+  > extends StreamedInContext<Request, Response>,
+      StreamedOutContext<Response> {
+    /**
+     * Register an event handler for {@link StreamedInContext.data} events.
+     *
+     * @param eventType - 'data'
+     * @param callback - the callback for each new message
+     * @see {@link StreamedInContext.data}
+     */
+    on(eventType: 'data', callback: (message: Request) => void): void;
+
+    /**
+     * Register an event handler for {@link StreamedInContext.end} events.
+     *
+     * @param eventType - 'end'
+     * @param callback - the callback for when the input stream ends
+     * @returns nothing or a Reply that is returned as the response from the action
+     * @see {@link StreamedInContext.end}
+     */
+    on(eventType: 'end', callback: () => Reply<Response> | void): void;
+
+    /**
+     * Register an event handler for {@link StreamedOutContext.cancelled} events.
+     *
+     * @param eventType - 'cancelled'
+     * @param callback - the callback for when the stream is cancelled
+     * @see {@link StreamedInContext.cancelled}
+     */
+    on(eventType: 'cancelled', callback: () => void): void;
+  }
 
   /**
    * The command handlers.
@@ -273,46 +365,61 @@ export namespace Action {
   /**
    * A unary action command handler.
    *
+   * @typeParam Request - The type of the request message
+   * @typeParam Response - The type of the response message
    * @param message - The command message, this will be of the type of the gRPC service call input type
    * @param context - The command context
    * @returns The message to reply with, it must match the gRPC service call output type for
    *          this command. If replying by using context.write, undefined must be returned.
    */
-  export type UnaryCommandHandler = (
-    message: any,
-    context: UnaryCommandContext,
-  ) => Reply | any | Promise<any> | undefined;
+  export type UnaryCommandHandler<
+    Request extends object = any,
+    Response extends object = any,
+  > = (
+    message: Request,
+    context: UnaryCommandContext<Response>,
+  ) => Promise<CommandReply<Response>> | CommandReply<Response>;
 
   /**
    * A streamed in action command handler.
    *
+   * @typeParam Request - The type of the request message
+   * @typeParam Response - The type of the response message
    * @param context - The command context
    * @returns The message to reply with, it must match the gRPC service call output type for
    *          this command. If replying by using context.write, undefined must be returned.
    */
-  export type StreamedInCommandHandler = (
-    context: StreamedInCommandContext,
-  ) => any | Promise<any> | undefined;
+  export type StreamedInCommandHandler<
+    Request extends object = any,
+    Response extends object = any,
+  > = (
+    context: StreamedInCommandContext<Request, Response>,
+  ) => Promise<CommandReply<Response>> | CommandReply<Response>;
 
   /**
    * A streamed out command handler.
    *
+   * @typeParam Request - The type of the request message
+   * @typeParam Response - The type of the response message
    * @param message - The command message, this will be of the type of the gRPC service call input type
    * @param context - The command context
    */
-  export type StreamedOutCommandHandler = (
-    message: any,
-    context: StreamedOutCommandContext,
-  ) => void;
+  export type StreamedOutCommandHandler<
+    Request extends object = any,
+    Response extends object = any,
+  > = (message: Request, context: StreamedOutCommandContext<Response>) => void;
 
   /**
    * A streamed command handler.
    *
+   * @typeParam Request - The type of the request message
+   * @typeParam Response - The type of the response message
    * @param context - The command context
    */
-  export type StreamedCommandHandler = (
-    context: StreamedCommandContext,
-  ) => void;
+  export type StreamedCommandHandler<
+    Request extends object = any,
+    Response extends object = any,
+  > = (context: StreamedCommandContext<Request, Response>) => void;
 
   export interface Options extends Omit<ComponentOptions, 'entityType'> {}
 }

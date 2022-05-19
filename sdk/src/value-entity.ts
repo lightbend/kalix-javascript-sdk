@@ -21,18 +21,28 @@ import ValueEntityServices from './value-entity-support';
 import { GrpcClientLookup, GrpcUtil } from './grpc-util';
 import { Entity, EntityOptions, ServiceMap } from './kalix';
 import { Serializable } from './serializable';
-import { CommandContext, EntityContext, UserReply } from './command';
+import { EntityCommandContext, CommandReply } from './command';
 
 const valueEntityServices = new ValueEntityServices();
 
 /** @public */
 export namespace ValueEntity {
+  // re-export under old name
   /**
    * Context for a value entity command.
+   *
+   * @typeParam State - the type of {@link Serializable} state
    */
-  export interface ValueEntityCommandContext
-    extends CommandContext,
-      EntityContext {
+  export type ValueEntityCommandContext<State extends Serializable = any> =
+    CommandContext<State>;
+
+  /**
+   * Context for a value entity command.
+   *
+   * @typeParam State - the type of {@link Serializable} state
+   */
+  export interface CommandContext<State extends Serializable = any>
+    extends EntityCommandContext {
     /**
      * Persist the updated state.
      *
@@ -43,7 +53,7 @@ export namespace ValueEntity {
      *
      * @param newState - The state to store
      */
-    updateState(newState: Serializable): void;
+    updateState(newState: State): void;
 
     /**
      * Delete this entity.
@@ -54,27 +64,30 @@ export namespace ValueEntity {
   /**
    * A command handler for one service call to the value entity.
    *
+   * @typeParam State - the type of {@link Serializable} state
    * @param command - The command message, this will be of the type of the gRPC service call input type
    * @param state - The entity state
    * @param context - The command context
    * @returns The message to reply with, it must match the gRPC service call output type for this
    *          command, or if a Reply is returned, contain an object that matches the output type.
    */
-  export type CommandHandler = (
+  export type CommandHandler<State extends Serializable = any> = (
     command: any,
-    state: any,
-    context: ValueEntityCommandContext,
-  ) => Promise<UserReply> | UserReply;
+    state: State,
+    context: CommandContext<State>,
+  ) => Promise<CommandReply> | CommandReply;
 
   /**
    * Value entity command handlers.
    *
    * @remarks
    * The names of the properties must match the names of the service calls specified in the gRPC
-   * descriptor for this value entities service.
+   * descriptor for this value entity's service.
+   *
+   * @typeParam State - the type of {@link Serializable} state
    */
-  export type CommandHandlers = {
-    [commandName: string]: CommandHandler;
+  export type CommandHandlers<State extends Serializable = any> = {
+    [commandName: string]: CommandHandler<State>;
   };
 
   /**
@@ -83,10 +96,13 @@ export namespace ValueEntity {
    * @remarks
    * This is invoked if the entity is started with no snapshot.
    *
+   * @typeParam State - the type of {@link Serializable} state
    * @param entityId - The entity id
    * @returns The entity state
    */
-  export type InitialCallback = (entityId: string) => Serializable;
+  export type InitialCallback<State extends Serializable = any> = (
+    entityId: string,
+  ) => State;
 
   /**
    * Options for a value entity.
@@ -120,9 +136,16 @@ const defaultOptions = {
 /**
  * Value Entity.
  *
+ * @typeParam State - the type of {@link Serializable} state
+ * @typeParam CommandHandlers - optional type of {@link ValueEntity.CommandHandlers}
+ *
  * @public
  */
-export class ValueEntity implements Entity {
+export class ValueEntity<
+  State extends Serializable = any,
+  CommandHandlers extends ValueEntity.CommandHandlers<State> = ValueEntity.CommandHandlers<State>,
+> implements Entity
+{
   readonly serviceName: string;
   readonly service: protobuf.Service;
   readonly options: Required<ValueEntity.Options>;
@@ -134,12 +157,12 @@ export class ValueEntity implements Entity {
   /**
    * The initial state callback.
    */
-  initial?: ValueEntity.InitialCallback;
+  initial?: ValueEntity.InitialCallback<State>;
 
   /**
    * The command handlers.
    */
-  commandHandlers: ValueEntity.CommandHandlers;
+  commandHandlers: CommandHandlers;
 
   /**
    * Create a new value entity.
@@ -184,7 +207,7 @@ export class ValueEntity implements Entity {
 
     this.clients = GrpcUtil.clientCreators(this.root, this.grpc);
 
-    this.commandHandlers = {};
+    this.commandHandlers = {} as CommandHandlers;
   }
 
   /** @internal */
@@ -202,7 +225,9 @@ export class ValueEntity implements Entity {
    * @param callback - The initial state callback
    * @returns This entity
    */
-  setInitial(callback: ValueEntity.InitialCallback): ValueEntity {
+  setInitial(
+    callback: ValueEntity.InitialCallback<State>,
+  ): ValueEntity<State, CommandHandlers> {
     this.initial = callback;
     return this;
   }
@@ -214,8 +239,8 @@ export class ValueEntity implements Entity {
    * @returns This entity
    */
   setCommandHandlers(
-    commandHandlers: ValueEntity.CommandHandlers,
-  ): ValueEntity {
+    commandHandlers: CommandHandlers,
+  ): ValueEntity<State, CommandHandlers> {
     this.commandHandlers = commandHandlers;
     return this;
   }

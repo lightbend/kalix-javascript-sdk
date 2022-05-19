@@ -19,7 +19,7 @@ import {
   CommandHandlerFactory,
   InternalContext,
   Message,
-  UserReply,
+  CommandReply,
 } from './command';
 import { ContextFailure } from './context-failure';
 import { EffectMethod } from './effect';
@@ -148,13 +148,13 @@ export default class CommandHelper {
   }
 
   async invoke(
-    handler: () => Promise<UserReply>,
+    handler: () => Promise<CommandReply>,
     ctx: InternalContext,
-  ): Promise<UserReply> {
+  ): Promise<CommandReply> {
     ctx.reply = {};
-    let userReply: UserReply;
+    let commandReply: CommandReply;
     try {
-      userReply = await Promise.resolve(handler());
+      commandReply = await Promise.resolve(handler());
     } catch (err) {
       if (ctx.error === undefined) {
         // If the error field is defined, then that means we were explicitly told
@@ -167,7 +167,7 @@ export default class CommandHelper {
       ctx.active = false;
     }
 
-    return userReply;
+    return commandReply;
   }
 
   errorReply(
@@ -195,12 +195,12 @@ export default class CommandHelper {
   }
 
   async invokeHandlerLogic(
-    handler: () => Promise<UserReply>,
+    handler: () => Promise<CommandReply>,
     ctx: InternalContext,
     grpcMethod: protobuf.Method,
     desc: string,
   ): Promise<protocol.EntityStreamOut> {
-    const userReply = await this.invoke(handler, ctx);
+    const commandReply = await this.invoke(handler, ctx);
 
     if (ctx.error !== undefined) {
       return this.errorReply(
@@ -209,12 +209,12 @@ export default class CommandHelper {
         ctx,
         desc,
       );
-    } else if (userReply instanceof Reply) {
-      if (userReply.getFailure()) {
+    } else if (commandReply instanceof Reply) {
+      if (commandReply.getFailure()) {
         // handle failure with a separate write to make sure we don't write back events etc
         return this.errorReply(
-          userReply.getFailure()?.getDescription(),
-          userReply.getFailure()?.getStatus(),
+          commandReply.getFailure()?.getDescription(),
+          commandReply.getFailure()?.getStatus(),
           ctx,
           desc,
         );
@@ -223,8 +223,8 @@ export default class CommandHelper {
         // note that we amend the ctx.reply to get events etc passed along from the entities
         if (!ctx.reply) ctx.reply = {};
         ctx.reply.commandId = ctx.commandId;
-        if (userReply.getEffects()) {
-          ctx.reply.sideEffects = userReply
+        if (commandReply.getEffects()) {
+          ctx.reply.sideEffects = commandReply
             .getEffects()
             .map((effect) =>
               this.effectSerializer.serializeSideEffect(
@@ -235,15 +235,17 @@ export default class CommandHelper {
               ),
             );
         }
-        if (userReply.getMessage()) {
+        if (commandReply.getMessage()) {
           ctx.reply.clientAction = {
             reply: {
               payload: AnySupport.serialize(
-                grpcMethod.resolvedResponseType!.create(userReply.getMessage()),
+                grpcMethod.resolvedResponseType!.create(
+                  commandReply.getMessage(),
+                ),
                 false,
                 false,
               ),
-              metadata: userReply.getMetadata() || null,
+              metadata: commandReply.getMetadata() || null,
             },
           };
           ctx.commandDebug(
@@ -252,18 +254,18 @@ export default class CommandHelper {
             ctx.reply.clientAction.reply?.payload?.type_url,
             ctx.effects.length,
           );
-        } else if (userReply.getForward()) {
+        } else if (commandReply.getForward()) {
           ctx.reply.clientAction = {
             forward: this.effectSerializer.serializeForward(
-              userReply.getForward()?.getMethod() ?? null,
-              userReply.getForward()?.getMessage(),
-              userReply.getForward()?.getMetadata(),
+              commandReply.getForward()?.getMethod() ?? null,
+              commandReply.getForward()?.getMessage(),
+              commandReply.getForward()?.getMetadata(),
             ),
           };
           ctx.commandDebug(
             '%s forward to %s with %d side effects.',
             desc,
-            userReply.getForward()?.getMethod(),
+            commandReply.getForward()?.getMethod(),
             ctx.effects.length,
           );
         } else {
@@ -281,7 +283,7 @@ export default class CommandHelper {
                 false,
                 false,
               ),
-              metadata: userReply.getMetadata() || null,
+              metadata: commandReply.getMetadata() || null,
             },
           };
         }
@@ -304,11 +306,11 @@ export default class CommandHelper {
           ctx.forward?.commandName,
           ctx.effects.length,
         );
-      } else if (userReply !== undefined) {
+      } else if (commandReply !== undefined) {
         ctx.reply.clientAction = {
           reply: {
             payload: AnySupport.serialize(
-              grpcMethod.resolvedResponseType!.create(userReply),
+              grpcMethod.resolvedResponseType!.create(commandReply),
               false,
               false,
             ),

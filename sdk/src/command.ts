@@ -163,15 +163,26 @@ export interface CommandContext extends EffectContext {
 }
 
 /**
- * User reply types.
+ * Context for an entity command.
  *
  * @public
  */
-export type UserReply = Reply | Message | undefined;
+export type EntityCommandContext = EntityContext & CommandContext;
+
+/**
+ * Command reply types.
+ *
+ * @public
+ */
+export type CommandReply<Message extends object = object> =
+  | Reply<Message>
+  | Message
+  | undefined
+  | void;
 
 /** @internal */
 export interface CommandHandler {
-  (message: protobuf.Message, context: InternalContext): Promise<UserReply>;
+  (message: protobuf.Message, context: InternalContext): Promise<CommandReply>;
 }
 
 /** @internal */
