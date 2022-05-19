@@ -222,18 +222,54 @@ object SourceGenerator extends PrettyPrinter {
   private[js] def arrowFn(args: Seq[String], body: Doc) =
     parens(ssep(args.map(text), comma)) <+> "=>" <+> braces(nest(line <> body) <> line)
 
-  private[js] def typeReference(fqn: FullyQualifiedName): Doc = fqn match {
-    case FullyQualifiedName("Empty", parent) if parent.pkg == "google.protobuf" =>
-      "void"
+  private[js] def protoClass(fqn: FullyQualifiedName): Doc = fqn match {
+    case FullyQualifiedName(name, parent) =>
+      ProtoNs <> dot <> parent.pkg <> dot <> name
+  }
+
+  private[js] def protoInterface(fqn: FullyQualifiedName): Doc = fqn match {
     case FullyQualifiedName(name, parent) =>
       ProtoNs <> dot <> parent.pkg <> dot <> "I" <> name
   }
 
-  private[js] def typeUnion(fqns: Seq[FullyQualifiedName]): Doc = fqns match {
+  private[js] def messageType(fqn: FullyQualifiedName): Doc = {
+    val interface = protoInterface(fqn)
+    interface <+> ampersand <> nest(line <> "protobuf.Message" <> angles(interface))
+  }
+
+  private[codegen] def apiTypes(service: ModelBuilder.Service): Doc = {
+    "export declare namespace api" <+> braces(
+      nest(
+        line <>
+        ssep(
+          service.commands.toSeq.distinctBy(_.inputType.name).map { command =>
+            "type" <+> command.inputType.name <+> equal <+> protoClass(command.inputType) <> semi
+          },
+          line) <>
+        line <>
+        ssep(
+          service.commands.toSeq.distinctBy(_.outputType.name).map { command =>
+            "type" <+> "I" <> command.outputType.name <+> equal <+> protoInterface(command.outputType) <> semi
+          },
+          line)) <> line) <> line
+  }
+
+  private[js] def apiClass(fqn: FullyQualifiedName): Doc = {
+    "api." <> fqn.name
+  }
+
+  private[js] def apiInterface(fqn: FullyQualifiedName): Doc = {
+    "api.I" <> fqn.name
+  }
+
+  private[js] def domainType(fqn: FullyQualifiedName): Doc = {
+    "domain." <> fqn.name
+  }
+
+  private[js] def typeUnion(docs: Seq[Doc]): Doc = docs match {
     case Nil        => " " <> "unknown"
-    case fqn :: Nil => " " <> typeReference(fqn)
-    case _ =>
-      nest(line <> ssep(fqns.map(fqn => "|" <+> typeReference(fqn)), line))
+    case doc :: Nil => " " <> doc
+    case _          => nest(line <> ssep(docs.map(doc => "|" <+> doc), line))
   }
 
   private[js] def typedef(source: Doc, name: Doc): Doc =

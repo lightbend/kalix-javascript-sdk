@@ -118,7 +118,7 @@ object TestData {
     ModelBuilder.EventSourcedEntity(
       FullyQualifiedName(s"MyEntity$suffix", domainProto(suffix)),
       entityType = s"my-eventsourcedentity$suffix-persistence",
-      Some(ModelBuilder.State(FullyQualifiedName("MyState", domainProto(suffix)))),
+      ModelBuilder.State(FullyQualifiedName("MyState", domainProto(suffix))),
       List(ModelBuilder.Event(FullyQualifiedName("SetEvent", domainProto(suffix)))))
 
   def valueEntity(suffix: String = ""): ModelBuilder.ValueEntity =

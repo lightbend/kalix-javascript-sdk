@@ -47,7 +47,7 @@ object ModelBuilder {
   /**
    * An entity represents the primary model object and is conceptually equivalent to a class, or a type of state.
    */
-  sealed abstract class Entity(val fqn: FullyQualifiedName, val entityType: String)
+  sealed abstract class Entity(val fqn: FullyQualifiedName, val entityType: String, val state: State)
 
   /**
    * A type of Entity that stores its state using a journal of events, and restores its state by replaying that journal.
@@ -55,15 +55,18 @@ object ModelBuilder {
   case class EventSourcedEntity(
       override val fqn: FullyQualifiedName,
       override val entityType: String,
-      state: Option[State],
+      override val state: State,
       events: Iterable[Event])
-      extends Entity(fqn, entityType)
+      extends Entity(fqn, entityType, state)
 
   /**
    * A type of Entity that stores its state using a journal of events, and restores its state by replaying that journal.
    */
-  case class ValueEntity(override val fqn: FullyQualifiedName, override val entityType: String, state: State)
-      extends Entity(fqn, entityType)
+  case class ValueEntity(
+      override val fqn: FullyQualifiedName,
+      override val entityType: String,
+      override val state: State)
+      extends Entity(fqn, entityType, state)
 
   /**
    * A Service backed by Kalix; either an Action, View or Entity
@@ -283,9 +286,7 @@ object ModelBuilder {
     EventSourcedEntity(
       defineEntityFullyQualifiedName(entityDef.getName, serviceName),
       entityDef.getEntityType,
-      Option(entityDef.getState)
-        .filter(_.nonEmpty)
-        .map(name => State(resolveFullyQualifiedMessageType(name, pkg, additionalDescriptors))),
+      State(resolveFullyQualifiedMessageType(entityDef.getState, pkg, additionalDescriptors)),
       entityDef.getEventsList.asScala
         .map(event => Event(resolveFullyQualifiedMessageType(event, pkg, additionalDescriptors))))
   }
@@ -436,9 +437,7 @@ object ModelBuilder {
           EventSourcedEntity(
             FullyQualifiedName(name, protoReference),
             entityDef.getEntityType,
-            Option(entityDef.getState)
-              .filter(_.nonEmpty)
-              .map(name => State(FullyQualifiedName(name, protoReference))),
+            State(FullyQualifiedName(entityDef.getState, protoReference)),
             entityDef.getEventsList.asScala
               .map(event => Event(FullyQualifiedName(event, protoReference)))))
       }
