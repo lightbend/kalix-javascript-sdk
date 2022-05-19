@@ -23,7 +23,7 @@ type Response = protocol.kalix.tck.model.eventsourcedentity.Response;
 
 const { Request, Response } = protocol.kalix.tck.model.eventsourcedentity;
 
-export const tckModel = new EventSourcedEntity(
+export const tckModel = new EventSourcedEntity<Persisted, Persisted>(
   ['proto/event_sourced_entity.proto'],
   'kalix.tck.model.eventsourcedentity.EventSourcedTckModel',
   'event-sourced-tck-model',
@@ -53,7 +53,7 @@ tckModel.behavior = () => ({
 function process(
   request: Request,
   state: Persisted,
-  context: EventSourcedEntity.EventSourcedEntityCommandContext,
+  context: EventSourcedEntity.CommandContext<Persisted>,
 ): Reply<Response> {
   let reply: Reply<Response> | undefined,
     effects: replies.Effect[] = [];
@@ -93,7 +93,7 @@ function persisted(event: Persisted, state: Persisted) {
   return state;
 }
 
-export const two = new EventSourcedEntity(
+export const two = new EventSourcedEntity<Persisted>(
   ['proto/event_sourced_entity.proto'],
   'kalix.tck.model.eventsourcedentity.EventSourcedTwo',
   'event-sourced-tck-model-2',
@@ -106,15 +106,10 @@ export const two = new EventSourcedEntity(
     eventHandlers: {},
   }));
 
-export const configured = new EventSourcedEntity(
+export const configured = new EventSourcedEntity<Persisted>(
   ['proto/event_sourced_entity.proto'],
   'kalix.tck.model.eventsourcedentity.EventSourcedConfigured',
   'event-sourced-configured',
-  {
-    entityPassivationStrategy: {
-      timeout: 100, // milliseconds
-    },
-  },
 )
   .setInitial(() => Persisted.create())
   .setBehavior(() => ({

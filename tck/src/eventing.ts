@@ -17,6 +17,7 @@
 import {
   Action,
   EventSourcedEntity,
+  TypedJson,
   ValueEntity,
 } from '@kalix-io/kalix-javascript-sdk';
 import protocol from '../generated/tck';
@@ -27,8 +28,8 @@ type UpdateValueRequest = protocol.kalix.tck.model.eventing.UpdateValueRequest;
 type JsonValue = protocol.kalix.tck.model.eventing.JsonValue;
 type EventOne = protocol.kalix.tck.model.eventing.EventOne;
 type EventTwo = protocol.kalix.tck.model.eventing.EventTwo;
-type ValueOne = protocol.kalix.tck.model.eventing.ValueOne;
-type ValueTwo = protocol.kalix.tck.model.eventing.ValueTwo;
+type IValueOne = protocol.kalix.tck.model.eventing.IValueOne;
+type IValueTwo = protocol.kalix.tck.model.eventing.IValueTwo;
 type EffectRequest = protocol.kalix.tck.model.eventing.EffectRequest;
 type IProcessStep = protocol.kalix.tck.model.eventing.IProcessStep;
 
@@ -97,11 +98,18 @@ function emitJsonEvent(
   return Empty;
 }
 
-export const valueEntityOne = new ValueEntity(
+export const valueEntityOne = new ValueEntity<ValueOne | ValueTwo>(
   ['proto/local_persistence_eventing.proto'],
   'kalix.tck.model.eventing.ValueEntityOne',
   'valuechangeseventing-one',
 );
+
+// need to use the reflective types
+// https://github.com/lightbend/kalix-javascript-sdk/issues/326
+type ValueOne = IValueOne & protobuf.Message;
+const ValueOne = valueEntityOne.lookupType('kalix.tck.model.eventing.ValueOne');
+type ValueTwo = IValueTwo & protobuf.Message;
+const ValueTwo = valueEntityOne.lookupType('kalix.tck.model.eventing.ValueTwo');
 
 valueEntityOne.initial = () => Empty;
 
@@ -111,16 +119,25 @@ valueEntityOne.commandHandlers = {
 
 function updateValue(
   request: UpdateValueRequest,
-  _state: any,
-  context: ValueEntity.ValueEntityCommandContext,
+  _state: ValueOne | ValueTwo,
+  context: ValueEntity.CommandContext<ValueOne | ValueTwo>,
 ) {
   context.updateState(
-    request.valueOne ? request.valueOne : request.valueTwo ?? {},
+    request.valueOne
+      ? ValueOne.create(request.valueOne)
+      : request.valueTwo
+      ? ValueTwo.create(request.valueTwo)
+      : Empty,
   );
   return Empty;
 }
 
-export const valueEntityTwo = new ValueEntity(
+interface JsonMessage extends TypedJson {
+  type: 'JsonMessage';
+  message?: string;
+}
+
+export const valueEntityTwo = new ValueEntity<JsonMessage>(
   ['proto/local_persistence_eventing.proto'],
   'kalix.tck.model.eventing.ValueEntityTwo',
   'valuechangeseventing-two',
@@ -129,7 +146,7 @@ export const valueEntityTwo = new ValueEntity(
   },
 );
 
-valueEntityTwo.initial = () => Empty;
+valueEntityTwo.initial = () => ({ type: 'JsonMessage' });
 
 valueEntityTwo.commandHandlers = {
   UpdateJsonValue: updateJsonValue,
@@ -137,8 +154,8 @@ valueEntityTwo.commandHandlers = {
 
 function updateJsonValue(
   request: JsonValue,
-  _state: any,
-  context: ValueEntity.ValueEntityCommandContext,
+  _state: JsonMessage,
+  context: ValueEntity.CommandContext<JsonMessage>,
 ) {
   context.updateState({
     type: 'JsonMessage',
@@ -178,28 +195,28 @@ function processEventTwo(
 
 function processAnyEvent(event: any, context: Action.ActionCommandContext) {
   return Response.create({
-    id: context.metadata.getSubject()?.toString(),
+    id: context.metadata.cloudevent.subject,
     message: event.message,
   });
 }
 
 function processValueOne(
-  value: ValueOne,
+  value: IValueOne,
   context: Action.ActionCommandContext,
 ) {
   process(value.step, context);
 }
 
 function processValueTwo(
-  value: ValueTwo,
+  value: IValueTwo,
   context: Action.ActionCommandContext,
 ) {
-  value.step.forEach((step) => process(step, context));
+  if (value.step) value.step.forEach((step) => process(step, context));
 }
 
 function processAnyValue(value: any, context: Action.ActionCommandContext) {
   return Response.create({
-    id: context.metadata.getSubject()?.toString(),
+    id: context.metadata.cloudevent.subject,
     message: value.message,
   });
 }
@@ -213,7 +230,7 @@ function process(
   context: Action.ActionCommandContext,
 ) {
   if (step) {
-    const id = context.metadata.getSubject()?.toString();
+    const id = context.metadata.cloudevent.subject;
     if (step.reply)
       context.write(Response.create({ id: id, message: step.reply.message }));
     else if (step.forward)

@@ -23,7 +23,7 @@ type Response = protocol.kalix.tck.model.valueentity.Response;
 
 const { Request, Response } = protocol.kalix.tck.model.valueentity;
 
-export const tckModel = new ValueEntity(
+export const tckModel = new ValueEntity<Persisted>(
   ['proto/value_entity.proto'],
   'kalix.tck.model.valueentity.ValueEntityTckModel',
   'value-entity-tck-model',
@@ -43,7 +43,7 @@ tckModel
 function process(
   request: Request,
   state: Persisted,
-  context: ValueEntity.ValueEntityCommandContext,
+  context: ValueEntity.CommandContext<Persisted>,
 ): Reply<Response> {
   let reply: Reply<Response> | undefined,
     effects: replies.Effect[] = [];
@@ -78,7 +78,7 @@ function process(
   return reply;
 }
 
-export const two = new ValueEntity(
+export const two = new ValueEntity<Persisted>(
   ['proto/value_entity.proto'],
   'kalix.tck.model.valueentity.ValueEntityTwo',
   'value-entity-tck-model-two',
@@ -88,15 +88,10 @@ export const two = new ValueEntity(
     Call: () => Response.create(),
   });
 
-export const configured = new ValueEntity(
+export const configured = new ValueEntity<Persisted>(
   ['proto/value_entity.proto'],
   'kalix.tck.model.valueentity.ValueEntityConfigured',
   'value-entity-configured',
-  {
-    entityPassivationStrategy: {
-      timeout: 100, // milliseconds
-    },
-  },
 )
   .setInitial(() => Persisted.create())
   .setCommandHandlers({
