@@ -39,7 +39,7 @@ describe("Customer registry service", function() {
   before(done => testkit.start(done));
   after(done => testkit.shutdown(done));
 
-  this.retries(2); // in case view has not updated yet
+  this.retries(10); // in case view has not updated yet
   beforeEach(function(done) { // add a delay between retries
     if (this.currentTest.currentRetry() > 0) {
       setTimeout(done, this.currentTest.currentRetry() * 1000);
