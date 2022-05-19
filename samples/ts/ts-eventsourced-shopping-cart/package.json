@@ -41,7 +41,7 @@
     "test": "ts-mocha test/**/*.test.ts",
     "integration-test": "ts-mocha integration-test/**/*.integration-test.ts",
     "test-all": "npm run test && npm run integration-test",
-    "build": "kalix-scripts build && rimraf {src,test,integration-test}/**/*.js && rimraf lib/**/*{kalix,shoppingcart,index}.{js,d.ts} && tsc",
+    "build": "kalix-scripts build && rimraf {src,test,integration-test}/**/*.js && rimraf lib/generated/index.js && tsc",
     "package": "kalix-scripts package",
     "deploy": "kalix-scripts deploy"
   }

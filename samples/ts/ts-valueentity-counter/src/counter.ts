@@ -15,46 +15,17 @@
  */
 // tag::entity-class[]
 import { ValueEntity, Reply } from "@kalix-io/kalix-javascript-sdk";
-import * as proto from "../lib/generated/proto";
+import { CounterService, api, domain } from "../lib/generated/counter";
 
-/**
- * Type definitions.
- * These types have been generated based on your proto source.
- * A TypeScript aware editor such as VS Code will be able to leverage them to provide hinting and validation.
- *
- * State; the serialisable and persistable state of the entity
- * @typedef { import("../lib/generated/counterservice").State } State
- *
- * CounterService; a strongly typed extension of ValueEntity derived from your proto source
- * @typedef { import("../lib/generated/counterservice").CounterService } CounterService
- */
-
-/**
- * @type CounterService
- */
-const entity: ValueEntity = new ValueEntity(
+const entity: CounterService = new ValueEntity(
   ["counter_domain.proto", "counter_api.proto"],
   "com.example.CounterService",
   "counter",
   {
-    includeDirs: ["./proto"],
-    serializeAllowPrimitives: true,
-    serializeFallbackToJson: true
+    includeDirs: ["./proto"]
   }
 );
 // end::entity-class[]
-
-type Context = ValueEntity.ValueEntityCommandContext;
-
-type State = proto.com.example.domain.CounterState;
-
-type IncreaseValue = proto.com.example.IncreaseValue;
-type DecreaseValue = proto.com.example.DecreaseValue;
-type ResetValue = proto.com.example.ResetValue;
-type GetCounter = proto.com.example.GetCounter;
-
-type Empty = proto.google.protobuf.IEmpty;
-type CurrentCounter = proto.com.example.ICurrentCounter;
 
 // tag::lookup-type[]
 const CounterState = entity.lookupType("com.example.domain.CounterState");
@@ -73,15 +44,14 @@ entity.setCommandHandlers({
 
 // tag::increase[]
 function increase(
-  command: IncreaseValue,
-  counter: State,
-  ctx: Context
-): Reply<Empty> {
+  command: api.IncreaseValue,
+  counter: domain.CounterState,
+  ctx: CounterService.CommandContext
+): Reply<api.IEmpty> {
   if (command.value < 0) {
-    return Reply.failure(
-      `Increase requires a positive value. It was [${command.value}].`
-    );
+    return Reply.failure(`Increase requires a positive value. It was [${command.value}].`);
   }
+  if (!counter.value) counter.value = 0;
   counter.value += command.value;
   ctx.updateState(counter);
   return Reply.message({});
@@ -89,25 +59,24 @@ function increase(
 // end::increase[]
 
 function decrease(
-  command: DecreaseValue,
-  counter: State,
-  ctx: Context
-): Reply<Empty> {
+  command: api.DecreaseValue,
+  counter: domain.CounterState,
+  ctx: CounterService.CommandContext
+): Reply<api.IEmpty> {
   if (command.value < 0) {
-    return Reply.failure(
-      `Decrease requires a positive value. It was [${command.value}].`
-    );
+    return Reply.failure(`Decrease requires a positive value. It was [${command.value}].`);
   }
+  if (!counter.value) counter.value = 0;
   counter.value -= command.value;
   ctx.updateState(counter);
   return Reply.message({});
 }
 
 function reset(
-  command: ResetValue,
-  counter: State,
-  ctx: Context
-): Reply<Empty> {
+  _command: api.ResetValue,
+  counter: domain.CounterState,
+  ctx: CounterService.CommandContext
+): Reply<api.IEmpty> {
   counter.value = 0;
   ctx.updateState(counter);
   return Reply.message({});
@@ -115,9 +84,9 @@ function reset(
 
 // tag::get-current[]
 function getCurrentCounter(
-  command: GetCounter,
-  counter: State
-): Reply<CurrentCounter> {
+  _command: api.GetCounter,
+  counter: domain.CounterState
+): Reply<api.ICurrentCounter> {
   return Reply.message({ value: counter.value });
 }
 // end::get-current[]

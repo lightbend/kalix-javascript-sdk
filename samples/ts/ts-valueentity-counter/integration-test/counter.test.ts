@@ -21,14 +21,19 @@ import counterEntity from "../src/counter";
 
 type CounterService = proto.com.example.CounterService;
 
+type ServiceMethods<S extends protobuf.rpc.Service> = {
+  [M in keyof S]: S[M] extends (x: any) => Promise<any> ? M : never;
+}[keyof S];
+
 type AsyncCounterService = {
-  [K in keyof CounterService as `${K}Async`]: CounterService[K];
+  [M in ServiceMethods<CounterService> as `${M}Async`]: (
+    ...args: Parameters<CounterService[M]>
+  ) => ReturnType<CounterService[M]>;
 };
 
 const testkit = new IntegrationTestkit().addComponent(counterEntity);
 
 function client(): AsyncCounterService {
-  // @ts-ignore
   return testkit.clients.CounterService;
 }
 
