@@ -131,8 +131,8 @@ export namespace EventSourcedEntity {
    *
    * @typeParam State - the type of {@link Serializable} state
    * @typeParam Events - the type of all {@link Serializable} events
-   * @typeParam CommandHandlers - optional type of {@link EventSourcedEntity.CommandHandlers}
-   * @typeParam EventHandlers - optional type of {@link EventSourcedEntity.EventHandlers}
+   * @typeParam CommandHandlers - optional type of {@link CommandHandlers}
+   * @typeParam EventHandlers - optional type of {@link EventHandlers}
    */
   export type Behavior<
     State extends Serializable = any,
@@ -170,8 +170,8 @@ export namespace EventSourcedEntity {
    *
    * @typeParam State - the type of {@link Serializable} state
    * @typeParam Events - the type of all {@link Serializable} events
-   * @typeParam CommandHandlers - optional type of {@link EventSourcedEntity.CommandHandlers}
-   * @typeParam EventHandlers - optional type of {@link EventSourcedEntity.EventHandlers}
+   * @typeParam CommandHandlers - optional type of {@link CommandHandlers}
+   * @typeParam EventHandlers - optional type of {@link EventHandlers}
    * @param state - The entity state
    * @returns The new entity state
    */
@@ -251,8 +251,8 @@ const defaultOptions = {
  *
  * @typeParam State - the type of {@link Serializable} state
  * @typeParam Events - the type of all {@link Serializable} events
- * @typeParam CommandHandlers - optional type of {@link EventSourcedEntity.CommandHandlers}
- * @typeParam EventHandlers - optional type of {@link EventSourcedEntity.EventHandlers}
+ * @typeParam CommandHandlers - optional type of CommandHandlers
+ * @typeParam EventHandlers - optional type of EventHandlers
  *
  * @public
  */

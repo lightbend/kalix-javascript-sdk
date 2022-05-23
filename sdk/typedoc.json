@@ -1,9 +1,15 @@
 {
   "$schema": "https://typedoc.org/schema.json",
-  "entryPoints": [
-    "./index.ts"
-  ],
+  "entryPoints": ["./index.ts"],
   "excludeInternal": true,
   "excludePrivate": true,
+  "readme": "none",
+  "sort": ["source-order"],
+  "validation": {
+    "notExported": true,
+    "invalidLink": true,
+    "notDocumented": false
+  },
+  "treatWarningsAsErrors": true,
   "out": "apidocs"
 }
