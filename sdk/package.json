@@ -1,7 +1,7 @@
 {
   "name": "@kalix-io/kalix-javascript-sdk",
   "version": "0.0.0",
-  "description": "Kalix JavaScript SDK SDK",
+  "description": "Kalix JavaScript SDK",
   "keywords": [
     "kalix",
     "serverless"

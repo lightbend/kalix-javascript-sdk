@@ -1,4 +1,4 @@
-# Make Kalix JavaScript SDK SDK documentation
+# Make Kalix JavaScript SDK documentation
 
 module   := javascript
 upstream := lightbend/kalix-javascript-sdk

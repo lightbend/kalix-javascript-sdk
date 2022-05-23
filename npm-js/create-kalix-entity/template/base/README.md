@@ -21,7 +21,7 @@ To understand Kalix services, `protobuf` descriptors, and Entities, see the docu
 ## Developing
 
 This project has a bare-bones service ready for you to adapt and
-extend. To see the range of functionality available for you to use with the Kalix JavaScript SDK SDK, see the documentation [JavaScript section](https://docs.kalix.io/javascript/index.html). After you have modified any source files, build and the tools will preserve your changes as well as generate stubs for you to implement.
+extend. To see the range of functionality available for you to use with the Kalix JavaScript SDK, see the documentation [JavaScript section](https://docs.kalix.io/javascript/index.html). After you have modified any source files, build and the tools will preserve your changes as well as generate stubs for you to implement.
 
 ## Building
 
