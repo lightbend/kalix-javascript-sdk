@@ -137,7 +137,7 @@ const defaultOptions = {
  * Value Entity.
  *
  * @typeParam State - the type of {@link Serializable} state
- * @typeParam CommandHandlers - optional type of {@link ValueEntity.CommandHandlers}
+ * @typeParam CommandHandlers - optional type of CommandHandlers
  *
  * @public
  */
