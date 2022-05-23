@@ -1,4 +1,4 @@
-# Kalix JavaScript SDK SDK
+# Kalix JavaScript SDK
 
 Source code for the [@kalix-io/kalix-javascript-sdk](https://www.npmjs.com/package/@kalix-io/kalix-javascript-sdk) package.
 

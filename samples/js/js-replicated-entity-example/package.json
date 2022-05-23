@@ -1,7 +1,7 @@
 {
   "name": "js-replicated-entity-example",
   "version": "0.0.0",
-  "description": "Kalix JavaScript SDK SDK example for replicated entities",
+  "description": "Kalix JavaScript SDK example for replicated entities",
   "homepage": "https://github.com/lightbend/kalix-javascript-sdk",
   "bugs": {
     "url": "https://github.com/lightbend/kalix-javascript-sdk/issues"
