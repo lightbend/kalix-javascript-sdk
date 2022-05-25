@@ -300,15 +300,12 @@ class ActionHandler {
   }
 
   private serializeResponse(method: protobuf.Method, message: any): any {
-    if (
-        method.resolvedResponseType!.fullName ===
-        '.google.protobuf.Any'
-    ) {
+    if (method.resolvedResponseType!.fullName === '.google.protobuf.Any') {
       // special handling to emit JSON to topics by defining return type as proto Any
       return AnySupport.serialize(message, false, true);
     } else {
       const messageProto =
-          this.grpcMethod!.resolvedResponseType!.create(message);
+        this.grpcMethod!.resolvedResponseType!.create(message);
       return AnySupport.serialize(messageProto, false, false);
     }
   }
