@@ -137,7 +137,7 @@ export namespace MockEventSourcedEntity {
    *
    * By default, calls to {@link MockEventSourcedEntity.handleCommand} will
    * construct their own instance of this class, however for making assertions on
-   * forwarding or emmitted effects you may provide your own.
+   * forwarding or emitted effects you may provide your own.
    */
   export class CommandContext<Events extends Serializable = any>
     extends MockCommandContext
