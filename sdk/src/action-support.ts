@@ -299,6 +299,17 @@ class ActionHandler {
     this.invokeUserCallback('command', this.commandHandler, this.ctx);
   }
 
+  private serializeResponse(grpcMethod: protobuf.Method, message: any): any {
+    let resolvedResponseType = grpcMethod.resolvedResponseType!;
+    if (resolvedResponseType.fullName === '.google.protobuf.Any') {
+      // special handling to emit JSON to topics by defining return type as proto Any
+      return AnySupport.serialize(message, false, true);
+    } else {
+      const messageProto = resolvedResponseType.create(message);
+      return AnySupport.serialize(messageProto, false, false);
+    }
+  }
+
   setupUnaryOutContext() {
     const ctx = this.ctx as Action.UnaryCommandContext;
 
@@ -345,18 +356,7 @@ class ActionHandler {
       this.streamDebug('Sending reply');
       ctx.alreadyReplied = true;
       if (message != null) {
-        let replyPayload;
-        if (
-          this.grpcMethod!.resolvedResponseType!.fullName ===
-          '.google.protobuf.Any'
-        ) {
-          // special handling to emit JSON to topics by defining return type as proto Any
-          replyPayload = AnySupport.serialize(message, false, true);
-        } else {
-          const messageProto =
-            this.grpcMethod!.resolvedResponseType!.create(message);
-          replyPayload = AnySupport.serialize(messageProto, false, false);
-        }
+        let replyPayload = this.serializeResponse(this.grpcMethod!, message);
         let replyMetadata = null;
         if (metadata && metadata.entries) {
           replyMetadata = {
@@ -474,9 +474,7 @@ class ActionHandler {
       this.ensureNotCancelled();
       this.streamDebug('Sending reply');
       if (message != null) {
-        const messageProto =
-          this.grpcMethod!.resolvedResponseType!.create(message);
-        const replyPayload = AnySupport.serialize(messageProto, false, false);
+        let replyPayload = this.serializeResponse(this.grpcMethod!, message);
         let replyMetadata = null;
         if (metadata && metadata.entries) {
           replyMetadata = {
