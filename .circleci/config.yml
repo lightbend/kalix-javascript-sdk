@@ -516,8 +516,7 @@ jobs:
             source /opt/circleci/.nvm/nvm.sh
             pushd sdk && nvm install && popd
             make -C docs
-            # temporarily disabled 
-            # make -C docs validate-links
+            make -C docs validate-links
 
   publish:
     docker:
