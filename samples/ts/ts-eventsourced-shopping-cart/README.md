@@ -90,11 +90,11 @@ grpcurl --plaintext -d '{"cart_id": "cart1", "product_id": "kalix-tshirt"}' loca
 
 ## Deploying to Kalix
 
-To deploy your service, install the `akkasls` CLI as documented in [Setting up a local development environment](https://docs.kalix.io/getting-started/set-up-development-env.html) and configure a Docker Registry to upload your docker image to.
+To deploy your service, install the `kalix` CLI as documented in [Setting up a local development environment](https://docs.kalix.io/getting-started/set-up-development-env.html) and configure a Docker Registry to upload your docker image to.
 
 You will need to update the `config.dockerImage` property in the `package.json` and refer to [Configuring registries](https://docs.kalix.io/projects/container-registries.html) for more information on how to make your docker image available to Kalix.
 
 Finally, you can use the [Kalix Console](https://console.kalix.io)
 to create a project and then deploy your service into the project either by using `npm run deploy`,
-through the `akkasls` CLI or via the web interface. When using `npm run deploy`, NPM will also
+through the `kalix` CLI or via the web interface. When using `npm run deploy`, NPM will also
 conveniently package and publish your docker image prior to deployment.

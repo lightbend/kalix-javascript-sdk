@@ -89,7 +89,7 @@ grpcurl --plaintext -d '{"cart_id": "cart1"}' localhost:9000 com.example.shoppin
 
 ## Deploying
 
-To deploy your service, install the `akkasls` CLI as documented in
+To deploy your service, install the `kalix` CLI as documented in
 [Setting up a local development environment](https://docs.kalix.io/getting-started/set-up-development-env.html)
 and configure a Docker Registry to upload your docker image to.
 
@@ -99,5 +99,5 @@ for more information on how to make your docker image available to Kalix.
 
 Finally you can or use the [Kalix Console](https://console.kalix.io)
 to create a project and then deploy your service into the project either by using `npm run deploy`,
-through the `akkasls` CLI or via the web interface. When using `npm run deploy`, npm will also
+through the `kalix` CLI or via the web interface. When using `npm run deploy`, npm will also
 conveniently package and publish your docker image prior to deployment.

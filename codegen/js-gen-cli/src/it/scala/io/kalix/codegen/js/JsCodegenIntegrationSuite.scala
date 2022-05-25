@@ -32,9 +32,9 @@ class JsCodegenIntegrationSuite extends munit.FunSuite {
       .withFileFromPath("kalix-codegen-js", cliImagePath)
       .withFileFromPath("kalix-npm-js", npmJsPath)
 
-  class AkkaslsJsCodegenContainer extends GenericContainer[AkkaslsJsCodegenContainer](codegenImage)
+  class KalixJsCodegenContainer extends GenericContainer[KalixJsCodegenContainer](codegenImage)
 
-  class AkkaslsProxyContainer extends GenericContainer[AkkaslsProxyContainer](proxyImage)
+  class KalixProxyContainer extends GenericContainer[KalixProxyContainer](proxyImage)
 
   val logConsumer = new Slf4jLogConsumer(logger);
   logger.info("Waiting for docker image to be built. This can take several minutes")
@@ -45,11 +45,11 @@ class JsCodegenIntegrationSuite extends munit.FunSuite {
   // Define simple dockerised deployment with proxy and container for generated project
   val network = Network.newNetwork()
   val codegenContainer =
-    new AkkaslsJsCodegenContainer()
+    new KalixJsCodegenContainer()
       .withNetwork(network)
       .withNetworkAliases("generated-entity")
       .withEnv("HOST", "0.0.0.0")
-  val proxyContainer = new AkkaslsProxyContainer()
+  val proxyContainer = new KalixProxyContainer()
     .withNetwork(network)
     .withNetworkAliases("proxy")
     .withExposedPorts(9000)

@@ -37,4 +37,4 @@ On install, this downloads the latest version of the JavaScript [codegen CLI](..
 ### Deploy
 
 - Deploys Docker image to specified repository
-- Invokes Kalix deploy via `akkasls` CLI
+- Invokes Kalix deploy via `kalix` CLI
