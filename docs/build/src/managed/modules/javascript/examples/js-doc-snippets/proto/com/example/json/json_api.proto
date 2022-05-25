@@ -27,6 +27,6 @@ service MyService {
       topic:  "notifications" // <3>
     };
   }
-  
+
 }
 // end::service[]

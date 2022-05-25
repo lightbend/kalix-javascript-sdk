@@ -42,7 +42,7 @@ describe("Shopping cart service", function () {
     await client().addItemAsync({ cartId: "cart2", productId: "a", name: "Apple", quantity: 1 });
     await client().addItemAsync({ cartId: "cart2", productId: "b", name: "Banana", quantity: 2 });
     await client().addItemAsync({ cartId: "cart2", productId: "c", name: "Cantaloupe", quantity: 3 });
-    
+
     const cart = await client().getCartAsync({ cartId: "cart2" });
     expect(cart.items).to.deep.equal([
       { productId: 'a', name: 'Apple', quantity: 1 },
@@ -62,7 +62,7 @@ describe("Shopping cart service", function () {
         { productId: 'b', name: 'Banana', quantity: 2 }
       ]);
     }
-    
+
     await client().removeItemAsync({ cartId: "cart3", productId: "a" });
     { // after removing 'Apple'
       const cart = await client().getCartAsync({ cartId: "cart3" });
@@ -89,7 +89,7 @@ describe("Shopping cart service", function () {
       const cart = await client().getCartAsync({ cartId: "cart4" });
       expect(cart).to.deep.equal({});
     }
-    
+
   });
 
 });

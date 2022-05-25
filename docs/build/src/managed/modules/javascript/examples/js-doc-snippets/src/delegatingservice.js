@@ -28,7 +28,7 @@ import * as grpc from '@grpc/grpc-js'; // <1>
  * Type definitions.
  * These types have been generated based on your proto source.
  * A TypeScript aware editor such as VS Code will be able to leverage them to provide hinting and validation.
- * 
+ *
  * DelegatingService; a strongly typed extension of Action derived from your proto source
  * @typedef { import("../lib/generated/delegatingservice").DelegatingService } DelegatingService
  */

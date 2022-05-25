@@ -21,14 +21,19 @@ import shoppingcartEnity from "../src/shoppingcart";
 
 type ShoppingCartService = proto.com.example.shoppingcart.ShoppingCartService;
 
+type ServiceMethods<S extends protobuf.rpc.Service> = {
+  [M in keyof S]: S[M] extends (x: any) => Promise<any> ? M : never;
+}[keyof S];
+
 type AsyncShoppingCartService = {
-  [K in keyof ShoppingCartService as `${K}Async`]: ShoppingCartService[K];
+  [M in ServiceMethods<ShoppingCartService> as `${M}Async`]: (
+    ...args: Parameters<ShoppingCartService[M]>
+  ) => ReturnType<ShoppingCartService[M]>;
 };
 
 const testkit = new IntegrationTestkit().addComponent(shoppingcartEnity);
 
 function client(): AsyncShoppingCartService {
-  // @ts-ignore
   return testkit.clients.ShoppingCartService;
 }
 
@@ -98,9 +103,7 @@ describe("Shopping cart service", function () {
     {
       // after removing 'Apple'
       const cart = await client().getCartAsync({ cartId: "cart3" });
-      expect(cart.items).to.deep.equal([
-        { productId: "b", name: "Banana", quantity: 2 }
-      ]);
+      expect(cart.items).to.deep.equal([{ productId: "b", name: "Banana", quantity: 2 }]);
     }
   });
 

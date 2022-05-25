@@ -13,40 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { ValueEntity, replies } from "@kalix-io/kalix-javascript-sdk";
-import * as proto from "../lib/generated/proto";
+import { ValueEntity, Reply } from "@kalix-io/kalix-javascript-sdk";
+import { ShoppingCartService, api, domain } from "../lib/generated/shoppingcart";
 
-type Context = ValueEntity.ValueEntityCommandContext;
-
-type State = proto.com.example.shoppingcart.domain.Cart;
-
-type AddLineItem = proto.com.example.shoppingcart.AddLineItem;
-type RemoveLineItem = proto.com.example.shoppingcart.RemoveLineItem;
-type GetShoppingCart = proto.com.example.shoppingcart.GetShoppingCart;
-type RemoveShoppingCart = proto.com.example.shoppingcart.RemoveShoppingCart;
-
-/**
- * Type definitions.
- * These types have been generated based on your proto source.
- * A TypeScript aware editor such as VS Code will be able to leverage them to provide hinting and validation.
- *
- * State; the serialisable and persistable state of the entity
- * @typedef { import("../lib/generated/shoppingcartservice").State } State
- *
- * ShoppingCartService; a strongly typed extension of ValueEntity derived from your proto source
- * @typedef { import("../lib/generated/shoppingcartservice").ShoppingCartService } ShoppingCartService
- */
-
-/**
- * @type ShoppingCartService
- */
-const entity: ValueEntity = new ValueEntity(
+const entity: ShoppingCartService = new ValueEntity(
   ["shoppingcart_domain.proto", "shoppingcart_api.proto"],
   "com.example.shoppingcart.ShoppingCartService",
   "shopping-cart",
   {
-    includeDirs: ["./proto"],
-    serializeFallbackToJson: true
+    includeDirs: ["./proto"]
   }
 );
 
@@ -67,7 +42,7 @@ const Cart = entity.lookupType(pkg + "Cart");
  * We can ignore the cartId parameter if we want, it's the id of the entity, which is
  * automatically associated with all events and state for this entity.
  */
-entity.setInitial(cartId => Cart.create({ items: [] }));
+entity.setInitial(() => Cart.create({ items: [] }));
 
 /*
  * Command handlers. The name of the command corresponds to the name of the rpc call in
@@ -84,19 +59,17 @@ entity.setCommandHandlers({
  * Handler for add item commands.
  */
 function addItem(
-  addItem: AddLineItem,
-  cart: State,
-  ctx: Context
-): replies.Reply {
+  addItem: api.AddLineItem,
+  cart: domain.Cart,
+  ctx: ShoppingCartService.CommandContext
+): Reply<api.IEmpty> {
   // Validation:
   // Make sure that it is not possible to add negative quantities
   if (addItem.quantity < 1) {
-    return replies.failure(
-      "Quantity for item " + addItem.productId + " must be greater than zero."
-    );
+    return Reply.failure("Quantity for item " + addItem.productId + " must be greater than zero.");
   } else {
     // If there is an existing item with that product id, we need to increment its quantity.
-    const existing = cart.items.find(item => {
+    const existing = (cart.items ?? []).find(item => {
       return item.productId === addItem.productId;
     });
 
@@ -104,60 +77,61 @@ function addItem(
       existing.quantity = (existing.quantity || 0) + addItem.quantity;
     } else {
       // Otherwise, we just add the item to the existing list.
+      if (!cart.items) cart.items = [];
       cart.items.push(addItem);
     }
     ctx.updateState(cart);
   }
-  return replies.message({});
+  return Reply.message({});
 }
 
 /**
  * Handler for remove item commands.
  */
 function removeItem(
-  removeItem: RemoveLineItem,
-  cart: State,
-  ctx: Context
-): replies.Reply {
+  removeItem: api.RemoveLineItem,
+  cart: domain.Cart,
+  ctx: ShoppingCartService.CommandContext
+): Reply<api.IEmpty> {
   // Validation:
   // Check that the item that we're removing actually exists.
-  const existing = cart.items.find(item => {
+  const existing = (cart.items ?? []).find(item => {
     return item.productId === removeItem.productId;
   });
 
   // If not, fail the command.
   if (!existing) {
-    return replies.failure("Item " + removeItem.productId + " not in cart");
+    return Reply.failure("Item " + removeItem.productId + " not in cart");
   } else {
     // Otherwise, remove the item.
     // Filter the removed item from the items by product id.
-    cart.items = cart.items.filter(item => {
+    cart.items = (cart.items ?? []).filter(item => {
       return item.productId !== removeItem.productId;
     });
 
     ctx.updateState(cart);
   }
-  return replies.message({});
+  return Reply.message({});
 }
 
 /**
  * Handler for get cart commands.
  */
-function getCart(request: GetShoppingCart, cart: State): replies.Reply {
+function getCart(_request: api.GetShoppingCart, cart: domain.Cart): Reply<api.ICart> {
   // Simply return the shopping cart as is.
-  return replies.message(cart);
+  return Reply.message(cart);
 }
 
 /**
  * Handler for remove cart commands.
  */
 function removeCart(
-  request: RemoveShoppingCart,
-  cart: State,
-  ctx: Context
-): replies.Reply {
+  _request: api.RemoveShoppingCart,
+  _cart: domain.Cart,
+  ctx: ShoppingCartService.CommandContext
+): Reply<api.IEmpty> {
   ctx.deleteState();
-  return replies.message({});
+  return Reply.message({});
 }
 
 export default entity;

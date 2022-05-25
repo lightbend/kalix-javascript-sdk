@@ -14,7 +14,34 @@
  * limitations under the License.
  */
 
-import { Metadata, EventSourcedEntity } from "@kalix-io/kalix-javascript-sdk";
+import {
+  CommandContext,
+  EffectMethod,
+  EventSourcedEntity,
+  Message,
+  Metadata,
+  Reply,
+  Serializable
+} from "@kalix-io/kalix-javascript-sdk";
+
+export namespace MockEventSourcedEntity {
+  type InferTypes<Entity> = Entity extends EventSourcedEntity<
+    infer State,
+    infer Events,
+    infer CommandHandlers,
+    infer EventHandlers
+  >
+    ? [State, Events, CommandHandlers, EventHandlers]
+    : never;
+
+  export type StateType<Entity> = InferTypes<Entity>[0];
+  export type EventsType<Entity> = InferTypes<Entity>[1];
+  export type CommandHandlersType<Entity> = InferTypes<Entity>[2];
+  export type EventHandlersType<Entity> = InferTypes<Entity>[3];
+
+  export type CommandNames<Entity> = keyof CommandHandlersType<Entity>;
+  export type EventNames<Entity> = keyof EventHandlersType<Entity>;
+}
 
 /**
  * Mocks the behaviour of a single Kalix EventSourcedEntity.
@@ -23,57 +50,67 @@ import { Metadata, EventSourcedEntity } from "@kalix-io/kalix-javascript-sdk";
  *
  * NOTE: Entity IDs are not handled, so all commands are assumed to refer to a single entity.
  */
-export class MockEventSourcedEntity<S> {
-  state: S;
-  error: any;
-  grpcService: any;
-  entity: EventSourcedEntity;
+export class MockEventSourcedEntity<Entity extends EventSourcedEntity> {
+  entity: Entity;
   entityId: string;
-  events: Array<any> = [];
 
-  constructor(entity: EventSourcedEntity, entityId: string) {
+  state: MockEventSourcedEntity.StateType<Entity>;
+  events: Array<MockEventSourcedEntity.EventsType<Entity>> = [];
+  error?: string = undefined;
+
+  private grpcService: any;
+
+  constructor(entity: Entity, entityId: string) {
     this.entity = entity;
     this.entityId = entityId;
     this.state = entity.initial(entityId);
     this.grpcService = entity.serviceName
       .split(".")
-      // @ts-ignore
-      .reduce((obj, part) => obj[part], entity.grpc).service;
+      .reduce((obj, part) => obj[part], (entity as any).grpc).service;
   }
 
   /**
    * Handle the provided command, and return the result. Any emitted events are also handled.
    *
-   * @param {string} commandName the command method name (as per the entity proto definition)
-   * @param {object} command the request body
-   * @param {MockEventSourcedCommandContext} ctx override the context object for this handler for advanced behaviour
+   * @param commandName - the command method name (as per the entity proto definition)
+   * @param command - the command message
+   * @param ctx - override the context object for this handler for advanced behaviour
    * @returns the result of the command
    */
   handleCommand(
-    commandName: string,
+    commandName: MockEventSourcedEntity.CommandNames<Entity>,
     command: any,
-    ctx = new MockEventSourcedCommandContext()
-  ) {
+    ctx = new MockEventSourcedCommandContext<
+      MockEventSourcedEntity.EventsType<Entity>
+    >()
+  ): any {
     const behaviors = this.entity.behavior(this.state);
-    const handler = behaviors.commandHandlers[commandName];
+    const handler = (
+      behaviors.commandHandlers as MockEventSourcedEntity.CommandHandlersType<Entity>
+    )[commandName];
     const grpcMethod = this.grpcService[commandName];
 
     const request = grpcMethod.requestDeserialize(
       grpcMethod.requestSerialize(command)
     );
 
-    const result = handler(request, this.state, ctx);
+    const reply = handler(request, this.state, ctx);
+    const result = reply instanceof Reply ? reply.getMessage() : reply;
+
     ctx.events.forEach(event => this.handleEvent(event));
-    this.error = ctx.error;
+
+    if (reply instanceof Reply && reply.getFailure())
+      this.error = reply.getFailure().getDescription();
+    else this.error = ctx.error;
 
     return grpcMethod.responseDeserialize(grpcMethod.responseSerialize(result));
   }
 
   /**
-   * Handle the provied event, and add it to the event log.
-   * @param {object} event the event payload
+   * Handle the provided event, and add it to the event log.
+   * @param event - the event payload
    */
-  handleEvent(event) {
+  handleEvent(event: MockEventSourcedEntity.EventsType<Entity>): void {
     const behaviors = this.entity.behavior(this.state);
     const handler =
       behaviors.eventHandlers[event.type || event.constructor.name];
@@ -83,29 +120,58 @@ export class MockEventSourcedEntity<S> {
   }
 }
 
-/**
- * Generic mock CommandContext for any Kalix entity
- * @type { import("../lib/kalix").CommandContext }
- */
-export class MockCommandContext {
-  effects: Array<any> = [];
-  thenForward = () => {};
-  error: any;
-
-  /**
-   * Set the `thenForward` callback for this context.
-   * This allows tests handling both failure and success cases for forwarded commands.
-   * @param  handler the thenForward callback to set
-   */
-  onForward(handler: any) {
-    this.thenForward = handler;
+export namespace MockCommandContext {
+  export interface Effect {
+    method: EffectMethod;
+    message: object;
+    synchronous?: boolean;
+    metadata?: Metadata;
   }
 
-  fail(error: any) {
+  export type ForwardHandler = (
+    method: EffectMethod,
+    message: Message,
+    metadata: Metadata
+  ) => void;
+}
+
+/**
+ * Generic mock CommandContext for any Kalix entity.
+ */
+export class MockCommandContext implements CommandContext {
+  metadata: Metadata;
+
+  effects: Array<MockCommandContext.Effect> = [];
+
+  forward: MockCommandContext.ForwardHandler = () => {};
+
+  thenForward: MockCommandContext.ForwardHandler = (
+    method,
+    message,
+    metadata
+  ) => this.forward(method, message, metadata);
+
+  error: string;
+
+  /**
+   * Set the `forward` callback for this context.
+   * This allows tests handling both failure and success cases for forwarded commands.
+   * @param handler - the forward callback to set
+   */
+  onForward(handler: MockCommandContext.ForwardHandler): void {
+    this.forward = handler;
+  }
+
+  fail(error: string): void {
     this.error = error;
   }
 
-  effect(method: any, message: any, synchronous: any, metadata: any) {
+  effect(
+    method: EffectMethod,
+    message: object,
+    synchronous?: boolean,
+    metadata?: Metadata
+  ): void {
     this.effects.push({
       method,
       message,
@@ -118,25 +184,21 @@ export class MockCommandContext {
 /**
  * Mocks the behaviour of the command context object within Kalix.
  *
- * By default, calls to [KalixTestKitEntity~handleCommand] will
+ * By default, calls to {@link MockEventSourcedEntity.handleCommand} will
  * construct their own instance of this class, however for making assertions on
  * forwarding or emmitted effects you may provide your own.
- *
- * @type { import("../lib/kalix").EventSourcedCommandContext<unknown> }
  */
-export class MockEventSourcedCommandContext
+export class MockEventSourcedCommandContext<Events extends Serializable = any>
   extends MockCommandContext
-  implements EventSourcedEntity.EventSourcedEntityCommandContext
+  implements EventSourcedEntity.CommandContext<Events>
 {
-  events: Array<any> = [];
-  metadata: Metadata;
   entityId: string;
   commandId: Long;
   replyMetadata: Metadata;
 
-  forward() {}
+  events: Array<Events> = [];
 
-  emit(event) {
+  emit(event: Events) {
     this.events.push(event);
   }
 }

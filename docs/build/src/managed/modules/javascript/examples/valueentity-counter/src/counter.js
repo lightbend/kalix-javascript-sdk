@@ -14,24 +14,19 @@
  * limitations under the License.
  */
 // tag::entity-class[]
-import kalix from "@kalix-io/kalix-javascript-sdk";
-const ValueEntity = kalix.ValueEntity;
+import { ValueEntity, Reply } from "@kalix-io/kalix-javascript-sdk";
 
 /**
  * Type definitions.
  * These types have been generated based on your proto source.
  * A TypeScript aware editor such as VS Code will be able to leverage them to provide hinting and validation.
- * 
- * State; the serialisable and persistable state of the entity
- * @typedef { import("../lib/generated/counterservice").State } State
- * 
+ *
  * CounterService; a strongly typed extension of ValueEntity derived from your proto source
- * @typedef { import("../lib/generated/counterservice").CounterService } CounterService
+ * @typedef { import("../lib/generated/counter").CounterService } CounterService
+ * @typedef { import("../lib/generated/counter").CounterService.CommandHandlers } CommandHandlers
  */
 
-/**
- * @type CounterService
- */
+/** @type CounterService */
 const entity = new ValueEntity(
   [
     "counter_domain.proto",
@@ -40,9 +35,7 @@ const entity = new ValueEntity(
   "com.example.CounterService",
   "counter",
   {
-    includeDirs: ["./proto"],
-    serializeAllowPrimitives: true,
-    serializeFallbackToJson: true
+    includeDirs: ["./proto"]
   }
 );
 // end::entity-class[]
@@ -52,7 +45,7 @@ const CounterState = entity.lookupType("com.example.domain.CounterState");
 // end::lookup-type[]
 
 // tag::initial[]
-entity.setInitial(entityId => (CounterState.create({ value: 0 })));
+entity.setInitial(entityId => CounterState.create({ value: 0 }));
 // end::initial[]
 
 entity.setCommandHandlers({
@@ -62,35 +55,39 @@ entity.setCommandHandlers({
   GetCurrentCounter: getCurrentCounter
 });
 
+/** @type CommandHandlers['Increase'] */
 // tag::increase[]
 function increase(command, state, ctx) {
   if (command.value < 0) {
-    ctx.fail(`Increase requires a positive value. It was [${command.value}].`);
+    return Reply.failure(`Increase requires a positive value. It was [${command.value}].`);
   }
   state.value += command.value;
   ctx.updateState(state);
-  return {};
+  return Reply.message({});
 }
 // end::increase[]
 
+/** @type CommandHandlers['Decrease'] */
 function decrease(command, state, ctx) {
   if (command.value < 0) {
-    ctx.fail(`Decrease requires a positive value. It was [${command.value}].`);
+    return Reply.failure(`Decrease requires a positive value. It was [${command.value}].`);
   }
   state.value -= command.value;
   ctx.updateState(state);
-  return {};
+  return Reply.message({});
 }
 
-function reset(command, state, ctx) {
+/** @type CommandHandlers['Reset'] */
+function reset(_command, state, ctx) {
   state.value = 0;
   ctx.updateState(state);
-  return {};
+  return Reply.message({});
 }
 
+/** @type CommandHandlers['GetCurrentCounter'] */
 // tag::get-current[]
-function getCurrentCounter(command, state, ctx) {
-  return { value: state.value };
+function getCurrentCounter(_command, state) {
+  return Reply.message({ value: state.value });
 }
 // end::get-current[]
 

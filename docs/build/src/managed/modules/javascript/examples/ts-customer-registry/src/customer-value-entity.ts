@@ -18,9 +18,9 @@ import { ValueEntity, Reply } from "@kalix-io/kalix-javascript-sdk";
 import { customer as customerApi, google } from "../lib/generated/customer_api";
 import { customer as customerDomain } from "../lib/generated/customer_domain";
 
-type Context = ValueEntity.ValueEntityCommandContext;
+type Context = ValueEntity.CommandContext<State>;
 
-type State = customerDomain.domain.CustomerState;
+type State = customerDomain.domain.ICustomerState & protobuf.Message;
 
 type Customer = customerApi.api.Customer;
 type ChangeNameRequest = customerApi.api.ChangeNameRequest;
@@ -29,7 +29,7 @@ type GetCustomerRequest = customerApi.api.GetCustomerRequest;
 
 type Empty = google.protobuf.Empty;
 
-const entity: ValueEntity = new ValueEntity(
+const entity: ValueEntity<State> = new ValueEntity(
   ["customer_api.proto", "customer_domain.proto"],
   "customer.api.CustomerService",
   "customers"

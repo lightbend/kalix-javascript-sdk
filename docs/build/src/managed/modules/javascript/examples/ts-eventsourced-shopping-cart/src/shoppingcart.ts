@@ -15,46 +15,18 @@
  */
 
 import { EventSourcedEntity, Reply } from "@kalix-io/kalix-javascript-sdk";
-import * as proto from "../lib/generated/proto";
+import {
+  ShoppingCartService,
+  api,
+  domain
+} from "../lib/generated/shoppingcart";
 
-type Context = EventSourcedEntity.EventSourcedEntityCommandContext;
-
-type State = proto.com.example.shoppingcart.domain.Cart;
-
-type Cart = proto.com.example.shoppingcart.Cart;
-type AddLineItem = proto.com.example.shoppingcart.AddLineItem;
-type RemoveLineItem = proto.com.example.shoppingcart.RemoveLineItem;
-type GetShoppingCart = proto.com.example.shoppingcart.GetShoppingCart;
-type ItemAdded = proto.com.example.shoppingcart.domain.ItemAdded;
-type ItemRemoved = proto.com.example.shoppingcart.domain.ItemRemoved;
-
-type Empty = proto.google.protobuf.Empty;
-
-/**
- * Type definitions.
- * These types have been generated based on your proto source.
- * A TypeScript aware editor such as VS Code will be able to leverage them to provide hinting and validation.
- *
- * State; the serialisable and persistable state of the entity
- * @typedef { import("../lib/generated/shoppingcartservice").State } State
- *
- * Event; the union of all possible event types
- * @typedef { import("../lib/generated/shoppingcartservice").Event } Event
- *
- * ShoppingCartService; a strongly typed extension of EventSourcedEntity derived from your proto source
- * @typedef { import("../lib/generated/shoppingcartservice").ShoppingCartService } ShoppingCartService
- */
-
-/**
- * @type ShoppingCartService
- */
-const entity: EventSourcedEntity = new EventSourcedEntity(
+const entity: ShoppingCartService = new EventSourcedEntity(
   ["shoppingcart_domain.proto", "shoppingcart_api.proto"],
   "com.example.shoppingcart.ShoppingCartService",
   "eventsourced-shopping-cart",
   {
-    includeDirs: ["./proto"],
-    serializeFallbackToJson: true
+    includeDirs: ["./proto"]
   }
 );
 
@@ -77,9 +49,9 @@ const Cart = entity.lookupType(pkg + "Cart");
  * We can ignore the cartId parameter if we want, it's the id of the entity, which is
  * automatically associated with all events and state for this entity.
  */
-entity.setInitial(cartId => Cart.create({ items: [] }));
+entity.setInitial(() => Cart.create({ items: [] }));
 
-entity.setBehavior((cart: State) => {
+entity.setBehavior(() => {
   return {
     // Command handlers. The name of the command corresponds to the name of the rpc call in
     // the gRPC service that this entity offers.
@@ -101,10 +73,10 @@ entity.setBehavior((cart: State) => {
  * Handler for add item commands.
  */
 function addItem(
-  addItem: AddLineItem,
-  cart: State,
-  ctx: Context
-): Reply<Empty> {
+  addItem: api.AddLineItem,
+  _cart: domain.Cart,
+  ctx: ShoppingCartService.CommandContext
+): Reply<api.IEmpty> {
   // Validation:
   // Make sure that it is not possible to add negative quantities
   if (addItem.quantity < 1) {
@@ -130,13 +102,13 @@ function addItem(
  * Handler for remove item commands.
  */
 function removeItem(
-  removeItem: RemoveLineItem,
-  cart: State,
-  ctx: Context
-): Reply<Empty> {
+  removeItem: api.RemoveLineItem,
+  cart: domain.Cart,
+  ctx: ShoppingCartService.CommandContext
+): Reply<api.IEmpty> {
   // Validation:
   // Check that the item that we're removing actually exists.
-  const existing = cart.items.find(item => {
+  const existing = (cart.items ?? []).find(item => {
     return item.productId === removeItem.productId;
   });
 
@@ -156,7 +128,10 @@ function removeItem(
 /**
  * Handler for get cart commands.
  */
-function getCart(request: GetShoppingCart, cart: State): Reply<Cart> {
+function getCart(
+  _request: api.GetShoppingCart,
+  cart: domain.Cart
+): Reply<api.ICart> {
   // Simply return the shopping cart as is.
   return Reply.message(cart);
 }
@@ -164,9 +139,9 @@ function getCart(request: GetShoppingCart, cart: State): Reply<Cart> {
 /**
  * Handler for item added events.
  */
-function itemAdded(added: ItemAdded, cart: State): State {
+function itemAdded(added: domain.ItemAdded, cart: domain.Cart): domain.Cart {
   // If there is an existing item with that product id, we need to increment its quantity.
-  const existing = cart.items.find(item => {
+  const existing = (cart.items ?? []).find(item => {
     return item.productId === added.item?.productId;
   });
 
@@ -174,7 +149,7 @@ function itemAdded(added: ItemAdded, cart: State): State {
     existing.quantity = (existing.quantity || 0) + (added.item?.quantity || 0);
   } else {
     // Otherwise, we just add the item to the existing list.
-    added.item ? cart.items.push(added.item) : {};
+    added.item ? (cart.items ?? []).push(added.item) : {};
   }
 
   // And return the new state.
@@ -184,9 +159,12 @@ function itemAdded(added: ItemAdded, cart: State): State {
 /**
  * Handler for item removed events.
  */
-function itemRemoved(removed: ItemRemoved, cart: State): State {
+function itemRemoved(
+  removed: domain.ItemRemoved,
+  cart: domain.Cart
+): domain.Cart {
   // Filter the removed item from the items by product id.
-  cart.items = cart.items.filter(item => {
+  cart.items = (cart.items ?? []).filter(item => {
     return item.productId !== removed.productId;
   });
 
