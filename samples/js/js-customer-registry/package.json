@@ -25,6 +25,7 @@
     "@kalix-io/kalix-javascript-sdk": "1.0.0-M6"
   },
   "devDependencies": {
+    "@kalix-io/testkit": "1.0.0-M6",
     "chai": "4.2.0",
     "mocha": "^6.2.3"
   },

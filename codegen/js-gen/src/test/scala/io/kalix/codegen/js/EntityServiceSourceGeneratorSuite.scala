@@ -293,7 +293,7 @@ class EntityServiceSourceGeneratorSuite extends munit.FunSuite {
         | * You are free to make changes to this file.
         | */
         |
-        |import { MockEventSourcedEntity } from "./testkit.js";
+        |import { MockEventSourcedEntity } from "@kalix-io/testkit";
         |import { expect } from "chai";
         |import myentity from "../../src/js/myentity.js";
         |
@@ -344,7 +344,7 @@ class EntityServiceSourceGeneratorSuite extends munit.FunSuite {
         | * You are free to make changes to this file.
         | */
         |
-        |import { MockValueEntity } from "./testkit.js";
+        |import { MockValueEntity } from "@kalix-io/testkit";
         |import { expect } from "chai";
         |import myvalueentity from "../../src/js/myvalueentity.js";
         |
@@ -393,11 +393,11 @@ class EntityServiceSourceGeneratorSuite extends munit.FunSuite {
         | * You are free to make changes to this file.
         | */
         |
-        |import kalix from "@kalix-io/kalix-javascript-sdk";
+        |import { IntegrationTestkit } from "@kalix-io/testkit";
         |import { expect } from "chai";
         |import myvalueentity from "../../src/js/myvalueentity.js";
         |
-        |const testkit = new kalix.IntegrationTestKit();
+        |const testkit = new IntegrationTestkit();
         |testkit.addComponent(myvalueentity);
         |
         |const client = () => testkit.clients.MyService1;

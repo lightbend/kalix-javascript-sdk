@@ -63,6 +63,12 @@ const args = yargs(hideBin(process.argv))
     type: 'string',
     description: 'Specify the kalix-javascript-sdk version string',
     default: `^${package.version}`,
+  })
+  .option('testkitVersion', {
+    alias: 'testkit-version',
+    type: 'string',
+    description: 'Specify the @kalix-io/testkit version string',
+    default: `^${package.version}`,
   }).argv;
 
 const baseTemplatePath = path.resolve(__dirname, 'template/base');
@@ -90,6 +96,7 @@ const scaffold = new Scaffold({
     name: args.entityName,
     scriptsVersion: args.scriptsVersion,
     sdkVersion: args.sdkVersion,
+    testkitVersion: args.testkitVersion,
   },
   render: mustache.render,
 });

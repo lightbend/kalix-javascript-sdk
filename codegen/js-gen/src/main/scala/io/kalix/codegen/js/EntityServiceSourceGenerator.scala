@@ -269,7 +269,7 @@ object EntityServiceSourceGenerator {
 
     pretty(
       initialisedCodeComment <> line <> line <>
-      "import" <+> braces(" " <> entityMockType <> " ") <+> "from" <+> dquotes("./testkit.js") <> semi <> line <>
+      "import" <+> braces(" " <> entityMockType <> " ") <+> "from" <+> dquotes("@kalix-io/testkit") <> semi <> line <>
       """import { expect } from "chai"""" <> semi <> line <>
       "import" <+> entityName <+> "from" <+> dquotes(
         testSourceDirectory.toAbsolutePath
@@ -326,14 +326,14 @@ object EntityServiceSourceGenerator {
 
     pretty(
       initialisedCodeComment <> line <> line <>
-      "import" <+> "kalix" <+> "from" <+> dquotes("@kalix-io/kalix-javascript-sdk") <> semi <> line <>
+      "import" <+> braces(" IntegrationTestkit ") <+> "from" <+> dquotes("@kalix-io/testkit") <> semi <> line <>
       """import { expect } from "chai"""" <> semi <> line <>
       "import" <+> entityName <+> "from" <+> dquotes(testSourceDirectory.toAbsolutePath
         .relativize(sourceDirectory.toAbsolutePath)
         .resolve(s"$entityName.js")
         .toString) <> semi <> line <>
       line <>
-      "const" <+> "testkit" <+> equal <+> "new" <+> "kalix.IntegrationTestKit" <> parens(emptyDoc) <> semi <> line <>
+      "const" <+> "testkit" <+> equal <+> "new" <+> "IntegrationTestkit" <> parens(emptyDoc) <> semi <> line <>
       "testkit" <> dot <> "addComponent" <> parens(entityName) <> semi <> line <>
       line <>
       "const" <+> "client" <+> equal <+> parens(

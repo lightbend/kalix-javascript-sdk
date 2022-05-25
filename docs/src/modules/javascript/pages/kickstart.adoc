@@ -82,7 +82,6 @@ Take a look at the initial structure. The project contains the following directo
 
 * `lib` - typescript files that allow IDEs to provide better highlighting and validation.
 * `proto` - files containing domain and api Protobuf definitions for a `Counter` Value Entity.
-* `test` - testkit file
 
 To understand how the Protobuf definitions relate to the implementation files, see https://docs.kalix.io/developing/development-process-js.html#_specify_service_interface_and_domain_model[The development process] and https://docs.kalix.io/services/state-model.html#_choosing_a_state_model[Understanding the programming model].
 
@@ -136,22 +135,7 @@ TypeScript::
 include::example$ts-valueentity-counter/test/counter.test.ts[]
 ----
 
-The entity used by `counter.test.js` is contained within `testkit.js`.
-
-[.tabset]
-JavaScript::
-+
-[source,javascript]
-----
-include::example$valueentity-counter/test/testkit.js[]
-----
-
-TypeScript::
-+
-[source,typescript]
-----
-include::example$ts-valueentity-counter/test/testkit.ts[]
-----
+The mock entity used by `counter.test.js` is provided by the `@kalix-io/testkit` package.
 
 == Run locally
 

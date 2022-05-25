@@ -8,3 +8,5 @@ jsdoc.json
 /tck/dist/**/*.*
 /tck/generated/**/*.*
 /tck/proto/**/*.*
+/testkit/dist/**/*.*
+/testkit/integration-test/proto.*

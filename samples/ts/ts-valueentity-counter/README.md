@@ -36,7 +36,7 @@ Mocha is the testing framework employed, and Chai is used for assertions. To exe
 npm run test
 ```
 
-These tests leverage the mock event-sourced entity and value-entity classes provided by `testkit.ts`. These classes mimic the minimal required machinery to execute commands and handle events against a single entity for simple unit testing.
+These tests leverage the mock entity classes provided by `@kalix-io/testkit`. These classes mimic the minimal required machinery to execute commands and handle events against a single entity for simple unit testing. Integration tests, which run a local Kalix development environment, can also be written using `@kalix-io/testkit`.
 
 ## Integration Test
 

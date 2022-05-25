@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import kalix from "@kalix-io/kalix-javascript-sdk";
+import { IntegrationTestkit } from "@kalix-io/testkit";
 
-const testkit = new kalix.IntegrationTestkit();
+const testkit = new IntegrationTestkit();
 
 import {expect} from "chai"
 

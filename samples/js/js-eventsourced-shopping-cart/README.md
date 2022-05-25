@@ -42,7 +42,7 @@ Running build generates basic skeleton unit tests for each method in each servic
 npm run test
 ```
 
-These tests leverage the mock event-sourced entity classes provided by `testkit.js`. These classes mimic the minimal required machinery to execute commands and handle events against a single entity for simple unit testing. In the future, more complicated testing can leverage the Kalix integration test-kit which runs the proxy inside docker (see [this example](https://github.com/lightbend/kalix-framework/blob/master/javascript-sdk/integration-test/integration-testkit-test.js)).
+These tests leverage the mock entity classes provided by `@kalix-io/testkit`. These classes mimic the minimal required machinery to execute commands and handle events against a single entity for simple unit testing. Integration tests, which run a local Kalix development environment, can also be written using `@kalix-io/testkit`.
 
 ## Running Locally
 

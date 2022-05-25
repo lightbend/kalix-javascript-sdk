@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import kalix from "@kalix-io/kalix-javascript-sdk";
+import { IntegrationTestkit } from "@kalix-io/testkit";
 import chai from "chai";
 import chaiAsPromised from "chai-as-promised";
 import shoppingcart from "../src/shoppingcart.js";
@@ -22,7 +22,7 @@ import shoppingcart from "../src/shoppingcart.js";
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
-const testkit = new kalix.IntegrationTestkit();
+const testkit = new IntegrationTestkit();
 testkit.addComponent(shoppingcart);
 
 function client() {
@@ -45,7 +45,7 @@ describe("Shopping cart service", function () {
     await client().addItemAsync({ cartId: "cart2", productId: "a", name: "Apple", quantity: 1 });
     await client().addItemAsync({ cartId: "cart2", productId: "b", name: "Banana", quantity: 2 });
     await client().addItemAsync({ cartId: "cart2", productId: "c", name: "Cantaloupe", quantity: 3 });
-    
+
     const cart = await client().getCartAsync({ cartId: "cart2" });
     expect(cart.items).to.deep.equal([
       { productId: 'a', name: 'Apple', quantity: 1 },
@@ -65,7 +65,7 @@ describe("Shopping cart service", function () {
         { productId: 'b', name: 'Banana', quantity: 2 }
       ]);
     }
-    
+
     await client().removeItemAsync({ cartId: "cart3", productId: "a", name: "Apple" });
     { // after removing 'Apple'
       const cart = await client().getCartAsync({ cartId: "cart3" });

@@ -11,6 +11,7 @@
   },
   "devDependencies": {
     "@kalix-io/kalix-scripts": "1.0.0-M6",
+    "@kalix-io/testkit": "1.0.0-M6",
     "@types/chai": "^4.2.21",
     "@types/chai-as-promised": "^7.1.4",
     "@types/mocha": "^8.2.3",

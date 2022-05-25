@@ -39,7 +39,6 @@
     "node-fetch": "^2.6.7",
     "rimraf": "^2.6.3",
     "test": "^0.6.0",
-    "testcontainers": "7.5.0",
     "tslib": "^2.3.0",
     "unzipper": "^0.9.15"
   },
@@ -89,8 +88,6 @@
     "watch-typedoc": "npm-watch typedoc",
     "typedoc": "typedoc",
     "test": "mocha --exclude '**/proto/**/*' --recursive --unhandled-rejections=strict",
-    "integration-test": "npm run compile && mocha integration-test",
-    "preintegration-test": "bin/compile-descriptor.js test/example.proto --descriptor_set_out=integration-test/user-function.desc",
     "prepare": "bin/prepare.sh",
     "postinstall": "node bin/download-protoc.js",
     "prepublishOnly": "npm version --no-git-tag-version $(bin/version.sh)"
