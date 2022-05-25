@@ -299,13 +299,13 @@ class ActionHandler {
     this.invokeUserCallback('command', this.commandHandler, this.ctx);
   }
 
-  private serializeResponse(method: protobuf.Method, message: any): any {
-    if (method.resolvedResponseType!.fullName === '.google.protobuf.Any') {
+  private serializeResponse(grpcMethod: protobuf.Method, message: any): any {
+    let resolvedResponseType = grpcMethod.resolvedResponseType!;
+    if (resolvedResponseType.fullName === '.google.protobuf.Any') {
       // special handling to emit JSON to topics by defining return type as proto Any
       return AnySupport.serialize(message, false, true);
     } else {
-      const messageProto =
-        this.grpcMethod!.resolvedResponseType!.create(message);
+      const messageProto = resolvedResponseType.create(message);
       return AnySupport.serialize(messageProto, false, false);
     }
   }
