@@ -1,0 +1,4 @@
+dist
+integration-test/proto.*
+integration-test/user-function.desc
+*.tgz

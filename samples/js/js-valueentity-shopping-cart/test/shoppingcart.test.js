@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { MockValueEntity } from "./testkit.js";
+import { MockValueEntity } from "@kalix-io/testkit";
 import { expect } from "chai";
 import shoppingcart from "../src/shoppingcart.js";
 

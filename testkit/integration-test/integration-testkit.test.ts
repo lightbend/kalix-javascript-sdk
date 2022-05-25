@@ -18,18 +18,21 @@ require('chai').should();
 import {
   Action,
   EventSourcedEntity,
-  IntegrationTestkit,
   Reply,
   ValueEntity,
-} from '../';
+} from '@kalix-io/kalix-javascript-sdk';
+import { IntegrationTestkit } from '../src/integration-testkit';
 import { ServiceError } from '@grpc/grpc-js';
-import * as proto from '../test/proto/test-protobuf-bundle';
+import * as proto from './proto';
 
 type Example = proto.com.example.IExample & protobuf.Message;
 type In = proto.com.example.IIn;
 type Out = proto.com.example.IOut;
 
-const action = new Action('./test/example.proto', 'com.example.ExampleService');
+const action = new Action(
+  './integration-test/example.proto',
+  'com.example.ExampleService',
+);
 
 action.commandHandlers = {
   DoSomething: (input: In) => {
@@ -45,7 +48,7 @@ action.commandHandlers = {
 };
 
 const value_entity = new ValueEntity<Example>(
-  './test/example.proto',
+  './integration-test/example.proto',
   'com.example.ExampleServiceTwo',
   'value-entity-example-service',
 );
@@ -70,7 +73,7 @@ value_entity.commandHandlers = {
 };
 
 const entity = new EventSourcedEntity<Example>(
-  './test/example.proto',
+  './integration-test/example.proto',
   'com.example.ExampleServiceThree',
   'event-sourced-entity-example-service',
 );
@@ -130,7 +133,7 @@ describe('The Kalix IntegrationTestkit', function () {
   it('should allow actions to fail with custom code', (done) => {
     testkit.clients.ExampleService.Fail(
       { field: 'hello' },
-      (err: ServiceError, msg: Out) => {
+      (err: ServiceError, _msg: Out) => {
         err.should.not.be.undefined;
         // Unfortunately, this appears to be the only way the JS library offers to read the error description,
         // by reading this unspecified message string.
@@ -144,7 +147,7 @@ describe('The Kalix IntegrationTestkit', function () {
   it('should handle value entities sync handlers', (done) => {
     testkit.clients.ExampleServiceTwo.DoSomethingOne(
       { field: 'hello' },
-      (err: any, msg: Out) => {
+      (_err: any, msg: Out) => {
         msg.field?.should.equal('ValueEntity Received hello');
         done();
       },
@@ -154,7 +157,7 @@ describe('The Kalix IntegrationTestkit', function () {
   it('should handle value entities async handlers', (done) => {
     testkit.clients.ExampleServiceTwo.DoSomethingTwo(
       { field: 'hello' },
-      (err: any, msg: Out) => {
+      (_err: any, msg: Out) => {
         msg.field?.should.equal('ValueEntityAsync Received hello');
         done();
       },
@@ -164,7 +167,7 @@ describe('The Kalix IntegrationTestkit', function () {
   it('should allow value entities to fail with custom code', (done) => {
     testkit.clients.ExampleServiceTwo.Fail(
       { field: 'hello' },
-      (err: ServiceError, msg: Out) => {
+      (err: ServiceError, _msg: Out) => {
         err.should.not.be.undefined;
         err.message.should.be.eq('6 ALREADY_EXISTS: some-error');
         err.code.should.be.eq(6);
@@ -176,7 +179,7 @@ describe('The Kalix IntegrationTestkit', function () {
   it('should handle event sourced entities sync handlers', (done) => {
     testkit.clients.ExampleServiceThree.DoSomethingOne(
       { field: 'hello' },
-      (err: any, msg: Out) => {
+      (_err: any, msg: Out) => {
         msg.field?.should.equal('EventSourcedEntity Received hello');
         done();
       },
@@ -186,7 +189,7 @@ describe('The Kalix IntegrationTestkit', function () {
   it('should handle event sourced entities async handlers', (done) => {
     testkit.clients.ExampleServiceThree.DoSomethingTwo(
       { field: 'hello' },
-      (err: any, msg: Out) => {
+      (_err: any, msg: Out) => {
         msg.field?.should.equal('EventSourcedEntityAsync Received hello');
         done();
       },
@@ -196,7 +199,7 @@ describe('The Kalix IntegrationTestkit', function () {
   it('should allow event sourced entities to fail with custom code', (done) => {
     testkit.clients.ExampleServiceThree.Fail(
       { field: 'hello' },
-      (err: ServiceError, msg: Out) => {
+      (err: ServiceError, _msg: Out) => {
         err.should.not.be.undefined;
         err.message.should.be.eq('6 ALREADY_EXISTS: some-error');
         err.code.should.be.eq(6);

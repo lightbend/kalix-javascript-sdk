@@ -1,0 +1,27 @@
+{
+  "compilerOptions": {
+    "target": "es6",
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "declaration": true,
+    "composite": false,
+    "strict": true,
+    "allowJs": false,
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "strictFunctionTypes": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "sourceMap": true,
+    "stripInternal": true,
+    "rootDir": "./src",
+    "outDir": "./dist",
+    "lib": ["ES6"]
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules"]
+}

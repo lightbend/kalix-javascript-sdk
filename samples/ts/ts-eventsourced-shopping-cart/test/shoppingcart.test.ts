@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { MockEventSourcedEntity } from "./testkit";
+import { MockEventSourcedEntity } from "@kalix-io/testkit";
 import { expect } from "chai";
 import shoppingcart from "../src/shoppingcart";
 

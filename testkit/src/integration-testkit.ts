@@ -15,9 +15,12 @@
  */
 
 import * as grpc from '@grpc/grpc-js';
-import * as settings from '../settings';
-import { GrpcUtil } from './grpc-util';
-import { Kalix, Component } from './kalix';
+import {
+  Kalix,
+  settings,
+  Component,
+  GrpcUtil,
+} from '@kalix-io/kalix-javascript-sdk';
 import { GenericContainer, TestContainers, Wait } from 'testcontainers';
 
 const defaultDockerImage = `gcr.io/kalix-public/kalix-proxy:${settings.frameworkVersion.replace(
@@ -128,10 +131,12 @@ export class IntegrationTestkit {
     const proxyPort = proxyContainer.getMappedPort(9000);
 
     // Create clients
-    this.kalix.getComponents().forEach((entity: Component) => {
-      const parts = entity.serviceName ? entity.serviceName.split('.') : [];
-      if (entity.grpc) {
-        let stub: any = entity.grpc;
+    this.kalix.getComponents().forEach((component: Component) => {
+      const parts = component.serviceName
+        ? component.serviceName.split('.')
+        : [];
+      if ((component as any).grpc) {
+        let stub: any = (component as any).grpc;
         parts.forEach((part: string) => {
           stub = stub[part];
         });

@@ -70,7 +70,5 @@ export {
   GrpcUtil,
 } from './src/grpc-util';
 
-export { IntegrationTestkit } from './src/integration-testkit';
-
 import * as settings from './settings';
 export { settings };

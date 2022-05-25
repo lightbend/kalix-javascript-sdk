@@ -12,7 +12,8 @@
     "**/*.yml",
     "samples/*/*/lib/generated",
     "sdk/test/*.desc",
-    "tck/generated"
+    "tck/generated",
+    "testkit/integration-test/proto.*"
   ],
   "license": "build/header.txt",
   "licenseFormats": {

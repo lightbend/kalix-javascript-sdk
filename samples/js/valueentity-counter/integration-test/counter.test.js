@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import kalix from "@kalix-io/kalix-javascript-sdk";
+import { IntegrationTestkit } from "@kalix-io/testkit";
 import { expect } from "chai";
 import counter from "../src/counter.js";
 
-const testkit = new kalix.IntegrationTestkit();
+const testkit = new IntegrationTestkit();
 testkit.addComponent(counter);
 
 function client() {

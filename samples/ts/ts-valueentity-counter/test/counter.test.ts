@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { MockValueEntity } from "./testkit";
+import { MockValueEntity } from "@kalix-io/testkit";
 import { expect } from "chai";
 import counterEntity from "../src/counter";
 
