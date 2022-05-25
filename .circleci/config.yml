@@ -218,8 +218,11 @@ jobs:
           name: "build testkit"
           working_directory: "~/project/testkit"
           command: |
-            npm ci
-            npm install ../sdk/kalix-io-sdk-0.0.0.tgz
+            # first install sdk, for rename testing
+            # npm ci
+            # npm install --no-save ../sdk/kalix-io-sdk-0.0.0.tgz
+            npm install --save-dev ../sdk/kalix-io-sdk-0.0.0.tgz
+            npm install
             npm pack
       - run:
           name: "Test JS Value Entity Counter sample"
@@ -338,8 +341,11 @@ jobs:
             export VERSION_CHECK_ON_STARTUP=false
             source /opt/circleci/.nvm/nvm.sh
             nvm install
-            npm ci
-            npm install ../sdk/kalix-io-sdk-0.0.0.tgz
+            # first install sdk, for rename testing
+            # npm ci
+            # npm install --no-save ../sdk/kalix-io-sdk-0.0.0.tgz
+            npm install --save-dev ../sdk/kalix-io-sdk-0.0.0.tgz
+            npm install
             DEBUG='testcontainers*' npm run integration-test
             npm pack
       - run:
@@ -597,8 +603,11 @@ jobs:
           name: "build testkit"
           working_directory: "~/project/testkit"
           command: |
-            npm ci
-            npm install ../sdk/kalix-io-sdk-0.0.0.tgz
+            # first install sdk, for rename testing
+            # npm ci
+            # npm install --no-save ../sdk/kalix-io-sdk-0.0.0.tgz
+            npm install --save-dev ../sdk/kalix-io-sdk-0.0.0.tgz
+            npm install
             npm pack
       - run:
           name: "test everything"
@@ -654,8 +663,11 @@ jobs:
           command: |
             source /opt/circleci/.nvm/nvm.sh
             nvm install
-            npm ci
-            npm install ../sdk/kalix-io-sdk-0.0.0.tgz
+            # first install sdk, for rename testing
+            # npm ci
+            # npm install --no-save ../sdk/kalix-io-sdk-0.0.0.tgz
+            npm install --save-dev ../sdk/kalix-io-sdk-0.0.0.tgz
+            npm install
             npm pack
       - run:
           name: "generate project"
