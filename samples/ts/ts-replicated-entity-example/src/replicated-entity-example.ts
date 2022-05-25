@@ -17,7 +17,7 @@
 import {
   replicatedentity,
   replies
-} from "@kalix-io/kalix-javascript-sdk";
+} from "@kalix-io/sdk";
 import * as proto from "../lib/generated/proto";
 
 type UpdateCounter = proto.com.example.replicatedentity.UpdateCounter;

@@ -15,7 +15,7 @@
  */
 
 // tag::entity-class[]
-const EventSourcedEntity = require("@lightbend/kalix-javascript-sdk").EventSourcedEntity;
+const EventSourcedEntity = require("@kalix-io/sdk").EventSourcedEntity;
 
 const entity = new EventSourcedEntity(
     ["shoppingcart.proto", "domain.proto"],
@@ -150,7 +150,7 @@ entity.behavior = cart => {
 describe("The Eventsourced class", () => {
     it("should allow adding the entity to the gRPC server", () => {
         // tag::add-entity[]
-        const Kalix = require("@lightbend/kalix-javascript-sdk").Kalix;
+        const Kalix = require("@kalix-io/sdk").Kalix;
 
         const server = new Kalix();
         server.addComponent(require("./shoppingcart"));

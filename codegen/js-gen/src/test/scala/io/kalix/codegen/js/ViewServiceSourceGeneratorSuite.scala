@@ -32,7 +32,7 @@ class ViewServiceSourceGeneratorSuite extends munit.FunSuite {
         | * You are free to make changes to this file.
         | */
         |
-        |import { View } from "@kalix-io/kalix-javascript-sdk";
+        |import { View } from "@kalix-io/sdk";
         |
         |/**
         | * Type definitions.
@@ -95,7 +95,7 @@ class ViewServiceSourceGeneratorSuite extends munit.FunSuite {
         | * You are free to make changes to this file.
         | */
         |
-        |import { View } from "@kalix-io/kalix-javascript-sdk";
+        |import { View } from "@kalix-io/sdk";
         |
         |/**
         | * Type definitions.
@@ -138,7 +138,7 @@ class ViewServiceSourceGeneratorSuite extends munit.FunSuite {
         | * DO NOT EDIT
         | */
         |
-        |import { View } from "@kalix-io/kalix-javascript-sdk";
+        |import { View } from "@kalix-io/sdk";
         |import * as proto from "./proto";
         |
         |export declare namespace domain {

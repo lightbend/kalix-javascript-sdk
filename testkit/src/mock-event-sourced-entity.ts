@@ -19,7 +19,7 @@ import {
   Metadata,
   Reply,
   Serializable,
-} from '@kalix-io/kalix-javascript-sdk';
+} from '@kalix-io/sdk';
 import { MockCommandContext } from './mock-command';
 import * as Long from 'long';
 

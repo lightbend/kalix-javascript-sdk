@@ -15,12 +15,7 @@
  */
 
 require('chai').should();
-import {
-  Action,
-  EventSourcedEntity,
-  Reply,
-  ValueEntity,
-} from '@kalix-io/kalix-javascript-sdk';
+import { Action, EventSourcedEntity, Reply, ValueEntity } from '@kalix-io/sdk';
 import { IntegrationTestkit } from '../src/integration-testkit';
 import { ServiceError } from '@grpc/grpc-js';
 import * as proto from './proto';

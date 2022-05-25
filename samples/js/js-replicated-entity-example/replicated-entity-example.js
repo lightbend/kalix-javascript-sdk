@@ -15,7 +15,7 @@
  */
 
 
-const replicatedentity = require("@kalix-io/kalix-javascript-sdk").replicatedentity;
+const replicatedentity = require("@kalix-io/sdk").replicatedentity;
 
 const entity = new replicatedentity.ReplicatedEntity(
   "replicated_entity_example.proto",

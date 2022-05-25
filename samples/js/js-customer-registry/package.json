@@ -22,7 +22,7 @@
     "directory": "samples/js/js-customer-registry"
   },
   "dependencies": {
-    "@kalix-io/kalix-javascript-sdk": "1.0.0-M6"
+    "@kalix-io/sdk": "1.0.0-M6"
   },
   "devDependencies": {
     "@kalix-io/testkit": "1.0.0-M6",

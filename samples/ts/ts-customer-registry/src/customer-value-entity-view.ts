@@ -15,7 +15,7 @@
  */
 
 // tag::register[]
-import { View } from "@kalix-io/kalix-javascript-sdk";
+import { View } from "@kalix-io/sdk";
 
 const view: View = new View(
   ["customer_view.proto", "customer_domain.proto"],

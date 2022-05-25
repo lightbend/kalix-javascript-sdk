@@ -67,7 +67,7 @@ object ActionServiceSourceGenerator {
 
     pretty(
       initialisedCodeComment <> line <> line <>
-      "import" <+> braces(" Action ") <+> "from" <+> dquotes("@kalix-io/kalix-javascript-sdk") <> semi <> line <>
+      "import" <+> braces(" Action ") <+> "from" <+> dquotes("@kalix-io/sdk") <> semi <> line <>
       line <>
       blockComment(Seq[Doc](
         "Type definitions.",
@@ -108,7 +108,7 @@ object ActionServiceSourceGenerator {
     pretty(
       managedCodeComment <> line <> line <>
       "import" <+> braces(space <> "Action, CommandReply" <> space) <+> "from" <+> dquotes(
-        "@kalix-io/kalix-javascript-sdk") <> semi <> line <>
+        "@kalix-io/sdk") <> semi <> line <>
       "import * as" <+> ProtoNs <+> "from" <+> dquotes("./proto") <> semi <> line <>
       line <>
       apiTypes(service) <>

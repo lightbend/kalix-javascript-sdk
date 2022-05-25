@@ -25,7 +25,7 @@ const yargs = require('yargs/yargs');
 const { hideBin } = require('yargs/helpers');
 
 /**
- * Generates a new initial codebase for a Kalix entity.
+ * Generates a new initial codebase for a Kalix service.
  *
  * Renders the contents of the `./template/base` directory overlayed with a second
  * subdirectory selected by the user (via the --template flag) using the Mustache
@@ -35,14 +35,14 @@ const { hideBin } = require('yargs/helpers');
  * see https://create-react-app.dev/docs/custom-templates
  */
 const args = yargs(hideBin(process.argv))
-  .env('KALIX_NPMJS')
+  .env('KALIX')
   .usage(
-    '$0 <entity-name>',
-    'Generates a new initial codebase for a Kalix entity.',
+    '$0 <service-name>',
+    'Generates a new initial codebase for a Kalix service.',
     (yargs) => {
-      yargs.positional('entity-name', {
+      yargs.positional('service-name', {
         describe:
-          'The name of the entity to generate. This is also used for the project directory.',
+          'The name of the service to generate. This is also used for the project directory.',
         type: 'string',
       });
     },
@@ -55,13 +55,13 @@ const args = yargs(hideBin(process.argv))
   .option('scriptsVersion', {
     alias: 'scripts-version',
     type: 'string',
-    description: 'Specify the kalix-scripts version string',
+    description: 'Specify the @kalix-io/scripts version string',
     default: `^${package.version}`,
   })
   .option('sdkVersion', {
     alias: 'sdk-version',
     type: 'string',
-    description: 'Specify the kalix-javascript-sdk version string',
+    description: 'Specify the @kalix-io/sdk version string',
     default: `^${package.version}`,
   })
   .option('testkitVersion', {
@@ -73,18 +73,22 @@ const args = yargs(hideBin(process.argv))
 
 const baseTemplatePath = path.resolve(__dirname, 'template/base');
 const templatePath = path.resolve(__dirname, 'template', args.template);
-const targetPath = path.resolve(args.entityName);
+const targetPath = path.resolve(args.serviceName);
 
 if (fs.existsSync(targetPath)) {
   const existing = fs.lstatSync(targetPath);
   const type = existing.isDirectory() ? 'directory' : 'file';
   console.error(
-    'A ' + type + " with the name '" + args.entityName + "' already exists.",
+    'A ' +
+      type +
+      " service with the name '" +
+      args.serviceName +
+      "' already exists.",
   );
   console.error(
-    'Either try with a new entity name, remove the existing ' +
+    'Either try with a new service name, remove the existing ' +
       type +
-      ', or create the entity in a different directory.',
+      ' service, or create the service in a different directory.',
   );
   process.exit(1);
 }
@@ -93,7 +97,7 @@ if (fs.existsSync(targetPath)) {
 mustache.escape = (v) => v;
 const scaffold = new Scaffold({
   data: {
-    name: args.entityName,
+    name: args.serviceName,
     scriptsVersion: args.scriptsVersion,
     sdkVersion: args.sdkVersion,
     testkitVersion: args.testkitVersion,
@@ -101,14 +105,14 @@ const scaffold = new Scaffold({
   render: mustache.render,
 });
 
-console.info(`Generating new Kalix entity '${args.entityName}'`);
+console.info(`Generating new Kalix service '${args.serviceName}'`);
 
 scaffold
   .copy(baseTemplatePath, targetPath)
   .then(() => scaffold.copy(templatePath, targetPath))
   .then(() => {
-    console.info('Entity codebase generated successfully. To get started:');
-    console.info(`  cd ${args.entityName}`);
+    console.info('Service codebase generated successfully. To get started:');
+    console.info(`  cd ${args.serviceName}`);
     console.info('  npm install');
     console.info('  npm run build');
   });

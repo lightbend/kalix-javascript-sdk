@@ -14,10 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  replicatedentity,
-  ReplicatedWriteConsistency,
-} from '@kalix-io/kalix-javascript-sdk';
+import { replicatedentity, ReplicatedWriteConsistency } from '@kalix-io/sdk';
 import protocol from '../generated/tck';
 
 type Request = protocol.kalix.tck.model.replicatedentity.Request;

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Prepare script for the kalix-javascript-sdk package
+# Prepare script for the @kalix-io/sdk package
 
 # get the framework version from config.json
 readonly framework_version=$(node --print 'require("./config.json").frameworkVersion')

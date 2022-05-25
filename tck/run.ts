@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as sdk from '@kalix-io/kalix-javascript-sdk';
+import * as sdk from '@kalix-io/sdk';
 import { GenericContainer, TestContainers } from 'testcontainers';
 import tckImplementation from './index';
 

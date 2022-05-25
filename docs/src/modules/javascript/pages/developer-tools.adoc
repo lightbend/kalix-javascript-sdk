@@ -4,7 +4,7 @@ The Javascript tooling is published to the npm registry under the https://www.np
 
 == Kickstart
 
-Entity initialization is provided via the _create-kalix-entity_ command line tool. This tool requires only a name for the new entity, and creates a new npm project directory with the Kalix SDK and associated development support tooling set up.
+Service initialization is provided via the _create-kalix-service_ command line tool. This tool requires only a name for the new service, and creates a new npm project directory with the Kalix SDK and associated development support tooling set up.
 
 An initial codebase for a new entity can be created using either npm or Yarn:
 
@@ -13,8 +13,8 @@ npm::
 +
 [source,command line]
 ----
-npx @kalix-io/create-kalix-entity@latest my-entity
-cd my-entity
+npx @kalix-io/create-kalix-service@latest my-service
+cd my-service
 npm install
 npm run build
 ----
@@ -23,14 +23,14 @@ Yarn::
 +
 [source,command line]
 ----
-yarn create @kalix-io/kalix-entity@latest my-entity
-cd my-entity
+yarn create @kalix-io/kalix-entity@latest my-service
+cd my-service
 yarn
 yarn build
 ----
 
 == Ongoing development support
-The development support tooling is provided via a single npm package; _kalix-scripts_. This package is intended to be invoked from your npm scripts configuration and provides a single script designed to be invoked from the command line.
+The development support tooling is provided via a single npm package; `@kalix-io/scripts`. This package is intended to be invoked from your npm scripts configuration and provides a single script designed to be invoked from the command line.
 
 === Commands
 The _kalix-scripts_ script is expected to be invoked with a single argument, specifying one of the following commands:
@@ -46,7 +46,7 @@ The package can be added to your project via npm:
 
 [source,command line]
 ----
-npm install --save-dev @kalix-io/kalix-scripts
+npm install --save-dev @kalix-io/scripts
 ----
 
 === Configuration

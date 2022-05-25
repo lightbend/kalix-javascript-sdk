@@ -34,7 +34,7 @@ class EntityServiceSourceGeneratorSuite extends munit.FunSuite {
         | * You are free to make changes to this file.
         | */
         |
-        |import { EventSourcedEntity, Reply } from "@kalix-io/kalix-javascript-sdk";
+        |import { EventSourcedEntity, Reply } from "@kalix-io/sdk";
         |
         |/**
         | * Type definitions.
@@ -110,7 +110,7 @@ class EntityServiceSourceGeneratorSuite extends munit.FunSuite {
         | * You are free to make changes to this file.
         | */
         |
-        |import { ValueEntity, Reply } from "@kalix-io/kalix-javascript-sdk";
+        |import { ValueEntity, Reply } from "@kalix-io/sdk";
         |
         |/**
         | * Type definitions.
@@ -167,7 +167,7 @@ class EntityServiceSourceGeneratorSuite extends munit.FunSuite {
         | * DO NOT EDIT
         | */
         |
-        |import { EventSourcedEntity , CommandReply } from "@kalix-io/kalix-javascript-sdk";
+        |import { EventSourcedEntity , CommandReply } from "@kalix-io/sdk";
         |import * as proto from "./proto";
         |
         |export declare namespace api {
@@ -236,7 +236,7 @@ class EntityServiceSourceGeneratorSuite extends munit.FunSuite {
         | * DO NOT EDIT
         | */
         |
-        |import { ValueEntity , CommandReply } from "@kalix-io/kalix-javascript-sdk";
+        |import { ValueEntity , CommandReply } from "@kalix-io/sdk";
         |import * as proto from "./proto";
         |
         |export declare namespace api {

@@ -15,11 +15,11 @@
  */
 
 // tag::import-replicatedentity[]
-import { replicatedentity } from "@kalix-io/kalix-javascript-sdk";
+import { replicatedentity } from "@kalix-io/sdk";
 
 // end::import-replicatedentity[]
 // tag::import-replies[]
-import { replies } from "@kalix-io/kalix-javascript-sdk";
+import { replies } from "@kalix-io/sdk";
 
 // end::import-replies[]
 // tag::types[]

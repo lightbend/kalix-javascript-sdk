@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { ValueEntity } from '@kalix-io/kalix-javascript-sdk';
-import { Reply, replies } from '@kalix-io/kalix-javascript-sdk';
+import { ValueEntity } from '@kalix-io/sdk';
+import { Reply, replies } from '@kalix-io/sdk';
 import protocol from '../generated/tck';
 
 type Request = protocol.kalix.tck.model.valueentity.Request;

@@ -25,8 +25,8 @@ const filename = 'kalix-codegen-js.bin';
 const binDir = path.resolve(__dirname, '../bin');
 const targetFile = path.resolve(binDir, filename);
 // for testing and local development:
-// if the env var KALIX_NPMJS_CODEGEN_BINARY is set the file is fetched from the local filesystem
-const localBinary = process.env.KALIX_NPMJS_CODEGEN_BINARY;
+// if the env var KALIX_CODEGEN_BINARY is set the file is fetched from the local filesystem
+const localBinary = process.env.KALIX_CODEGEN_BINARY;
 if (localBinary) {
   console.info(`Copying kalix-codegen-js from ${localBinary}`);
   fs.copyFile(localBinary, targetFile, (err) => {

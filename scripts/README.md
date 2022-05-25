@@ -1,6 +1,6 @@
-# kalix-scripts
+# @kalix-io/scripts
 
-This package includes scripts and configuration used by the [`create-kalix-entity` tool](../create-kalix-entity).
+This package includes scripts and configuration used by the [`create-kalix-service` tool](../create).
 
 Configuration is pulled from the `config` section of your project's `package.json`, and the command will fail if any required configuration is not present. For example:
 

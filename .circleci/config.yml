@@ -202,9 +202,9 @@ jobs:
           command: sbt kalix-codegen-js-cli/nativeImage
       - run:
           name: "install kalix-scripts"
-          working_directory: "~/project/npm-js/kalix-scripts"
+          working_directory: "~/project/scripts"
           command: |
-            export KALIX_NPMJS_CODEGEN_BINARY="${HOME}/project/codegen/js-gen-cli/target/native-image/kalix-codegen-js"
+            export KALIX_CODEGEN_BINARY="${HOME}/project/codegen/js-gen-cli/target/native-image/kalix-codegen-js"
             npm ci
             npm pack
       - run:
@@ -219,17 +219,17 @@ jobs:
           working_directory: "~/project/testkit"
           command: |
             npm ci
-            npm install ../sdk/kalix-io-kalix-javascript-sdk-0.0.0.tgz
+            npm install ../sdk/kalix-io-sdk-0.0.0.tgz
             npm pack
       - run:
           name: "Test JS Value Entity Counter sample"
           command: |
             cd samples/js/valueentity-counter
             # don't download, use the one we built
-            export KALIX_NPMJS_CODEGEN_BINARY="${HOME}/project/codegen/js-gen-cli/target/native-image/kalix-codegen-js"
+            export KALIX_CODEGEN_BINARY="${HOME}/project/codegen/js-gen-cli/target/native-image/kalix-codegen-js"
             npm install --save \
-              ../../../sdk/kalix-io-kalix-javascript-sdk-0.0.0.tgz \
-              ../../../npm-js/kalix-scripts/kalix-io-kalix-scripts-1.0.0.tgz \
+              ../../../sdk/kalix-io-sdk-0.0.0.tgz \
+              ../../../scripts/kalix-io-scripts-0.0.0.tgz \
               ../../../testkit/kalix-io-testkit-0.0.0.tgz
             npm install 
             npm run build  
@@ -239,10 +239,10 @@ jobs:
           command: |
             cd samples/js/js-valueentity-shopping-cart
             # don't download, use the one we built
-            export KALIX_NPMJS_CODEGEN_BINARY="${HOME}/project/codegen/js-gen-cli/target/native-image/kalix-codegen-js"
+            export KALIX_CODEGEN_BINARY="${HOME}/project/codegen/js-gen-cli/target/native-image/kalix-codegen-js"
             npm install --save \
-              ../../../sdk/kalix-io-kalix-javascript-sdk-0.0.0.tgz \
-              ../../../npm-js/kalix-scripts/kalix-io-kalix-scripts-1.0.0.tgz \
+              ../../../sdk/kalix-io-sdk-0.0.0.tgz \
+              ../../../scripts/kalix-io-scripts-0.0.0.tgz \
               ../../../testkit/kalix-io-testkit-0.0.0.tgz
             npm install 
             npm run build  
@@ -252,10 +252,10 @@ jobs:
           command: |
             cd samples/js/js-eventsourced-shopping-cart
             # don't download, use the one we built
-            export KALIX_NPMJS_CODEGEN_BINARY="${HOME}/project/codegen/js-gen-cli/target/native-image/kalix-codegen-js"
+            export KALIX_CODEGEN_BINARY="${HOME}/project/codegen/js-gen-cli/target/native-image/kalix-codegen-js"
             npm install --save \
-              ../../../sdk/kalix-io-kalix-javascript-sdk-0.0.0.tgz \
-              ../../../npm-js/kalix-scripts/kalix-io-kalix-scripts-1.0.0.tgz \
+              ../../../sdk/kalix-io-sdk-0.0.0.tgz \
+              ../../../scripts/kalix-io-scripts-0.0.0.tgz \
               ../../../testkit/kalix-io-testkit-0.0.0.tgz
             npm install 
             npm run build  
@@ -265,10 +265,10 @@ jobs:
           command: |
             cd samples/ts/ts-valueentity-counter
             # don't download, use the one we built
-            export KALIX_NPMJS_CODEGEN_BINARY="${HOME}/project/codegen/js-gen-cli/target/native-image/kalix-codegen-js"
+            export KALIX_CODEGEN_BINARY="${HOME}/project/codegen/js-gen-cli/target/native-image/kalix-codegen-js"
             npm install --save \
-              ../../../sdk/kalix-io-kalix-javascript-sdk-0.0.0.tgz \
-              ../../../npm-js/kalix-scripts/kalix-io-kalix-scripts-1.0.0.tgz \
+              ../../../sdk/kalix-io-sdk-0.0.0.tgz \
+              ../../../scripts/kalix-io-scripts-0.0.0.tgz \
               ../../../testkit/kalix-io-testkit-0.0.0.tgz
             npm install 
             npm run build  
@@ -278,10 +278,10 @@ jobs:
           command: |
             cd samples/ts/ts-valueentity-shopping-cart
             # don't download, use the one we built
-            export KALIX_NPMJS_CODEGEN_BINARY="${HOME}/project/codegen/js-gen-cli/target/native-image/kalix-codegen-js"
+            export KALIX_CODEGEN_BINARY="${HOME}/project/codegen/js-gen-cli/target/native-image/kalix-codegen-js"
             npm install --save \
-              ../../../sdk/kalix-io-kalix-javascript-sdk-0.0.0.tgz \
-              ../../../npm-js/kalix-scripts/kalix-io-kalix-scripts-1.0.0.tgz \
+              ../../../sdk/kalix-io-sdk-0.0.0.tgz \
+              ../../../scripts/kalix-io-scripts-0.0.0.tgz \
               ../../../testkit/kalix-io-testkit-0.0.0.tgz
             npm install 
             npm run build  
@@ -291,10 +291,10 @@ jobs:
           command: |
             cd samples/ts/ts-eventsourced-shopping-cart
             # don't download, use the one we built
-            export KALIX_NPMJS_CODEGEN_BINARY="${HOME}/project/codegen/js-gen-cli/target/native-image/kalix-codegen-js"
+            export KALIX_CODEGEN_BINARY="${HOME}/project/codegen/js-gen-cli/target/native-image/kalix-codegen-js"
             npm install --save \
-              ../../../sdk/kalix-io-kalix-javascript-sdk-0.0.0.tgz \
-              ../../../npm-js/kalix-scripts/kalix-io-kalix-scripts-1.0.0.tgz \
+              ../../../sdk/kalix-io-sdk-0.0.0.tgz \
+              ../../../scripts/kalix-io-scripts-0.0.0.tgz \
               ../../../testkit/kalix-io-testkit-0.0.0.tgz
             npm install 
             npm run build  
@@ -315,11 +315,11 @@ jobs:
           command: sbt kalix-codegen-js-cli/nativeImage
       - run:
           name: "install kalix-scripts"
-          working_directory: "~/project/npm-js/kalix-scripts"
+          working_directory: "~/project/scripts"
           command: |
             source /opt/circleci/.nvm/nvm.sh
             nvm install
-            export KALIX_NPMJS_CODEGEN_BINARY="${HOME}/project/codegen/js-gen-cli/target/native-image/kalix-codegen-js"
+            export KALIX_CODEGEN_BINARY="${HOME}/project/codegen/js-gen-cli/target/native-image/kalix-codegen-js"
             npm ci
             npm pack
       - run:
@@ -339,20 +339,20 @@ jobs:
             source /opt/circleci/.nvm/nvm.sh
             nvm install
             npm ci
-            npm install ../sdk/kalix-io-kalix-javascript-sdk-0.0.0.tgz
+            npm install ../sdk/kalix-io-sdk-0.0.0.tgz
             DEBUG='testcontainers*' npm run integration-test
             npm pack
       - run:
           name: "integration tests: samples/js/js-customer-registry"
           command: |
             export VERSION_CHECK_ON_STARTUP=false
-            export KALIX_NPMJS_CODEGEN_BINARY="${HOME}/project/codegen/js-gen-cli/target/native-image/kalix-codegen-js"
+            export KALIX_CODEGEN_BINARY="${HOME}/project/codegen/js-gen-cli/target/native-image/kalix-codegen-js"
             source /opt/circleci/.nvm/nvm.sh
             pushd sdk && nvm install && popd
             cd samples/js/js-customer-registry
             npm install --save \
-              ../../../sdk/kalix-io-kalix-javascript-sdk-0.0.0.tgz \
-              ../../../npm-js/kalix-scripts/kalix-io-kalix-scripts-1.0.0.tgz \
+              ../../../sdk/kalix-io-sdk-0.0.0.tgz \
+              ../../../scripts/kalix-io-scripts-0.0.0.tgz \
               ../../../testkit/kalix-io-testkit-0.0.0.tgz
             npm install
             npm run integration-test
@@ -360,13 +360,13 @@ jobs:
           name: "integration tests: samples/js/valueentity-counter"
           command: |
             export VERSION_CHECK_ON_STARTUP=false
-            export KALIX_NPMJS_CODEGEN_BINARY="${HOME}/project/codegen/js-gen-cli/target/native-image/kalix-codegen-js"
+            export KALIX_CODEGEN_BINARY="${HOME}/project/codegen/js-gen-cli/target/native-image/kalix-codegen-js"
             source /opt/circleci/.nvm/nvm.sh
             pushd sdk && nvm install && popd
             cd samples/js/valueentity-counter
             npm install --save \
-              ../../../sdk/kalix-io-kalix-javascript-sdk-0.0.0.tgz \
-              ../../../npm-js/kalix-scripts/kalix-io-kalix-scripts-1.0.0.tgz \
+              ../../../sdk/kalix-io-sdk-0.0.0.tgz \
+              ../../../scripts/kalix-io-scripts-0.0.0.tgz \
               ../../../testkit/kalix-io-testkit-0.0.0.tgz
             npm install
             npm run build
@@ -375,13 +375,13 @@ jobs:
           name: "integration tests: samples/js/js-valueentity-shopping-cart"
           command: |
             export VERSION_CHECK_ON_STARTUP=false
-            export KALIX_NPMJS_CODEGEN_BINARY="${HOME}/project/codegen/js-gen-cli/target/native-image/kalix-codegen-js"
+            export KALIX_CODEGEN_BINARY="${HOME}/project/codegen/js-gen-cli/target/native-image/kalix-codegen-js"
             source /opt/circleci/.nvm/nvm.sh
             pushd sdk && nvm install && popd
             cd samples/js/js-valueentity-shopping-cart
             npm install --save \
-              ../../../sdk/kalix-io-kalix-javascript-sdk-0.0.0.tgz \
-              ../../../npm-js/kalix-scripts/kalix-io-kalix-scripts-1.0.0.tgz \
+              ../../../sdk/kalix-io-sdk-0.0.0.tgz \
+              ../../../scripts/kalix-io-scripts-0.0.0.tgz \
               ../../../testkit/kalix-io-testkit-0.0.0.tgz
             npm install
             npm run build
@@ -390,13 +390,13 @@ jobs:
           name: "integration tests: samples/js/js-eventsourced-shopping-cart"
           command: |
             export VERSION_CHECK_ON_STARTUP=false
-            export KALIX_NPMJS_CODEGEN_BINARY="${HOME}/project/codegen/js-gen-cli/target/native-image/kalix-codegen-js"
+            export KALIX_CODEGEN_BINARY="${HOME}/project/codegen/js-gen-cli/target/native-image/kalix-codegen-js"
             source /opt/circleci/.nvm/nvm.sh
             pushd sdk && nvm install && popd
             cd samples/js/js-eventsourced-shopping-cart
             npm install --save \
-              ../../../sdk/kalix-io-kalix-javascript-sdk-0.0.0.tgz \
-              ../../../npm-js/kalix-scripts/kalix-io-kalix-scripts-1.0.0.tgz \
+              ../../../sdk/kalix-io-sdk-0.0.0.tgz \
+              ../../../scripts/kalix-io-scripts-0.0.0.tgz \
               ../../../testkit/kalix-io-testkit-0.0.0.tgz
             npm install
             npm run build
@@ -405,13 +405,13 @@ jobs:
           name: "integration tests: samples/js/js-replicated-entity-shopping-cart"
           command: |
             export VERSION_CHECK_ON_STARTUP=false
-            export KALIX_NPMJS_CODEGEN_BINARY="${HOME}/project/codegen/js-gen-cli/target/native-image/kalix-codegen-js"
+            export KALIX_CODEGEN_BINARY="${HOME}/project/codegen/js-gen-cli/target/native-image/kalix-codegen-js"
             source /opt/circleci/.nvm/nvm.sh
             pushd sdk && nvm install && popd
             cd samples/js/js-replicated-entity-shopping-cart
             npm install --save \
-              ../../../sdk/kalix-io-kalix-javascript-sdk-0.0.0.tgz \
-              ../../../npm-js/kalix-scripts/kalix-io-kalix-scripts-1.0.0.tgz \
+              ../../../sdk/kalix-io-sdk-0.0.0.tgz \
+              ../../../scripts/kalix-io-scripts-0.0.0.tgz \
               ../../../testkit/kalix-io-testkit-0.0.0.tgz
             npm install
             npm run build
@@ -420,13 +420,13 @@ jobs:
           name: "integration tests: samples/ts/ts-customer-registry"
           command: |
             export VERSION_CHECK_ON_STARTUP=false
-            export KALIX_NPMJS_CODEGEN_BINARY="${HOME}/project/codegen/js-gen-cli/target/native-image/kalix-codegen-js"
+            export KALIX_CODEGEN_BINARY="${HOME}/project/codegen/js-gen-cli/target/native-image/kalix-codegen-js"
             source /opt/circleci/.nvm/nvm.sh
             pushd sdk && nvm install && popd
             cd samples/ts/ts-customer-registry
             npm install --save \
-              ../../../sdk/kalix-io-kalix-javascript-sdk-0.0.0.tgz \
-              ../../../npm-js/kalix-scripts/kalix-io-kalix-scripts-1.0.0.tgz \
+              ../../../sdk/kalix-io-sdk-0.0.0.tgz \
+              ../../../scripts/kalix-io-scripts-0.0.0.tgz \
               ../../../testkit/kalix-io-testkit-0.0.0.tgz
             npm install
             npm run integration-test
@@ -434,13 +434,13 @@ jobs:
           name: "integration tests: samples/ts/ts-valueentity-counter"
           command: |
             export VERSION_CHECK_ON_STARTUP=false
-            export KALIX_NPMJS_CODEGEN_BINARY="${HOME}/project/codegen/js-gen-cli/target/native-image/kalix-codegen-js"
+            export KALIX_CODEGEN_BINARY="${HOME}/project/codegen/js-gen-cli/target/native-image/kalix-codegen-js"
             source /opt/circleci/.nvm/nvm.sh
             pushd sdk && nvm install && popd
             cd samples/ts/ts-valueentity-counter
             npm install --save \
-              ../../../sdk/kalix-io-kalix-javascript-sdk-0.0.0.tgz \
-              ../../../npm-js/kalix-scripts/kalix-io-kalix-scripts-1.0.0.tgz \
+              ../../../sdk/kalix-io-sdk-0.0.0.tgz \
+              ../../../scripts/kalix-io-scripts-0.0.0.tgz \
               ../../../testkit/kalix-io-testkit-0.0.0.tgz
             npm install
             npm run build
@@ -449,13 +449,13 @@ jobs:
           name: "integration tests: samples/ts/ts-valueentity-shopping-cart"
           command: |
             export VERSION_CHECK_ON_STARTUP=false
-            export KALIX_NPMJS_CODEGEN_BINARY="${HOME}/project/codegen/js-gen-cli/target/native-image/kalix-codegen-js"
+            export KALIX_CODEGEN_BINARY="${HOME}/project/codegen/js-gen-cli/target/native-image/kalix-codegen-js"
             source /opt/circleci/.nvm/nvm.sh
             pushd sdk && nvm install && popd
             cd samples/ts/ts-valueentity-shopping-cart
             npm install --save \
-              ../../../sdk/kalix-io-kalix-javascript-sdk-0.0.0.tgz \
-              ../../../npm-js/kalix-scripts/kalix-io-kalix-scripts-1.0.0.tgz \
+              ../../../sdk/kalix-io-sdk-0.0.0.tgz \
+              ../../../scripts/kalix-io-scripts-0.0.0.tgz \
               ../../../testkit/kalix-io-testkit-0.0.0.tgz
             npm install
             npm run build
@@ -464,13 +464,13 @@ jobs:
           name: "integration tests: samples/ts/ts-eventsourced-shopping-cart"
           command: |
             export VERSION_CHECK_ON_STARTUP=false
-            export KALIX_NPMJS_CODEGEN_BINARY="${HOME}/project/codegen/js-gen-cli/target/native-image/kalix-codegen-js"
+            export KALIX_CODEGEN_BINARY="${HOME}/project/codegen/js-gen-cli/target/native-image/kalix-codegen-js"
             source /opt/circleci/.nvm/nvm.sh
             pushd sdk && nvm install && popd
             cd samples/ts/ts-eventsourced-shopping-cart
             npm install --save \
-              ../../../sdk/kalix-io-kalix-javascript-sdk-0.0.0.tgz \
-              ../../../npm-js/kalix-scripts/kalix-io-kalix-scripts-1.0.0.tgz \
+              ../../../sdk/kalix-io-sdk-0.0.0.tgz \
+              ../../../scripts/kalix-io-scripts-0.0.0.tgz \
               ../../../testkit/kalix-io-testkit-0.0.0.tgz
             npm install
             npm run build
@@ -479,13 +479,13 @@ jobs:
           name: "integration tests: samples/ts/ts-replicated-entity-shopping-cart"
           command: |
             export VERSION_CHECK_ON_STARTUP=false
-            export KALIX_NPMJS_CODEGEN_BINARY="${HOME}/project/codegen/js-gen-cli/target/native-image/kalix-codegen-js"
+            export KALIX_CODEGEN_BINARY="${HOME}/project/codegen/js-gen-cli/target/native-image/kalix-codegen-js"
             source /opt/circleci/.nvm/nvm.sh
             pushd sdk && nvm install && popd
             cd samples/ts/ts-replicated-entity-shopping-cart
             npm install --save \
-              ../../../sdk/kalix-io-kalix-javascript-sdk-0.0.0.tgz \
-              ../../../npm-js/kalix-scripts/kalix-io-kalix-scripts-1.0.0.tgz \
+              ../../../sdk/kalix-io-sdk-0.0.0.tgz \
+              ../../../scripts/kalix-io-scripts-0.0.0.tgz \
               ../../../testkit/kalix-io-testkit-0.0.0.tgz
             npm install
             npm run build
@@ -531,9 +531,9 @@ jobs:
             git reset --hard HEAD
             pushd testkit && npm ci && npm publish --access public && popd
             git reset --hard HEAD
-            pushd npm-js/create-kalix-entity && npm publish --access public && popd
+            pushd create && npm publish --access public && popd
             git reset --hard HEAD
-            pushd npm-js/kalix-scripts && npm publish --access public && popd
+            pushd scripts && npm publish --access public && popd
 
   publish-tck:
     machine:
@@ -565,10 +565,10 @@ jobs:
             pushd sdk && nvm install && popd
             make -C docs deploy
 
-  npm-js-tests:
+  create-tests:
     docker:
       - image: cimg/node:14.16.1
-    description: "npm-js-tests"
+    description: "create-tests"
     steps:
       - checkout-and-merge-to-main
       - setup_sbt
@@ -580,13 +580,13 @@ jobs:
       - run:
           name: "install codegen"
           command: |
-            cd npm-js/create-kalix-entity
+            cd create
             npm ci && npm pack
       - run:
           name: "install kalix-scripts"
           command: |
-            cd npm-js/kalix-scripts
-            export KALIX_NPMJS_CODEGEN_BINARY="${HOME}/project/codegen/js-gen-cli/target/native-image/kalix-codegen-js"
+            cd scripts
+            export KALIX_CODEGEN_BINARY="${HOME}/project/codegen/js-gen-cli/target/native-image/kalix-codegen-js"
             npm ci && npm pack
       - run:
           name: "install sdk"
@@ -598,17 +598,17 @@ jobs:
           working_directory: "~/project/testkit"
           command: |
             npm ci
-            npm install ../sdk/kalix-io-kalix-javascript-sdk-0.0.0.tgz
+            npm install ../sdk/kalix-io-sdk-0.0.0.tgz
             npm pack
       - run:
           name: "test everything"
           working_directory: "~/tmp"
           command: |
-            export KALIX_NPMJS_SCRIPTS_VERSION="file:${HOME}/project/npm-js/kalix-scripts/kalix-io-kalix-scripts-1.0.0.tgz"
-            export KALIX_NPMJS_SDK_VERSION="file:${HOME}/project/sdk/kalix-io-kalix-javascript-sdk-0.0.0.tgz"
-            export KALIX_NPMJS_TESTKIT_VERSION="file:${HOME}/project/testkit/kalix-io-testkit-0.0.0.tgz"
-            export KALIX_NPMJS_CODEGEN_BINARY="${HOME}/project/codegen/js-gen-cli/target/native-image/kalix-codegen-js"
-            node "${HOME}/project/npm-js/create-kalix-entity/create-kalix-entity.js" generated-project
+            export KALIX_SCRIPTS_VERSION="file:${HOME}/project/scripts/kalix-io-scripts-0.0.0.tgz"
+            export KALIX_SDK_VERSION="file:${HOME}/project/sdk/kalix-io-sdk-0.0.0.tgz"
+            export KALIX_TESTKIT_VERSION="file:${HOME}/project/testkit/kalix-io-testkit-0.0.0.tgz"
+            export KALIX_CODEGEN_BINARY="${HOME}/project/codegen/js-gen-cli/target/native-image/kalix-codegen-js"
+            node "${HOME}/project/create/create-kalix-service.js" generated-project
             cd generated-project
             npm install && \
               npm run build && \
@@ -628,18 +628,18 @@ jobs:
           command: sbt kalix-codegen-js-cli/nativeImage
       - run:
           name: "install codegen"
-          working_directory: "~/project/npm-js/create-kalix-entity"
+          working_directory: "~/project/create"
           command: |
             source /opt/circleci/.nvm/nvm.sh
             nvm install
             npm ci && npm pack
       - run:
           name: "install kalix-scripts"
-          working_directory: "~/project/npm-js/kalix-scripts"
+          working_directory: "~/project/scripts"
           command: |
             source /opt/circleci/.nvm/nvm.sh
             nvm install
-            export KALIX_NPMJS_CODEGEN_BINARY="${HOME}/project/codegen/js-gen-cli/target/native-image/kalix-codegen-js"
+            export KALIX_CODEGEN_BINARY="${HOME}/project/codegen/js-gen-cli/target/native-image/kalix-codegen-js"
             npm ci && npm pack
       - run:
           name: "install sdk"
@@ -655,7 +655,7 @@ jobs:
             source /opt/circleci/.nvm/nvm.sh
             nvm install
             npm ci
-            npm install ../sdk/kalix-io-kalix-javascript-sdk-0.0.0.tgz
+            npm install ../sdk/kalix-io-sdk-0.0.0.tgz
             npm pack
       - run:
           name: "generate project"
@@ -663,16 +663,16 @@ jobs:
           command: |
             source /opt/circleci/.nvm/nvm.sh
             nvm install v14
-            export KALIX_NPMJS_SCRIPTS_VERSION="file:${HOME}/project/npm-js/kalix-scripts/kalix-io-kalix-scripts-1.0.0.tgz"
-            export KALIX_NPMJS_SDK_VERSION="file:${HOME}/project/sdk/kalix-io-kalix-javascript-sdk-0.0.0.tgz"
-            export KALIX_NPMJS_TESTKIT_VERSION="file:${HOME}/project/testkit/kalix-io-testkit-0.0.0.tgz"
-            node "${HOME}/project/npm-js/create-kalix-entity/create-kalix-entity.js" generated-project --template event-sourced-entity
+            export KALIX_SCRIPTS_VERSION="file:${HOME}/project/scripts/kalix-io-scripts-0.0.0.tgz"
+            export KALIX_SDK_VERSION="file:${HOME}/project/sdk/kalix-io-sdk-0.0.0.tgz"
+            export KALIX_TESTKIT_VERSION="file:${HOME}/project/testkit/kalix-io-testkit-0.0.0.tgz"
+            node "${HOME}/project/create/create-kalix-service.js" generated-project --template event-sourced-entity
       - run:
           name: "test up to unit tests"
           working_directory: "~/tmp/generated-project"
           command: |
             source /opt/circleci/.nvm/nvm.sh
-            export KALIX_NPMJS_CODEGEN_BINARY="${HOME}/project/codegen/js-gen-cli/target/native-image/kalix-codegen-js"
+            export KALIX_CODEGEN_BINARY="${HOME}/project/codegen/js-gen-cli/target/native-image/kalix-codegen-js"
             nvm install v14
             npm install && \
               npm run build && \
@@ -782,7 +782,7 @@ workflows:
           filters: # required since publish jobs have tag filters and dependencies
             tags:
               only: /.*/
-      - npm-js-tests:
+      - create-tests:
           filters: # required since publish jobs have tag filters and dependencies
             tags:
               only: /.*/
@@ -805,7 +805,7 @@ workflows:
             - integration-tests
             - tck-tests
             - validate-docs
-            - npm-js-tests
+            - create-tests
             - e2e-tests
             - test-codegen
       - publish-tck:
@@ -819,7 +819,7 @@ workflows:
             - integration-tests
             - tck-tests
             - validate-docs
-            - npm-js-tests
+            - create-tests
             - e2e-tests
             - test-codegen
       - publish-docs:
@@ -833,7 +833,7 @@ workflows:
             - integration-tests
             - tck-tests
             - validate-docs
-            - npm-js-tests
+            - create-tests
             - e2e-tests
             - test-codegen
       - publish_native_linux:
@@ -849,7 +849,7 @@ workflows:
             - integration-tests
             - tck-tests
             - validate-docs
-            - npm-js-tests
+            - create-tests
             - e2e-tests
       - publish_native_macos:
           context:
@@ -864,7 +864,7 @@ workflows:
             - integration-tests
             - tck-tests
             - validate-docs
-            - npm-js-tests
+            - create-tests
             - e2e-tests
       - publish_native_win:
           context:
@@ -879,5 +879,5 @@ workflows:
             - integration-tests
             - tck-tests
             - validate-docs
-            - npm-js-tests
+            - create-tests
             - e2e-tests

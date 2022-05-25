@@ -15,12 +15,7 @@
  */
 
 import * as grpc from '@grpc/grpc-js';
-import {
-  Kalix,
-  settings,
-  Component,
-  GrpcUtil,
-} from '@kalix-io/kalix-javascript-sdk';
+import { Kalix, settings, Component, GrpcUtil } from '@kalix-io/sdk';
 import { GenericContainer, TestContainers, Wait } from 'testcontainers';
 
 const defaultDockerImage = `gcr.io/kalix-public/kalix-proxy:${settings.frameworkVersion.replace(

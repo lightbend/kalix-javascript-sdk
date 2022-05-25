@@ -1,5 +1,5 @@
 {
-  "name": "@kalix-io/kalix-javascript-sdk",
+  "name": "@kalix-io/sdk",
   "version": "0.0.0",
   "description": "Kalix JavaScript SDK",
   "keywords": [
@@ -79,7 +79,7 @@
     }
   },
   "scripts": {
-    "clean": "rm -rf ./dist ./proto ./apidocs kalix-io-kalix-javascript-sdk-0.0.0.tgz user-function.desc",
+    "clean": "rm -rf ./dist ./proto ./apidocs kalix-io-sdk-0.0.0.tgz user-function.desc",
     "copy-files": "cp -r ./proto ./dist",
     "compile": "tsc && npm run copy-files",
     "verify-types": "tsc dist/index.d.ts --noEmit",

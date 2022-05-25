@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { EventSourcedEntity, Reply } from "@kalix-io/kalix-javascript-sdk";
+import { EventSourcedEntity, Reply } from "@kalix-io/sdk";
 import {
   ShoppingCartService,
   api,

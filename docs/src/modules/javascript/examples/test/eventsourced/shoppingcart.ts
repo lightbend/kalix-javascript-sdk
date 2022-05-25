@@ -16,10 +16,10 @@
 
 
 import * as proto from "../lib/generated/proto";
-import { replies } from "@kalix-io/kalix-javascript-sdk";
+import { replies } from "@kalix-io/sdk";
 
 // tag::entity-class[]
-import { EventSourcedEntity } from "@kalix-io/kalix-javascript-sdk";
+import { EventSourcedEntity } from "@kalix-io/sdk";
 
 const entity: EventSourcedEntity = new EventSourcedEntity(
     ["shoppingcart.proto", "domain.proto"],
@@ -193,7 +193,7 @@ entity.behavior = cart => {
 // end::multiple-behaviors[]
 
 // tag::add-entity[]
-import { Kalix } from "@kalix-io/kalix-javascript-sdk";
+import { Kalix } from "@kalix-io/sdk";
 import shoppingcartEntity from "./shoppingcart";
 
 new Kalix().addComponent(shoppingcartEntity).start();

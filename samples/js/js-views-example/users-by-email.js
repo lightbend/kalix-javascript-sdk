@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-const View = require("@kalix-io/kalix-javascript-sdk").View;
+const View = require("@kalix-io/sdk").View;
 
 const entity = new View(
   ["users.proto"],

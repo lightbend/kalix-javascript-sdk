@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 // tag::entity-class[]
-import { ValueEntity, Reply } from "@kalix-io/kalix-javascript-sdk";
+import { ValueEntity, Reply } from "@kalix-io/sdk";
 
 /**
  * Type definitions.

@@ -67,7 +67,7 @@ object ViewServiceSourceGenerator {
 
     pretty(
       initialisedCodeComment <> line <> line <>
-      "import" <+> braces(" View ") <+> "from" <+> dquotes("@kalix-io/kalix-javascript-sdk") <> semi <> line <>
+      "import" <+> braces(" View ") <+> "from" <+> dquotes("@kalix-io/sdk") <> semi <> line <>
       line <>
       blockComment(Seq[Doc](
         "Type definitions.",
@@ -109,7 +109,7 @@ object ViewServiceSourceGenerator {
     val events = service.transformedUpdates.toSeq.map(_.inputType).distinct
     pretty(
       managedCodeComment <> line <> line <>
-      "import" <+> braces(" View ") <+> "from" <+> dquotes("@kalix-io/kalix-javascript-sdk") <> semi <> line <>
+      "import" <+> braces(" View ") <+> "from" <+> dquotes("@kalix-io/sdk") <> semi <> line <>
       "import * as" <+> ProtoNs <+> "from" <+> dquotes("./proto") <> semi <> line <>
       line <>
       "export declare namespace domain" <+> braces(

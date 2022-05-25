@@ -109,7 +109,7 @@ object EntityServiceSourceGenerator {
     pretty(
       initialisedCodeComment <> line <> line <>
       "import" <+> braces(space <> entityType <> comma <+> "Reply" <> space) <+> "from" <+> dquotes(
-        "@kalix-io/kalix-javascript-sdk") <> semi <> line <>
+        "@kalix-io/sdk") <> semi <> line <>
       line <>
       blockComment(Seq[Doc](
         "Type definitions.",
@@ -181,8 +181,7 @@ object EntityServiceSourceGenerator {
       "import" <+> braces(space <> (entity match {
         case _: ModelBuilder.EventSourcedEntity => "EventSourcedEntity"
         case _: ModelBuilder.ValueEntity        => "ValueEntity"
-      }) <+> comma <+> "CommandReply" <> space) <+> "from" <+> dquotes(
-        "@kalix-io/kalix-javascript-sdk") <> semi <> line <>
+      }) <+> comma <+> "CommandReply" <> space) <+> "from" <+> dquotes("@kalix-io/sdk") <> semi <> line <>
       "import * as" <+> ProtoNs <+> "from" <+> dquotes("./proto") <> semi <> line <>
       line <>
       apiTypes(service) <>

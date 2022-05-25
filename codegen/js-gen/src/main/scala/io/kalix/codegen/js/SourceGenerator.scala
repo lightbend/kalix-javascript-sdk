@@ -140,7 +140,7 @@ object SourceGenerator extends PrettyPrinter {
 
     pretty(
       initialisedCodeComment <> line <> line <>
-      "import" <+> braces(" Kalix ") <+> "from" <+> dquotes("@kalix-io/kalix-javascript-sdk") <> semi <> line <>
+      "import" <+> braces(" Kalix ") <+> "from" <+> dquotes("@kalix-io/sdk") <> semi <> line <>
       "import" <+> generatedComponentArray <+> "from" <+> dquotes(generatedComponentIndexFilename) <> semi
       <> line <> line <>
       "const" <+> "server" <+> equal <+> "new" <+> "Kalix" <> parens(emptyDoc) <> semi <> line <> line <>

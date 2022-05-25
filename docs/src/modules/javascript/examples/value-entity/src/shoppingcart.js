@@ -3,7 +3,7 @@
  */
 
 // tag::entity-class[]
-const ValueEntity = require("@lightbend/kalix-javascript-sdk").ValueEntity;
+const ValueEntity = require("@kalix-io/sdk").ValueEntity;
 
 const entity = new ValueEntity(
   ["shoppingcart.proto", "domain.proto"],
@@ -93,7 +93,7 @@ module.exports = entity;
 describe("The ValueEntity class", () => {
   it("should allow adding the entity to the Kalix server", () => {
     // tag::add-component[]
-    const Kalix = require("@lightbend/kalix-javascript-sdk").Kalix;
+    const Kalix = require("@kalix-io/sdk").Kalix;
     const server = new Kalix();
     server.addComponent(entity);
     server.start();

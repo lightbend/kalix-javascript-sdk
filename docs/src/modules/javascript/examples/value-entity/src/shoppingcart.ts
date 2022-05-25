@@ -4,10 +4,10 @@
 
 
 import * as proto from "../lib/generated/proto";
-import { replies } from "@kalix-io/kalix-javascript-sdk";
+import { replies } from "@kalix-io/sdk";
 
 // tag::entity-class[]
-import { ValueEntity } from "@kalix-io/kalix-javascript-sdk";
+import { ValueEntity } from "@kalix-io/sdk";
 
 const entity: ValueEntity = new ValueEntity(
   ["shoppingcart.proto", "domain.proto"],
@@ -111,7 +111,7 @@ export default entity;
 
 
 // tag::add-component[]
-import { Kalix } from "@kalix-io/kalix-javascript-sdk";
+import { Kalix } from "@kalix-io/sdk";
 import shoppingcartEntity from "./shoppingcart";
 
 new Kalix().addComponent(shoppingcartEntity).start();

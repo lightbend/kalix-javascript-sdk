@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-const Kalix = require("@kalix-io/kalix-javascript-sdk").Kalix;
+const Kalix = require("@kalix-io/sdk").Kalix;
 
 const server = new Kalix();
 server.addComponent(require("./users"));

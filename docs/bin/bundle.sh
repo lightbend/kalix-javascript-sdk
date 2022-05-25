@@ -39,11 +39,11 @@ function _set_sdk_version {
   local -r dir="$1"
   # install json command once in a local dir
   [ -f "$json" ] || npm install --prefix "$npm_dir" -g json
-  if [ -n "$("$json" -q -f "$dir/package.json" "dependencies['@kalix-io/kalix-javascript-sdk']")" ] ; then
-    "$json" -q -I -f "$dir/package.json" -e "this.dependencies['@kalix-io/kalix-javascript-sdk'] = '$sdk_version'"
+  if [ -n "$("$json" -q -f "$dir/package.json" "dependencies['@kalix-io/sdk']")" ] ; then
+    "$json" -q -I -f "$dir/package.json" -e "this.dependencies['@kalix-io/sdk'] = '$sdk_version'"
   fi
-  if [ -n "$("$json" -q -f "$dir/package.json" "devDependencies['@kalix-io/kalix-scripts']")" ] ; then
-    "$json" -q -I -f "$dir/package.json" -e "this.devDependencies['@kalix-io/kalix-scripts'] = '$sdk_version'"
+  if [ -n "$("$json" -q -f "$dir/package.json" "devDependencies['@kalix-io/scripts']")" ] ; then
+    "$json" -q -I -f "$dir/package.json" -e "this.devDependencies['@kalix-io/scripts'] = '$sdk_version'"
   fi
   if [ -n "$("$json" -q -f "$dir/package.json" "devDependencies['@kalix-io/testkit']")" ] ; then
     "$json" -q -I -f "$dir/package.json" -e "this.devDependencies['@kalix-io/testkit'] = '$sdk_version'"

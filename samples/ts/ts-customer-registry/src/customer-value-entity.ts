@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ValueEntity, Reply } from "@kalix-io/kalix-javascript-sdk";
+import { ValueEntity, Reply } from "@kalix-io/sdk";
 import { customer as customerApi, google } from "../lib/generated/customer_api";
 import { customer as customerDomain } from "../lib/generated/customer_domain";
 

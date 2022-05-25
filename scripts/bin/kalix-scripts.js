@@ -113,7 +113,7 @@ const script = process.argv[2];
 const handler = scriptHandlers[script];
 if (!handler) {
   console.error(`Unknown script "${script}".`);
-  console.error('Perhaps you need to update kalix-scripts?');
+  console.error('Perhaps you need to update @kalix-io/scripts?');
   process.exit(1);
 }
 

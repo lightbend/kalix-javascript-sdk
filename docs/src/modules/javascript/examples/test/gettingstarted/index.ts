@@ -1,5 +1,5 @@
 // tag::start[]
-import { Kalix } from "@kalix-io/kalix-javascript-sdk";
+import { Kalix } from "@kalix-io/sdk";
 import shoppingcartEntity from "./shoppingcart";
 
 new Kalix().addComponent(shoppingcartEntity).start();

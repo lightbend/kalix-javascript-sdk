@@ -137,9 +137,7 @@ At package.test.json:2:4:
     serviceInfo?.getServiceName().should.equal('my-service');
     serviceInfo?.getServiceVersion().should.equal('1.2.3');
     serviceInfo?.getServiceRuntime().should.contains('node v');
-    serviceInfo
-      ?.getSupportLibraryName()
-      .should.equal('@kalix-io/kalix-javascript-sdk');
+    serviceInfo?.getSupportLibraryName().should.equal('@kalix-io/sdk');
     serviceInfo?.getSupportLibraryVersion().should.equal('0.0.0');
   });
 

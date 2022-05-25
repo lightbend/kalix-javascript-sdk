@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 // tag::imports[]
-import { EventSourcedEntity } from "@kalix-io/kalix-javascript-sdk";
+import { EventSourcedEntity } from "@kalix-io/sdk";
 // end::imports[]
 /**
  * Type definitions.

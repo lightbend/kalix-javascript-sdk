@@ -6,7 +6,7 @@ describe("The Kalix class", () => {
     it("should allow creating and starting a server", () => {
 
         // tag::start[]
-        const Kalix = require("@lightbend/kalix-javascript-sdk").Kalix;
+        const Kalix = require("@kalix-io/sdk").Kalix;
 
         const server = new Kalix();
         server.addComponent(require("./shoppingcart"));
@@ -18,7 +18,7 @@ describe("The Kalix class", () => {
     });
 
     it("should allow using a custom descriptor name", () => {
-        const Kalix = require("@lightbend/kalix-javascript-sdk").Kalix;
+        const Kalix = require("@kalix-io/sdk").Kalix;
 
         // tag::custom-desc[]
         const server = new Kalix({

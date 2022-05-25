@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ValueEntity, View } from '@kalix-io/kalix-javascript-sdk';
+import { ValueEntity, View } from '@kalix-io/sdk';
 import protocol from '../generated/tck';
 
 type Event = protocol.kalix.tck.model.view.Event;

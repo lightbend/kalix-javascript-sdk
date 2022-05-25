@@ -1,6 +1,6 @@
-# create-kalix-entity
+# @kalix-io/create-kalix-service
 
-This repository provides the `create-kalix-entity` tool to support Kalix development with the npm/JavaScript toolchain.
+This repository provides the `create-kalix-service` tool to support Kalix development with the npm/JavaScript toolchain.
 
 ## Usage
 
@@ -15,8 +15,8 @@ There are two templates available to select from:
 To create the initial codebase for a new entity with npm:
 
 ```sh
-npx @kalix-io/create-kalix-entity@latest my-entity --template value-entity
-cd my-entity
+npx @kalix-io/create-kalix-service@latest my-service --template value-entity
+cd my-service
 npm install
 npm run build
 ```
@@ -24,8 +24,8 @@ npm run build
 Or using Yarn:
 
 ```sh
-yarn create @kalix-io/kalix-entity@latest my-entity --template value-entity
-cd my-entity
+yarn create @kalix-io/kalix-service@latest my-service --template value-entity
+cd my-service
 yarn
 yarn build
 ```
@@ -49,11 +49,11 @@ npm pack
 ...and then install locally (substituting <some-version> with the version that the above `npm pack` reports):
 
 ```sh
-npm install -g kalix-io-create-kalix-entity-<some-version>.tgz
+npm install -g kalix-io-create-kalix-service-<some-version>.tgz
 ```
 
-As the `create-kalix-entity` command is now locally installed, you are able to run:
+As the `create-kalix-service` command is now locally installed, you are able to run:
 
 ```sh
-create-kalix-entity my-entity
+create-kalix-service my-service
 ```

@@ -14,12 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  CommandContext,
-  EffectMethod,
-  Message,
-  Metadata,
-} from '@kalix-io/kalix-javascript-sdk';
+import { CommandContext, EffectMethod, Message, Metadata } from '@kalix-io/sdk';
 
 /** @public */
 export namespace MockCommandContext {

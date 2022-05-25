@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { EventSourcedEntity } from '@kalix-io/kalix-javascript-sdk';
-import { Reply, replies } from '@kalix-io/kalix-javascript-sdk';
+import { EventSourcedEntity } from '@kalix-io/sdk';
+import { Reply, replies } from '@kalix-io/sdk';
 import protocol from '../generated/tck';
 
 type Request = protocol.kalix.tck.model.eventsourcedentity.Request;

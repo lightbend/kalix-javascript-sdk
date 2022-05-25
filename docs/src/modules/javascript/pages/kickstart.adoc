@@ -29,7 +29,7 @@ Before running the code generation tools, make sure that you have the following:
 :sectnums:
 == Prepare the development project
 
-The code generation tools create a new development project named `my-entity`, that contains build configuration and the https://docs.kalix.io/reference/glossary.html#gRPC[gRPC Protobuf specifications] for a https://docs.kalix.io/reference/glossary.html#value_entity[Value Entity].
+The code generation tools create a new development project named `my-service`, that contains build configuration and the https://docs.kalix.io/reference/glossary.html#gRPC[gRPC Protobuf specifications] for a https://docs.kalix.io/reference/glossary.html#value_entity[Value Entity].
 
 . To create the initial codebase, from a command window enter the following:
 +
@@ -39,7 +39,7 @@ npm::
 --
 [source, command window, subs="attributes"]
 ----
-npx @kalix-io/create-kalix-entity@latest my-entity
+npx @kalix-io/create-kalix-service@latest my-service
 ----
 --
 yarn::
@@ -47,7 +47,7 @@ yarn::
 --
 [source, command window, subs="attributes"]
 ----
-yarn create @kalix-io/kalix-entity@latest my-entity
+yarn create @kalix-io/kalix-service@latest my-service
 ----
 --
 
@@ -55,7 +55,7 @@ yarn create @kalix-io/kalix-entity@latest my-entity
 +
 [source, command window, subs="attributes"]
 ----
-cd my-entity
+cd my-service
 ----
 
 . Prepare the build unit by installing all the required dependencies and tools:

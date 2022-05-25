@@ -14,12 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  Metadata,
-  Reply,
-  Serializable,
-  ValueEntity,
-} from '@kalix-io/kalix-javascript-sdk';
+import { Metadata, Reply, Serializable, ValueEntity } from '@kalix-io/sdk';
 import * as Long from 'long';
 import { MockCommandContext } from './mock-command';
 

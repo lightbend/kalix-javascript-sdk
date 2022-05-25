@@ -1,8 +1,8 @@
 {
-  "name": "@kalix-io/create-kalix-entity",
-  "version": "1.0.0",
+  "name": "@kalix-io/scripts",
+  "version": "0.0.0",
   "description": "Create a Kalix entity codebase with a single command.",
-  "main": "",
+  "main": "kalix-scripts.js",
   "repository": "https://github.com/lightbend/kalix-javascript-sdk",
   "author": "Lightbend Inc",
   "license": "Copyright (c) Lightbend Inc. 2021",
@@ -11,14 +11,14 @@
     "npm": ">=6.0.0"
   },
   "dependencies": {
-    "mustache": "^4.1.0",
-    "scaffold-generator": "^3.0.4",
-    "yargs": "^17.0.1"
+    "cross-spawn": "^7.0.3",
+    "node-fetch": "^2.6.1"
   },
   "bin": {
-    "create-kalix-entity": "create-kalix-entity.js"
+    "kalix-scripts": "./bin/kalix-scripts.js"
   },
   "scripts": {
+    "install": "node bin/download-codegen.js",
     "prepublishOnly": "npm version --no-git-tag-version $(../../sdk/bin/version.sh)"
   },
   "publishConfig": {

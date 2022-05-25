@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Kalix } from "@kalix-io/kalix-javascript-sdk";
+import { Kalix } from "@kalix-io/sdk";
 import usersEntity from "./users";
 import usersByMailView from "./users-by-email";
 import usersMailCountView from "./user-email-count";

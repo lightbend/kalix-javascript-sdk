@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { ValueEntity, Reply } from "@kalix-io/kalix-javascript-sdk";
+import { ValueEntity, Reply } from "@kalix-io/sdk";
 import { ShoppingCartService, api, domain } from "../lib/generated/shoppingcart";
 
 const entity: ShoppingCartService = new ValueEntity(
