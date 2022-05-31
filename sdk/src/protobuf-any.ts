@@ -18,11 +18,30 @@ import * as util from 'util';
 import * as protobuf from 'protobufjs';
 import * as Long from 'long';
 import stableJsonStringify = require('json-stable-stringify');
-import * as proto from '../proto/protobuf-bundle';
+import * as protocol from '../types/protocol/any';
 
-type IAny = proto.google.protobuf.IAny;
-type Any = proto.google.protobuf.Any;
-const Any = proto.google.protobuf.Any;
+export type Any = {
+  type_url: string;
+  value: Uint8Array;
+};
+
+export namespace Any {
+  export function typeUrl(any?: protocol.AnyOut | null): string {
+    return any && 'type_url' in any ? any.type_url : any?.['@type'] ?? '';
+  }
+
+  export function value(any?: protocol.AnyOut | null): Buffer {
+    return any && 'value' in any ? Buffer.from(any.value) : Buffer.alloc(0);
+  }
+
+  // convert from proto-loader outgoing to incoming representation
+  export function flip(any?: protocol.AnyOut | null): protocol.AnyIn {
+    return {
+      type_url: Any.typeUrl(any),
+      value: Any.value(any),
+    };
+  }
+}
 
 // To allow primitive types to be stored, Kalix defines a number of primitive type URLs, based on protobuf types.
 // The serialized values are valid protobuf messages that contain a value of that type as their single field at index
@@ -100,11 +119,11 @@ export default class AnySupport {
   }
 
   static serializePrimitive(obj: any, type: PrimitiveTypeName): Any {
-    return Any.create({
+    return {
       // I have *no* idea why it's type_url and not typeUrl, but it is.
       type_url: KalixPrimitive + type,
       value: this.serializePrimitiveValue(obj, type),
-    });
+    };
   }
 
   /**
@@ -185,12 +204,12 @@ export default class AnySupport {
       typeof obj.constructor.encode === 'function' &&
       obj.constructor.$type
     ) {
-      return Any.create({
+      return {
         // I have *no* idea why it's type_url and not typeUrl, but it is.
         type_url:
           'type.googleapis.com/' + AnySupport.fullNameOf(obj.constructor.$type),
         value: obj.constructor.encode(obj).finish(),
-      });
+      };
     } else if (fallbackToJson && typeof obj === 'object') {
       let type = obj.type;
       if (type === undefined) {
@@ -205,10 +224,10 @@ export default class AnySupport {
           type = 'object';
         }
       }
-      return Any.create({
+      return {
         type_url: KalixJson + type,
         value: this.serializePrimitiveValue(stableJsonStringify(obj), 'string'),
-      });
+      };
     } else {
       throw new Error(
         util.format(
@@ -225,7 +244,7 @@ export default class AnySupport {
    *
    * @param any The any.
    */
-  deserialize(any?: IAny | null): any {
+  deserialize(any?: Any | null): any {
     if (!any?.type_url) throw Error('No type URL specified for Any');
 
     const url = any.type_url;

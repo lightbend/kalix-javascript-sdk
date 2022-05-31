@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import AnySupport from './protobuf-any';
+import AnySupport, { Any } from './protobuf-any';
 import {
   CommandHandlerFactory,
   InternalContext,
@@ -30,17 +30,7 @@ import * as Long from 'long';
 import { Metadata } from './metadata';
 import { Reply } from './reply';
 import * as grpc from '@grpc/grpc-js';
-import * as proto from '../proto/protobuf-bundle';
-
-/** @internal */
-namespace protocol {
-  export type EntityCommand = proto.kalix.component.entity.ICommand;
-  export type EntityStreamOut =
-    | proto.kalix.component.valueentity.IValueEntityStreamOut
-    | proto.kalix.component.eventsourcedentity.IEventSourcedStreamOut
-    | proto.kalix.component.replicatedentity.IReplicatedEntityStreamOut;
-  export type Failure = proto.kalix.component.IFailure;
-}
+import * as protocol from '../types/protocol/commands';
 
 /** @internal */
 export default class CommandHelper {
@@ -251,7 +241,7 @@ export default class CommandHelper {
           ctx.commandDebug(
             '%s reply with type [%s] with %d side effects.',
             desc,
-            ctx.reply.clientAction.reply?.payload?.type_url,
+            Any.typeUrl(ctx.reply.clientAction.reply?.payload),
             ctx.effects.length,
           );
         } else if (commandReply.getForward()) {
@@ -322,7 +312,7 @@ export default class CommandHelper {
         ctx.commandDebug(
           '%s reply with type [%s] with %d side effects.',
           desc,
-          ctx.reply.clientAction.reply?.payload?.type_url,
+          Any.typeUrl(ctx.reply.clientAction.reply?.payload),
           ctx.effects.length,
         );
       } else {

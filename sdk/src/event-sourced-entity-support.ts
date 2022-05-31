@@ -17,7 +17,7 @@
 import * as path from 'path';
 import * as grpc from '@grpc/grpc-js';
 import * as protoLoader from '@grpc/proto-loader';
-import AnySupport from './protobuf-any';
+import AnySupport, { Any } from './protobuf-any';
 import { CommandHandler, InternalContext } from './command';
 import CommandHelper from './command-helper';
 import { EventSourcedEntity } from './event-sourced-entity';
@@ -25,37 +25,16 @@ import * as Long from 'long';
 import { ServiceMap } from './kalix';
 import { Reply } from './reply';
 import { Serializable } from './serializable';
-import * as proto from '../proto/protobuf-bundle';
+import * as protocol from '../types/protocol/event-sourced-entities';
 
 const debug = require('debug')('kalix-event-sourced-entity');
 // Bind to stdout
 debug.log = console.log.bind(console);
 
 /** @internal */
-namespace protocol {
-  export type Any = proto.google.protobuf.IAny;
-
-  export type StreamIn =
-    proto.kalix.component.eventsourcedentity.IEventSourcedStreamIn;
-
-  export type Init = proto.kalix.component.eventsourcedentity.IEventSourcedInit;
-
-  export type Snapshot =
-    proto.kalix.component.eventsourcedentity.IEventSourcedSnapshot;
-
-  export type StreamOut =
-    proto.kalix.component.eventsourcedentity.IEventSourcedStreamOut;
-
-  export type Reply =
-    proto.kalix.component.eventsourcedentity.IEventSourcedReply;
-
-  export type Call = grpc.ServerDuplexStream<StreamIn, StreamOut>;
-}
-
-/** @internal */
 interface InternalEventSourcedEntityContext extends InternalContext {
   context: EventSourcedEntity.CommandContext;
-  events: protocol.Any[];
+  events: Any[];
 }
 
 /** @internal */
@@ -91,7 +70,7 @@ class EventSourcedEntitySupport {
       );
   }
 
-  serialize(obj: any, requireJsonType?: boolean): protocol.Any {
+  serialize(obj: any, requireJsonType?: boolean): Any {
     return AnySupport.serialize(
       obj,
       this.options.serializeAllowPrimitives,
@@ -100,7 +79,7 @@ class EventSourcedEntitySupport {
     );
   }
 
-  deserialize(any?: protocol.Any | null): any {
+  deserialize(any?: Any | null): any {
     return this.anySupport.deserialize(any);
   }
 
@@ -121,7 +100,7 @@ class EventSourcedEntityHandler {
   private entityId: string;
   private streamId: string;
   private commandHelper: CommandHelper;
-  private anyState?: protocol.Any | null;
+  private anyState?: Any | null;
   private sequence: number;
 
   constructor(
@@ -287,7 +266,7 @@ class EventSourcedEntityHandler {
     }
   }
 
-  handleEvent(event?: protocol.Any | null): void {
+  handleEvent(event?: Any | null): void {
     const deserEvent = this.entity.deserialize(event);
     this.withBehaviorAndState(
       (behavior: EventSourcedEntity.Behavior, state: any) => {
@@ -370,13 +349,7 @@ export default class EventSourcedEntityServices {
     return 'kalix.component.eventsourcedentity.EventSourcedEntities';
   }
 
-  register(server: grpc.Server): void {
-    const includeDirs = [
-      path.join(__dirname, '..', 'proto'),
-      path.join(__dirname, '..', 'protoc', 'include'),
-      path.join(__dirname, '..', '..', 'proto'),
-      path.join(__dirname, '..', '..', 'protoc', 'include'),
-    ];
+  static loadProtocol() {
     const packageDefinition = protoLoader.loadSync(
       path.join(
         'kalix',
@@ -385,20 +358,30 @@ export default class EventSourcedEntityServices {
         'event_sourced_entity.proto',
       ),
       {
-        includeDirs: includeDirs,
+        includeDirs: [path.join(__dirname, '..', 'proto')],
+        defaults: true,
       },
     );
-    const grpcDescriptor = grpc.loadPackageDefinition(packageDefinition);
 
-    const entityService = (grpcDescriptor as any).kalix.component
-      .eventsourcedentity.EventSourcedEntities.service;
+    const descriptor = grpc.loadPackageDefinition(
+      packageDefinition,
+    ) as unknown as protocol.Descriptor;
 
-    server.addService(entityService, {
-      handle: this.handle.bind(this),
-    });
+    return descriptor.kalix.component.eventsourcedentity.EventSourcedEntities
+      .service;
   }
 
-  handle(call: protocol.Call) {
+  register(server: grpc.Server): void {
+    const service = EventSourcedEntityServices.loadProtocol();
+
+    const handlers: protocol.Handlers = {
+      Handle: this.handle,
+    };
+
+    server.addService(service, handlers);
+  }
+
+  handle: protocol.Handle = (call) => {
     let service: EventSourcedEntityHandler;
 
     call.on('data', (eventSourcedStreamIn: protocol.StreamIn) => {
@@ -460,5 +443,5 @@ export default class EventSourcedEntityServices {
         call.end();
       }
     });
-  }
+  };
 }

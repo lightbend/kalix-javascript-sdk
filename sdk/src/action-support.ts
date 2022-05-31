@@ -26,50 +26,11 @@ import { ServiceMap } from './kalix';
 import { GrpcStatus } from './grpc-status';
 import { Metadata } from './metadata';
 import { Reply } from './reply';
-import * as proto from '../proto/protobuf-bundle';
+import * as protocol from '../types/protocol/actions';
 
 const debug = require('debug')('kalix-action');
 // Bind to stdout
 debug.log = console.log.bind(console);
-
-/** @internal */
-namespace protocol {
-  export type Command = proto.kalix.component.action.IActionCommand;
-  export type Response = proto.kalix.component.action.IActionResponse;
-  export type Metadata = proto.kalix.component.IMetadata;
-  export type SideEffect = proto.kalix.component.ISideEffect;
-  export type Failure = proto.kalix.component.IFailure;
-}
-
-/** @internal */
-export type Call = UnaryCall | StreamedInCall | StreamedOutCall | StreamedCall;
-
-/** @internal */
-export type UnaryCall = grpc.ServerUnaryCall<
-  protocol.Command,
-  protocol.Response
->;
-
-/** @internal */
-export type UnaryCallback = grpc.sendUnaryData<protocol.Response>;
-
-/** @internal */
-export type StreamedInCall = grpc.ServerReadableStream<
-  protocol.Command,
-  protocol.Response
->;
-
-/** @internal */
-export type StreamedOutCall = grpc.ServerWritableStream<
-  protocol.Command,
-  protocol.Response
->;
-
-/** @internal */
-export type StreamedCall = grpc.ServerDuplexStream<
-  protocol.Command,
-  protocol.Response
->;
 
 /** @internal */
 class ActionService {
@@ -98,8 +59,8 @@ class ActionHandler {
   private actionService: ActionService;
   private grpcMethod: protobuf.Method;
   private commandHandler: Action.CommandHandler;
-  private call: Call;
-  private grpcCallback: UnaryCallback | null;
+  private call: protocol.Call;
+  private grpcCallback: protocol.UnaryCallback | null;
 
   private streamId: string;
   private supportedEvents: string[];
@@ -116,8 +77,8 @@ class ActionHandler {
     actionService: ActionService,
     grpcMethod: protobuf.Method,
     commandHandler: Action.CommandHandler,
-    call: Call,
-    grpcCallback: UnaryCallback | null,
+    call: protocol.Call,
+    grpcCallback: protocol.UnaryCallback | null,
     metadata?: protocol.Metadata | null,
   ) {
     this.actionService = actionService;
@@ -240,7 +201,7 @@ class ActionHandler {
 
   handleUnary() {
     this.setupUnaryOutContext();
-    const call = this.call as UnaryCall;
+    const call = this.call as protocol.UnaryCall;
     const deserializedCommand = this.actionService.anySupport.deserialize(
       call.request.payload,
     );
@@ -281,7 +242,7 @@ class ActionHandler {
 
   handleStreamedOut() {
     this.setupStreamedOutContext();
-    const call = this.call as StreamedOutCall;
+    const call = this.call as protocol.StreamedOutCall;
     const deserializedCommand = this.actionService.anySupport.deserialize(
       call.request.payload,
     );
@@ -414,7 +375,7 @@ class ActionHandler {
 
   setupStreamedOutContext() {
     const ctx = this.ctx as Action.StreamedOutContext;
-    const call = this.call as StreamedOutCall | StreamedCall;
+    const call = this.call as protocol.StreamedOutCall | protocol.StreamedCall;
 
     let effects: protocol.SideEffect[] = [];
 
@@ -533,7 +494,7 @@ class ActionHandler {
 
   setupStreamedInContext() {
     const ctx = this.ctx as Action.StreamedInContext;
-    const call = this.call as StreamedInCall | StreamedCall;
+    const call = this.call as protocol.StreamedInCall | protocol.StreamedCall;
 
     this.supportedEvents.push(Action.StreamedInContext.data);
     this.supportedEvents.push(Action.StreamedInContext.end);
@@ -643,55 +604,58 @@ export default class ActionSupport {
     return 'kalix.component.action.Actions';
   }
 
-  register(server: grpc.Server) {
-    const includeDirs = [
-      path.join(__dirname, '..', 'proto'),
-      path.join(__dirname, '..', 'protoc', 'include'),
-      path.join(__dirname, '..', '..', 'proto'),
-      path.join(__dirname, '..', '..', 'protoc', 'include'),
-    ];
+  static loadProtocol(): protocol.Definition {
     const packageDefinition = protoLoader.loadSync(
       path.join('kalix', 'component', 'action', 'action.proto'),
       {
-        includeDirs: includeDirs,
+        includeDirs: [path.join(__dirname, '..', 'proto')],
+        defaults: true,
       },
     );
-    const grpcDescriptor = grpc.loadPackageDefinition(packageDefinition);
 
-    const actionService: grpc.ServiceDefinition = (grpcDescriptor as any).kalix
-      .component.action.Actions.service;
+    const descriptor = grpc.loadPackageDefinition(
+      packageDefinition,
+    ) as unknown as protocol.Descriptor;
 
-    server.addService(actionService, {
-      handleUnary: this.handleUnary.bind(this),
-      handleStreamedIn: this.handleStreamedIn.bind(this),
-      handleStreamedOut: this.handleStreamedOut.bind(this),
-      handleStreamed: this.handleStreamed.bind(this),
-    });
+    return descriptor.kalix.component.action.Actions.service;
+  }
+
+  register(server: grpc.Server) {
+    const service = ActionSupport.loadProtocol();
+
+    const handlers: protocol.Handlers = {
+      HandleUnary: this.handleUnary,
+      HandleStreamedIn: this.handleStreamedIn,
+      HandleStreamedOut: this.handleStreamedOut,
+      HandleStreamed: this.handleStreamed,
+    };
+
+    server.addService(service, handlers);
   }
 
   createHandler(
-    call: Call,
-    callback: UnaryCallback | null,
-    data: protocol.Command,
+    call: protocol.Call,
+    callback: protocol.UnaryCallback | null,
+    command: protocol.Command,
   ): ActionHandler | undefined {
-    if (data.serviceName && data.name) {
-      const actionService = this.actionServices[data.serviceName];
+    if (command.serviceName && command.name) {
+      const actionService = this.actionServices[command.serviceName];
       if (
         actionService &&
-        actionService.service.methods.hasOwnProperty(data.name)
+        actionService.service.methods.hasOwnProperty(command.name)
       ) {
-        if (actionService.commandHandlers.hasOwnProperty(data.name)) {
+        if (actionService.commandHandlers.hasOwnProperty(command.name)) {
           return new ActionHandler(
             actionService,
-            actionService.service.methods[data.name],
-            actionService.commandHandlers[data.name],
+            actionService.service.methods[command.name],
+            actionService.commandHandlers[command.name],
             call,
             callback,
-            data.metadata,
+            command.metadata,
           );
         } else {
           this.reportError(
-            `Service call ${data.serviceName}.${data.name} not implemented`,
+            `Service call ${command.serviceName}.${command.name} not implemented`,
             call,
             callback,
           );
@@ -699,7 +663,7 @@ export default class ActionSupport {
         }
       } else {
         this.reportError(
-          `No service call named ${data.serviceName}.${data.name} found`,
+          `No service call named ${command.serviceName}.${command.name} found`,
           call,
           callback,
         );
@@ -711,7 +675,11 @@ export default class ActionSupport {
     }
   }
 
-  reportError(error: string, call: Call, callback: UnaryCallback | null): void {
+  reportError(
+    error: string,
+    call: protocol.Call,
+    callback: protocol.UnaryCallback | null,
+  ): void {
     console.warn(error);
     const failure: protocol.Response = {
       failure: {
@@ -726,43 +694,43 @@ export default class ActionSupport {
     }
   }
 
-  handleStreamed(call: StreamedCall): void {
+  handleStreamed: protocol.HandleStreamed = (call) => {
     let initial = true;
-    call.on('data', (data) => {
+    call.on('data', (command: protocol.Command) => {
       if (initial) {
         initial = false;
-        const handler = this.createHandler(call, null, data);
+        const handler = this.createHandler(call, null, command);
         if (handler) {
           handler.handleStreamed();
         }
       } // ignore the remaining data here, subscribed in setupStreamedInContext
     });
-  }
+  };
 
-  handleStreamedOut(call: StreamedOutCall): void {
+  handleStreamedOut: protocol.HandleStreamedOut = (call) => {
     const handler = this.createHandler(call, null, call.request);
     if (handler) {
       handler.handleStreamedOut();
     }
-  }
+  };
 
-  handleStreamedIn(call: StreamedInCall, callback: UnaryCallback) {
+  handleStreamedIn: protocol.HandleStreamedIn = (call, callback) => {
     let initial = true;
-    call.on('data', (data) => {
+    call.on('data', (command: protocol.Command) => {
       if (initial) {
         initial = false;
-        const handler = this.createHandler(call, callback, data);
+        const handler = this.createHandler(call, callback, command);
         if (handler) {
           handler.handleStreamedIn();
         }
       } // ignore the remaining data here, subscribed in setupStreamedInContext
     });
-  }
+  };
 
-  handleUnary(call: UnaryCall, callback: UnaryCallback) {
+  handleUnary: protocol.HandleUnary = (call, callback) => {
     const handler = this.createHandler(call, callback, call.request);
     if (handler) {
       handler.handleUnary();
     }
-  }
+  };
 }

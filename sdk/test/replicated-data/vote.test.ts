@@ -16,26 +16,26 @@
 
 const should = require('chai').should();
 import { Vote } from '../../src/replicated-data/vote';
-import * as proto from '../proto/protobuf-bundle';
+import { ReplicatedEntityServices } from '../../src/replicated-entity-support';
+import * as protocol from '../../types/protocol/replicated-entities';
 
-namespace protocol {
-  export type Delta =
-    proto.kalix.component.replicatedentity.IReplicatedEntityDelta;
-  export const Delta =
-    proto.kalix.component.replicatedentity.ReplicatedEntityDelta;
-}
+const service = ReplicatedEntityServices.loadProtocol();
 
-function roundTripDelta(delta: protocol.Delta | null): protocol.Delta {
-  return delta
-    ? protocol.Delta.decode(protocol.Delta.encode(delta).finish())
-    : {};
+function roundTripDelta(delta: protocol.DeltaOut | null): protocol.DeltaIn {
+  return (
+    service.Handle.responseDeserialize(
+      service.Handle.responseSerialize({
+        reply: { stateAction: { update: delta } },
+      }),
+    ).reply?.stateAction?.update ?? {}
+  );
 }
 
 function voteDelta(
   totalVoters: number,
   votesFor: number,
   selfVote: boolean,
-): protocol.Delta {
+): protocol.DeltaIn {
   return roundTripDelta({
     vote: {
       totalVoters: totalVoters,

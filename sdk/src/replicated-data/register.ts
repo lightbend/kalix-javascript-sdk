@@ -18,18 +18,7 @@ import * as util from 'util';
 import AnySupport from '../protobuf-any';
 import { ReplicatedData, Clock, Clocks } from '.';
 import { Serializable } from '../serializable';
-import * as proto from '../../proto/protobuf-bundle';
-
-/** @internal */
-namespace protocol {
-  export type Any = proto.google.protobuf.IAny;
-
-  export type Delta =
-    proto.kalix.component.replicatedentity.IReplicatedEntityDelta;
-
-  export type RegisterDelta =
-    proto.kalix.component.replicatedentity.IReplicatedRegisterDelta;
-}
+import * as protocol from '../../types/protocol/replicated-entities';
 
 /**
  * A Replicated Register data type.
@@ -49,7 +38,7 @@ export class ReplicatedRegister<Value extends Serializable = Serializable>
   implements ReplicatedData
 {
   private currentValue: Value;
-  private delta: protocol.RegisterDelta;
+  private delta: protocol.RegisterDeltaOut;
 
   /**
    * Create a new Replicated Register.
@@ -116,13 +105,13 @@ export class ReplicatedRegister<Value extends Serializable = Serializable>
   private resetDelta() {
     this.delta = {
       value: null,
-      clock: null,
+      clock: undefined,
       customClockValue: 0,
     };
   }
 
   /** @internal */
-  getAndResetDelta = (): protocol.Delta | null => {
+  getAndResetDelta = (): protocol.DeltaOut | null => {
     if (this.delta.value !== null) {
       const toReturn = this.delta;
       this.resetDelta();
@@ -135,7 +124,7 @@ export class ReplicatedRegister<Value extends Serializable = Serializable>
   };
 
   /** @internal */
-  applyDelta = (delta: protocol.Delta, anySupport: AnySupport): void => {
+  applyDelta = (delta: protocol.DeltaIn, anySupport: AnySupport): void => {
     if (!delta.register) {
       throw new Error(
         util.format('Cannot apply delta %o to ReplicatedRegister', delta),

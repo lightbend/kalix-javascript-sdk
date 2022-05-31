@@ -17,35 +17,16 @@
 import * as path from 'path';
 import * as grpc from '@grpc/grpc-js';
 import * as protoLoader from '@grpc/proto-loader';
-import AnySupport from './protobuf-any';
+import AnySupport, { Any } from './protobuf-any';
 import { CommandHandler, InternalContext } from './command';
 import CommandHelper from './command-helper';
 import { ServiceMap } from './kalix';
 import { ValueEntity } from './value-entity';
-import * as proto from '../proto/protobuf-bundle';
+import * as protocol from '../types/protocol/value-entities';
 
 const debug = require('debug')('kalix-value-entity');
 // Bind to stdout
 debug.log = console.log.bind(console);
-
-/** @internal */
-namespace protocol {
-  export type Any = proto.google.protobuf.IAny;
-
-  export type StreamIn = proto.kalix.component.valueentity.IValueEntityStreamIn;
-
-  export type Init = proto.kalix.component.valueentity.IValueEntityInit;
-
-  export type InitState =
-    proto.kalix.component.valueentity.IValueEntityInitState;
-
-  export type StreamOut =
-    proto.kalix.component.valueentity.IValueEntityStreamOut;
-
-  export type Reply = proto.kalix.component.valueentity.IValueEntityReply;
-
-  export type Call = grpc.ServerDuplexStream<StreamIn, StreamOut>;
-}
 
 /** @internal */
 class ValueEntitySupport {
@@ -74,7 +55,7 @@ class ValueEntitySupport {
     this.allComponents = allComponents;
   }
 
-  serialize(obj: any, requireJsonType?: boolean): protocol.Any {
+  serialize(obj: any, requireJsonType?: boolean): Any {
     return AnySupport.serialize(
       obj,
       this.options.serializeAllowPrimitives,
@@ -83,7 +64,7 @@ class ValueEntitySupport {
     );
   }
 
-  deserialize(any?: protocol.Any | null): any {
+  deserialize(any?: Any | null): any {
     return this.anySupport.deserialize(any);
   }
 
@@ -100,7 +81,7 @@ class ValueEntityHandler {
   private entityId: string;
   private streamId: string;
   private commandHelper: CommandHelper;
-  private anyState?: protocol.Any | null;
+  private anyState?: Any | null;
 
   constructor(
     support: ValueEntitySupport,
@@ -142,7 +123,7 @@ class ValueEntityHandler {
     return this.withState((state) => {
       if (this.entity.commandHandlers.hasOwnProperty(commandName)) {
         return async (command: protobuf.Message, ctx: InternalContext) => {
-          let updatedAnyState = null as protocol.Any | null;
+          let updatedAnyState = null as Any | null;
           let deleted = false;
 
           const context = ctx.context as ValueEntity.CommandContext;
@@ -264,30 +245,33 @@ export default class ValueEntityServices {
     return 'kalix.component.valueentity.ValueEntities';
   }
 
-  register(server: grpc.Server): void {
-    const includeDirs = [
-      path.join(__dirname, '..', 'proto'),
-      path.join(__dirname, '..', 'protoc', 'include'),
-      path.join(__dirname, '..', '..', 'proto'),
-      path.join(__dirname, '..', '..', 'protoc', 'include'),
-    ];
+  static loadProtocol() {
     const packageDefinition = protoLoader.loadSync(
       path.join('kalix', 'component', 'valueentity', 'value_entity.proto'),
       {
-        includeDirs: includeDirs,
+        includeDirs: [path.join(__dirname, '..', 'proto')],
+        defaults: true,
       },
     );
-    const grpcDescriptor = grpc.loadPackageDefinition(packageDefinition);
 
-    const entityService = (grpcDescriptor as any).kalix.component.valueentity
-      .ValueEntities.service;
+    const descriptor = grpc.loadPackageDefinition(
+      packageDefinition,
+    ) as unknown as protocol.Descriptor;
 
-    server.addService(entityService, {
-      handle: this.handle.bind(this),
-    });
+    return descriptor.kalix.component.valueentity.ValueEntities.service;
   }
 
-  handle(call: protocol.Call): void {
+  register(server: grpc.Server): void {
+    const service = ValueEntityServices.loadProtocol();
+
+    const handlers: protocol.Handlers = {
+      Handle: this.handle,
+    };
+
+    server.addService(service, handlers);
+  }
+
+  handle: protocol.Handle = (call) => {
     let service: ValueEntityHandler;
 
     call.on('data', (valueEntityStreamIn: protocol.StreamIn) => {
@@ -349,5 +333,5 @@ export default class ValueEntityServices {
         call.end();
       }
     });
-  }
+  };
 }

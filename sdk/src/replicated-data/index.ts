@@ -16,7 +16,7 @@
 
 import * as util from 'util';
 import AnySupport from '../protobuf-any';
-import * as proto from '../../proto/protobuf-bundle';
+import * as protocol from '../../types/protocol/replicated-entities';
 
 import { ReplicatedCounter } from './counter';
 import { ReplicatedSet } from './set';
@@ -27,20 +27,6 @@ import { ReplicatedRegisterMap } from './register-map';
 import { ReplicatedMultiMap } from './multi-map';
 import { Vote } from './vote';
 
-/** @internal */
-namespace protocol {
-  export const Empty = proto.google.protobuf.Empty;
-
-  export type Delta =
-    proto.kalix.component.replicatedentity.IReplicatedEntityDelta;
-
-  export type Clock =
-    proto.kalix.component.replicatedentity.ReplicatedEntityClock;
-
-  export const Clock =
-    proto.kalix.component.replicatedentity.ReplicatedEntityClock;
-}
-
 /**
  * A Replicated Data type.
  *
@@ -48,13 +34,13 @@ namespace protocol {
  */
 export interface ReplicatedData {
   /** @internal */
-  getAndResetDelta(initial?: boolean): protocol.Delta | null;
+  getAndResetDelta(initial?: boolean): protocol.DeltaOut | null;
 
   /** @internal */
   applyDelta(
-    delta: protocol.Delta,
+    delta: protocol.DeltaIn,
     anySupport: AnySupport,
-    createForDelta: (delta: protocol.Delta) => ReplicatedData,
+    createForDelta: (delta: protocol.DeltaIn) => ReplicatedData,
   ): void;
 }
 
@@ -85,34 +71,33 @@ export enum Clocks {
   /**
    * The default clock, uses the machines system time.
    */
-  DEFAULT = protocol.Clock.REPLICATED_ENTITY_CLOCK_DEFAULT_UNSPECIFIED,
+  DEFAULT = 0,
 
   /**
    * A reverse clock, for achieving first - write - wins semantics.
    */
-  REVERSE = protocol.Clock.REPLICATED_ENTITY_CLOCK_REVERSE,
+  REVERSE = 1,
 
   /**
    * A custom clock.
    */
-  CUSTOM = protocol.Clock.REPLICATED_ENTITY_CLOCK_CUSTOM,
+  CUSTOM = 2,
 
   /**
    * A custom clock that automatically increments if the current clock value is less than the existing clock value.
    */
-  CUSTOM_AUTO_INCREMENT = protocol.Clock
-    .REPLICATED_ENTITY_CLOCK_CUSTOM_AUTO_INCREMENT,
+  CUSTOM_AUTO_INCREMENT = 3,
 }
 
 /** @internal */
-export function createForDelta(delta: protocol.Delta): ReplicatedData {
+export function createForDelta(delta: protocol.DeltaIn): ReplicatedData {
   if (delta.counter) {
     return new ReplicatedCounter();
   } else if (delta.replicatedSet) {
     return new ReplicatedSet();
   } else if (delta.register) {
     // It needs to be initialised with a value
-    return new ReplicatedRegister(protocol.Empty.create({}));
+    return new ReplicatedRegister({});
   } else if (delta.replicatedMap) {
     return new ReplicatedMap();
   } else if (delta.replicatedCounterMap) {

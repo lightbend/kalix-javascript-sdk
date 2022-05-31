@@ -24,33 +24,9 @@ import CommandHelper from './command-helper';
 import * as replicatedData from './replicated-data';
 import { ReplicatedEntity } from './replicated-entity';
 import { ServiceMap } from './kalix';
-import * as proto from '../proto/protobuf-bundle';
+import * as protocol from '../types/protocol/replicated-entities';
 
 const debug = require('debug')('kalix-replicated-entity');
-
-/** @internal */
-namespace protocol {
-  export type StreamIn =
-    proto.kalix.component.replicatedentity.IReplicatedEntityStreamIn;
-  export const StreamIn =
-    proto.kalix.component.replicatedentity.ReplicatedEntityStreamIn;
-
-  export type Init =
-    proto.kalix.component.replicatedentity.IReplicatedEntityInit;
-
-  export type Delta =
-    proto.kalix.component.replicatedentity.IReplicatedEntityDelta;
-  export const Delta =
-    proto.kalix.component.replicatedentity.ReplicatedEntityDelta;
-
-  export type StreamOut =
-    proto.kalix.component.replicatedentity.IReplicatedEntityStreamOut;
-
-  export type Reply =
-    proto.kalix.component.replicatedentity.IReplicatedEntityReply;
-
-  export type Call = grpc.ServerDuplexStream<StreamIn, StreamOut>;
-}
 
 /** @internal */
 interface ReplicatedEntityHandlers {
@@ -93,13 +69,7 @@ export class ReplicatedEntityServices {
     return 'kalix.component.replicatedentity.ReplicatedEntities';
   }
 
-  register(server: grpc.Server): void {
-    const includeDirs = [
-      path.join(__dirname, '..', 'proto'),
-      path.join(__dirname, '..', 'protoc', 'include'),
-      path.join(__dirname, '..', '..', 'proto'),
-      path.join(__dirname, '..', '..', 'protoc', 'include'),
-    ];
+  static loadProtocol(): protocol.Definition {
     const packageDefinition = protoLoader.loadSync(
       path.join(
         'kalix',
@@ -108,26 +78,33 @@ export class ReplicatedEntityServices {
         'replicated_entity.proto',
       ),
       {
-        includeDirs: includeDirs,
+        includeDirs: [path.join(__dirname, '..', 'proto')],
+        defaults: true,
       },
     );
-    const grpcDescriptor = grpc.loadPackageDefinition(packageDefinition);
 
-    const entityService = (grpcDescriptor as any).kalix.component
-      .replicatedentity.ReplicatedEntities.service;
+    const descriptor = grpc.loadPackageDefinition(
+      packageDefinition,
+    ) as unknown as protocol.Descriptor;
 
-    server.addService(entityService, {
-      handle: this.handle.bind(this),
-    });
+    return descriptor.kalix.component.replicatedentity.ReplicatedEntities
+      .service;
   }
 
-  handle(call: protocol.Call): void {
+  register(server: grpc.Server): void {
+    const service = ReplicatedEntityServices.loadProtocol();
+
+    const handlers: protocol.Handlers = {
+      Handle: this.handle,
+    };
+
+    server.addService(service, handlers);
+  }
+
+  handle: protocol.Handle = (call) => {
     let service: ReplicatedEntityHandler;
 
-    call.on('data', (streamIn: protocol.StreamIn) => {
-      // cycle through the ReplicatedEntityStreamIn type, this will ensure default values are initialised
-      const replicatedEntityStreamIn = protocol.StreamIn.fromObject(streamIn);
-
+    call.on('data', (replicatedEntityStreamIn: protocol.StreamIn) => {
       if (replicatedEntityStreamIn.init) {
         if (service != null) {
           service.streamDebug(
@@ -185,7 +162,7 @@ export class ReplicatedEntityServices {
         call.end();
       }
     });
-  }
+  };
 }
 
 /** @internal */
@@ -350,10 +327,10 @@ export class ReplicatedEntityHandler {
     debug('%s [%s] - ' + msg, ...[this.streamId, this.entityId].concat(args));
   }
 
-  handleInitialDelta(delta: protocol.Delta): void {
+  handleInitialDelta(delta: protocol.DeltaIn): void {
     this.streamDebug(
-      'Handling initial delta for Replicated Data type %s',
-      protocol.Delta.fromObject(delta).delta,
+      'Handling initial delta for Replicated Data type %o',
+      delta,
     );
     if (this.currentState === null) {
       this.currentState = replicatedData.createForDelta(delta);
@@ -393,8 +370,8 @@ export class ReplicatedEntityHandler {
       this.handleInitialDelta(replicatedEntityStreamIn.delta);
     } else if (replicatedEntityStreamIn.delta) {
       this.streamDebug(
-        'Received delta for Replicated Data type %s',
-        protocol.Delta.fromObject(replicatedEntityStreamIn.delta).delta,
+        'Received delta for Replicated Data type %o',
+        replicatedEntityStreamIn.delta,
       );
       if (this.currentState)
         this.currentState.applyDelta(

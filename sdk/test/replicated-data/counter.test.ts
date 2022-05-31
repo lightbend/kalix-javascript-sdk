@@ -17,23 +17,23 @@
 const should = require('chai').should();
 import * as Long from 'long';
 import { ReplicatedCounter } from '../../src/replicated-data/counter';
-import * as proto from '../proto/protobuf-bundle';
+import { ReplicatedEntityServices } from '../../src/replicated-entity-support';
+import * as protocol from '../../types/protocol/replicated-entities';
 
-namespace protocol {
-  export type Delta =
-    proto.kalix.component.replicatedentity.IReplicatedEntityDelta;
-  export const Delta =
-    proto.kalix.component.replicatedentity.ReplicatedEntityDelta;
-}
-
-function counterDelta(delta: protocol.Delta | null): number {
+function counterDelta(delta: protocol.DeltaOut | null): number {
   return toNumber(roundTripDelta(delta).counter?.change);
 }
 
-function roundTripDelta(delta: protocol.Delta | null): protocol.Delta {
-  return delta
-    ? protocol.Delta.decode(protocol.Delta.encode(delta).finish())
-    : {};
+const service = ReplicatedEntityServices.loadProtocol();
+
+function roundTripDelta(delta: protocol.DeltaOut | null): protocol.DeltaIn {
+  return (
+    service.Handle.responseDeserialize(
+      service.Handle.responseSerialize({
+        reply: { stateAction: { update: delta } },
+      }),
+    ).reply?.stateAction?.update ?? {}
+  );
 }
 
 function toNumber(n?: Long | number | null): number {

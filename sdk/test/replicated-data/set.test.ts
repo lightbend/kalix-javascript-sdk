@@ -18,16 +18,10 @@ const should = require('chai').should();
 import * as protobuf from 'protobufjs';
 import * as path from 'path';
 import { ReplicatedSet } from '../../src/replicated-data/set';
+import { ReplicatedEntityServices } from '../../src/replicated-entity-support';
 import AnySupport from '../../src/protobuf-any';
-import * as proto from '../proto/test-protobuf-bundle';
-
-namespace protocol {
-  export type Any = proto.google.protobuf.IAny;
-  export type Delta =
-    proto.kalix.component.replicatedentity.IReplicatedEntityDelta;
-  export const Delta =
-    proto.kalix.component.replicatedentity.ReplicatedEntityDelta;
-}
+import * as proto from '../generated/protobuf';
+import * as protocol from '../../types/protocol/replicated-entities';
 
 const root = new protobuf.Root();
 root.loadSync(path.join(__dirname, '..', 'example.proto'));
@@ -38,17 +32,23 @@ const anySupport = new AnySupport(root);
 type Example = proto.com.example.IExample & protobuf.Message;
 const Example = root.lookupType('com.example.Example');
 
-function roundTripDelta(delta: protocol.Delta | null): protocol.Delta {
-  return delta
-    ? protocol.Delta.decode(protocol.Delta.encode(delta).finish())
-    : {};
+const service = ReplicatedEntityServices.loadProtocol();
+
+function roundTripDelta(delta: protocol.DeltaOut | null): protocol.DeltaIn {
+  return (
+    service.Handle.responseDeserialize(
+      service.Handle.responseSerialize({
+        reply: { stateAction: { update: delta } },
+      }),
+    ).reply?.stateAction?.update ?? {}
+  );
 }
 
-function toAny(value: any): protocol.Any {
+function toAny(value: any): protocol.AnyOut {
   return AnySupport.serialize(value, true, true);
 }
 
-function fromAnys(values?: protocol.Any[] | null): any[] {
+function fromAnys(values?: protocol.AnyIn[] | null): any[] {
   return values ? values.map((any) => anySupport.deserialize(any)) : [];
 }
 

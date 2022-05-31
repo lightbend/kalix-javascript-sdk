@@ -21,18 +21,11 @@ import AnySupport from './protobuf-any';
 import { Metadata } from './metadata';
 import { ServiceMap } from './kalix';
 import { View } from './view';
-import * as proto from '../proto/protobuf-bundle';
+import * as protocol from '../types/protocol/views';
 
 const debug = require('debug')('kalix-view');
 // Bind to stdout
 debug.log = console.log.bind(console);
-
-/** @internal */
-namespace protocol {
-  export type StreamIn = proto.kalix.component.view.IViewStreamIn;
-  export type StreamOut = proto.kalix.component.view.IViewStreamOut;
-  export type Call = grpc.ServerDuplexStream<StreamIn, StreamOut>;
-}
 
 /** @internal */
 export default class ViewServices {
@@ -50,31 +43,33 @@ export default class ViewServices {
     return 'kalix.component.view.Views';
   }
 
-  register(server: grpc.Server): void {
-    // Nothing to register
-    const includeDirs = [
-      path.join(__dirname, '..', 'proto'),
-      path.join(__dirname, '..', 'protoc', 'include'),
-      path.join(__dirname, '..', '..', 'proto'),
-      path.join(__dirname, '..', '..', 'protoc', 'include'),
-    ];
+  static loadProtocol() {
     const packageDefinition = protoLoader.loadSync(
       path.join('kalix', 'component', 'view', 'view.proto'),
       {
-        includeDirs: includeDirs,
+        includeDirs: [path.join(__dirname, '..', 'proto')],
+        defaults: true,
       },
     );
-    const grpcDescriptor = grpc.loadPackageDefinition(packageDefinition);
 
-    const viewService = (grpcDescriptor as any).kalix.component.view.Views
-      .service;
+    const descriptor = grpc.loadPackageDefinition(
+      packageDefinition,
+    ) as unknown as protocol.Descriptor;
 
-    server.addService(viewService, {
-      handle: this.handle.bind(this),
-    });
+    return descriptor.kalix.component.view.Views.service;
   }
 
-  handle(call: protocol.Call): void {
+  register(server: grpc.Server): void {
+    const service = ViewServices.loadProtocol();
+
+    const handlers: protocol.Handlers = {
+      Handle: this.handle,
+    };
+
+    server.addService(service, handlers);
+  }
+
+  handle: protocol.Handle = (call) => {
     const failAndEndCall = function (_description: string): void {
       // FIXME no failure reporting in protocol and this does not reach the proxy as a failure
       /*
@@ -177,5 +172,5 @@ export default class ViewServices {
     call.on('end', () => {
       call.end();
     });
-  }
+  };
 }

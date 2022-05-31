@@ -21,18 +21,9 @@ import { Serializable } from '../serializable';
 import * as iterators from './iterators';
 import * as Long from 'long';
 import * as util from 'util';
-import * as proto from '../../proto/protobuf-bundle';
+import * as protocol from '../../types/protocol/replicated-entities';
 
 const debug = require('debug')('kalix-replicated-entity');
-
-/** @internal */
-namespace protocol {
-  export type Delta =
-    proto.kalix.component.replicatedentity.IReplicatedEntityDelta;
-
-  export type EntryDelta =
-    proto.kalix.component.replicatedentity.IReplicatedCounterMapEntryDelta;
-}
 
 interface Entry<Key extends Serializable> {
   key: Key;
@@ -172,8 +163,8 @@ export class ReplicatedCounterMap<Key extends Serializable = Serializable>
   }
 
   /** @internal */
-  getAndResetDelta = (initial?: boolean): protocol.Delta | null => {
-    const updated: protocol.EntryDelta[] = [];
+  getAndResetDelta = (initial?: boolean): protocol.DeltaOut | null => {
+    const updated: protocol.CounterMapEntryDeltaOut[] = [];
     this.counters.forEach(({ key: key, counter: counter }, _comparableKey) => {
       const delta = counter.getAndResetDelta();
       if (delta !== null) {
@@ -189,7 +180,7 @@ export class ReplicatedCounterMap<Key extends Serializable = Serializable>
       updated.length > 0 ||
       initial
     ) {
-      const delta: protocol.Delta = {
+      const delta: protocol.DeltaOut = {
         replicatedCounterMap: {
           cleared: this.cleared,
           removed: Array.from(this.removed.values()).map((key) =>
@@ -207,7 +198,7 @@ export class ReplicatedCounterMap<Key extends Serializable = Serializable>
   };
 
   /** @internal */
-  applyDelta = (delta: protocol.Delta, anySupport: AnySupport): void => {
+  applyDelta = (delta: protocol.DeltaIn, anySupport: AnySupport): void => {
     if (!delta.replicatedCounterMap) {
       throw new Error(
         util.format('Cannot apply delta %o to ReplicatedCounterMap', delta),

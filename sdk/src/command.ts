@@ -19,19 +19,7 @@ import { EffectMethod } from './effect';
 import { GrpcStatus } from './grpc-status';
 import { Metadata } from './metadata';
 import { Reply } from './reply';
-import * as proto from '../proto/protobuf-bundle';
-
-/** @internal */
-namespace protocol {
-  export type EntityCommand = proto.kalix.component.entity.ICommand;
-  export type EntityReply =
-    | proto.kalix.component.valueentity.IValueEntityReply
-    | proto.kalix.component.eventsourcedentity.IEventSourcedReply
-    | proto.kalix.component.replicatedentity.IReplicatedEntityReply;
-  export type Forward = proto.kalix.component.IForward;
-  export type SideEffect = proto.kalix.component.ISideEffect;
-  export type Failure = proto.kalix.component.IFailure;
-}
+import * as protocol from '../types/protocol/commands';
 
 /**
  * A message object.

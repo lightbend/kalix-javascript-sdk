@@ -24,18 +24,18 @@ export {
   EntityPassivationStrategy,
   ReplicatedWriteConsistency,
   ServiceBinding,
-} from './src/kalix';
+} from './kalix';
 
-export { Action } from './src/action';
+export { Action } from './action';
 
-export { ValueEntity } from './src/value-entity';
+export { ValueEntity } from './value-entity';
 
-export { EventSourcedEntity } from './src/event-sourced-entity';
+export { EventSourcedEntity } from './event-sourced-entity';
 
-import * as replicatedentity from './src/replicated-entity';
+import * as replicatedentity from './replicated-entity';
 export { replicatedentity };
 
-export { View } from './src/view';
+export { View } from './view';
 
 export {
   CommandContext,
@@ -43,32 +43,32 @@ export {
   EntityContext,
   Message,
   CommandReply,
-} from './src/command';
+} from './command';
 
-export { EffectMethod } from './src/effect';
+export { EffectMethod } from './effect';
 
 export {
   Metadata,
   MetadataEntry,
   MetadataMap,
   MetadataValue,
-} from './src/metadata';
-export { Cloudevent } from './src/cloudevent';
-export { JwtClaims } from './src/jwt-claims';
+} from './metadata';
+export { Cloudevent } from './cloudevent';
+export { JwtClaims } from './jwt-claims';
 
-export { Serializable, TypedJson } from './src/serializable';
+export { Serializable, TypedJson } from './serializable';
 
-import * as replies from './src/reply';
+import * as replies from './reply';
 export { replies };
-export { Reply } from './src/reply';
+export { Reply } from './reply';
 
-export { GrpcStatus } from './src/grpc-status';
+export { GrpcStatus } from './grpc-status';
 export {
   GrpcClient,
   GrpcClientCreator,
   GrpcClientLookup,
   GrpcUtil,
-} from './src/grpc-util';
+} from './grpc-util';
 
 import * as settings from './settings';
 export { settings };

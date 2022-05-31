@@ -1,0 +1,15 @@
+{
+  "extends": "../tsconfig.build.json",
+  "compilerOptions": {
+    "composite": false,
+    "declaration": true,
+    "stripInternal": true,
+    "sourceMap": true,
+    "rootDir": ".",
+    "outDir": "../dist"
+  },
+  "references": [
+    { "path": ".." },
+    { "path": "../types" }
+  ]
+}

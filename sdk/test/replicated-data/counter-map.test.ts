@@ -16,21 +16,13 @@
 
 const should = require('chai').should();
 import { ReplicatedCounterMap } from '../../src/replicated-data/counter-map';
+import { ReplicatedEntityServices } from '../../src/replicated-entity-support';
 import * as path from 'path';
 import * as protobuf from 'protobufjs';
 import AnySupport from '../../src/protobuf-any';
 import * as Long from 'long';
-import * as proto from '../proto/test-protobuf-bundle';
-
-namespace protocol {
-  export type Any = proto.google.protobuf.IAny;
-  export type Delta =
-    proto.kalix.component.replicatedentity.IReplicatedEntityDelta;
-  export const Delta =
-    proto.kalix.component.replicatedentity.ReplicatedEntityDelta;
-  export type EntryDelta =
-    proto.kalix.component.replicatedentity.IReplicatedCounterMapEntryDelta;
-}
+import * as proto from '../generated/protobuf';
+import * as protocol from '../../types/protocol/replicated-entities';
 
 const root = new protobuf.Root();
 root.loadSync(path.join(__dirname, '..', 'example.proto'));
@@ -41,17 +33,23 @@ const anySupport = new AnySupport(root);
 type Example = proto.com.example.IExample & protobuf.Message;
 const Example = root.lookupType('com.example.Example');
 
-function roundTripDelta(delta: protocol.Delta | null): protocol.Delta {
-  return delta
-    ? protocol.Delta.decode(protocol.Delta.encode(delta).finish())
-    : {};
+const service = ReplicatedEntityServices.loadProtocol();
+
+function roundTripDelta(delta: protocol.DeltaOut | null): protocol.DeltaIn {
+  return (
+    service.Handle.responseDeserialize(
+      service.Handle.responseSerialize({
+        reply: { stateAction: { update: delta } },
+      }),
+    ).reply?.stateAction?.update ?? {}
+  );
 }
 
-function toAny(value: any): protocol.Any {
+function toAny(value: any): protocol.AnyOut {
   return AnySupport.serialize(value, true, true);
 }
 
-function fromAnys(values?: protocol.Any[] | null): any[] {
+function fromAnys(values?: protocol.AnyIn[] | null): any[] {
   return values ? values.map((any) => anySupport.deserialize(any)) : [];
 }
 
@@ -64,7 +62,9 @@ interface Entry {
   delta: number;
 }
 
-function deltaEntries(entries?: protocol.EntryDelta[] | null): Entry[] {
+function deltaEntries(
+  entries?: protocol.CounterMapEntryDeltaIn[] | null,
+): Entry[] {
   return entries
     ? entries.map((entry) => {
         return {
@@ -75,7 +75,10 @@ function deltaEntries(entries?: protocol.EntryDelta[] | null): Entry[] {
     : [];
 }
 
-function counterDelta(key: any, value: number): protocol.EntryDelta {
+function counterDelta(
+  key: any,
+  value: number,
+): protocol.CounterMapEntryDeltaOut {
   return { key: toAny(key), delta: { change: value } };
 }
 

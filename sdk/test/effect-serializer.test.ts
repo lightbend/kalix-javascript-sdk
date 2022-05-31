@@ -16,16 +16,32 @@
 
 import { should as chaiShould } from 'chai';
 import EffectSerializer from '../src/effect-serializer';
+import { Any } from '../src/protobuf-any';
 import * as protobuf from 'protobufjs';
 import * as path from 'path';
+import * as grpc from '@grpc/grpc-js';
+import * as protoLoader from '@grpc/proto-loader';
+import { ProtoGrpcType as Descriptor } from './generated/proto/example';
 
 const should = chaiShould();
+
+// protobufjs services
 const root = new protobuf.Root();
 root.loadSync(path.join(__dirname, 'example.proto'));
 const In = root.lookupType('com.example.In');
 const exampleService = root.lookupService('com.example.ExampleService');
 const exampleServiceTwo = root.lookupService('com.example.ExampleServiceTwo');
-import exampleServiceGenerated from './proto/example_grpc_pb';
+
+// grpc services
+const packageDefinition = protoLoader.loadSync('example.proto', {
+  includeDirs: [__dirname, path.join(__dirname, '..', 'proto')],
+  defaults: true,
+});
+const descriptor = grpc.loadPackageDefinition(
+  packageDefinition,
+) as unknown as Descriptor;
+const grpcExampleService = descriptor.com.example.ExampleService.service;
+const grpcExampleServiceTwo = descriptor.com.example.ExampleServiceTwo.service;
 
 describe('Effect Serializer', () => {
   it('should throw error if the service is not registered', () => {
@@ -56,7 +72,9 @@ describe('Effect Serializer', () => {
 
     res.serviceName?.should.eq('com.example.ExampleService');
     res.commandName?.should.eq('DoSomething');
-    res.payload?.type_url?.should.eq('type.googleapis.com/com.example.In');
+    Any.flip(res.payload).type_url.should.eq(
+      'type.googleapis.com/com.example.In',
+    );
   });
 
   it('should serialize successfully', () => {
@@ -70,7 +88,9 @@ describe('Effect Serializer', () => {
 
     res.serviceName?.should.eq('com.example.ExampleService');
     res.commandName?.should.eq('DoSomething');
-    res.payload?.type_url?.should.eq('type.googleapis.com/com.example.In');
+    Any.flip(res.payload).type_url.should.eq(
+      'type.googleapis.com/com.example.In',
+    );
   });
 
   it('should serialize successfully unresolved methods', () => {
@@ -83,7 +103,9 @@ describe('Effect Serializer', () => {
 
     res.serviceName?.should.eq('com.example.ExampleService');
     res.commandName?.should.eq('DoSomething');
-    res.payload?.type_url?.should.eq('type.googleapis.com/com.example.In');
+    Any.flip(res.payload).type_url.should.eq(
+      'type.googleapis.com/com.example.In',
+    );
   });
 
   it('should serialize successfully using lookup', () => {
@@ -96,37 +118,35 @@ describe('Effect Serializer', () => {
 
     res.serviceName?.should.eq('com.example.ExampleService');
     res.commandName?.should.eq('DoSomething');
-    res.payload?.type_url?.should.eq('type.googleapis.com/com.example.In');
+    Any.flip(res.payload).type_url.should.eq(
+      'type.googleapis.com/com.example.In',
+    );
   });
 
-  it('should reject methods on the incorrect service using the generated gRPC definition', () => {
+  it('should reject methods on the incorrect service using a gRPC method definition', () => {
     const es = new EffectSerializer({
       'com.example.ExampleService': exampleService,
     });
     const msg = In.create({ field: 'foo' });
 
     const res = () =>
-      es.serializeEffect(
-        exampleServiceGenerated.ExampleServiceTwoService.doSomethingOne,
-        msg,
-      );
+      es.serializeEffect(grpcExampleServiceTwo.DoSomethingOne, msg);
 
     should.throw(() => res(), Error);
   });
 
-  it('should serialize successfully methods using the generated gRPC definition', () => {
+  it('should serialize successfully methods using a gRPC method definition', () => {
     const es = new EffectSerializer({
       'com.example.ExampleService': exampleService,
     });
     const msg = In.create({ field: 'foo' });
 
-    const res = es.serializeEffect(
-      exampleServiceGenerated.ExampleServiceService.doSomething,
-      msg,
-    );
+    const res = es.serializeEffect(grpcExampleService.DoSomething, msg);
 
     res.serviceName?.should.eq('com.example.ExampleService');
     res.commandName?.should.eq('DoSomething');
-    res.payload?.type_url?.should.eq('type.googleapis.com/com.example.In');
+    Any.flip(res.payload).type_url.should.eq(
+      'type.googleapis.com/com.example.In',
+    );
   });
 });

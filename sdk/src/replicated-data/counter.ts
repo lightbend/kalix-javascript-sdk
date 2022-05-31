@@ -17,13 +17,7 @@
 import * as util from 'util';
 import * as Long from 'long';
 import { ReplicatedData } from '.';
-import * as proto from '../../proto/protobuf-bundle';
-
-/** @internal */
-namespace protocol {
-  export type Delta =
-    proto.kalix.component.replicatedentity.IReplicatedEntityDelta;
-}
+import * as protocol from '../../types/protocol/replicated-entities';
 
 /**
  * A Replicated Counter data type.
@@ -86,9 +80,9 @@ export class ReplicatedCounter implements ReplicatedData {
   };
 
   /** @internal */
-  getAndResetDelta = (initial?: boolean): protocol.Delta | null => {
+  getAndResetDelta = (initial?: boolean): protocol.DeltaOut | null => {
     if (!this.delta.isZero() || initial) {
-      const currentDelta: protocol.Delta = {
+      const currentDelta: protocol.DeltaOut = {
         counter: {
           change: this.delta,
         },
@@ -101,7 +95,7 @@ export class ReplicatedCounter implements ReplicatedData {
   };
 
   /** @internal */
-  applyDelta = (delta: protocol.Delta): void => {
+  applyDelta = (delta: protocol.DeltaIn): void => {
     if (!delta.counter) {
       throw new Error(
         util.format('Cannot apply delta %o to ReplicatedCounter', delta),
