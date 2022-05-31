@@ -18,17 +18,9 @@ import * as util from 'util';
 import { ReplicatedData } from '.';
 import AnySupport, { Comparable } from '../protobuf-any';
 import { Serializable } from '../serializable';
-import * as proto from '../../proto/protobuf-bundle';
+import * as protocol from '../../types/protocol/replicated-entities';
 
 const debug = require('debug')('kalix-replicated-entity');
-
-/** @internal */
-namespace protocol {
-  export type Any = proto.google.protobuf.IAny;
-
-  export type Delta =
-    proto.kalix.component.replicatedentity.IReplicatedEntityDelta;
-}
 
 /** @public */
 export namespace ReplicatedSet {
@@ -58,8 +50,8 @@ export class ReplicatedSet<Element extends Serializable = Serializable>
   // Map of a comparable form (that compares correctly using ===) of the elements to the elements
   private currentValue = new Map<Comparable, Element>();
   private delta = {
-    added: new Map<Comparable, protocol.Any>(),
-    removed: new Map<Comparable, protocol.Any>(),
+    added: new Map<Comparable, protocol.AnyOut>(),
+    removed: new Map<Comparable, protocol.AnyOut>(),
     cleared: false,
   };
 
@@ -180,14 +172,14 @@ export class ReplicatedSet<Element extends Serializable = Serializable>
   };
 
   /** @internal */
-  getAndResetDelta = (initial?: boolean): protocol.Delta | null => {
+  getAndResetDelta = (initial?: boolean): protocol.DeltaOut | null => {
     if (
       this.delta.cleared ||
       this.delta.added.size > 0 ||
       this.delta.removed.size > 0 ||
       initial
     ) {
-      const currentDelta: protocol.Delta = {
+      const currentDelta: protocol.DeltaOut = {
         replicatedSet: {
           cleared: this.delta.cleared,
           removed: Array.from(this.delta.removed.values()),
@@ -204,7 +196,7 @@ export class ReplicatedSet<Element extends Serializable = Serializable>
   };
 
   /** @internal */
-  applyDelta = (delta: protocol.Delta, anySupport: AnySupport): void => {
+  applyDelta = (delta: protocol.DeltaIn, anySupport: AnySupport): void => {
     if (!delta.replicatedSet) {
       throw new Error(
         util.format('Cannot apply delta %o to ReplicatedSet', delta),

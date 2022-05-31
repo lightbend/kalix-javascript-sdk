@@ -26,8 +26,8 @@ chai.should();
 import * as protobuf from 'protobufjs';
 import * as path from 'path';
 import { Action } from '../src/action';
-import ActionSupport, { UnaryCall, UnaryCallback } from '../src/action-support';
-import AnySupport from '../src/protobuf-any';
+import ActionSupport from '../src/action-support';
+import AnySupport, { Any } from '../src/protobuf-any';
 import { Message } from '../src/command';
 import { ServiceMap } from '../src/kalix';
 
@@ -47,12 +47,7 @@ const ExampleService = root.lookupService(ExampleServiceName);
 
 import * as replies from '../src/reply';
 import _stableJsonStringify from 'json-stable-stringify';
-import * as proto from '../proto/protobuf-bundle';
-
-namespace protocol {
-  export type Command = proto.kalix.component.action.IActionCommand;
-  export type Response = proto.kalix.component.action.IActionResponse;
-}
+import * as protocol from '../types/protocol/actions';
 
 class MockUnaryCall {
   request: protocol.Command;
@@ -79,12 +74,12 @@ class MockUnaryCall {
 
   async reply(): Promise<any> {
     const value = await this.value;
-    return anySupport.deserialize(value.reply?.payload);
+    return anySupport.deserialize(Any.flip(value.reply?.payload));
   }
 
   async forward(): Promise<any> {
     const value = await this.value;
-    return anySupport.deserialize(value.forward?.payload);
+    return anySupport.deserialize(Any.flip(value.forward?.payload));
   }
 
   async effects(): Promise<
@@ -99,7 +94,7 @@ class MockUnaryCall {
     return (value.sideEffects ?? []).map((effect) => ({
       serviceName: effect.serviceName ?? '',
       commandName: effect.commandName ?? '',
-      payload: anySupport.deserialize(effect.payload),
+      payload: anySupport.deserialize(Any.flip(effect.payload)),
       synchronous: effect.synchronous ?? false,
     }));
   }
@@ -121,12 +116,16 @@ function callDoSomething(action: ActionSupport, message: Message) {
   const command: protocol.Command = {
     serviceName: ExampleServiceName,
     name: 'DoSomething',
-    payload: AnySupport.serialize(In.create(message), false, false),
+    payload: Any.flip(AnySupport.serialize(In.create(message), false, false)),
+    metadata: { entries: [] },
   };
   const call = new MockUnaryCall(command);
   const callback = (_error: any, value: protocol.Response) =>
     call.write!(value);
-  action.handleUnary(call as unknown as UnaryCall, callback as UnaryCallback);
+  action.handleUnary(
+    call as unknown as protocol.UnaryCall,
+    callback as protocol.UnaryCallback,
+  );
   return call;
 }
 
@@ -134,12 +133,16 @@ function callPublishJsonToTopic(action: ActionSupport, message: Message) {
   const command: protocol.Command = {
     serviceName: ExampleServiceName,
     name: 'PublishJsonToTopic',
-    payload: AnySupport.serialize(In.create(message), false, false),
+    payload: Any.flip(AnySupport.serialize(In.create(message), false, false)),
+    metadata: { entries: [] },
   };
   const call = new MockUnaryCall(command);
   const callback = (_error: any, value: protocol.Response) =>
     call.write!(value);
-  action.handleUnary(call as unknown as UnaryCall, callback as UnaryCallback);
+  action.handleUnary(
+    call as unknown as protocol.UnaryCall,
+    callback as protocol.UnaryCallback,
+  );
   return call;
 }
 
@@ -648,7 +651,7 @@ describe('ActionHandler', () => {
         payload?.should.have.property('type_url', 'json.kalix.io/object');
         return JSON.parse(
           AnySupport.deserializePrimitive(
-            payload?.value || Buffer.alloc(0),
+            Any.flip(payload).value,
             'string',
           ) as string,
         );

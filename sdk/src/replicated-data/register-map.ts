@@ -20,18 +20,9 @@ import AnySupport, { Comparable } from '../protobuf-any';
 import { Serializable } from '../serializable';
 import * as iterators from './iterators';
 import * as util from 'util';
-import * as proto from '../../proto/protobuf-bundle';
+import * as protocol from '../../types/protocol/replicated-entities';
 
 const debug = require('debug')('kalix-replicated-entity');
-
-/** @internal */
-namespace protocol {
-  export type Delta =
-    proto.kalix.component.replicatedentity.IReplicatedEntityDelta;
-
-  export type EntryDelta =
-    proto.kalix.component.replicatedentity.IReplicatedRegisterMapEntryDelta;
-}
 
 interface Entry<Key extends Serializable, Value extends Serializable> {
   key: Key;
@@ -153,8 +144,8 @@ export class ReplicatedRegisterMap<
   }
 
   /** @internal */
-  getAndResetDelta = (initial?: boolean): protocol.Delta | null => {
-    const updated: protocol.EntryDelta[] = [];
+  getAndResetDelta = (initial?: boolean): protocol.DeltaOut | null => {
+    const updated: protocol.RegisterMapEntryDeltaOut[] = [];
     this.registers.forEach(
       ({ key: key, register: register }, _comparableKey) => {
         const delta = register.getAndResetDelta();
@@ -190,7 +181,7 @@ export class ReplicatedRegisterMap<
   };
 
   /** @internal */
-  applyDelta = (delta: protocol.Delta, anySupport: AnySupport): void => {
+  applyDelta = (delta: protocol.DeltaIn, anySupport: AnySupport): void => {
     if (!delta.replicatedRegisterMap) {
       throw new Error(
         util.format('Cannot apply delta %o to ReplicatedRegisterMap', delta),

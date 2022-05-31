@@ -20,7 +20,7 @@
  * @public
  */
 export const frameworkVersion: string =
-  require('./config.json').frameworkVersion;
+  require('../config.json').frameworkVersion;
 
 /**
  * Kalix protocol version.

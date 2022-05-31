@@ -19,7 +19,6 @@ import * as protobuf from 'protobufjs';
 import * as path from 'path';
 import AnySupport from '../src/protobuf-any';
 import * as Long from 'long';
-import * as proto from '../proto/protobuf-bundle';
 
 should();
 
@@ -28,7 +27,6 @@ root.loadSync(path.join(__dirname, 'example.proto'));
 const anySupport = new AnySupport(root);
 const Example = root.lookupType('com.example.Example');
 const PrimitiveLike = root.lookupType('com.example.PrimitiveLike');
-const Any = proto.google.protobuf.Any;
 
 describe('AnySupport', () => {
   it('should support serializing strings', () => {
@@ -129,27 +127,23 @@ describe('AnySupport', () => {
 
   it('should support deserializing primitives when the field in not present', () => {
     anySupport
-      .deserialize(
-        Any.create({
-          type_url: 'type.kalix.io/string',
-          value: PrimitiveLike.encode({}).finish(),
-        }),
-      )
+      .deserialize({
+        type_url: 'type.kalix.io/string',
+        value: PrimitiveLike.encode({}).finish(),
+      })
       .should.equal('');
   });
 
   it('should support deserializing primitives when other fields are present', () => {
     anySupport
-      .deserialize(
-        Any.create({
-          type_url: 'type.kalix.io/string',
-          value: PrimitiveLike.encode({
-            field1: 'one',
-            field2: 'two',
-            field3: 'three',
-          }).finish(),
-        }),
-      )
+      .deserialize({
+        type_url: 'type.kalix.io/string',
+        value: PrimitiveLike.encode({
+          field1: 'one',
+          field2: 'two',
+          field3: 'three',
+        }).finish(),
+      })
       .should.equal('one');
   });
 
@@ -191,14 +185,5 @@ describe('AnySupport', () => {
         true,
         true,
       )).should.throw();
-  });
-
-  it('should handle deserializing undefined any values', () => {
-    const serialized = Any.create({
-      type_url: 'type.googleapis.com/com.example.Example',
-    });
-    const deserialized = anySupport.deserialize(serialized);
-    deserialized.should.be.an.instanceof(Example.ctor);
-    deserialized.should.be.empty;
   });
 });

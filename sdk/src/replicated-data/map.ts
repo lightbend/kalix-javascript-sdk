@@ -19,20 +19,9 @@ import AnySupport, { Comparable } from '../protobuf-any';
 import { Serializable } from '../serializable';
 import * as iterators from './iterators';
 import * as util from 'util';
-import * as proto from '../../proto/protobuf-bundle';
+import * as protocol from '../../types/protocol/replicated-entities';
 
 const debug = require('debug')('kalix-replicated-entity');
-
-/** @internal */
-namespace protocol {
-  export type Any = proto.google.protobuf.IAny;
-
-  export type Delta =
-    proto.kalix.component.replicatedentity.IReplicatedEntityDelta;
-
-  export type EntryDelta =
-    proto.kalix.component.replicatedentity.IReplicatedMapEntryDelta;
-}
 
 interface Entry<Key extends Serializable, Value extends ReplicatedData> {
   key: Key;
@@ -107,8 +96,8 @@ export class ReplicatedMap<
   // actual key and the value.
   private currentValue = new Map<Comparable, Entry<Key, Value>>();
   private delta = {
-    added: new Map<Comparable, protocol.Any>(),
-    removed: new Map<Comparable, protocol.Any>(),
+    added: new Map<Comparable, protocol.AnyOut>(),
+    removed: new Map<Comparable, protocol.AnyOut>(),
     cleared: false,
   };
 
@@ -357,9 +346,9 @@ export class ReplicatedMap<
   };
 
   /** @internal */
-  getAndResetDelta = (initial?: boolean): protocol.Delta | null => {
-    const updateDeltas: protocol.EntryDelta[] = [];
-    const addedDeltas: protocol.EntryDelta[] = [];
+  getAndResetDelta = (initial?: boolean): protocol.DeltaOut | null => {
+    const updateDeltas: protocol.MapEntryDeltaOut[] = [];
+    const addedDeltas: protocol.MapEntryDeltaOut[] = [];
     this.currentValue.forEach((value, key) => {
       if (this.delta.added.has(key)) {
         addedDeltas.push({
@@ -384,7 +373,7 @@ export class ReplicatedMap<
       addedDeltas.length > 0 ||
       initial
     ) {
-      const currentDelta: protocol.Delta = {
+      const currentDelta: protocol.DeltaOut = {
         replicatedMap: {
           cleared: this.delta.cleared,
           removed: Array.from(this.delta.removed.values()),
@@ -403,9 +392,9 @@ export class ReplicatedMap<
 
   /** @internal */
   applyDelta = (
-    delta: protocol.Delta,
+    delta: protocol.DeltaIn,
     anySupport: AnySupport,
-    createForDelta: (delta: protocol.Delta) => ReplicatedData,
+    createForDelta: (delta: protocol.DeltaIn) => ReplicatedData,
   ): void => {
     if (!delta.replicatedMap) {
       throw new Error(

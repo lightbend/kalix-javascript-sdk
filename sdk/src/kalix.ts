@@ -13,16 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import * as fs from 'fs';
 import * as path from 'path';
 import * as grpc from '@grpc/grpc-js';
-import * as settings from '../settings';
-
-import * as discovery from '../proto/kalix/protocol/discovery_pb';
-import * as discovery_grpc from '../proto/kalix/protocol/discovery_grpc_pb';
-import * as google_protobuf_empty_pb from 'google-protobuf/google/protobuf/empty_pb';
+import * as protoLoader from '@grpc/proto-loader';
+import * as settings from './settings';
 import { PackageInfo } from './package-info';
 import { GrpcClientLookup } from './grpc-util';
+import * as discovery from '../types/protocol/discovery';
+
+const debug = require('debug')('kalix');
+debug.log = console.log.bind(console); // bind to stdout
 
 function loadJson(filename: string) {
   return JSON.parse(fs.readFileSync(filename).toString());
@@ -288,27 +290,24 @@ class DocLink {
 
 /** @internal */
 class SourceFormatter {
-  constructor(private location: discovery.UserFunctionError.SourceLocation) {}
+  constructor(private location: discovery.SourceLocation) {}
 
   getLocationString(components: Array<Component>) {
-    if (this.location.getEndLine() === 0 && this.location.getEndCol() === 0) {
+    if (this.location.endLine === 0 && this.location.endCol === 0) {
       // It's been sent without line/col data
-      return `At ${this.location.getFileName}`;
+      return `At ${this.location.fileName}`;
     }
     // First, we need to location the protobuf file that it's from. To do that, we need to look in the include dirs
     // of each entity.
     for (const component of components) {
       for (const includeDir of component.options?.includeDirs ?? []) {
-        const file = path.resolve(includeDir, this.location.getFileName());
+        const file = path.resolve(includeDir, this.location.fileName);
         if (fs.existsSync(file)) {
           const lines = fs
             .readFileSync(file)
             .toString('utf-8')
             .split(/\r?\n/)
-            .slice(
-              this.location.getStartLine(),
-              this.location.getEndLine() + 1,
-            );
+            .slice(this.location.startLine, this.location.endLine + 1);
           let content = '';
           if (lines.length > 1) {
             content = lines.join('\n');
@@ -317,7 +316,7 @@ class SourceFormatter {
             content = line + '\n';
             for (
               let i = 0;
-              i < Math.min(line.length, this.location.getStartCol());
+              i < Math.min(line.length, this.location.startCol);
               i++
             ) {
               if (line.charAt(i) === '\t') {
@@ -328,15 +327,18 @@ class SourceFormatter {
             }
             content += '^';
           }
-          return `At ${this.location.getFileName()}:${
-            this.location.getStartLine() + 1
-          }:${this.location.getStartCol() + 1}:\n${content}`;
+          return (
+            `At ${this.location.fileName}:` +
+            `${this.location.startLine + 1}:${this.location.startCol + 1}:\n` +
+            content
+          );
         }
       }
     }
-    return `At ${this.location.getFileName()}:${
-      this.location.getStartLine() + 1
-    }:${this.location.getStartCol() + 1}`;
+    return (
+      `At ${this.location.fileName}:` +
+      `${this.location.startLine + 1}:${this.location.startCol + 1}`
+    );
   }
 }
 
@@ -412,10 +414,10 @@ export class Kalix {
 
     process.on('SIGTERM', () => {
       if (!this.proxySeen || this.proxyHasTerminated || this.devMode) {
-        console.debug('Got SIGTERM. Shutting down');
+        debug('Got SIGTERM. Shutting down');
         this.terminate();
       } else {
-        console.debug(
+        debug(
           'Got SIGTERM. But did not yet see proxy terminating, deferring shutdown until proxy stops',
         );
         // no timeout because process will be SIGKILLed anyway if it does not get the proxy termination in time
@@ -458,9 +460,23 @@ export class Kalix {
       services.register(this.server);
     });
 
-    const discoveryServer = this.getDiscoveryServer();
+    const packageDefinition = protoLoader.loadSync(
+      path.join('kalix', 'protocol', 'discovery.proto'),
+      {
+        includeDirs: [path.join(__dirname, '..', 'proto')],
+        defaults: true,
+      },
+    );
 
-    this.server.addService(discovery_grpc.DiscoveryService, discoveryServer);
+    const grpcDescriptor = grpc.loadPackageDefinition(
+      packageDefinition,
+    ) as unknown as discovery.Descriptor;
+
+    const discoveryService = grpcDescriptor.kalix.protocol.Discovery.service;
+
+    const discoveryHandlers = this.createDiscoveryHandlers();
+
+    this.server.addService(discoveryService, discoveryHandlers);
 
     return new Promise((resolve, reject) => {
       this.server.bindAsync(
@@ -487,59 +503,37 @@ export class Kalix {
   }
 
   /** @internal */
-  formatSource(location: discovery.UserFunctionError.SourceLocation) {
+  formatSource(location: discovery.SourceLocation) {
     return new SourceFormatter(location).getLocationString(this.components);
   }
 
-  private getDiscoveryServer() {
-    const that = this;
-    const discoveryServer: discovery_grpc.IDiscoveryServer = {
-      discover(
-        call: grpc.ServerUnaryCall<discovery.ProxyInfo, discovery.Spec>,
-        callback: grpc.sendUnaryData<discovery.Spec>,
-      ) {
-        const result = that.discoveryLogic(call.request);
+  private createDiscoveryHandlers() {
+    const self = this;
+    const discoveryHandlers: discovery.Handlers = {
+      Discover(call, callback) {
+        const result = self.discoveryLogic(call.request);
         callback(null, result);
       },
-      reportError(
-        call: grpc.ServerUnaryCall<
-          discovery.UserFunctionError,
-          google_protobuf_empty_pb.Empty
-        >,
-        callback: grpc.sendUnaryData<google_protobuf_empty_pb.Empty>,
-      ) {
-        const msg = that.reportErrorLogic(
-          call.request.getCode(),
-          call.request.getMessage(),
-          call.request.getDetail(),
-          call.request.getSourceLocationsList(),
+      ReportError(call, callback) {
+        const msg = self.reportErrorLogic(
+          call.request.code,
+          call.request.message,
+          call.request.detail,
+          call.request.sourceLocations,
         );
-
         console.error(msg);
-        callback(null, new google_protobuf_empty_pb.Empty());
+        callback(null, {});
       },
-      proxyTerminated(
-        call: grpc.ServerUnaryCall<
-          google_protobuf_empty_pb.Empty,
-          google_protobuf_empty_pb.Empty
-        >,
-        callback: grpc.sendUnaryData<google_protobuf_empty_pb.Empty>,
-      ) {
-        that.proxyTerminatedLogic();
-        callback(null, new google_protobuf_empty_pb.Empty());
+      ProxyTerminated(_call, callback) {
+        self.proxyTerminatedLogic();
+        callback(null, {});
       },
-      healthCheck(
-        call: grpc.ServerUnaryCall<
-          google_protobuf_empty_pb.Empty,
-          google_protobuf_empty_pb.Empty
-        >,
-        callback: grpc.sendUnaryData<google_protobuf_empty_pb.Empty>,
-      ) {
-        callback(null, new google_protobuf_empty_pb.Empty());
+      HealthCheck(_call, callback) {
+        callback(null, {});
       },
     };
 
-    return discoveryServer;
+    return discoveryHandlers;
   }
 
   /**
@@ -568,10 +562,10 @@ export class Kalix {
 
   /** @internal */
   reportErrorLogic(
-    code: string | undefined,
-    message: string | undefined,
-    detail: string | undefined,
-    locations: Array<discovery.UserFunctionError.SourceLocation> | undefined,
+    code?: string,
+    message?: string,
+    detail?: string,
+    locations?: Array<discovery.SourceLocation>,
   ) {
     let msg = `Error reported from Kalix system: ${code} ${message}`;
     if (detail) {
@@ -591,116 +585,96 @@ export class Kalix {
 
   // detect hybrid proxy version probes when protocol version 0.0 (or undefined)
   private isVersionProbe(proxyInfo: discovery.ProxyInfo) {
-    return (
-      !proxyInfo.getProtocolMajorVersion() &&
-      !proxyInfo.getProtocolMinorVersion()
-    );
+    return !proxyInfo.protocolMajorVersion && !proxyInfo.protocolMinorVersion;
   }
 
   /** @internal */
   discoveryLogic(proxyInfo: discovery.ProxyInfo): discovery.Spec {
-    const serviceInfo = new discovery.ServiceInfo()
-      .setServiceName(this.service.name)
-      .setServiceVersion(this.service.version)
-      .setServiceRuntime(this.runtime)
-      .setSupportLibraryName(this.packageInfo.name)
-      .setSupportLibraryVersion(this.packageInfo.version)
-      .setProtocolMajorVersion(this.protocolMajorVersion)
-      .setProtocolMinorVersion(this.protocolMinorVersion);
+    const serviceInfo: discovery.ServiceInfo = {
+      serviceName: this.service.name,
+      serviceVersion: this.service.version,
+      serviceRuntime: this.runtime,
+      supportLibraryName: this.packageInfo.name,
+      supportLibraryVersion: this.packageInfo.version,
+      protocolMajorVersion: this.protocolMajorVersion,
+      protocolMinorVersion: this.protocolMinorVersion,
+    };
 
-    const spec = new discovery.Spec().setServiceInfo(serviceInfo);
+    const spec: discovery.Spec = {
+      serviceInfo: serviceInfo,
+    };
 
     if (this.isVersionProbe(proxyInfo)) {
       // only (silently) send service info for hybrid proxy version probe
     } else {
       this.proxySeen = true;
-      this.devMode = proxyInfo.getDevMode();
+      this.devMode = proxyInfo.devMode;
       this.proxyHasTerminated = false;
 
-      console.debug(
-        `Discover call with info ${proxyInfo}, sending ${this.components.length} components`,
+      console.log(
+        'Discovery call received from %s %s',
+        proxyInfo.proxyName,
+        proxyInfo.proxyVersion,
+      );
+
+      debug(
+        'Discovery call with info %j, sending %d components',
+        proxyInfo,
+        this.components.length,
       );
 
       const components = this.components.map((component) => {
-        const res = new discovery.Component();
+        const res: discovery.Component = {
+          serviceName: component.serviceName,
+          componentType: component.componentType(),
+        };
 
-        res.setServiceName(component.serviceName);
-        res.setComponentType(component.componentType());
-
-        if (res.getComponentType().indexOf('Entities') > -1) {
+        if ((res.componentType ?? '').indexOf('Entities') > -1) {
           // entities has EntityOptions / EntitySettings
           const entityOptions = component.options as EntityOptions;
-          const entitySettings = new discovery.EntitySettings();
-          if (entityOptions.entityType) {
-            entitySettings.setEntityType(entityOptions.entityType);
-          }
+          const entitySettings: discovery.EntitySettings = {
+            entityType: entityOptions.entityType,
+            forwardHeaders: entityOptions.forwardHeaders,
+          };
           if (entityOptions.entityPassivationStrategy?.timeout) {
-            const ps = new discovery.PassivationStrategy().setTimeout(
-              new discovery.TimeoutPassivationStrategy().setTimeout(
-                entityOptions.entityPassivationStrategy.timeout,
-              ),
-            );
-            entitySettings.setPassivationStrategy(ps);
-          }
-          if (entityOptions.forwardHeaders) {
-            entitySettings.setForwardHeadersList(entityOptions.forwardHeaders);
+            entitySettings.passivationStrategy = {
+              timeout: {
+                timeout: entityOptions.entityPassivationStrategy.timeout,
+              },
+            };
           }
           if (entityOptions.replicatedWriteConsistency) {
-            const replicatedEntitySettings =
-              new discovery.ReplicatedEntitySettings();
-            let writeConsistency =
-              discovery.ReplicatedWriteConsistency
-                .REPLICATED_WRITE_CONSISTENCY_LOCAL_UNSPECIFIED;
-            switch (entityOptions.replicatedWriteConsistency) {
-              case ReplicatedWriteConsistency.ALL:
-                writeConsistency =
-                  discovery.ReplicatedWriteConsistency
-                    .REPLICATED_WRITE_CONSISTENCY_ALL;
-                break;
-              case ReplicatedWriteConsistency.MAJORITY:
-                writeConsistency =
-                  discovery.ReplicatedWriteConsistency
-                    .REPLICATED_WRITE_CONSISTENCY_MAJORITY;
-                break;
-              default:
-                writeConsistency =
-                  discovery.ReplicatedWriteConsistency
-                    .REPLICATED_WRITE_CONSISTENCY_LOCAL_UNSPECIFIED;
-            }
-            replicatedEntitySettings.setWriteConsistency(writeConsistency);
-            entitySettings.setReplicatedEntity(replicatedEntitySettings);
+            const writeConsistency: number | undefined =
+              entityOptions.replicatedWriteConsistency;
+            const replicatedEntitySettings: discovery.ReplicatedEntitySettings =
+              {
+                writeConsistency: writeConsistency,
+              };
+            entitySettings.replicatedEntity = replicatedEntitySettings;
           }
-
-          res.setEntity(entitySettings);
-        } else if (res.getComponentType().indexOf('View') > -1) {
+          res.entity = entitySettings;
+        } else if ((res.componentType ?? '').indexOf('View') > -1) {
           // views need to use entity settings to be able to pass view id (as entity_id)
           const componentOptions = component.options as ComponentOptions;
-          const entitySettings = new discovery.EntitySettings();
-          if (componentOptions.entityType) {
-            entitySettings.setEntityType(componentOptions.entityType);
-          }
-          if (componentOptions.forwardHeaders) {
-            entitySettings.setForwardHeadersList(
-              componentOptions.forwardHeaders,
-            );
-          }
-          res.setEntity(entitySettings);
+          const entitySettings: discovery.EntitySettings = {
+            entityType: componentOptions.entityType,
+            forwardHeaders: componentOptions.forwardHeaders,
+          };
+          res.entity = entitySettings;
         } else {
           // other components has ComponentOptions / GenericComponentSettings
           const componentOptions = component.options as ComponentOptions;
-          const componentSettings = new discovery.GenericComponentSettings();
-          if (componentOptions.forwardHeaders) {
-            componentSettings.setForwardHeadersList(
-              componentOptions.forwardHeaders,
-            );
-          }
-          res.setComponent(componentSettings);
+          const componentSettings: discovery.GenericComponentSettings = {
+            forwardHeaders: componentOptions.forwardHeaders,
+          };
+          res.component = componentSettings;
         }
 
         return res;
       });
 
-      spec.setProto(this.proto).setComponentsList(components);
+      spec.proto = this.proto;
+      spec.components = components;
     }
 
     return spec;

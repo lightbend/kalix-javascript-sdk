@@ -16,12 +16,7 @@
 
 import { Cloudevent } from './cloudevent';
 import { JwtClaims } from './jwt-claims';
-import * as proto from '../proto/protobuf-bundle';
-
-/** @internal */
-namespace protocol {
-  export type Metadata = proto.kalix.component.IMetadata;
-}
+import * as protocol from '../types/protocol/commands';
 
 /**
  * A metadata value. Can either be a string or a buffer.

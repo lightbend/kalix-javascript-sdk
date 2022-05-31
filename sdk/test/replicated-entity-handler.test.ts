@@ -18,15 +18,15 @@ const should = require('chai').should();
 import * as protobuf from 'protobufjs';
 import * as path from 'path';
 import * as Long from 'long';
-import * as grpc from '@grpc/grpc-js';
 import * as replicatedData from '../src/replicated-data';
-import AnySupport from '../src/protobuf-any';
+import AnySupport, { Any } from '../src/protobuf-any';
 import { ReplicatedEntity } from '../src/replicated-entity';
 import {
   ReplicatedEntityHandler,
+  ReplicatedEntityServices,
   ReplicatedEntitySupport,
 } from '../src/replicated-entity-support';
-import * as proto from '../proto/protobuf-bundle';
+import * as protocol from '../types/protocol/replicated-entities';
 
 const root = new protobuf.Root();
 root.loadSync(path.join(__dirname, 'example.proto'));
@@ -36,33 +36,6 @@ const anySupport = new AnySupport(root);
 const In = root.lookupType('com.example.In');
 const ExampleService = root.lookupService('com.example.ExampleService');
 
-namespace protocol {
-  export type StreamIn =
-    proto.kalix.component.replicatedentity.IReplicatedEntityStreamIn;
-
-  export const StreamIn =
-    proto.kalix.component.replicatedentity.ReplicatedEntityStreamIn;
-
-  export const Init =
-    proto.kalix.component.replicatedentity.ReplicatedEntityInit;
-
-  export type StreamOut =
-    proto.kalix.component.replicatedentity.IReplicatedEntityStreamOut;
-
-  export const StreamOut =
-    proto.kalix.component.replicatedentity.ReplicatedEntityStreamOut;
-
-  export type Reply =
-    proto.kalix.component.replicatedentity.IReplicatedEntityReply;
-
-  export type Delta =
-    proto.kalix.component.replicatedentity.IReplicatedEntityDelta;
-
-  export type Failure = proto.kalix.component.IFailure;
-
-  export type Call = grpc.ServerDuplexStream<StreamIn, StreamOut>;
-}
-
 const outMsg = {
   field: 'ok',
 };
@@ -70,13 +43,33 @@ const inMsg = {
   field: 'ok',
 };
 
+const service = ReplicatedEntityServices.loadProtocol();
+
+function roundTripStreamIn(streamIn: protocol.StreamIn): protocol.StreamIn {
+  return service.Handle.requestDeserialize(
+    service.Handle.requestSerialize(streamIn),
+  );
+}
+
+function roundTripInit(init: protocol.Init): protocol.Init {
+  return (
+    service.Handle.requestDeserialize(
+      service.Handle.requestSerialize({ init: init }),
+    ).init ?? { serviceName: '', entityId: '', delta: {} }
+  );
+}
+
+function roundTripStreamOut(streamOut: protocol.StreamOut): protocol.StreamOut {
+  return service.Handle.responseDeserialize(
+    service.Handle.responseSerialize(streamOut),
+  );
+}
+
 class MockCall {
   private written: protocol.StreamOut[] = [];
 
   write(msg: protocol.StreamOut): void {
-    this.written.push(
-      protocol.StreamOut.decode(protocol.StreamOut.encode(msg).finish()),
-    );
+    this.written.push(roundTripStreamOut(msg));
   }
 
   end(): void {}
@@ -104,7 +97,7 @@ const call = new MockCall();
 
 function createHandler(
   commandHandler: ReplicatedEntity.CommandHandler,
-  delta: protocol.Delta | undefined = undefined,
+  delta: protocol.DeltaIn | undefined = undefined,
   otherHandlers: Handlers = {},
 ): ReplicatedEntityHandler {
   otherHandlers.commandHandlers = {
@@ -115,7 +108,7 @@ function createHandler(
 
 function create(
   handlers: Handlers = {},
-  delta: protocol.Delta | undefined = undefined,
+  delta: protocol.DeltaIn | null = null,
 ): ReplicatedEntityHandler {
   const entity = new ReplicatedEntitySupport(
     root,
@@ -135,21 +128,12 @@ function create(
   );
   return entity.create(
     call as unknown as protocol.Call,
-    protocol.Init.decode(
-      protocol.Init.encode({
-        entityId: 'foo',
-        delta: delta,
-      }).finish(),
-    ),
+    roundTripInit({
+      serviceName: 'test',
+      entityId: 'foo',
+      delta: delta,
+    }),
   );
-}
-
-// This ensures we have the field names right, rather than just matching them between
-// the tests and the code.
-function roundTripReplicatedEntityStreamIn(
-  msg: protocol.StreamIn,
-): protocol.StreamIn {
-  return protocol.StreamIn.decode(protocol.StreamIn.encode(msg).finish());
 }
 
 async function handleCommand(
@@ -159,10 +143,10 @@ async function handleCommand(
   id = 10,
 ): Promise<protocol.Reply | null | undefined> {
   const response = await doHandleCommand(handler, command, name, id);
-  if (response?.failure !== null) {
+  if (response?.failure) {
     throw new Error(response?.failure?.description ?? '');
   }
-  const reply = response.reply;
+  const reply = response?.reply;
   reply?.commandId?.should.eql(Long.fromNumber(id));
   return reply;
 }
@@ -176,9 +160,10 @@ async function doHandleCommand(
   await send(handler, {
     command: {
       entityId: 'foo',
-      id: id,
+      id: Long.fromNumber(id),
       name: name,
-      payload: AnySupport.serialize(In.create(command), false, false),
+      payload: Any.flip(AnySupport.serialize(In.create(command), false, false)),
+      metadata: { entries: [] },
     },
   });
   return call.get();
@@ -200,9 +185,7 @@ async function send(
   handler: ReplicatedEntityHandler,
   streamIn: protocol.StreamIn,
 ): Promise<void> {
-  await Promise.resolve(
-    handler.onData(roundTripReplicatedEntityStreamIn(streamIn)),
-  );
+  await Promise.resolve(handler.onData(roundTripStreamIn(streamIn)));
 }
 
 function assertHasNoAction(reply?: protocol.Reply | null) {
@@ -212,8 +195,8 @@ function assertHasNoAction(reply?: protocol.Reply | null) {
   }
 }
 
-function toNumber(n?: Long | number | null): number {
-  return Long.isLong(n) ? n.toNumber() : n ?? 0;
+function toNumber(n?: Long | number | string): number {
+  return Long.fromValue(n ?? 0).toNumber();
 }
 
 describe('ReplicatedEntityHandler', () => {
@@ -226,7 +209,7 @@ describe('ReplicatedEntityHandler', () => {
     const reply = await handleCommand(handler, inMsg);
     assertHasNoAction(reply);
     anySupport
-      .deserialize(reply?.clientAction?.reply?.payload)
+      .deserialize(Any.flip(reply?.clientAction?.reply?.payload))
       .field.should.equal(outMsg.field);
   });
 
@@ -238,7 +221,7 @@ describe('ReplicatedEntityHandler', () => {
       },
       {
         counter: {
-          change: 5,
+          change: Long.fromNumber(5),
         },
       },
     );
@@ -255,7 +238,7 @@ describe('ReplicatedEntityHandler', () => {
     const reply = await handleCommand(handler, inMsg);
     assertHasNoAction(reply);
     anySupport
-      .deserialize(reply?.clientAction?.reply?.payload)
+      .deserialize(Any.flip(reply?.clientAction?.reply?.payload))
       .field.should.equal(outMsg.field);
   });
 
@@ -267,7 +250,7 @@ describe('ReplicatedEntityHandler', () => {
       },
       {
         counter: {
-          change: 5,
+          change: Long.fromNumber(5),
         },
       },
     );
@@ -283,7 +266,7 @@ describe('ReplicatedEntityHandler', () => {
     send(handler, {
       delta: {
         counter: {
-          change: 5,
+          change: Long.fromNumber(5),
         },
       },
     });
@@ -298,14 +281,14 @@ describe('ReplicatedEntityHandler', () => {
       },
       {
         counter: {
-          change: 2,
+          change: Long.fromNumber(2),
         },
       },
     );
     send(handler, {
       delta: {
         counter: {
-          change: 5,
+          change: Long.fromNumber(5),
         },
       },
     });
@@ -320,7 +303,7 @@ describe('ReplicatedEntityHandler', () => {
       },
       {
         counter: {
-          change: 2,
+          change: Long.fromNumber(2),
         },
       },
     );

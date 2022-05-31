@@ -34,5 +34,15 @@ else
    fi
 fi
 
-# Compile protobuf
-./bin/compile-protobuf.sh
+# Generate types for the proxy protocol
+proto-loader-gen-types \
+  --grpcLib=@grpc/grpc-js \
+  --defaults \
+  --includeDirs=proto \
+  --outDir=types/generated/proto \
+  kalix/protocol/discovery.proto \
+  kalix/component/action/action.proto \
+  kalix/component/eventsourcedentity/event_sourced_entity.proto \
+  kalix/component/replicatedentity/replicated_entity.proto \
+  kalix/component/valueentity/value_entity.proto \
+  kalix/component/view/view.proto

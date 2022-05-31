@@ -20,13 +20,7 @@ import AnySupport from './protobuf-any';
 import * as util from 'util';
 import { EffectMethod } from './effect';
 import { Metadata } from './metadata';
-import * as proto from '../proto/protobuf-bundle';
-
-/** @internal */
-namespace protocol {
-  export type Forward = proto.kalix.component.IForward;
-  export type SideEffect = proto.kalix.component.ISideEffect;
-}
+import * as protocol from '../types/protocol/commands';
 
 /** @internal */
 export default class EffectSerializer {

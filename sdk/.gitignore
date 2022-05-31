@@ -2,5 +2,6 @@ dist
 proto
 protoc
 apidocs
-user-function.desc
+generated
 *.tgz
+*.tsbuildinfo

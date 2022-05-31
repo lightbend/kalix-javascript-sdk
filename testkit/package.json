@@ -25,7 +25,8 @@
     "node": "~14"
   },
   "files": [
-    "dist"
+    "dist",
+    "src"
   ],
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

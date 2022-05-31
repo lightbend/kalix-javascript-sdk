@@ -14,20 +14,26 @@
  * limitations under the License.
  */
 
-import {
-  Kalix,
-  ComponentOptions,
-  EntityOptions,
-  Component,
-} from '../src/kalix';
-import discovery from '../proto/kalix/protocol/discovery_pb';
+import { Kalix, Component } from '../src/kalix';
+import * as discovery from '../types/protocol/discovery';
+import * as fs from 'fs';
 import { should } from 'chai';
 should();
+
+const proxyInfo: discovery.ProxyInfo = {
+  protocolMajorVersion: 1,
+  protocolMinorVersion: 0,
+  proxyName: 'kalix-proxy-test',
+  proxyVersion: '1.0.0',
+  supportedEntityTypes: [],
+  devMode: false,
+  deploymentName: '',
+};
 
 describe('Kalix', () => {
   it('should generate working links based on error codes', () => {
     const kalix = new Kalix({
-      descriptorSetPath: 'test/user-function-test.desc',
+      descriptorSetPath: 'test/generated/user-function.desc',
     });
 
     const specificLink = kalix.docLinkFor('KLX-00112');
@@ -43,15 +49,16 @@ describe('Kalix', () => {
 
   it('format correctly the source code for errors', () => {
     const kalix = new Kalix({
-      descriptorSetPath: 'test/user-function-test.desc',
+      descriptorSetPath: 'test/generated/user-function.desc',
     });
-    const location = new discovery.UserFunctionError.SourceLocation();
-    location.setFileName('package.test.json');
-    location.setStartLine(1);
-    location.setStartCol(3);
-    location.setEndLine(2);
-    location.setEndCol(5);
-    location.setProtoPathList([]);
+    const location: discovery.SourceLocation = {
+      fileName: 'package.test.json',
+      startLine: 1,
+      startCol: 3,
+      endLine: 2,
+      endCol: 5,
+      protoPath: [],
+    };
     const component = {
       serviceName: 'my-service',
       options: {
@@ -74,15 +81,16 @@ describe('Kalix', () => {
 
   it('report correctly errors', () => {
     const kalix = new Kalix({
-      descriptorSetPath: 'test/user-function-test.desc',
+      descriptorSetPath: 'test/generated/user-function.desc',
     });
-    const location = new discovery.UserFunctionError.SourceLocation();
-    location.setFileName('package.test.json');
-    location.setStartLine(1);
-    location.setStartCol(3);
-    location.setEndLine(2);
-    location.setEndCol(5);
-    location.setProtoPathList([]);
+    const location: discovery.SourceLocation = {
+      fileName: 'package.test.json',
+      startLine: 1,
+      startCol: 3,
+      endLine: 2,
+      endCol: 5,
+      protoPath: [],
+    };
     const component = {
       serviceName: 'my-service',
       options: {
@@ -95,17 +103,18 @@ describe('Kalix', () => {
     };
     kalix.addComponent(component as Component);
 
-    const userError = new discovery.UserFunctionError();
-    userError.setCode('KLX-00112');
-    userError.setDetail('test details');
-    userError.setMessage('test message');
-    userError.setSourceLocationsList([location]);
+    const userError: discovery.UserFunctionError = {
+      code: 'KLX-00112',
+      detail: 'test details',
+      message: 'test message',
+      sourceLocations: [location],
+    };
 
     const errorMsg = kalix.reportErrorLogic(
-      userError.getCode(),
-      userError.getMessage(),
-      userError.getDetail(),
-      userError.getSourceLocationsList(),
+      userError.code,
+      userError.message,
+      userError.detail,
+      userError.sourceLocations,
     );
 
     const result = `Error reported from Kalix system: KLX-00112 test message
@@ -121,34 +130,33 @@ At package.test.json:2:4:
 
   it('discovery service should return correct service info', () => {
     const kalix = new Kalix({
-      descriptorSetPath: 'test/user-function-test.desc',
+      descriptorSetPath: 'test/generated/user-function.desc',
       serviceName: 'my-service',
       serviceVersion: '1.2.3',
     });
-    const proxyInfo = new discovery.ProxyInfo();
 
     const result = kalix.discoveryLogic(proxyInfo);
-    const serviceInfo = result.getServiceInfo();
+    const serviceInfo = result.serviceInfo;
 
-    result.getProto().should.equal('');
-    result.getComponentsList().length.should.equal(0);
-    serviceInfo?.getProtocolMajorVersion().should.equal(1);
-    serviceInfo?.getProtocolMinorVersion().should.equal(0);
-    serviceInfo?.getServiceName().should.equal('my-service');
-    serviceInfo?.getServiceVersion().should.equal('1.2.3');
-    serviceInfo?.getServiceRuntime().should.contains('node v');
-    serviceInfo
-      ?.getSupportLibraryName()
-      .should.equal('@kalix-io/kalix-javascript-sdk');
-    serviceInfo?.getSupportLibraryVersion().should.equal('0.0.0');
+    const expectedProto = fs.readFileSync('test/generated/user-function.desc');
+
+    result.proto?.should.deep.equal(expectedProto);
+    result.components?.length.should.equal(0);
+    serviceInfo?.protocolMajorVersion?.should.equal(1);
+    serviceInfo?.protocolMinorVersion?.should.equal(0);
+    serviceInfo?.serviceName?.should.equal('my-service');
+    serviceInfo?.serviceVersion?.should.equal('1.2.3');
+    serviceInfo?.serviceRuntime?.should.contains('node v');
+    serviceInfo?.supportLibraryName?.should.equal(
+      '@kalix-io/kalix-javascript-sdk',
+    );
+    serviceInfo?.supportLibraryVersion?.should.equal('0.0.0');
   });
 
   it('discovery service should return correct components', () => {
     const kalix = new Kalix({
-      descriptorSetPath: 'test/user-function-test.desc',
+      descriptorSetPath: 'test/generated/user-function.desc',
     });
-    const proxyInfo = new discovery.ProxyInfo();
-    proxyInfo.setProtocolMajorVersion(1);
     const entity = {
       serviceName: 'my-service',
       options: {
@@ -175,37 +183,31 @@ At package.test.json:2:4:
     kalix.addComponent(action as Component);
     const result = kalix.discoveryLogic(proxyInfo);
 
-    result.getComponentsList().length.should.equal(2);
-    const entityResult = result.getComponentsList()[0];
-    entityResult.getServiceName().should.equal('my-service');
-    entityResult
-      .getComponentType()
-      .should.equal('kalix.component.valueentity.ValueEntities');
-    entityResult.getEntity()?.should.not.be.undefined;
-    entityResult.getEntity()?.getEntityType().should.equal('my-entity-type');
-    entityResult.getEntity()?.getPassivationStrategy()?.should.be.undefined;
-    entityResult
-      .getEntity()
-      ?.getForwardHeadersList()
-      .should.have.same.members(['x-my-header']);
-    const actionResult = result.getComponentsList()[1];
-    actionResult.getServiceName().should.equal('my-action');
-    actionResult
-      .getComponentType()
-      .should.equal('kalix.component.action.Actions');
-    entityResult.getComponent()?.should.not.be.undefined;
-    entityResult
-      .getComponent()
-      ?.getForwardHeadersList()
-      .should.have.same.members(['x-my-header']);
+    result.components?.length.should.equal(2);
+    const entityResult = (result.components ?? [])[0];
+    entityResult.serviceName?.should.equal('my-service');
+    entityResult.componentType?.should.equal(
+      'kalix.component.valueentity.ValueEntities',
+    );
+    entityResult.entity?.should.not.be.undefined;
+    entityResult.entity?.entityType?.should.equal('my-entity-type');
+    entityResult.entity?.passivationStrategy?.should.be.undefined;
+    entityResult.entity?.forwardHeaders?.should.have.same.members([
+      'x-my-header',
+    ]);
+    const actionResult = (result.components ?? [])[1];
+    actionResult.serviceName?.should.equal('my-action');
+    actionResult.componentType?.should.equal('kalix.component.action.Actions');
+    entityResult.component?.should.not.be.undefined;
+    entityResult.component?.forwardHeaders?.should.have.same.members([
+      'x-my-header',
+    ]);
   });
 
   it('discovery service should return correct components with passivation', () => {
     const kalix = new Kalix({
-      descriptorSetPath: 'test/user-function-test.desc',
+      descriptorSetPath: 'test/generated/user-function.desc',
     });
-    const proxyInfo = new discovery.ProxyInfo();
-    proxyInfo.setProtocolMajorVersion(1);
     const component = {
       serviceName: 'my-service',
       options: {
@@ -221,13 +223,8 @@ At package.test.json:2:4:
     kalix.addComponent(component as Component);
     const result = kalix.discoveryLogic(proxyInfo);
 
-    result.getComponentsList().length.should.equal(1);
-    const comp = result.getComponentsList()[0];
-    comp
-      .getEntity()
-      ?.getPassivationStrategy()
-      ?.getTimeout()
-      ?.getTimeout()
-      .should.equal(10);
+    result.components?.length.should.equal(1);
+    const comp = (result.components ?? [])[0];
+    comp.entity?.passivationStrategy?.timeout?.timeout?.should.equal(10);
   });
 });

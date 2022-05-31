@@ -20,18 +20,9 @@ import AnySupport, { Comparable } from '../protobuf-any';
 import { Serializable } from '../serializable';
 import * as iterators from './iterators';
 import * as util from 'util';
-import * as proto from '../../proto/protobuf-bundle';
+import * as protocol from '../../types/protocol/replicated-entities';
 
 const debug = require('debug')('kalix-replicated-entity');
-
-/** @internal */
-namespace protocol {
-  export type Delta =
-    proto.kalix.component.replicatedentity.IReplicatedEntityDelta;
-
-  export type EntryDelta =
-    proto.kalix.component.replicatedentity.IReplicatedMultiMapEntryDelta;
-}
 
 interface Entry<Key extends Serializable, Value extends Serializable> {
   key: Key;
@@ -206,8 +197,8 @@ export class ReplicatedMultiMap<
   }
 
   /** @internal */
-  getAndResetDelta = (initial?: boolean): protocol.Delta | null => {
-    const updated: protocol.EntryDelta[] = [];
+  getAndResetDelta = (initial?: boolean): protocol.DeltaOut | null => {
+    const updated: protocol.MultiMapEntryDeltaOut[] = [];
     this.entries.forEach(({ key: key, values: values }, _comparableKey) => {
       const delta = values.getAndResetDelta();
       if (delta !== null) {
@@ -241,7 +232,7 @@ export class ReplicatedMultiMap<
   };
 
   /** @internal */
-  applyDelta = (delta: protocol.Delta, anySupport: AnySupport): void => {
+  applyDelta = (delta: protocol.DeltaIn, anySupport: AnySupport): void => {
     if (!delta.replicatedMultiMap) {
       throw new Error(
         util.format('Cannot apply delta %o to ReplicatedMultiMap', delta),
