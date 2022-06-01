@@ -65,7 +65,7 @@ export class MockValueEntity<Entity extends ValueEntity> {
     ctx = new MockValueEntity.CommandContext<MockValueEntity.StateType<Entity>>(
       this.entityId,
     ),
-  ) {
+  ): any {
     const handler = (
       this.entity.commandHandlers as MockValueEntity.CommandHandlersType<Entity>
     )[commandName];
@@ -90,9 +90,9 @@ export class MockValueEntity<Entity extends ValueEntity> {
       this.error = reply.getFailure()?.getDescription();
     else this.error = ctx.error;
 
-    return grpcMethod.responseDeserialize(
-      grpcMethod.responseSerialize(message),
-    );
+    return message
+      ? grpcMethod.responseDeserialize(grpcMethod.responseSerialize(message))
+      : undefined;
   }
 }
 

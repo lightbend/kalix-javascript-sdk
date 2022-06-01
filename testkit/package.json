@@ -43,16 +43,20 @@
     "chai": "^4.3.6",
     "mocha": "^10.0.0",
     "ts-node": "^10.8.0",
-    "typescript": "^4.6.4"
+    "typescript": "^4.7.2"
   },
   "scripts": {
     "clean": "rimraf ./dist",
     "compile": "tsc",
     "verify-types": "tsc dist/index.d.ts --noEmit",
     "prepack": "npm run compile && npm run verify-types",
-    "preintegration-test": "npm run integration-test-descriptor && npm run integration-test-protobuf",
-    "integration-test-descriptor": "compile-descriptor integration-test/example.proto --descriptor_set_out=integration-test/user-function.desc",
-    "integration-test-protobuf": "pbjs -t static-module -w commonjs integration-test/example.proto -o integration-test/proto.js && pbts -o integration-test/proto.d.ts integration-test/proto.js",
+    "example:build": "mkdirp example/generated && npm run example:descriptor && npm run example:pbjs && npm run example:pbts",
+    "example:descriptor": "compile-descriptor example/proto/*.proto --descriptor_set_out=example/generated/user-function.desc",
+    "example:pbjs": "pbjs -t static-module -w commonjs example/proto/example.proto -o example/generated/proto.js",
+    "example:pbts": "pbts -o example/generated/proto.d.ts example/generated/proto.js",
+    "pretest": "npm run example:build",
+    "test": "mocha",
+    "preintegration-test": "npm run example:build",
     "integration-test": "mocha integration-test/**/*.test.ts",
     "prepublishOnly": "npm version --no-git-tag-version $(bin/version.sh)"
   },
