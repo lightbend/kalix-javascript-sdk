@@ -80,7 +80,7 @@ export class MockEventSourcedEntity<Entity extends EventSourcedEntity> {
     );
 
     const reply = handler(request, this.state, ctx);
-    const result = reply instanceof Reply ? reply.getMessage() : reply;
+    const message = reply instanceof Reply ? reply.getMessage() : reply;
 
     ctx.events.forEach((event) => this.handleEvent(event));
 
@@ -88,7 +88,9 @@ export class MockEventSourcedEntity<Entity extends EventSourcedEntity> {
       this.error = reply.getFailure()?.getDescription();
     else this.error = ctx.error;
 
-    return grpcMethod.responseDeserialize(grpcMethod.responseSerialize(result));
+    return message
+      ? grpcMethod.responseDeserialize(grpcMethod.responseSerialize(message))
+      : undefined;
   }
 
   /**

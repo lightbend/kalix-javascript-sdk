@@ -15,101 +15,22 @@
  */
 
 require('chai').should();
-import {
-  Action,
-  EventSourcedEntity,
-  Reply,
-  ValueEntity,
-} from '@kalix-io/kalix-javascript-sdk';
-import { IntegrationTestkit } from '../src/integration-testkit';
+import { IntegrationTestkit } from '../src';
+import action from '../example/src/action';
+import valueEntity from '../example/src/value-entity';
+import eventSourcedEntity from '../example/src/event-sourced-entity';
 import { ServiceError } from '@grpc/grpc-js';
-import * as proto from './proto';
+import * as proto from '../example/generated/proto';
 
-type Example = proto.com.example.IExample & protobuf.Message;
-type In = proto.com.example.IIn;
 type Out = proto.com.example.IOut;
 
-const action = new Action(
-  './integration-test/example.proto',
-  'com.example.ExampleService',
-);
-
-action.commandHandlers = {
-  DoSomething: (input: In) => {
-    return { field: 'Received ' + input.field };
-  },
-  StreamSomething: (input: In, ctx: Action.StreamedOutCommandContext) => {
-    ctx.write({ field: 'Received ' + input.field });
-    ctx.end();
-  },
-  Fail: (_input: In, ctx: Action.UnaryCommandContext) => {
-    ctx.fail('some-error', 6);
-  },
-};
-
-const value_entity = new ValueEntity<Example>(
-  './integration-test/example.proto',
-  'com.example.ExampleServiceTwo',
-  'value-entity-example-service',
-);
-
-value_entity.setInitial(() =>
-  value_entity.lookupType('com.example.Example').create({}),
-);
-
-value_entity.commandHandlers = {
-  DoSomethingOne: (input: In) => {
-    return { field: 'ValueEntity Received ' + input.field };
-  },
-  DoSomethingTwo: (input: In) => {
-    return new Promise((resolve) => {
-      setTimeout(
-        () => resolve({ field: 'ValueEntityAsync Received ' + input.field }),
-        1000,
-      );
-    });
-  },
-  Fail: () => Reply.failure('some-error', 6),
-};
-
-const entity = new EventSourcedEntity<Example>(
-  './integration-test/example.proto',
-  'com.example.ExampleServiceThree',
-  'event-sourced-entity-example-service',
-);
-
-entity.setInitial(() => entity.lookupType('com.example.Example').create({}));
-
-entity.setBehavior(() => {
-  return {
-    commandHandlers: {
-      DoSomethingOne: (input: In) => {
-        return { field: 'EventSourcedEntity Received ' + input.field };
-      },
-      DoSomethingTwo: (input: In) => {
-        return new Promise((resolve) => {
-          setTimeout(
-            () =>
-              resolve({
-                field: 'EventSourcedEntityAsync Received ' + input.field,
-              }),
-            1000,
-          );
-        });
-      },
-      Fail: () => Reply.failure('some-error', 6),
-    },
-    eventHandlers: {},
-  };
-});
-
 const testkit = new IntegrationTestkit({
-  descriptorSetPath: 'integration-test/user-function.desc',
+  descriptorSetPath: 'example/generated/user-function.desc',
 });
 
 testkit.addComponent(action);
-testkit.addComponent(value_entity);
-testkit.addComponent(entity);
+testkit.addComponent(valueEntity);
+testkit.addComponent(eventSourcedEntity);
 
 describe('The Kalix IntegrationTestkit', function () {
   this.timeout(60000);
@@ -117,13 +38,13 @@ describe('The Kalix IntegrationTestkit', function () {
   after((done) => testkit.shutdown(done));
 
   it('should handle actions', (done) => {
-    testkit.clients.ExampleService.DoSomething(
+    testkit.clients.ExampleActionService.DoSomething(
       { field: 'hello' },
       (err: any, msg: Out) => {
         if (err) {
           done(err);
         } else {
-          msg.field?.should.equal('Received hello');
+          msg.field?.should.equal('Received: hello');
           done();
         }
       },
@@ -131,7 +52,7 @@ describe('The Kalix IntegrationTestkit', function () {
   });
 
   it('should allow actions to fail with custom code', (done) => {
-    testkit.clients.ExampleService.Fail(
+    testkit.clients.ExampleActionService.Fail(
       { field: 'hello' },
       (err: ServiceError, _msg: Out) => {
         err.should.not.be.undefined;
@@ -145,27 +66,27 @@ describe('The Kalix IntegrationTestkit', function () {
   });
 
   it('should handle value entities sync handlers', (done) => {
-    testkit.clients.ExampleServiceTwo.DoSomethingOne(
+    testkit.clients.ExampleValueEntityService.DoSomethingOne(
       { field: 'hello' },
       (_err: any, msg: Out) => {
-        msg.field?.should.equal('ValueEntity Received hello');
+        msg.field?.should.equal('ValueEntity received: hello');
         done();
       },
     );
   });
 
   it('should handle value entities async handlers', (done) => {
-    testkit.clients.ExampleServiceTwo.DoSomethingTwo(
+    testkit.clients.ExampleValueEntityService.DoSomethingTwo(
       { field: 'hello' },
       (_err: any, msg: Out) => {
-        msg.field?.should.equal('ValueEntityAsync Received hello');
+        msg.field?.should.equal('ValueEntity async received: hello');
         done();
       },
     );
   });
 
   it('should allow value entities to fail with custom code', (done) => {
-    testkit.clients.ExampleServiceTwo.Fail(
+    testkit.clients.ExampleValueEntityService.Fail(
       { field: 'hello' },
       (err: ServiceError, _msg: Out) => {
         err.should.not.be.undefined;
@@ -177,27 +98,27 @@ describe('The Kalix IntegrationTestkit', function () {
   });
 
   it('should handle event sourced entities sync handlers', (done) => {
-    testkit.clients.ExampleServiceThree.DoSomethingOne(
+    testkit.clients.ExampleEventSourcedEntityService.DoSomethingOne(
       { field: 'hello' },
       (_err: any, msg: Out) => {
-        msg.field?.should.equal('EventSourcedEntity Received hello');
+        msg.field?.should.equal('EventSourcedEntity received: hello');
         done();
       },
     );
   });
 
   it('should handle event sourced entities async handlers', (done) => {
-    testkit.clients.ExampleServiceThree.DoSomethingTwo(
+    testkit.clients.ExampleEventSourcedEntityService.DoSomethingTwo(
       { field: 'hello' },
       (_err: any, msg: Out) => {
-        msg.field?.should.equal('EventSourcedEntityAsync Received hello');
+        msg.field?.should.equal('EventSourcedEntity async received: hello');
         done();
       },
     );
   });
 
   it('should allow event sourced entities to fail with custom code', (done) => {
-    testkit.clients.ExampleServiceThree.Fail(
+    testkit.clients.ExampleEventSourcedEntityService.Fail(
       { field: 'hello' },
       (err: ServiceError, _msg: Out) => {
         err.should.not.be.undefined;

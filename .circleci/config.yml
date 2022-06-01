@@ -220,6 +220,7 @@ jobs:
           command: |
             npm ci
             npm install ../sdk/kalix-io-kalix-javascript-sdk-0.0.0.tgz
+            npm test
             npm pack
       - run:
           name: "Test JS Value Entity Counter sample"

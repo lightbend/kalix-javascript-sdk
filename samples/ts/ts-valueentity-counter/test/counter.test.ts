@@ -56,7 +56,7 @@ describe("CounterService", () => {
         value: -2
       });
 
-      expect(result).to.deep.equal({});
+      expect(result).to.be.undefined;
       expect(entity.error).to.be.equal(`Increase requires a positive value. It was [-2].`);
     });
   });

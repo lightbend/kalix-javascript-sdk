@@ -11,4 +11,4 @@ jsdoc.json
 /tck/generated/**/*.*
 /tck/proto/**/*.*
 /testkit/dist/**/*.*
-/testkit/integration-test/proto.*
+/testkit/example/generated/**/*.*

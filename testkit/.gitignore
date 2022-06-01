@@ -1,4 +1,3 @@
 dist
-integration-test/proto.*
-integration-test/user-function.desc
+example/generated
 *.tgz
