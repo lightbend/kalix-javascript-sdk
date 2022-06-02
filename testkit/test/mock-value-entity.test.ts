@@ -21,27 +21,39 @@ import valueEntity from '../example/src/value-entity';
 const ExampleState = valueEntity.lookupType('com.example.ExampleState');
 
 describe('MockValueEntity', () => {
-  it('should update state', () => {
+  it('should update state', async () => {
     const entity = new MockValueEntity(valueEntity, 'entity-id');
 
     expect(entity.error).to.be.undefined;
     expect(entity.state).to.deep.equal(ExampleState.create({}));
 
-    const response = entity.handleCommand('DoSomethingOne', {
+    const responseOne = await entity.handleCommand('DoSomethingOne', {
       field: 'foo',
     });
 
-    expect(response).to.deep.equal({ field: 'ValueEntity received: foo' });
+    expect(responseOne).to.deep.equal({ field: 'ValueEntity received: foo' });
     expect(entity.error).to.be.undefined;
     expect(entity.state).to.deep.equal(
       ExampleState.create({ field1: 'foo', field2: '' }),
     );
+
+    const responseTwo = await entity.handleCommand('DoSomethingTwo', {
+      field: 'bar',
+    });
+
+    expect(responseTwo).to.deep.equal({
+      field: 'ValueEntity async received: bar',
+    });
+    expect(entity.error).to.be.undefined;
+    expect(entity.state).to.deep.equal(
+      ExampleState.create({ field1: 'foo', field2: 'bar' }),
+    );
   });
 
-  it('should record error message', () => {
+  it('should record error message', async () => {
     const entity = new MockValueEntity(valueEntity, 'entity-id');
 
-    const response = entity.handleCommand('Fail', {});
+    const response = await entity.handleCommand('Fail', {});
 
     expect(response).to.be.undefined;
     expect(entity.error).to.equal('some-error');

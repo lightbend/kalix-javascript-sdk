@@ -52,20 +52,20 @@ export class MockValueEntity<Entity extends ValueEntity> {
   }
 
   /**
-   * Handle the provided command, and return the result. Any emitted events are also handled.
+   * Handle the provided command, and return the result.
    *
    * @param commandName - the command method name (as per the entity proto definition)
    * @param command - the command message
    * @param ctx - override the context object for this handler for advanced behaviour
    * @returns the result of the command
    */
-  handleCommand(
+  async handleCommand(
     commandName: MockValueEntity.CommandNames<Entity>,
     command: any,
     ctx = new MockValueEntity.CommandContext<MockValueEntity.StateType<Entity>>(
       this.entityId,
     ),
-  ): any {
+  ): Promise<any> {
     const handler = (
       this.entity.commandHandlers as MockValueEntity.CommandHandlersType<Entity>
     )[commandName];
@@ -75,7 +75,7 @@ export class MockValueEntity<Entity extends ValueEntity> {
       grpcMethod.requestSerialize(command),
     );
 
-    const reply = handler(request, this.state, ctx);
+    const reply = await handler(request, this.state, ctx);
     const message = reply instanceof Reply ? reply.getMessage() : reply;
 
     if (ctx.delete) {
@@ -115,7 +115,7 @@ export namespace MockValueEntity {
    *
    * By default, calls to {@link MockValueEntity.handleCommand} will
    * construct their own instance of this class, however for making assertions on
-   * forwarding or emmitted effects you may provide your own.
+   * forwarding or emitted effects you may provide your own.
    */
   export class CommandContext<State extends Serializable = any>
     extends MockCommandContext

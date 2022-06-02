@@ -204,12 +204,12 @@ class EntityServiceSourceGeneratorSuite extends munit.FunSuite {
         |      command: api.SetValue,
         |      state: State,
         |      ctx: CommandContext
-        |    ) => CommandReply<api.IEmpty>;
+        |    ) => CommandReply<api.IEmpty> | Promise<CommandReply<api.IEmpty>>;
         |    Get: (
         |      command: api.GetValue,
         |      state: State,
         |      ctx: CommandContext
-        |    ) => CommandReply<api.IMyState>;
+        |    ) => CommandReply<api.IMyState> | Promise<CommandReply<api.IMyState>>;
         |  };
         |}
         |
@@ -261,12 +261,12 @@ class EntityServiceSourceGeneratorSuite extends munit.FunSuite {
         |      command: api.SetValue,
         |      state: State,
         |      ctx: CommandContext
-        |    ) => CommandReply<api.IEmpty>;
+        |    ) => CommandReply<api.IEmpty> | Promise<CommandReply<api.IEmpty>>;
         |    Get: (
         |      command: api.GetValue,
         |      state: State,
         |      ctx: CommandContext
-        |    ) => CommandReply<api.IMyState>;
+        |    ) => CommandReply<api.IMyState> | Promise<CommandReply<api.IMyState>>;
         |  };
         |}
         |
@@ -301,10 +301,10 @@ class EntityServiceSourceGeneratorSuite extends munit.FunSuite {
         |  const entityId = "entityId";
         |  
         |  describe("Set", () => {
-        |    it("should...", () => {
+        |    it("should...", async () => {
         |      const entity = new MockEventSourcedEntity(myentity, entityId);
         |      // TODO: you may want to set fields in addition to the entity id
-        |      // const result = entity.handleCommand("Set", { entityId });
+        |      // const result = await entity.handleCommand("Set", { entityId });
         |      
         |      // expect(result).to.deep.equal({});
         |      // expect(entity.error).to.be.undefined;
@@ -314,10 +314,10 @@ class EntityServiceSourceGeneratorSuite extends munit.FunSuite {
         |  });
         |  
         |  describe("Get", () => {
-        |    it("should...", () => {
+        |    it("should...", async () => {
         |      const entity = new MockEventSourcedEntity(myentity, entityId);
         |      // TODO: you may want to set fields in addition to the entity id
-        |      // const result = entity.handleCommand("Get", { entityId });
+        |      // const result = await entity.handleCommand("Get", { entityId });
         |      
         |      // expect(result).to.deep.equal({});
         |      // expect(entity.error).to.be.undefined;
@@ -352,10 +352,10 @@ class EntityServiceSourceGeneratorSuite extends munit.FunSuite {
         |  const entityId = "entityId";
         |  
         |  describe("Set", () => {
-        |    it("should...", () => {
+        |    it("should...", async () => {
         |      const entity = new MockValueEntity(myvalueentity, entityId);
         |      // TODO: you may want to set fields in addition to the entity id
-        |      // const result = entity.handleCommand("Set", { entityId });
+        |      // const result = await entity.handleCommand("Set", { entityId });
         |      
         |      // expect(result).to.deep.equal({});
         |      // expect(entity.error).to.be.undefined;
@@ -364,10 +364,10 @@ class EntityServiceSourceGeneratorSuite extends munit.FunSuite {
         |  });
         |  
         |  describe("Get", () => {
-        |    it("should...", () => {
+        |    it("should...", async () => {
         |      const entity = new MockValueEntity(myvalueentity, entityId);
         |      // TODO: you may want to set fields in addition to the entity id
-        |      // const result = entity.handleCommand("Get", { entityId });
+        |      // const result = await entity.handleCommand("Get", { entityId });
         |      
         |      // expect(result).to.deep.equal({});
         |      // expect(entity.error).to.be.undefined;

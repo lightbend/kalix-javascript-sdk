@@ -27,7 +27,7 @@ const ExampleEventTwo = eventSourcedEntity.lookupType(
 );
 
 describe('MockEventSourcedEntity', () => {
-  it('should update state', () => {
+  it('should update state', async () => {
     const entity = new MockEventSourcedEntity(eventSourcedEntity, 'entity-id');
 
     expect(entity.error).to.be.undefined;
@@ -41,23 +41,35 @@ describe('MockEventSourcedEntity', () => {
       ExampleState.create({ field1: 'foo', field2: 'bar' }),
     );
 
-    const response = entity.handleCommand('DoSomethingOne', {
+    const responseOne = await entity.handleCommand('DoSomethingOne', {
       field: 'baz',
     });
 
-    expect(response).to.deep.equal({
+    expect(responseOne).to.deep.equal({
       field: 'EventSourcedEntity received: baz',
     });
     expect(entity.error).to.be.undefined;
     expect(entity.state).to.deep.equal(
       ExampleState.create({ field1: 'baz', field2: 'bar' }),
     );
+
+    const responseTwo = await entity.handleCommand('DoSomethingTwo', {
+      field: 'qux',
+    });
+
+    expect(responseTwo).to.deep.equal({
+      field: 'EventSourcedEntity async received: qux',
+    });
+    expect(entity.error).to.be.undefined;
+    expect(entity.state).to.deep.equal(
+      ExampleState.create({ field1: 'baz', field2: 'qux' }),
+    );
   });
 
-  it('should record error message', () => {
+  it('should record error message', async () => {
     const entity = new MockEventSourcedEntity(eventSourcedEntity, 'entity-id');
 
-    const response = entity.handleCommand('Fail', {});
+    const response = await entity.handleCommand('Fail', {});
 
     expect(response).to.be.undefined;
     expect(entity.error).to.equal('some-error');

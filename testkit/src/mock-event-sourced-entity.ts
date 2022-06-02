@@ -60,13 +60,13 @@ export class MockEventSourcedEntity<Entity extends EventSourcedEntity> {
    * @param ctx - override the context object for this handler for advanced behaviour
    * @returns the result of the command
    */
-  handleCommand(
+  async handleCommand(
     commandName: MockEventSourcedEntity.CommandNames<Entity>,
     command: any,
     ctx = new MockEventSourcedEntity.CommandContext<
       MockEventSourcedEntity.EventsType<Entity>
     >(this.entityId),
-  ): any {
+  ): Promise<any> {
     const behavior = this.entity.behavior
       ? this.entity.behavior(this.state)
       : { commandHandlers: {} };
@@ -79,7 +79,7 @@ export class MockEventSourcedEntity<Entity extends EventSourcedEntity> {
       grpcMethod.requestSerialize(command),
     );
 
-    const reply = handler(request, this.state, ctx);
+    const reply = await handler(request, this.state, ctx);
     const message = reply instanceof Reply ? reply.getMessage() : reply;
 
     ctx.events.forEach((event) => this.handleEvent(event));

@@ -39,17 +39,17 @@ export declare namespace ExampleValueEntityService {
       command: api.In,
       state: State,
       ctx: CommandContext,
-    ) => CommandReply<api.IOut>;
+    ) => CommandReply<api.IOut> | Promise<CommandReply<api.IOut>>;
     DoSomethingTwo: (
       command: api.In,
       state: State,
       ctx: CommandContext,
-    ) => Promise<CommandReply<api.IOut>>;
+    ) => CommandReply<api.IOut> | Promise<CommandReply<api.IOut>>;
     Fail: (
       command: api.In,
       state: State,
       ctx: CommandContext,
-    ) => CommandReply<api.IOut>;
+    ) => CommandReply<api.IOut> | Promise<CommandReply<api.IOut>>;
   };
 }
 

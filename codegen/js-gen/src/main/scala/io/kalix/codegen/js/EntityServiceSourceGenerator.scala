@@ -219,8 +219,11 @@ object EntityServiceSourceGenerator {
               command.fqn.name <> colon <+> parens(nest(line <>
               "command" <> colon <+> apiClass(command.inputType) <> comma <> line <>
               "state" <> colon <+> "State" <> comma <> line <>
-              "ctx" <> colon <+> "CommandContext") <> line) <+> "=>" <+> "CommandReply" <> angles(
-                apiInterface(command.outputType)) <> semi
+              "ctx" <> colon <+> "CommandContext") <> line) <+> "=>" <+> ssep(
+                Seq(
+                  "CommandReply" <> angles(apiInterface(command.outputType)),
+                  "Promise" <> angles("CommandReply" <> angles(apiInterface(command.outputType)))),
+                " | ") <> semi
             },
             line)) <> line) <> semi) <> line) <> line <>
       line <>
@@ -286,12 +289,12 @@ object EntityServiceSourceGenerator {
           service.commands.map { command =>
             "describe" <> parens(dquotes(command.fqn.name) <> comma <+> arrowFn(
               List.empty,
-              "it" <> parens(dquotes("should...") <> comma <+> arrowFn(
+              "it" <> parens(dquotes("should...") <> comma <+> "async" <+> arrowFn(
                 List.empty,
                 "const entity" <+> equal <+> "new" <+> entityMockType <> parens(
                   entityName <> comma <+> "entityId") <> semi <> line <>
                 "// TODO: you may want to set fields in addition to the entity id" <> line <>
-                "// const result" <+> equal <+> "entity.handleCommand" <> parens(
+                "// const result" <+> equal <+> "await" <+> "entity.handleCommand" <> parens(
                   dquotes(command.fqn.name) <> comma <+> braces(" entityId ")) <> semi <> line <>
                 line <>
                 "// expect" <> parens("result") <> dot <> "to" <> dot <> "deep" <> dot <> "equal" <> parens(
