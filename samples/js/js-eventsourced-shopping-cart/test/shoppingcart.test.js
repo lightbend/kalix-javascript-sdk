@@ -28,13 +28,13 @@ describe("ShoppingCartService", () => {
   const entityId = "entityId";
 
   describe("AddItem", () => {
-    it("should respond to addItem commands", () => {
+    it("should respond to addItem commands", async () => {
       const entity = new MockEventSourcedEntity(shoppingcart, entityId);
-      entity.handleCommand(
+      await entity.handleCommand(
         "AddItem", {cartId: "cart1", productId: "a", name: "Apple", quantity: 1});
-      entity.handleCommand(
+      await entity.handleCommand(
         "AddItem", {cartId: "cart1", productId: "b", name: "Banana", quantity: 2});
-      entity.handleCommand(
+      await entity.handleCommand(
         "AddItem", {cartId: "cart1", productId: "c", name: "Cantaloupe", quantity: 3});
 
       expect(entity.error).to.be.undefined;
@@ -56,12 +56,12 @@ describe("ShoppingCartService", () => {
   });
 
   describe("RemoveItem", () => {
-    it("should remove items from a cart", () => {
+    it("should remove items from a cart", async () => {
       const entity = new MockEventSourcedEntity(shoppingcart, entityId);
 
-      entity.handleCommand(
+      await entity.handleCommand(
         "AddItem", {cartId: "cart1", productId: "a", name: "Apple", quantity: 1});
-      entity.handleCommand(
+      await entity.handleCommand(
         "AddItem", {cartId: "cart1", productId: "b", name: "Banana", quantity: 2});
 
       expect(entity.error).to.be.undefined;
@@ -78,7 +78,7 @@ describe("ShoppingCartService", () => {
           ItemAdded.create({item: {productId: 'b', name: 'Banana', quantity: 2}}),
         ]);
 
-      entity.handleCommand(
+      await entity.handleCommand(
         "RemoveItem", {cartId: "cart1", productId: "a"});
       expect(entity.error).to.be.undefined;
       expect(entity.state.items)
@@ -97,9 +97,9 @@ describe("ShoppingCartService", () => {
   });
 
   describe("GetCart", () => {
-    it("should default to an empty cart", () => {
+    it("should default to an empty cart", async () => {
       const entity = new MockEventSourcedEntity(shoppingcart, entityId);
-      const result = entity.handleCommand("GetCart", {entityId});
+      const result = await entity.handleCommand("GetCart", {entityId});
       expect(result).to.deep.equal({});
       expect(entity.error).to.be.undefined;
       expect(entity.state.items).to.be.empty;
