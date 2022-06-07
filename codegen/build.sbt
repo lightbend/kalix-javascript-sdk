@@ -101,7 +101,7 @@ lazy val `kalix-codegen-js-cli` =
 lazy val library =
   new {
     object Version {
-      val kalix = "1.0.9"
+      val kalix = "1.0.10"
       val commonsIo = "2.8.0"
       val kiama = "2.4.0"
       val logback = "1.2.3"
