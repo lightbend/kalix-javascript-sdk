@@ -18,7 +18,12 @@ import * as protobufHelper from './protobuf-helper';
 import * as grpc from '@grpc/grpc-js';
 import * as protoLoader from '@grpc/proto-loader';
 import ViewServices from './view-support';
-import { Component, ComponentOptions, ServiceMap } from './kalix';
+import {
+  Component,
+  ComponentOptions,
+  PreStartSettings,
+  ServiceMap,
+} from './kalix';
 import { Metadata } from './metadata';
 
 const viewServices = new ViewServices();
@@ -125,6 +130,7 @@ export class View<
   readonly serviceName: string;
   readonly service: protobuf.Service;
   readonly options: Required<View.Options>;
+  readonly clients = undefined;
 
   /** @internal */ readonly root: protobuf.Root;
   /** @internal */ readonly grpc: grpc.GrpcObject;
@@ -177,6 +183,8 @@ export class View<
 
     this.grpc = grpc.loadPackageDefinition(packageDefinition);
   }
+
+  preStart(settings: PreStartSettings): void {}
 
   /** @internal */
   componentType(): string {

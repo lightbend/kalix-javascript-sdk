@@ -24,6 +24,7 @@ export {
   EntityPassivationStrategy,
   ReplicatedWriteConsistency,
   ServiceBinding,
+  PreStartSettings,
 } from './kalix';
 
 export { Action } from './action';

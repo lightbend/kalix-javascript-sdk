@@ -18,6 +18,7 @@ import * as util from 'util';
 import * as protobuf from 'protobufjs';
 import * as grpc from '@grpc/grpc-js';
 import { ServiceClientConstructor } from '@grpc/grpc-js/build/src/make-client';
+import { IdentificationInfo } from '../types/protocol/discovery';
 
 /**
  * gRPC client.
@@ -37,12 +38,12 @@ export interface GrpcClientCreator {
   /**
    * Create a new client for service.
    *
-   * @param address - the address for the service
+   * @param address - the address for the service, or undefined if client is for another component in this Kalix Service
    * @param credentials - the credentials for the connection
    * @returns a new gRPC client for the service
    */
   createClient(
-    address: string,
+    address?: string,
     credentials?: grpc.ChannelCredentials,
   ): GrpcClient;
 }
@@ -56,16 +57,43 @@ export interface GrpcClientLookup {
   [index: string]: GrpcClientLookup | GrpcClientCreator;
 }
 
+/**
+ * @private
+ */
+enum ServiceType {
+  SELF,
+  KALIX_SERVICE,
+  EXTERNAL,
+}
+
 /** @public */
 export class GrpcUtil {
   /**
    * Create gRPC client creators for defined services, with promisified clients.
+   *
+   * @internal
    */
   static clientCreators(
     namespace: protobuf.Namespace,
     grpcObject: grpc.GrpcObject,
+    proxyHostname: string,
+    proxyPort: number,
+    identificationInfo?: IdentificationInfo,
   ): GrpcClientLookup {
     const result: GrpcClientLookup = {};
+    const selfAuthHeaders = new grpc.Metadata();
+    const otherKalixServiceAuthHeaders = new grpc.Metadata();
+    if (identificationInfo) {
+      selfAuthHeaders.add(
+        identificationInfo.selfIdentificationHeader!,
+        identificationInfo.selfIdentificationToken!,
+      );
+      otherKalixServiceAuthHeaders.add(
+        identificationInfo.serviceIdentificationHeader!,
+        identificationInfo.selfDeploymentName!,
+      );
+    }
+
     for (const serviceFqn of GrpcUtil.getServiceNames(namespace)) {
       let currentLookup = result;
       let currentGrpc = grpcObject;
@@ -78,15 +106,48 @@ export class GrpcUtil {
         currentGrpc = currentGrpc[packageName] as grpc.GrpcObject;
       }
       const serviceName = nameComponents[nameComponents.length - 1];
-      const serviceClientConstructor = currentGrpc[
-        serviceName
-      ] as ServiceClientConstructor;
       const clientCreator = function (
-        address: string,
+        address?: string,
         credentials?: grpc.ChannelCredentials,
       ) {
         const creds = credentials || grpc.credentials.createInsecure();
-        const client = new serviceClientConstructor(address, creds);
+        let actualAddress: string;
+        let serviceType: ServiceType;
+        if (address) {
+          if (address.indexOf('.') > 0) {
+            serviceType = ServiceType.EXTERNAL;
+          } else if (address.startsWith(proxyHostname)) {
+            // FIXME deprecate and warn about creating with manual address?
+            // Note: this is not water tight, when running locally with docker it will likely be 'localhost' for all services
+            serviceType = ServiceType.SELF;
+          } else {
+            serviceType = ServiceType.KALIX_SERVICE;
+          }
+          actualAddress = address;
+        } else {
+          // auto set self-host/port
+          serviceType = ServiceType.SELF;
+          actualAddress = proxyHostname + ':' + proxyPort;
+        }
+
+        const serviceClientConstructor = currentGrpc[
+          serviceName
+        ] as ServiceClientConstructor;
+
+        const client = new serviceClientConstructor(actualAddress, creds);
+        if (identificationInfo) {
+          switch (serviceType) {
+            case ServiceType.SELF:
+              GrpcUtil.addHeadersToAllRequests(client, selfAuthHeaders);
+              break;
+            case ServiceType.KALIX_SERVICE:
+              GrpcUtil.addHeadersToAllRequests(
+                client,
+                otherKalixServiceAuthHeaders,
+              );
+              break;
+          }
+        }
         return GrpcUtil.promisifyClient(client);
       };
       currentLookup[serviceName] = {
@@ -115,6 +176,38 @@ export class GrpcUtil {
         .reduce((acc, val) => acc.concat(val), []);
     }
     return [];
+  }
+
+  /**
+   * Add default headers/metadata to all request methods
+   */
+  static addHeadersToAllRequests(
+    client: any,
+    metadataWithHeaders: grpc.Metadata,
+  ) {
+    Object.keys(Object.getPrototypeOf(client)).forEach((methodName) => {
+      const methodFunction = client[methodName];
+
+      if (methodFunction.requestStream == false) {
+        // unary
+        // FIXME: 4 overloads in generated TS service, how is that handled?
+        client[methodName] = function (
+          arg: any,
+          metadata: grpc.Metadata,
+          options: grpc.CallOptions,
+          callback: grpc.requestCallback<any>,
+        ) {
+          if (!metadata) {
+            metadata = metadataWithHeaders;
+          } else {
+            metadata.merge(metadataWithHeaders);
+          }
+          return methodFunction(arg, metadata, options, callback);
+        };
+      } else {
+        // FIXME streaming in calls look different?
+      }
+    });
   }
 
   /**

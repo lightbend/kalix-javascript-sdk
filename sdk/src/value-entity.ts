@@ -19,7 +19,7 @@ import * as grpc from '@grpc/grpc-js';
 import * as protoLoader from '@grpc/proto-loader';
 import ValueEntityServices from './value-entity-support';
 import { GrpcClientLookup, GrpcUtil } from './grpc-util';
-import { Entity, EntityOptions, ServiceMap } from './kalix';
+import { Entity, EntityOptions, PreStartSettings, ServiceMap } from './kalix';
 import { Serializable } from './serializable';
 import { EntityCommandContext, CommandReply } from './command';
 
@@ -149,7 +149,7 @@ export class ValueEntity<
   readonly serviceName: string;
   readonly service: protobuf.Service;
   readonly options: Required<ValueEntity.Options>;
-  readonly clients: GrpcClientLookup;
+  clients?: GrpcClientLookup;
 
   /** @internal */ readonly root: protobuf.Root;
   /** @internal */ readonly grpc: grpc.GrpcObject;
@@ -205,9 +205,19 @@ export class ValueEntity<
     });
     this.grpc = grpc.loadPackageDefinition(packageDefinition);
 
-    this.clients = GrpcUtil.clientCreators(this.root, this.grpc);
+    this.clients = undefined;
 
     this.commandHandlers = {} as CommandHandlers;
+  }
+
+  preStart(settings: PreStartSettings): void {
+    this.clients = GrpcUtil.clientCreators(
+      this.root,
+      this.grpc,
+      settings.proxyHostname,
+      settings.proxyPort,
+      settings.identificationInfo,
+    );
   }
 
   /** @internal */

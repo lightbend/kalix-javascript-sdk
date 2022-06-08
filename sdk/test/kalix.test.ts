@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-import { Kalix, Component } from '../src/kalix';
+import { Kalix, Component, ComponentServices, ServiceMap } from '../src/kalix';
 import * as discovery from '../types/protocol/discovery';
 import * as fs from 'fs';
 import { should } from 'chai';
+import { PreStartSettings } from '../src/kalix';
 should();
 
 const proxyInfo: discovery.ProxyInfo = {
@@ -27,7 +28,8 @@ const proxyInfo: discovery.ProxyInfo = {
   proxyVersion: '1.0.0',
   supportedEntityTypes: [],
   devMode: false,
-  deploymentName: '',
+  proxyHostname: 'localhost',
+  identificationInfo: null, // FIXME
 };
 
 describe('Kalix', () => {
@@ -59,7 +61,7 @@ describe('Kalix', () => {
       endCol: 5,
       protoPath: [],
     };
-    const component = {
+    const component: unknown = {
       serviceName: 'my-service',
       options: {
         includeDirs: ['./test'],
@@ -68,6 +70,7 @@ describe('Kalix', () => {
       componentType: () => {
         return 'my-type';
       },
+      preStart(settings: PreStartSettings): void {},
     };
     kalix.addComponent(component as Component);
 
@@ -91,7 +94,7 @@ describe('Kalix', () => {
       endCol: 5,
       protoPath: [],
     };
-    const component = {
+    const component: unknown = {
       serviceName: 'my-service',
       options: {
         includeDirs: ['./test'],
@@ -100,6 +103,7 @@ describe('Kalix', () => {
       componentType: () => {
         return 'my-type';
       },
+      preStart(settings: PreStartSettings): void {},
     };
     kalix.addComponent(component as Component);
 
@@ -167,6 +171,7 @@ At package.test.json:2:4:
       componentType: () => {
         return 'kalix.component.valueentity.ValueEntities';
       },
+      preStart(settings: PreStartSettings): void {},
     };
     const action = {
       serviceName: 'my-action',
@@ -177,6 +182,7 @@ At package.test.json:2:4:
       componentType: () => {
         return 'kalix.component.action.Actions';
       },
+      preStart(settings: PreStartSettings): void {},
     };
 
     kalix.addComponent(entity as Component);
@@ -218,6 +224,7 @@ At package.test.json:2:4:
       componentType: () => {
         return 'kalix.component.valueentity.ValueEntities';
       },
+      preStart(settings: PreStartSettings): void {},
     };
 
     kalix.addComponent(component as Component);
@@ -226,5 +233,29 @@ At package.test.json:2:4:
     result.components?.length.should.equal(1);
     const comp = (result.components ?? [])[0];
     comp.entity?.passivationStrategy?.timeout?.timeout?.should.equal(10);
+  });
+
+  it('discovered components should get preStarted', () => {
+    const kalix = new Kalix({
+      descriptorSetPath: 'test/generated/user-function.desc',
+    });
+    let seenSettings: PreStartSettings | undefined = undefined;
+    const action: unknown = {
+      serviceName: 'my-action',
+      options: {
+        includeDirs: ['./test'],
+        forwardHeaders: ['x-my-header'],
+      },
+      componentType: () => {
+        return 'kalix.component.action.Actions';
+      },
+      preStart(settings: PreStartSettings): void {
+        seenSettings = settings;
+      },
+    };
+    kalix.addComponent(action as Component);
+    const result = kalix.discoveryLogic(proxyInfo);
+
+    seenSettings!.proxyHostname!.should.equal('localhost');
   });
 });

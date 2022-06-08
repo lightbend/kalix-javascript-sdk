@@ -32,3 +32,4 @@ export { ReplicatedEntitySettings } from '../generated/proto/kalix/protocol/Repl
 
 export { UserFunctionError__Output as UserFunctionError } from '../generated/proto/kalix/protocol/UserFunctionError';
 export { _kalix_protocol_UserFunctionError_SourceLocation__Output as SourceLocation } from '../generated/proto/kalix/protocol/UserFunctionError';
+export { IdentificationInfo__Output as IdentificationInfo } from '../generated/proto/kalix/protocol/IdentificationInfo';

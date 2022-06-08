@@ -237,6 +237,25 @@ export interface Component {
    * @internal
    */
   register(allComponents: ServiceMap): ComponentServices;
+
+  /**
+   * Internal method for setting up the component.
+   */
+  preStart(settings: PreStartSettings): void;
+}
+
+/**
+ * Bootstrap parameters to component preStart, internal
+ *
+ * @public
+ */
+export interface PreStartSettings {
+  proxyHostname: string;
+  proxyPort: number;
+  /**
+   * @internal
+   */
+  identificationInfo?: discovery.IdentificationInfo;
 }
 
 /**
@@ -244,9 +263,7 @@ export interface Component {
  *
  * @public
  */
-export interface Entity extends Component {
-  clients: GrpcClientLookup;
-}
+export interface Entity extends Component {}
 
 /** @internal */
 export interface ServiceMap {
@@ -612,9 +629,12 @@ export class Kalix {
       this.proxyHasTerminated = false;
 
       console.log(
-        'Discovery call received from %s %s',
+        'Received discovery call from [%s %s] at [%s] supporting Kalix protocol %s.%s',
         proxyInfo.proxyName,
         proxyInfo.proxyVersion,
+        proxyInfo.proxyHostname,
+        proxyInfo.protocolMajorVersion,
+        proxyInfo.protocolMinorVersion,
       );
 
       debug(
@@ -623,7 +643,16 @@ export class Kalix {
         this.components.length,
       );
 
+      const preStartSettings: PreStartSettings = {
+        proxyHostname: proxyInfo.proxyHostname,
+        // FIXME setting the port for the integration tests like in the JVM SDK
+        proxyPort: proxyInfo.proxyHostname == 'localhost' ? 9000 : 80,
+        identificationInfo: proxyInfo.identificationInfo || undefined,
+      };
+
       const components = this.components.map((component) => {
+        component.preStart(preStartSettings);
+
         const res: discovery.Component = {
           serviceName: component.serviceName,
           componentType: component.componentType(),
