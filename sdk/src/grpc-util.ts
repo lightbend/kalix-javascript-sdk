@@ -186,24 +186,26 @@ export class GrpcUtil {
     metadataWithHeaders: grpc.Metadata,
   ) {
     Object.keys(Object.getPrototypeOf(client)).forEach((methodName) => {
-      const methodFunction = client[methodName];
+      const originalMethod = client[methodName];
 
-      if (methodFunction.requestStream == false) {
-        // unary
-        // FIXME: 4 overloads in generated TS service, how is that handled?
-        client[methodName] = function (
-          arg: any,
-          metadata: grpc.Metadata,
-          options: grpc.CallOptions,
-          callback: grpc.requestCallback<any>,
+      if (originalMethod.requestStream == false) {
+        // unary and streaming out
+        // important: rebind 'this' of the original/patched method
+        const reboundOriginalMethod = originalMethod.bind(client);
+        const patchedMethod = function(
+            arg: any,
+            metadata: grpc.Metadata,
+            options: grpc.CallOptions,
+            callback: grpc.requestCallback<any>,
         ) {
           if (!metadata) {
             metadata = metadataWithHeaders;
           } else {
             metadata.merge(metadataWithHeaders);
           }
-          return methodFunction(arg, metadata, options, callback);
+          return reboundOriginalMethod(arg, metadata, options, callback);
         };
+        client[methodName] = patchedMethod;
       } else {
         // FIXME streaming in calls look different?
       }
