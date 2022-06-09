@@ -24,18 +24,20 @@ include::example$js-doc-snippets/proto/com/example/counter_api.proto[tag=other-s
 
 The proto-js tool will now generate a client for the service in `lib/generated/proto.js` when we compile the project.
 
-Creating an instance of the generated client is done through the `.grpc` object on the action.
+Creating an instance of the generated client is done through the `.clients` object on the action.
 In our delegating service implementation:
 
 [source,javascript,indent=0]
-.src/main/java/com/example/delegatingservice.js
+.src/delegatingservice.js
 ----
 include::example$js-doc-snippets/src/delegatingservice.js[tag=delegating-action]
 ----
 <1> Include the `proto` file of the other service in the action service descriptors.
 <2> Create the client using the provided creators to get async methods. Defaults to a cleartext connection as TLS is handled transparently for us.
-<3> Use the name that the other Kalix service was deployed as, in this case `counter` and port `80`.
+<3> Use the name that the other Kalix service was deployed as, in this case `counter`.
 <4> We can now call the various methods on the other service with their method names directly on the client. The calls return promises so we can use `await/async` to interact with them.
+
+**Note:** The client can only be created once the service has been started by Kalix, for example triggered by a call, not from the constructor.
 
 == External gRPC services
 

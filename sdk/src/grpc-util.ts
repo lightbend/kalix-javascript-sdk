@@ -116,14 +116,21 @@ export class GrpcUtil {
         if (address) {
           if (address.indexOf('.') > 0) {
             serviceType = ServiceType.EXTERNAL;
+            actualAddress = address;
           } else if (address.startsWith(proxyHostname)) {
             // FIXME deprecate and warn about creating with manual address?
             // Note: this is not water tight, when running locally with docker it will likely be 'localhost' for all services
             serviceType = ServiceType.SELF;
+            actualAddress = address;
           } else {
             serviceType = ServiceType.KALIX_SERVICE;
+            if (address.indexOf(':') > 0) {
+              actualAddress = address;
+            } else {
+              // allow users to use only the service name and add the port for them
+              actualAddress = address + ':80';
+            }
           }
-          actualAddress = address;
         } else {
           // auto set self-host/port
           serviceType = ServiceType.SELF;
@@ -188,8 +195,9 @@ export class GrpcUtil {
     Object.keys(Object.getPrototypeOf(client)).forEach((methodName) => {
       const originalMethod = client[methodName];
 
-      if (originalMethod.requestStream == false) {
-        // unary and streaming out
+      // all client call methods surprisingly enough has the same signature
+      // (but we don't want to patch methods that are not service calls)
+      if (originalMethod.requestStream !== undefined) {
         // important: rebind 'this' of the original/patched method
         const reboundOriginalMethod = originalMethod.bind(client);
         const patchedMethod = function (
@@ -206,8 +214,6 @@ export class GrpcUtil {
           return reboundOriginalMethod(arg, metadata, options, callback);
         };
         client[methodName] = patchedMethod;
-      } else {
-        // FIXME streaming in calls look different?
       }
     });
   }

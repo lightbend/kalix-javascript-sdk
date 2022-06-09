@@ -47,26 +47,34 @@ const action = new Action(
   }
 );
 
-const counterClient = action.clients.com.example.CounterService.createClient( // <2>
-  "counter:80" // <3>
-);
-
-// end::delegating-action[]
-{
-// tag::public-grpc[]
-const counterClient = action.clients.com.example.CounterService.createClient( // <2>
-  "still-queen-1447.us-east1.apps.kalix.dev", // <3>
-  grpc.credentials.createSsl() // <4>
-);
-// end::public-grpc[]
-}
-// tag::delegating-action[]
-
+// tag::other-component[]
 action.commandHandlers = {
   async AddAndReturn(request) {
+    // end::delegating-action[]
+    // end::other-component[]
+    {
+      // FIXME not used in docs yet
+      // tag::other-component[]
+      const counterClient = action.clients.com.example.CounterService.createClient(); // <1>
+      // end::other-component[]
+    }
+
+    {
+    // tag::public-grpc[]
+      const counterClient = action.clients.com.example.CounterService.createClient( // <2>
+        "still-queen-1447.us-east1.apps.kalix.dev", // <3>
+        grpc.credentials.createSsl() // <4>
+      );
+    // end::public-grpc[]
+    }
+    // tag::delegating-action[]
+    const counterClient = action.clients.com.example.CounterService.createClient( // <2>
+      "counter" // <3>
+    );
     await counterClient.increase({counterId: request.counterId, value: 1}); // <4>
-    const currentCounter = await counterClient.getCurrentCounter({counterId: request.counterId });
-    return replies.message({value: currentCounter.value });
+    const currentCounter = await counterClient.getCurrentCounter({counterId: request.counterId});
+    return replies.message({value: currentCounter.value});
+
   }
 };
 
