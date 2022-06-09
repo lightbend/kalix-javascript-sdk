@@ -25,7 +25,7 @@ import "kalix/annotations.proto";
 // tag::service[]
 service CustomerByName {
   // end::service[]
-  option (kalix.method).acl.allow = { principal: ALL };
+  option (kalix.service).acl.allow = { principal: ALL };
   // tag::service[]
   rpc UpdateCustomer(domain.CustomerState) returns (domain.CustomerState) { // <1>
     option (kalix.method).eventing.in = { // <2>

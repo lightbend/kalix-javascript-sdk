@@ -46,7 +46,7 @@ message ChangeAddressRequest {
 }
 
 service CustomerService {
-  option (kalix.method).acl.allow = { principal: ALL };
+  option (kalix.service).acl.allow = { principal: ALL };
 
   rpc Create(Customer) returns (google.protobuf.Empty) {}
 
