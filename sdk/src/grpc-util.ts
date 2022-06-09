@@ -192,11 +192,11 @@ export class GrpcUtil {
         // unary and streaming out
         // important: rebind 'this' of the original/patched method
         const reboundOriginalMethod = originalMethod.bind(client);
-        const patchedMethod = function(
-            arg: any,
-            metadata: grpc.Metadata,
-            options: grpc.CallOptions,
-            callback: grpc.requestCallback<any>,
+        const patchedMethod = function (
+          arg: any,
+          metadata: grpc.Metadata,
+          options: grpc.CallOptions,
+          callback: grpc.requestCallback<any>,
         ) {
           if (!metadata) {
             metadata = metadataWithHeaders;
