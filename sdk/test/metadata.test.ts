@@ -15,7 +15,11 @@
  */
 
 import { expect } from 'chai';
-import { Metadata, PredefinedPrincipal, LocalServicePrincipal } from '../src/metadata';
+import {
+  Metadata,
+  PredefinedPrincipal,
+  LocalServicePrincipal,
+} from '../src/metadata';
 
 describe('Metadata', () => {
   it('should return empty array for missing keys', () => {
