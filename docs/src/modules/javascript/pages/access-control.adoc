@@ -35,10 +35,8 @@ In the unit test Mock components, the ACLs are ignored.
 
 == ACLs when running integration tests
 
-FIXME not implemented yet
+When running integration tests, ACLs are enabled by default but can be explicitly disabled per test by running the test with `IntegrationTestKitOptions` setting `aclCheckingEnabled` to `true`.
 
-When running integration tests, ACLs are enabled by default but can be explicitly disabled per test by running the test with `Settings.withAclDisabled`.
+For integration tests that call other services that have ACLs limiting access to specific service names `IntegrationTestKitOptions.withServiceName` allows specifying what the service identifies itself as to other services.
 
-For integration tests that call other services that have ACLs limiting access to specific service names `Settings.withServiceName` allows specifying what the service identifies itself as to other services.
-
-`KalixTestKit.getGrpcClientForPrincipal` makes it possible to get a integration test client that is authenticated with specific credentials for calling a service with ACLs.
+`IntegrationTestkit.clientsForPrincipal` makes it possible to get a integration test client that is authenticated with specific credentials for calling a service with ACLs.
