@@ -24,7 +24,6 @@ This is the default ACL included in the quickstarts and project templates, it al
 
 == Inspecting the principal inside a service
 
-FIXME not implemented yet
 
 Checking the ACLs are in general done for you by Kalix, however in some cases programmatic access to the principal of a call can be useful.
 
@@ -32,7 +31,7 @@ Accessing the principal of a call inside of a service is possible through the re
 
 == ACLs when running unit tests
 
-In the generated unit test testkits, the ACLs are ignored.
+In the unit test Mock components, the ACLs are ignored.
 
 == ACLs when running integration tests
 

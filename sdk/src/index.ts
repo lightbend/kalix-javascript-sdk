@@ -53,6 +53,10 @@ export {
   MetadataEntry,
   MetadataMap,
   MetadataValue,
+  Principal,
+  Principals,
+  PredefinedPrincipal,
+  LocalServicePrincipal,
 } from './metadata';
 export { Cloudevent } from './cloudevent';
 export { JwtClaims } from './jwt-claims';

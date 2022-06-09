@@ -15,7 +15,8 @@
  */
 
 import { expect } from 'chai';
-import { Metadata } from '../src/metadata';
+import { Metadata, PredefinedPrincipal } from '../src/metadata';
+import { LocalServicePrincipal } from '../dist';
 
 describe('Metadata', () => {
   it('should return empty array for missing keys', () => {
@@ -177,5 +178,62 @@ describe('Metadata', () => {
     const meta = new Metadata();
     meta.set('_kalix-jwt-claim-foo', '["foo","bar"]');
     expect(meta.jwtClaims.getStringArray('foo')).to.eql(['foo', 'bar']);
+  });
+
+  it('allows inspecting the Self principal', () => {
+    const meta = new Metadata();
+    meta.set('_kalix-src', 'self');
+    expect(meta.principals().getLocalService()).to.be.undefined;
+    expect(meta.principals().isInternet()).to.be.false;
+    expect(meta.principals().isBackoffice()).to.be.false;
+    expect(meta.principals().isLocalService('servicename')).to.be.false;
+    expect(meta.principals().isAnyLocalService()).to.be.false;
+    expect(meta.principals().isSelf()).to.be.true;
+    expect(meta.principals().get()).to.be.deep.equal([
+      PredefinedPrincipal.Self,
+    ]);
+  });
+
+  it('allows inspecting other Kalix service principal', () => {
+    const meta = new Metadata();
+    meta.set('_kalix-src-svc', 'servicename');
+    expect(meta.principals().getLocalService()).to.be.equal('servicename');
+    expect(meta.principals().isInternet()).to.be.false;
+    expect(meta.principals().isBackoffice()).to.be.false;
+    expect(meta.principals().isLocalService('servicename')).to.be.true;
+    expect(meta.principals().isLocalService('otherservicename')).to.be.false;
+    expect(meta.principals().isAnyLocalService()).to.be.true;
+    expect(meta.principals().isSelf()).to.be.false;
+    expect(meta.principals().get()).to.be.deep.equal([
+      new LocalServicePrincipal('servicename'),
+    ]);
+  });
+
+  it('allows inspecting Internet principal', () => {
+    const meta = new Metadata();
+    meta.set('_kalix-src', 'internet');
+    expect(meta.principals().getLocalService()).to.be.undefined;
+    expect(meta.principals().isInternet()).to.be.true;
+    expect(meta.principals().isBackoffice()).to.be.false;
+    expect(meta.principals().isLocalService('servicename')).to.be.false;
+    expect(meta.principals().isAnyLocalService()).to.be.false;
+    expect(meta.principals().isSelf()).to.be.false;
+    expect(meta.principals().get()).to.be.deep.equal([
+      PredefinedPrincipal.Internet,
+    ]);
+  });
+
+  it('allows inspecting backoffice principal', () => {
+    const meta = new Metadata();
+    meta.set('_kalix-src', 'backoffice');
+    expect(meta.principals().getLocalService()).to.be.undefined;
+    expect(meta.principals().isInternet()).to.be.false;
+    expect(meta.principals().isBackoffice()).to.be.true;
+    expect(meta.principals().isLocalService('servicename')).to.be.false;
+    expect(meta.principals().isAnyLocalService()).to.be.false;
+    expect(meta.principals().isSelf()).to.be.false;
+    expect(meta.principals().get()).to.be.deep.equal([
+      PredefinedPrincipal.Backoffice,
+    ]);
   });
 });
