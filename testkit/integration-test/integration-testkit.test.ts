@@ -86,7 +86,8 @@ describe('The Kalix IntegrationTestkit', function () {
       );
   });
 
-  it('should handle actions with acl', (done) => {
+  it('should handle self-delegating actions (with acl)', (done) => {
+    // Note: not really a test of the testkit but that the SDK sets inter-component calls up right
     testkit.clients.ExampleActionWithACLService.DelegateToSelf(
       { field: 'hello' },
       (err: any, msg: Out) => {

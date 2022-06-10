@@ -21,6 +21,7 @@ import {
   LocalServicePrincipal,
   PredefinedPrincipal,
   Principal,
+  replies,
 } from '@kalix-io/kalix-javascript-sdk';
 import { ExampleActionWithAclService } from '../types/action';
 
@@ -75,13 +76,18 @@ action.commandHandlers = {
         context.metadata.principals.get().map(principalToString),
     };
   },
-  DelegateToSelf: (input) => {
+  DelegateToSelf: async (input) => {
     // FIXME TS lookup doesn't seem to quite work for nested packages, needs this mess:
     const clientFactory = (
       (action.clients!.com as GrpcClientLookup).example as GrpcClientLookup
     ).ExampleActionWithACLService as GrpcClientCreator;
     const client = clientFactory.createClient();
-    return client.OnlyFromSelf(input);
+    try {
+      return await client.OnlyFromSelf(input);
+    } catch (e) {
+      console.error('Calling self failed', e);
+      return replies.failure('Cross component call failed');
+    }
   },
 };
 

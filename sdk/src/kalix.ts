@@ -22,6 +22,7 @@ import * as settings from './settings';
 import { PackageInfo } from './package-info';
 import { GrpcClientLookup } from './grpc-util';
 import * as discovery from '../types/protocol/discovery';
+import { ServerErrorResponse } from '@grpc/grpc-js/build/src/server-call';
 
 const debug = require('debug')('kalix');
 debug.log = console.log.bind(console); // bind to stdout
@@ -60,6 +61,11 @@ export interface KalixOptions {
    * @defaultValue `"user-function.desc"`
    */
   descriptorSetPath?: string;
+
+  /**
+   * Delay completing discovery until proxyPort has been set by the testkit.
+   */
+  delayDiscoveryUntilProxyPortSet?: boolean;
 }
 
 /** @internal */
@@ -370,6 +376,9 @@ export class Kalix {
   private address: string = process.env.HOST || '127.0.0.1';
   private port: number =
     (process.env.PORT ? parseInt(process.env.PORT) : undefined) || 8080;
+  private delayDiscoveryUntilProxyPortSet: boolean;
+  private proxyPort?: number;
+  public discoveryCompleted: boolean = false;
   private descriptorSetPath: string = 'user-function.desc';
   private service: ServiceInfo;
   private packageInfo: PackageInfo = new PackageInfo();
@@ -400,6 +409,9 @@ export class Kalix {
       options?.serviceVersion,
     );
 
+    this.delayDiscoveryUntilProxyPortSet =
+      options?.delayDiscoveryUntilProxyPortSet ?? false;
+
     try {
       this.proto = fs.readFileSync(this.descriptorSetPath);
     } catch (e) {
@@ -409,6 +421,15 @@ export class Kalix {
     }
 
     this.server = new grpc.Server();
+  }
+
+  /**
+   * Set the port that the proxy is running on, for calls from the SDK to the proxy.
+   * Used by the testkit.
+   * @param port
+   */
+  setProxyPort(port: number) {
+    this.proxyPort = port;
   }
 
   /**
@@ -528,8 +549,12 @@ export class Kalix {
     const self = this;
     const discoveryHandlers: discovery.Handlers = {
       Discover(call, callback) {
-        const result = self.discoveryLogic(call.request);
-        callback(null, result);
+        try {
+          const result = self.discoveryLogic(call.request);
+          callback(null, result);
+        } catch (error: any) {
+          callback(error as Error, null);
+        }
       },
       ReportError(call, callback) {
         const msg = self.reportErrorLogic(
@@ -607,6 +632,11 @@ export class Kalix {
 
   /** @internal */
   discoveryLogic(proxyInfo: discovery.ProxyInfo): discovery.Spec {
+    if (this.delayDiscoveryUntilProxyPortSet && this.proxyPort === undefined) {
+      console.log('Delaying discovery until proxy port set');
+      throw Error('Delaying discovery until proxy port set');
+    }
+
     const serviceInfo: discovery.ServiceInfo = {
       serviceName: this.service.name,
       serviceVersion: this.service.version,
@@ -645,8 +675,9 @@ export class Kalix {
 
       const preStartSettings: PreStartSettings = {
         proxyHostname: proxyInfo.proxyHostname,
-        // FIXME setting the port for the integration tests like in the JVM SDK
-        proxyPort: proxyInfo.proxyHostname == 'localhost' ? 9000 : 80,
+        proxyPort:
+          this.proxyPort ??
+          (proxyInfo.proxyHostname == 'localhost' ? 9000 : 80),
         identificationInfo: proxyInfo.identificationInfo || undefined,
       };
 
@@ -706,6 +737,7 @@ export class Kalix {
       spec.components = components;
     }
 
+    this.discoveryCompleted = true;
     return spec;
   }
 

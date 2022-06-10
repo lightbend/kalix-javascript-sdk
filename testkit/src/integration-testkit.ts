@@ -91,6 +91,8 @@ export class IntegrationTestkit {
       this.options = {};
     }
 
+    this.options.delayDiscoveryUntilProxyPortSet = true;
+
     // sensible defaults for missing values
     if (!this.options.dockerImage) {
       this.options.dockerImage = defaultDockerImage;
@@ -162,7 +164,7 @@ export class IntegrationTestkit {
     const boundPort = await this.kalix.start({ port: 0 });
 
     await TestContainers.exposeHostPorts(boundPort);
-
+    console.log('Starting Kalix Proxy');
     const proxyContainer = await new GenericContainer(this.options.dockerImage!)
       .withExposedPorts(9000)
       .withEnv('USER_FUNCTION_HOST', 'host.testcontainers.internal')
@@ -177,12 +179,23 @@ export class IntegrationTestkit {
         'VERSION_CHECK_ON_STARTUP',
         process.env.VERSION_CHECK_ON_STARTUP || 'true',
       )
-      .withWaitStrategy(Wait.forLogMessage('gRPC proxy started'))
+      .withWaitStrategy(Wait.forLogMessage('Starting Kalix Proxy'))
       .start();
+    this.proxyPort = proxyContainer.getMappedPort(9000);
+    // sdk needs to know how to call itself for cross component calls,
+    // Note: a flag in KalixOptions delays discovery until we have set the port
+    this.kalix.setProxyPort(this.proxyPort!);
 
     this.proxyContainer = proxyContainer;
 
-    this.proxyPort = proxyContainer.getMappedPort(9000);
+    // wait for discovery to complete
+    console.log('Proxy started, waiting for discovery to complete');
+    while (!this.kalix.discoveryCompleted) {
+      await new Promise((resolve) => setTimeout(resolve, 300));
+    }
+    // FIXME why is so much time needed here?
+    // wait some more for proxy to complete parsing/starting the discovered services
+    await new Promise((resolve) => setTimeout(resolve, 5000));
 
     // Create clients
     this.componentClients = this.createClients(this.proxyPort);
