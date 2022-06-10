@@ -437,7 +437,7 @@ export class Metadata {
   /**
    * Get the Principals associated with this request.
    */
-  principals(): Principals {
+  get principals(): Principals {
     const sourceMeta = this.get(PrincipalsSource);
     let source: string | undefined = undefined;
     if (sourceMeta.length > 0) {

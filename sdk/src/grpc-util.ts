@@ -19,6 +19,7 @@ import * as protobuf from 'protobufjs';
 import * as grpc from '@grpc/grpc-js';
 import { ServiceClientConstructor } from '@grpc/grpc-js/build/src/make-client';
 import { IdentificationInfo } from '../types/protocol/discovery';
+import { Func } from 'mocha';
 
 /**
  * gRPC client.
@@ -194,24 +195,22 @@ export class GrpcUtil {
   ) {
     Object.keys(Object.getPrototypeOf(client)).forEach((methodName) => {
       const originalMethod = client[methodName];
-
-      // all client call methods surprisingly enough has the same signature
-      // (but we don't want to patch methods that are not service calls)
+      // patch methods that are service calls
       if (originalMethod.requestStream !== undefined) {
-        // important: rebind 'this' of the original/patched method
-        const reboundOriginalMethod = originalMethod.bind(client);
-        const patchedMethod = function (
-          arg: any,
-          metadata: grpc.Metadata,
-          options: grpc.CallOptions,
-          callback: grpc.requestCallback<any>,
-        ) {
-          if (!metadata) {
-            metadata = metadataWithHeaders;
+        const patchedMethod = function patched() {
+          // service calls has 2-4 parameters, find the metadata parameter if there is one
+          const args = Array.prototype.slice.call(arguments);
+          const indexOfMeta = args.findIndex((p) => p instanceof grpc.Metadata);
+          if (indexOfMeta === -1) {
+            // no metadata present, inject metadata param at position 1
+            args.splice(1, 0, metadataWithHeaders);
           } else {
-            metadata.merge(metadataWithHeaders);
+            // metadata present, merge/mutate
+            const existingMeta = args[indexOfMeta];
+            existingMeta.merge(metadataWithHeaders);
           }
-          return reboundOriginalMethod(arg, metadata, options, callback);
+          // call original method with patched metadata
+          originalMethod.apply(client, args);
         };
         client[methodName] = patchedMethod;
       }

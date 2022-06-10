@@ -14,9 +14,12 @@
  * limitations under the License.
  */
 
+import { LocalServicePrincipal } from '@kalix-io/kalix-javascript-sdk';
+
 require('chai').should();
 import { IntegrationTestkit } from '../src';
 import action from '../example/src/action';
+import actionWithAcl from '../example/src/action-with-acl';
 import valueEntity from '../example/src/value-entity';
 import eventSourcedEntity from '../example/src/event-sourced-entity';
 import { ServiceError } from '@grpc/grpc-js';
@@ -26,11 +29,13 @@ type Out = proto.com.example.IOut;
 
 const testkit = new IntegrationTestkit({
   descriptorSetPath: 'example/generated/user-function.desc',
+  aclCheckingEnabled: true,
 });
 
 testkit.addComponent(action);
 testkit.addComponent(valueEntity);
 testkit.addComponent(eventSourcedEntity);
+testkit.addComponent(actionWithAcl);
 
 describe('The Kalix IntegrationTestkit', function () {
   this.timeout(60000);
@@ -63,6 +68,23 @@ describe('The Kalix IntegrationTestkit', function () {
         done();
       },
     );
+  });
+
+  it('should handle actions with acl', (done) => {
+    testkit
+      .clientsForPrincipal(new LocalServicePrincipal('other'))
+      .ExampleActionWithACLService.OnlyFromOtherService(
+        { field: 'hello' },
+        (err: any, msg: Out) => {
+          if (err) {
+            done(err);
+          } else {
+            msg.field?.should.equal('Received: hello, principals: other');
+            console.log(msg);
+            done();
+          }
+        },
+      );
   });
 
   it('should handle value entities sync handlers', (done) => {

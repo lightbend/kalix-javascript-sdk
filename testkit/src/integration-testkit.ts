@@ -20,8 +20,9 @@ import {
   GrpcUtil,
   Kalix,
   KalixOptions,
-  Principal,
+  LocalServicePrincipal,
   PredefinedPrincipal,
+  Principal,
   settings,
 } from '@kalix-io/kalix-javascript-sdk';
 import { GenericContainer, TestContainers, Wait } from 'testcontainers';
@@ -115,16 +116,16 @@ export class IntegrationTestkit {
    * @param principal The principal to authenticate calls to the service as.
    */
   clientsForPrincipal(principal: Principal): { [serviceName: string]: any } {
-    const metadata = new grpc.Metadata();
-    if (principal == PredefinedPrincipal.Internet) {
-      metadata.add('_kalix-src', 'internet');
-    } else if (principal == PredefinedPrincipal.Backoffice) {
-      metadata.add('_kalix-src', 'backoffice');
-    } else if (principal == PredefinedPrincipal.Self) {
-      metadata.add('_kalix-src', 'self');
+    var serviceName: string;
+    if (principal == PredefinedPrincipal.Self) {
+      serviceName = this.options.serviceName!;
+    } else if (principal instanceof LocalServicePrincipal) {
+      serviceName = principal.name.toString();
     } else {
-      metadata.add('_kalix-src-svc', principal.name!.toString());
+      throw new Error("Only 'Self' and 'LocalServicePrincipal' is supported");
     }
+    const metadata = new grpc.Metadata();
+    metadata.add('impersonate-kalix-service', serviceName);
     return this.createClients(this.proxyPort!, metadata);
   }
 

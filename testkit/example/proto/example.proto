@@ -49,6 +49,20 @@ service ExampleActionService {
   rpc Fail(In) returns (Out);
 }
 
+
+service ExampleActionWithACLService {
+  option (kalix.service) = {
+    type : SERVICE_TYPE_ACTION
+  };
+
+  rpc Public(In) returns (Out) {
+    option (kalix.method).acl.allow = { principal: ALL };
+  };
+  rpc OnlyFromOtherService(In) returns (Out) {
+    option (kalix.method).acl.allow = { service: "other" };
+  };
+}
+
 option (kalix.file).value_entity = {
   name: "ExampleValueEntity"
   entity_type: "example-value-entity"
