@@ -80,11 +80,26 @@ describe('The Kalix IntegrationTestkit', function () {
             done(err);
           } else {
             msg.field?.should.equal('Received: hello, principals: other');
-            console.log(msg);
             done();
           }
         },
       );
+  });
+
+  it('should handle actions with acl', (done) => {
+    testkit.clients.ExampleActionWithACLService.DelegateToSelf(
+      { field: 'hello' },
+      (err: any, msg: Out) => {
+        if (err) {
+          done(err);
+        } else {
+          msg.field?.should.equal(
+            'OnlyFromSelf Received: hello, principals: self',
+          );
+          done();
+        }
+      },
+    );
   });
 
   it('should handle value entities sync handlers', (done) => {

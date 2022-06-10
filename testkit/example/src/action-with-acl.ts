@@ -16,6 +16,8 @@
 
 import {
   Action,
+  GrpcClientCreator,
+  GrpcClientLookup,
   LocalServicePrincipal,
   PredefinedPrincipal,
   Principal,
@@ -63,6 +65,23 @@ action.commandHandlers = {
         ', principals: ' +
         context.metadata.principals.get().map(principalToString),
     };
+  },
+  OnlyFromSelf: (input, context) => {
+    return {
+      field:
+        'OnlyFromSelf Received: ' +
+        input.field +
+        ', principals: ' +
+        context.metadata.principals.get().map(principalToString),
+    };
+  },
+  DelegateToSelf: (input) => {
+    // FIXME TS lookup doesn't seem to quite work for nested packages, needs this mess:
+    const clientFactory = (
+      (action.clients!.com as GrpcClientLookup).example as GrpcClientLookup
+    ).ExampleActionWithACLService as GrpcClientCreator;
+    const client = clientFactory.createClient();
+    return client.OnlyFromSelf(input);
   },
 };
 

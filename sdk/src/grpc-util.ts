@@ -197,7 +197,7 @@ export class GrpcUtil {
       const originalMethod = client[methodName];
       // patch methods that are service calls
       if (originalMethod.requestStream !== undefined) {
-        const patchedMethod = function patched() {
+        const patchedMethod: any = function patched() {
           // service calls has 2-4 parameters, find the metadata parameter if there is one
           const args = Array.prototype.slice.call(arguments);
           const indexOfMeta = args.findIndex((p) => p instanceof grpc.Metadata);
@@ -212,6 +212,10 @@ export class GrpcUtil {
           // call original method with patched metadata
           originalMethod.apply(client, args);
         };
+        // copy fields from original method so that promisify works (sketchy)
+        for (var attr in originalMethod) {
+          patchedMethod[attr] = originalMethod[attr];
+        }
         client[methodName] = patchedMethod;
       }
     });

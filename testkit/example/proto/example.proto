@@ -61,6 +61,12 @@ service ExampleActionWithACLService {
   rpc OnlyFromOtherService(In) returns (Out) {
     option (kalix.method).acl.allow = { service: "other" };
   };
+  rpc OnlyFromSelf(In) returns (Out) {
+    option (kalix.method).acl.allow = { service: "self" };
+  }
+  rpc DelegateToSelf(In) returns (Out) {
+    option (kalix.method).acl.allow = { principal: ALL };
+  }
 }
 
 option (kalix.file).value_entity = {

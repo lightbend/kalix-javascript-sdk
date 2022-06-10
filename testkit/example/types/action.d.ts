@@ -52,6 +52,14 @@ export declare namespace ExampleActionWithAclService {
       command: api.In,
       ctx: Action.UnaryCommandContext<api.IOut>,
     ) => CommandReply<api.IOut> | Promise<CommandReply<api.IOut>>;
+    OnlyFromSelf: (
+      command: api.In,
+      ctx: Action.UnaryCommandContext<api.IOut>,
+    ) => CommandReply<api.IOut> | Promise<CommandReply<api.IOut>>;
+    DelegateToSelf: (
+      command: api.In,
+      ctx: Action.UnaryCommandContext<api.IOut>,
+    ) => CommandReply<api.IOut> | Promise<CommandReply<api.IOut>>;
   };
 }
 
