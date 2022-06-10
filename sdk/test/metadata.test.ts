@@ -186,28 +186,26 @@ describe('Metadata', () => {
   it('allows inspecting the Self principal', () => {
     const meta = new Metadata();
     meta.set('_kalix-src', 'self');
-    expect(meta.principals().getLocalService()).to.be.undefined;
-    expect(meta.principals().isInternet()).to.be.false;
-    expect(meta.principals().isBackoffice()).to.be.false;
-    expect(meta.principals().isLocalService('servicename')).to.be.false;
-    expect(meta.principals().isAnyLocalService()).to.be.false;
-    expect(meta.principals().isSelf()).to.be.true;
-    expect(meta.principals().get()).to.be.deep.equal([
-      PredefinedPrincipal.Self,
-    ]);
+    expect(meta.principals.getLocalService()).to.be.undefined;
+    expect(meta.principals.isInternet()).to.be.false;
+    expect(meta.principals.isBackoffice()).to.be.false;
+    expect(meta.principals.isLocalService('servicename')).to.be.false;
+    expect(meta.principals.isAnyLocalService()).to.be.false;
+    expect(meta.principals.isSelf()).to.be.true;
+    expect(meta.principals.get()).to.be.deep.equal([PredefinedPrincipal.Self]);
   });
 
   it('allows inspecting other Kalix service principal', () => {
     const meta = new Metadata();
     meta.set('_kalix-src-svc', 'servicename');
-    expect(meta.principals().getLocalService()).to.be.equal('servicename');
-    expect(meta.principals().isInternet()).to.be.false;
-    expect(meta.principals().isBackoffice()).to.be.false;
-    expect(meta.principals().isLocalService('servicename')).to.be.true;
-    expect(meta.principals().isLocalService('otherservicename')).to.be.false;
-    expect(meta.principals().isAnyLocalService()).to.be.true;
-    expect(meta.principals().isSelf()).to.be.false;
-    expect(meta.principals().get()).to.be.deep.equal([
+    expect(meta.principals.getLocalService()).to.be.equal('servicename');
+    expect(meta.principals.isInternet()).to.be.false;
+    expect(meta.principals.isBackoffice()).to.be.false;
+    expect(meta.principals.isLocalService('servicename')).to.be.true;
+    expect(meta.principals.isLocalService('otherservicename')).to.be.false;
+    expect(meta.principals.isAnyLocalService()).to.be.true;
+    expect(meta.principals.isSelf()).to.be.false;
+    expect(meta.principals.get()).to.be.deep.equal([
       new LocalServicePrincipal('servicename'),
     ]);
   });
@@ -215,13 +213,13 @@ describe('Metadata', () => {
   it('allows inspecting Internet principal', () => {
     const meta = new Metadata();
     meta.set('_kalix-src', 'internet');
-    expect(meta.principals().getLocalService()).to.be.undefined;
-    expect(meta.principals().isInternet()).to.be.true;
-    expect(meta.principals().isBackoffice()).to.be.false;
-    expect(meta.principals().isLocalService('servicename')).to.be.false;
-    expect(meta.principals().isAnyLocalService()).to.be.false;
-    expect(meta.principals().isSelf()).to.be.false;
-    expect(meta.principals().get()).to.be.deep.equal([
+    expect(meta.principals.getLocalService()).to.be.undefined;
+    expect(meta.principals.isInternet()).to.be.true;
+    expect(meta.principals.isBackoffice()).to.be.false;
+    expect(meta.principals.isLocalService('servicename')).to.be.false;
+    expect(meta.principals.isAnyLocalService()).to.be.false;
+    expect(meta.principals.isSelf()).to.be.false;
+    expect(meta.principals.get()).to.be.deep.equal([
       PredefinedPrincipal.Internet,
     ]);
   });
@@ -229,13 +227,13 @@ describe('Metadata', () => {
   it('allows inspecting backoffice principal', () => {
     const meta = new Metadata();
     meta.set('_kalix-src', 'backoffice');
-    expect(meta.principals().getLocalService()).to.be.undefined;
-    expect(meta.principals().isInternet()).to.be.false;
-    expect(meta.principals().isBackoffice()).to.be.true;
-    expect(meta.principals().isLocalService('servicename')).to.be.false;
-    expect(meta.principals().isAnyLocalService()).to.be.false;
-    expect(meta.principals().isSelf()).to.be.false;
-    expect(meta.principals().get()).to.be.deep.equal([
+    expect(meta.principals.getLocalService()).to.be.undefined;
+    expect(meta.principals.isInternet()).to.be.false;
+    expect(meta.principals.isBackoffice()).to.be.true;
+    expect(meta.principals.isLocalService('servicename')).to.be.false;
+    expect(meta.principals.isAnyLocalService()).to.be.false;
+    expect(meta.principals.isSelf()).to.be.false;
+    expect(meta.principals.get()).to.be.deep.equal([
       PredefinedPrincipal.Backoffice,
     ]);
   });
