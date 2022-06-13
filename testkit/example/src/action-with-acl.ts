@@ -55,7 +55,7 @@ action.commandHandlers = {
         'Received: ' +
         input.field +
         ', principals: ' +
-        context.metadata.principals.get().map(principalToString),
+        context.metadata.principals().get().map(principalToString),
     };
   },
   OnlyFromOtherService: (input, context) => {
@@ -64,7 +64,7 @@ action.commandHandlers = {
         'Received: ' +
         input.field +
         ', principals: ' +
-        context.metadata.principals.get().map(principalToString),
+        context.metadata.principals().get().map(principalToString),
     };
   },
   OnlyFromSelf: (input, context) => {
@@ -73,7 +73,7 @@ action.commandHandlers = {
         'OnlyFromSelf Received: ' +
         input.field +
         ', principals: ' +
-        context.metadata.principals.get().map(principalToString),
+        context.metadata.principals().get().map(principalToString),
     };
   },
   DelegateToSelf: async (input) => {
