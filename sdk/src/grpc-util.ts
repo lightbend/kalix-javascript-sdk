@@ -82,13 +82,18 @@ export class GrpcUtil {
     identificationInfo?: IdentificationInfo,
   ): GrpcClientLookup {
     const result: GrpcClientLookup = {};
-    const selfAuthHeaders = new grpc.Metadata();
-    const otherKalixServiceAuthHeaders = new grpc.Metadata();
-    if (identificationInfo) {
+    let selfAuthHeaders: grpc.Metadata | undefined;
+    let otherKalixServiceAuthHeaders: grpc.Metadata | undefined;
+    if (identificationInfo?.selfIdentificationHeader) {
+      selfAuthHeaders = new grpc.Metadata();
       selfAuthHeaders.add(
         identificationInfo.selfIdentificationHeader!,
         identificationInfo.selfIdentificationToken!,
       );
+    }
+    if (identificationInfo?.serviceIdentificationHeader) {
+      // only set for local dev proxy
+      otherKalixServiceAuthHeaders = new grpc.Metadata();
       otherKalixServiceAuthHeaders.add(
         identificationInfo.serviceIdentificationHeader!,
         identificationInfo.selfDeploymentName!,
@@ -146,13 +151,15 @@ export class GrpcUtil {
         if (identificationInfo) {
           switch (serviceType) {
             case ServiceType.SELF:
-              GrpcUtil.addHeadersToAllRequests(client, selfAuthHeaders);
+              if (selfAuthHeaders)
+                GrpcUtil.addHeadersToAllRequests(client, selfAuthHeaders);
               break;
             case ServiceType.KALIX_SERVICE:
-              GrpcUtil.addHeadersToAllRequests(
-                client,
-                otherKalixServiceAuthHeaders,
-              );
+              if (otherKalixServiceAuthHeaders)
+                GrpcUtil.addHeadersToAllRequests(
+                  client,
+                  otherKalixServiceAuthHeaders,
+                );
               break;
           }
         }

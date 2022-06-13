@@ -553,6 +553,7 @@ export class Kalix {
           const result = self.discoveryLogic(call.request);
           callback(null, result);
         } catch (error: any) {
+          console.error('Error handling discovery', error);
           callback(error as Error, null);
         }
       },
