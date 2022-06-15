@@ -9,7 +9,7 @@ const rimraf = require('rimraf');
 
 const downloadUrlPrefix =
   'https://github.com/protocolbuffers/protobuf/releases/download/v';
-const protocVersion = '3.15.6';
+const protocVersion = '3.20.1';
 function makeDownloadFile(platformArch) {
   return 'protoc-' + protocVersion + '-' + platformArch + '.zip';
 }
@@ -42,8 +42,7 @@ function determineDownloadFile() {
         case 'x64':
           return makeDownloadFile('osx-x86_64');
         case 'arm64':
-          // use rosetta for now
-          return makeDownloadFile('osx-x86_64');
+          return makeDownloadFile('osx-aarch_64');
       }
       break;
   }

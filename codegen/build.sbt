@@ -49,6 +49,7 @@ lazy val `kalix-codegen-js-cli` =
       buildInfoKeys := Seq[BuildInfoKey](version),
       buildInfoPackage := "io.kalix.codegen.js",
       name in NativeImage := "kalix-codegen-js",
+      nativeImageVersion := "22.1.0",
       /**
        * Due to limitations of the Windows command prompt/PowerShell, with a the native-image command fails with a long
        * classpath By using sbt-assembly, we first build a fat JAR which is then able to be used in place of the full

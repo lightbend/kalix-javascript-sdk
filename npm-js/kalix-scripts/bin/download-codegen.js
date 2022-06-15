@@ -16,7 +16,13 @@ const releases = {
   win32_x86_64: 'kalix-codegen-js-x86_64-pc-windows-gnu',
 };
 
-const arch = process.arch === 'x64' ? 'x86_64' : 'x86_32';
+const arch =
+  process.platform === 'darwin' && process.arch === 'arm64'
+    ? 'x86_64' // use rosetta for darwin arm64 for now
+    : process.arch === 'x64'
+    ? 'x86_64'
+    : 'x86_32';
+
 const release = `${process.platform}_${arch}`;
 
 // Windows requires executable files to have some file extension, but we need a consistent name cross-platform
