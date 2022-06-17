@@ -14,15 +14,11 @@
  * limitations under the License.
  */
 // tag::imports[]
-import { Kalix } from "@kalix-io/kalix-javascript-sdk";
-import generatedComponents from "../lib/generated/index.js";
+const Kalix = require("@kalix-io/kalix-javascript-sdk").Kalix
 // end::imports[]
 // tag::server[]
+console.log("Starting Event Sourced Entity")
 const server = new Kalix();
-
-generatedComponents.forEach((component) => {
-  server.addComponent(component);
-});
-
+server.addComponent(require("./shoppingcart.js"))
 server.start();
 // end::server[]

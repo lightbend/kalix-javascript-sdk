@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 // tag::imports[]
-import { EventSourcedEntity } from "@kalix-io/kalix-javascript-sdk";
+const EventSourcedEntity = require("@kalix-io/kalix-javascript-sdk").EventSourcedEntity;
 // end::imports[]
 /**
  * Type definitions.
@@ -37,10 +37,7 @@ const entity = new EventSourcedEntity(
     "shoppingcart_api.proto"
   ],
   "com.example.shoppingcart.ShoppingCartService",
-  "eventsourced-shopping-cart",
-  {
-    includeDirs: ["./proto"]
-  }
+  "eventsourced-shopping-cart"
 );
 // end::esentity[]
 /*
@@ -190,5 +187,5 @@ function itemRemoved(removed, cart) {
 // end::itemremoved[]
 
 // tag::export[]
-export default entity;
+module.exports = entity;
 // end::export[]
