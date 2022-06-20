@@ -58,7 +58,7 @@
     "test": "mocha",
     "preintegration-test": "npm run example:build",
     "integration-test": "mocha integration-test/**/*.test.ts",
-    "prepublishOnly": "npm version --no-git-tag-version $(bin/version.sh)"
+    "prepublishOnly": "npm version --no-git-tag-version $(../sdk/bin/version.sh)"
   },
   "publishConfig": {
     "@kalix-io:registry": "https://registry.npmjs.org"
