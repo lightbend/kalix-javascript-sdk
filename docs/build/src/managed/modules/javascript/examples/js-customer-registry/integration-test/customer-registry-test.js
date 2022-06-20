@@ -15,10 +15,10 @@
  */
 
 // tag::client[]
-const kalix = require("@kalix-io/kalix-javascript-sdk");
+const { IntegrationTestkit } = require("@kalix-io/testkit");
 const should = require("chai").should();
 
-const testkit = new kalix.IntegrationTestkit();
+const testkit = new IntegrationTestkit();
 testkit.addComponent(require("../customer-value-entity"))
 testkit.addComponent(require("../customer-value-entity-view"))
 

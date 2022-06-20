@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { MockValueEntity } from "./testkit.js";
+import { MockValueEntity } from "@kalix-io/testkit";
 import { expect } from "chai";
 import counter from "../src/counter.js";
 
@@ -25,38 +25,38 @@ describe("CounterService", () => {
 
   describe("Increase", () => {
 
-    it("should increase the value with no prior state", () => {
+    it("should increase the value with no prior state", async () => {
       const entity = new MockValueEntity(counter, entityId);
-      const result = entity.handleCommand("Increase", { entityId: entityId, value: 42 });
+      const result = await entity.handleCommand("Increase", { entityId: entityId, value: 42 });
 
       expect(result).to.deep.equal({});
       expect(entity.error).to.be.undefined;
       expect(entity.state).to.deep.equal(CounterState.create({ value: 42 }));
     });
 
-    it("should increase the value with some prior state", () => {
+    it("should increase the value with some prior state", async () => {
       const entity = new MockValueEntity(counter, entityId);
       entity.state = CounterState.create({ value: 13 });
-      const result = entity.handleCommand("Increase", { entityId: entityId, value: 42 });
+      const result = await entity.handleCommand("Increase", { entityId: entityId, value: 42 });
 
       expect(result).to.deep.equal({});
       expect(entity.error).to.be.undefined;
       expect(entity.state).to.deep.equal(CounterState.create({ value: 13 + 42 }));
     });
 
-    it("should fail on negative values", () => {
+    it("should fail on negative values", async () => {
       const entity = new MockValueEntity(counter, entityId);
-      const result = entity.handleCommand("Increase", { entityId: entityId, value: -2 });
+      const result = await entity.handleCommand("Increase", { entityId: entityId, value: -2 });
 
-      expect(result).to.deep.equal({});
+      expect(result).to.be.undefined;
       expect(entity.error).to.be.equal(`Increase requires a positive value. It was [-2].`);
     });
   });
 
   describe("Decrease", () => {
-    it("should decrease the value with no prior state.", () => {
+    it("should decrease the value with no prior state.", async () => {
       const entity = new MockValueEntity(counter, entityId);
-      const result = entity.handleCommand("Decrease", { entityId: entityId, value: 42 });
+      const result = await entity.handleCommand("Decrease", { entityId: entityId, value: 42 });
 
       expect(result).to.deep.equal({});
       expect(entity.error).to.be.undefined;
@@ -65,10 +65,10 @@ describe("CounterService", () => {
   });
 
   describe("Reset", () => {
-    it("should reset the entity value to 0", () => {
+    it("should reset the entity value to 0", async () => {
       const entity = new MockValueEntity(counter, entityId);
       entity.state = CounterState.create({ value: 13 });
-      const result = entity.handleCommand("Reset", { entityId: entityId });
+      const result = await entity.handleCommand("Reset", { entityId: entityId });
 
       expect(result).to.deep.equal({});
       expect(entity.error).to.be.undefined;
@@ -77,10 +77,10 @@ describe("CounterService", () => {
   });
 
   describe("GetCurrentCounter", () => {
-    it("should return the current state", () => {
+    it("should return the current state", async () => {
       const entity = new MockValueEntity(counter, entityId);
       entity.state = CounterState.create({ value: 13 });
-      const result = entity.handleCommand("GetCurrentCounter", { entityId: entityId });
+      const result = await entity.handleCommand("GetCurrentCounter", { entityId: entityId });
 
       expect(result).to.deep.equal({ value: 13 });
       expect(entity.error).to.be.undefined;
