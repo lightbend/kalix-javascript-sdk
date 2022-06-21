@@ -26,8 +26,8 @@
   },
   "devDependencies": {
     "@kalix-io/testkit": "1.0.0-M9",
-    "chai": "4.2.0",
-    "mocha": "^6.2.3"
+    "chai": "4.3.6",
+    "mocha": "^10.0.0"
   },
   "scripts": {
     "build": "compile-descriptor customer_api.proto customer_domain.proto customer_view.proto",

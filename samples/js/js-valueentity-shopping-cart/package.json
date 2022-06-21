@@ -12,10 +12,10 @@
   "devDependencies": {
     "@kalix-io/kalix-scripts": "1.0.0-M9",
     "@kalix-io/testkit": "1.0.0-M9",
-    "chai": "^4.3.3",
-    "jsdoc": "^3.6.3",
-    "mocha": "^8.3.1",
-    "uglify-js": "^3.7.7"
+    "chai": "^4.3.6",
+    "jsdoc": "^3.6.10",
+    "mocha": "^10.0.0",
+    "uglify-js": "^3.16.1"
   },
   "config": {
     "dockerImage": "gcr.io/kalix-public/samples-js-value-entity-shopping-cart",
