@@ -7,11 +7,11 @@
   },
   "main": "dist/index.js",
   "dependencies": {
-    "@kalix-io/kalix-javascript-sdk": "1.0.0-M6"
+    "@kalix-io/kalix-javascript-sdk": "1.0.0-M9"
   },
   "devDependencies": {
-    "@kalix-io/kalix-scripts": "1.0.0-M6",
-    "@kalix-io/testkit": "1.0.0-M6",
+    "@kalix-io/kalix-scripts": "1.0.0-M9",
+    "@kalix-io/testkit": "1.0.0-M9",
     "@types/chai": "^4.2.21",
     "@types/chai-as-promised": "^7.1.4",
     "@types/mocha": "^8.2.3",
