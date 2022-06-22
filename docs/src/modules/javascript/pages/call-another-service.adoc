@@ -37,7 +37,7 @@ include::example$js-doc-snippets/src/delegatingservice.js[tag=delegating-action]
 <3> Use the name that the other Kalix service was deployed as, in this case `counter`.
 <4> We can now call the various methods on the other service with their method names directly on the client. The calls return promises so we can use `await/async` to interact with them.
 
-**Note:** The client can only be created once the service has been started by Kalix, for example triggered by a call, not from the constructor.
+NOTE: The client can only be created once the service has been started by Kalix, for example triggered by a call, not from the constructor.
 
 == External gRPC services
 

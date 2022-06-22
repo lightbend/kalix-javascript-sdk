@@ -246,6 +246,8 @@ export interface Component {
 
   /**
    * Internal method for setting up the component.
+   *
+   * @internal
    */
   preStart(settings: PreStartSettings): void;
 }
