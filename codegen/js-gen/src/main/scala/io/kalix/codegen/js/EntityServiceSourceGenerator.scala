@@ -30,10 +30,11 @@ object EntityServiceSourceGenerator {
       testSourceDirectory: Path,
       generatedSourceDirectory: Path,
       integrationTestSourceDirectory: Option[Path],
-      indexFilename: String,
-      allProtoSources: Iterable[Path]) = {
+      allProtoSources: Iterable[Path],
+      typescript: Boolean) = {
 
-    val entityFilename = entity.fqn.name.toLowerCase + ".js"
+    val fileExtension = if (typescript) ".ts" else ".js"
+    val entityFilename = entity.fqn.name.toLowerCase + fileExtension
     val sourcePath = sourceDirectory.resolve(entityFilename)
 
     val typedefFilename = entity.fqn.name.toLowerCase + ".d.ts"
@@ -42,14 +43,14 @@ object EntityServiceSourceGenerator {
     val _ = Files.write(typedefSourcePath, typedefSource(service, entity).layout.getBytes(Charsets.UTF_8))
 
     // We're going to generate an entity - let's see if we can generate its test...
-    val entityTestFilename = entityFilename.replace(".js", ".test.js")
+    val entityTestFilename = entityFilename.replace(fileExtension, ".test" + fileExtension)
     val testSourcePath =
       testSourceDirectory.resolve(entityTestFilename)
     val testSourceFiles = if (!testSourcePath.toFile.exists()) {
       val _ = testSourcePath.getParent.toFile.mkdirs()
       val _ = Files.write(
         testSourcePath,
-        testSource(service, entity, testSourceDirectory, sourceDirectory).layout.getBytes(Charsets.UTF_8))
+        testSource(service, entity, testSourceDirectory, sourceDirectory, typescript).layout.getBytes(Charsets.UTF_8))
       List(testSourcePath)
     } else {
       List.empty
@@ -63,7 +64,7 @@ object EntityServiceSourceGenerator {
         val _ = integrationTestSourcePath.getParent.toFile.mkdirs()
         val _ = Files.write(
           integrationTestSourcePath,
-          integrationTestSource(service, entity, testSourceDirectory, sourceDirectory).layout
+          integrationTestSource(service, entity, testSourceDirectory, sourceDirectory, typescript).layout
             .getBytes(Charsets.UTF_8))
         integrationTestSourcePath
       }
@@ -79,7 +80,8 @@ object EntityServiceSourceGenerator {
           sourceDirectory,
           generatedSourceDirectory,
           service,
-          entity).layout
+          entity,
+          typescript).layout
           .getBytes(Charsets.UTF_8))
       List(sourcePath, typedefSourcePath)
     } else {
@@ -95,7 +97,8 @@ object EntityServiceSourceGenerator {
       sourceDirectory: Path,
       generatedSourceDirectory: Path,
       service: ModelBuilder.Service,
-      entity: ModelBuilder.Entity): Document = {
+      entity: ModelBuilder.Entity,
+      typescript: Boolean): Document = {
     val typedefPath =
       sourceDirectory.toAbsolutePath
         .relativize(generatedSourceDirectory.toAbsolutePath)
@@ -110,17 +113,25 @@ object EntityServiceSourceGenerator {
       initialisedCodeComment <> line <> line <>
       "import" <+> braces(space <> entityType <> comma <+> "Reply" <> space) <+> "from" <+> dquotes(
         "@kalix-io/kalix-javascript-sdk") <> semi <> line <>
-      line <>
-      blockComment(Seq[Doc](
-        "Type definitions.",
-        "These types have been generated based on your proto source.",
-        "A TypeScript aware editor such as VS Code will be able to leverage them to provide hinting and validation.",
-        emptyDoc) ++ Seq[Doc](
-        service.fqn.name <> semi <+> "a strongly typed extension of" <+> entityType <+> "derived from your proto source",
-        typedef("import" <> parens(dquotes(typedefPath)) <> dot <> service.fqn.name, service.fqn.name)): _*) <> line <>
-      line <>
-      blockComment("@type" <+> service.fqn.name) <> line <>
-      "const entity" <+> equal <+> "new" <+> entityType <> parens(
+      (if (typescript) {
+         "import" <+> braces(space <> service.fqn.name <> space) <+> "from" <+> dquotes(typedefPath) <> semi <> line <>
+         line <>
+         "const entity: " <> service.fqn.name
+       } else {
+         line <>
+         blockComment(Seq[Doc](
+           "Type definitions.",
+           "These types have been generated based on your proto source.",
+           "A TypeScript aware editor such as VS Code will be able to leverage them to provide hinting and validation.",
+           emptyDoc) ++ Seq[Doc](
+           service.fqn.name <> semi <+> "a strongly typed extension of" <+> entityType <+> "derived from your proto source",
+           typedef(
+             "import" <> parens(dquotes(typedefPath)) <> dot <> service.fqn.name,
+             service.fqn.name)): _*) <> line <>
+         line <>
+         blockComment("@type" <+> service.fqn.name) <> line <>
+         "const entity"
+       }) <+> equal <+> "new" <+> entityType <> parens(
         nest(
           line <>
           brackets(nest(line <>
@@ -261,9 +272,11 @@ object EntityServiceSourceGenerator {
       service: ModelBuilder.Service,
       entity: ModelBuilder.Entity,
       testSourceDirectory: Path,
-      sourceDirectory: Path): Document = {
+      sourceDirectory: Path,
+      typescript: Boolean): Document = {
 
     val entityName = entity.fqn.name.toLowerCase
+    val entityImport = if (typescript) entityName else s"$entityName.js"
 
     val entityMockType = entity match {
       case _: ModelBuilder.EventSourcedEntity => "MockEventSourcedEntity"
@@ -277,7 +290,7 @@ object EntityServiceSourceGenerator {
       "import" <+> entityName <+> "from" <+> dquotes(
         testSourceDirectory.toAbsolutePath
           .relativize(sourceDirectory.toAbsolutePath)
-          .resolve(s"$entityName.js")
+          .resolve(entityImport)
           .toString) <> semi <> line <>
       line <>
 
@@ -318,14 +331,11 @@ object EntityServiceSourceGenerator {
       service: ModelBuilder.Service,
       entity: ModelBuilder.Entity,
       testSourceDirectory: Path,
-      sourceDirectory: Path): Document = {
+      sourceDirectory: Path,
+      typescript: Boolean): Document = {
 
     val entityName = entity.fqn.name.toLowerCase
-
-    val entityMockType = entity match {
-      case _: ModelBuilder.EventSourcedEntity => "MockEventSourcedEntity"
-      case _: ModelBuilder.ValueEntity        => "MockValueEntity"
-    }
+    val entityImport = if (typescript) entityName else s"$entityName.js"
 
     pretty(
       initialisedCodeComment <> line <> line <>
@@ -333,7 +343,7 @@ object EntityServiceSourceGenerator {
       """import { expect } from "chai"""" <> semi <> line <>
       "import" <+> entityName <+> "from" <+> dquotes(testSourceDirectory.toAbsolutePath
         .relativize(sourceDirectory.toAbsolutePath)
-        .resolve(s"$entityName.js")
+        .resolve(entityImport)
         .toString) <> semi <> line <>
       line <>
       "const" <+> "testkit" <+> equal <+> "new" <+> "IntegrationTestkit" <> parens(emptyDoc) <> semi <> line <>

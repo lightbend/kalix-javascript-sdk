@@ -22,11 +22,11 @@ object Cli {
       descriptorSetOutputDirectory: Path = CWD,
       descriptorSetFileName: String = "user-function.desc",
       protoSourceDirectory: Path = CWD,
-      serviceNamesFilter: String = ".*ServiceEntity",
       sourceDirectory: Path = CWD,
       testSourceDirectory: Path = CWD,
       generatedSourceDirectory: Path = CWD,
-      integrationTestSourceDirectory: Option[Path] = None)
+      integrationTestSourceDirectory: Option[Path] = None,
+      typescript: Boolean = false)
 
   private val builder = OParser.builder[Config]
   private val parser = {
@@ -53,9 +53,6 @@ object Cli {
         .action((x, c) => c.copy(protoSourceDirectory = x.toPath))
         .text(
           "The location of protobuf source files in relation to the base directory - defaults to the current working directory"),
-      opt[String]("service-names-filter")
-        .action((x, c) => c.copy(serviceNamesFilter = x))
-        .text("The regex pattern used to discern entities from service declarations - defaults to .*ServiceEntity"),
       opt[File]("source-dir")
         .action((x, c) => c.copy(sourceDirectory = x.toPath))
         .text(
@@ -72,6 +69,9 @@ object Cli {
         .action((x, c) => c.copy(integrationTestSourceDirectory = Some(x.toPath)))
         .text(
           "The location of integration test source files in relation to the base directory - defaults to the current working directory"),
+      opt[Unit]("typescript")
+        .action((_, c) => c.copy(typescript = true))
+        .text("Generate TypeScript sources"),
       help("help").text("Prints this usage text"))
   }
 
@@ -103,7 +103,8 @@ object Cli {
                   config.testSourceDirectory,
                   config.generatedSourceDirectory,
                   config.integrationTestSourceDirectory,
-                  config.indexFile)
+                  config.indexFile,
+                  config.typescript)
                 .foreach { p =>
                   println("Generated: " + absBaseDir.relativize(p.toAbsolutePath).toString)
                 }

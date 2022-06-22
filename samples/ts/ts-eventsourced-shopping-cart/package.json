@@ -22,12 +22,12 @@
     "jsdoc": "^3.6.10",
     "mocha": "^10.0.0",
     "prettier": "^2.7.1",
-    "rimraf": "^3.0.2",
     "ts-mocha": "^10.0.0",
     "typescript": "^4.7.4",
     "uglify-js": "^3.16.1"
   },
   "config": {
+    "typescript": true,
     "dockerImage": "gcr.io/kalix-public/samples-ts-event-sourced-shopping-cart",
     "sourceDir": "./src",
     "testSourceDir": "./test",
@@ -42,7 +42,7 @@
     "test": "ts-mocha test/**/*.test.ts",
     "integration-test": "ts-mocha integration-test/**/*.integration-test.ts",
     "test-all": "npm run test && npm run integration-test",
-    "build": "kalix-scripts build && rimraf {src,test,integration-test}/**/*.js && rimraf lib/generated/index.js && tsc",
+    "build": "kalix-scripts build && tsc",
     "package": "kalix-scripts package",
     "deploy": "kalix-scripts deploy"
   }

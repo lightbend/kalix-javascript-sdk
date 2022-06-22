@@ -1,7 +1,6 @@
 {
   "name": "{{name}}",
   "version": "0.0.1",
-  "type": "module",
   "engines": {
     "node": ">=14.0.0",
     "npm": ">=6.0.0"
@@ -12,12 +11,18 @@
   "devDependencies": {
     "@kalix-io/kalix-scripts": "{{scriptsVersion}}",
     "@kalix-io/testkit": "{{testkitVersion}}",
-    "chai": "^4.3.3",
-    "jsdoc": "^3.6.3",
-    "mocha": "^8.3.1",
-    "uglify-js": "^3.7.7"
+    "@types/chai": "^4.3.1",
+    "@types/mocha": "^9.1.1",
+    "@types/node": "18.0.0",
+    "chai": "^4.3.6",
+    "jsdoc": "^3.6.10",
+    "mocha": "^10.0.0",
+    "ts-mocha": "^10.0.0",
+    "typescript": "^4.7.4",
+    "uglify-js": "^3.16.1"
   },
   "config": {
+    "typescript": true,
     "dockerImage": "my-docker-repo/{{name}}",
     "sourceDir": "./src",
     "testSourceDir": "./test",
@@ -26,9 +31,9 @@
     "compileDescriptorArgs": []
   },
   "scripts": {
-    "start": "node src/index.js",
-    "test": "mocha ./test",
-    "build": "kalix-scripts build",
+    "start": "node dist/src/index.js",
+    "test": "ts-mocha test/**/*.test.ts",
+    "build": "kalix-scripts build && tsc",
     "package": "kalix-scripts package",
     "deploy": "kalix-scripts deploy"
   }

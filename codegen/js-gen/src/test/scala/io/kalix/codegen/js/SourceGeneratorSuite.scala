@@ -70,7 +70,8 @@ class SourceGeneratorSuite extends munit.FunSuite {
                 testSourceDirectory,
                 generatedSourceDirectory,
                 Some(integrationTestSourceDirectory),
-                "index.js")
+                "index.js",
+                typescript = false)
 
               assertEquals(Files.size(source1), 0L)
               assertEquals(Files.size(testSource2), 0L)
@@ -117,7 +118,8 @@ class SourceGeneratorSuite extends munit.FunSuite {
         outDir.resolve("test"),
         outDir.resolve("gen"),
         None,
-        "index.js")
+        "index.js",
+        typescript = false)
 
       assertEquals(
         sources,
@@ -131,7 +133,7 @@ class SourceGeneratorSuite extends munit.FunSuite {
     } finally FileUtils.deleteDirectory(outDir.toFile)
   }
 
-  test("generated component index source") {
+  test("generated component index JavaScript source") {
     val protoRef = TestData.serviceProto()
 
     val generatedSourceDirectory = Paths.get("./generated/js")
@@ -152,7 +154,8 @@ class SourceGeneratorSuite extends munit.FunSuite {
       SourceGenerator.generatedComponentIndex(
         ModelBuilder.Model(services, entities),
         generatedSourceDirectory,
-        sourceDirectory)
+        sourceDirectory,
+        typescript = false)
 
     assertEquals(
       sourceDoc.layout.replace("\\", "/"),
@@ -168,14 +171,57 @@ class SourceGeneratorSuite extends munit.FunSuite {
         |
         |export { myentity1, myvalueentity2, myentity3, myservice4 };
         |
-        |export default [myentity1, myvalueentity2, myentity3, myservice4];""".stripMargin)
+        |export default [myentity1, myvalueentity2, myentity3, myservice4];
+        |""".stripMargin)
   }
 
-  test("index source") {
+  test("generated component index TypeScript source") {
+    val protoRef = TestData.serviceProto()
+
+    val generatedSourceDirectory = Paths.get("./generated/ts")
+    val sourceDirectory = Paths.get("./src/ts")
+
+    val services = Map(
+      "com.example.Service1" -> TestData.simpleEntityService(protoRef, "1"),
+      "com.example.Service2" -> TestData.simpleEntityService(protoRef, "2"),
+      "com.example.Service3" -> TestData.simpleEntityService(protoRef, "3"),
+      "com.example.Service4" -> TestData.simpleViewService(protoRef, "4"))
+
+    val entities = Map(
+      "com.example.Entity1" -> TestData.eventSourcedEntity("1"),
+      "com.example.Entity2" -> TestData.valueEntity("2"),
+      "com.example.Entity3" -> TestData.eventSourcedEntity("3"))
+
+    val sourceDoc =
+      SourceGenerator.generatedComponentIndex(
+        ModelBuilder.Model(services, entities),
+        generatedSourceDirectory,
+        sourceDirectory,
+        typescript = true)
+
+    assertEquals(
+      sourceDoc.layout.replace("\\", "/"),
+      """/* This code is managed by Kalix tooling.
+        | * It will be re-generated to reflect any changes to your protobuf definitions.
+        | * DO NOT EDIT
+        | */
+        |
+        |import myentity1 from "../../src/ts/myentity1";
+        |import myvalueentity2 from "../../src/ts/myvalueentity2";
+        |import myentity3 from "../../src/ts/myentity3";
+        |import myservice4 from "../../src/ts/myservice4";
+        |
+        |export { myentity1, myvalueentity2, myentity3, myservice4 };
+        |
+        |export default [myentity1, myvalueentity2, myentity3, myservice4];
+        |""".stripMargin)
+  }
+
+  test("index JavaScript source") {
     val generatedComponentIndexPath = Paths.get("./generated/my-generated-index.js")
     val sourceDirectory = Paths.get("./src/js")
 
-    val sourceDoc = SourceGenerator.indexSource(sourceDirectory, generatedComponentIndexPath)
+    val sourceDoc = SourceGenerator.indexSource(sourceDirectory, generatedComponentIndexPath, typescript = false)
     assertEquals(
       sourceDoc.layout.replace("\\", "/"),
       """/* This code was initialised by Kalix tooling.
@@ -195,7 +241,36 @@ class SourceGeneratorSuite extends munit.FunSuite {
         |  server.addComponent(component);
         |});
         |
-        |server.start();""".stripMargin)
+        |server.start();
+        |""".stripMargin)
+  }
+
+  test("index TypeScript source") {
+    val generatedComponentIndexPath = Paths.get("./generated/my-generated-index.js")
+    val sourceDirectory = Paths.get("./src/ts")
+
+    val sourceDoc = SourceGenerator.indexSource(sourceDirectory, generatedComponentIndexPath, typescript = true)
+    assertEquals(
+      sourceDoc.layout.replace("\\", "/"),
+      """/* This code was initialised by Kalix tooling.
+        | * As long as this file exists it will not be re-generated.
+        | * You are free to make changes to this file.
+        | */
+        |
+        |import { Kalix } from "@kalix-io/kalix-javascript-sdk";
+        |import generatedComponents from "../../generated/my-generated-index";
+        |
+        |const server = new Kalix();
+        |
+        |// This generatedComponentArray array contains all generated Actions, Views or Entities,
+        |// and is kept up-to-date with any changes in your protobuf definitions.
+        |// If you prefer, you may remove this line and manually register these components.
+        |generatedComponents.forEach((component) => {
+        |  server.addComponent(component);
+        |});
+        |
+        |server.start();
+        |""".stripMargin)
   }
 
 }

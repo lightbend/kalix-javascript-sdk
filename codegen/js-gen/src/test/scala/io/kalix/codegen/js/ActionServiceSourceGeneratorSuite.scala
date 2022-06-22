@@ -9,7 +9,7 @@ import java.nio.file.Paths
 
 class ActionServiceSourceGeneratorSuite extends munit.FunSuite {
 
-  test("source") {
+  test("JavaScript source") {
     val protoRef = TestData.serviceProto()
     val service = TestData.simpleActionService(protoRef)
 
@@ -24,7 +24,8 @@ class ActionServiceSourceGeneratorSuite extends munit.FunSuite {
         protobufSourceDirectory,
         sourceDirectory,
         generatedSourceDirectory,
-        service)
+        service,
+        typescript = false)
     assertEquals(
       sourceDoc.layout.replace("\\", "/"), // Cope with windows testing
       """/* This code was initialised by Kalix tooling.
@@ -47,6 +48,63 @@ class ActionServiceSourceGeneratorSuite extends munit.FunSuite {
         | * @type MyService
         | */
         |const action = new Action(
+        |  [
+        |    "myentity1.proto",
+        |    "someother.proto"
+        |  ],
+        |  "com.example.service.MyService",
+        |  {
+        |    includeDirs: ["./src/proto"]
+        |  }
+        |);
+        |
+        |action.commandHandlers = {
+        |  Simple(request, ctx) {
+        |    throw new Error("The command handler for `Simple` is not implemented, yet");
+        |  },
+        |  StreamedIn(ctx) {
+        |    throw new Error("The command handler for `StreamedIn` is not implemented, yet");
+        |  },
+        |  StreamedOut(request, ctx) {
+        |    throw new Error("The command handler for `StreamedOut` is not implemented, yet");
+        |  },
+        |  FullyStreamed(ctx) {
+        |    throw new Error("The command handler for `FullyStreamed` is not implemented, yet");
+        |  }
+        |};
+        |
+        |export default action;
+        |""".stripMargin)
+  }
+
+  test("TypeScript source") {
+    val protoRef = TestData.serviceProto()
+    val service = TestData.simpleActionService(protoRef)
+
+    val protoSources = List(Paths.get("myentity1.proto"), Paths.get("someother.proto"))
+    val protobufSourceDirectory = Paths.get("./src/proto")
+    val sourceDirectory = Paths.get("./src/js")
+    val generatedSourceDirectory = Paths.get("./lib/generated")
+
+    val sourceDoc =
+      ActionServiceSourceGenerator.source(
+        protoSources,
+        protobufSourceDirectory,
+        sourceDirectory,
+        generatedSourceDirectory,
+        service,
+        typescript = true)
+    assertEquals(
+      sourceDoc.layout.replace("\\", "/"), // Cope with windows testing
+      """/* This code was initialised by Kalix tooling.
+        | * As long as this file exists it will not be re-generated.
+        | * You are free to make changes to this file.
+        | */
+        |
+        |import { Action } from "@kalix-io/kalix-javascript-sdk";
+        |import { MyService } from "../../lib/generated/myservice";
+        |
+        |const action: MyService = new Action(
         |  [
         |    "myentity1.proto",
         |    "someother.proto"
