@@ -54,10 +54,6 @@ export namespace IntegrationTestkit {
  */
 export interface IntegrationTestKitOptions extends KalixOptions {
   /**
-   * The name of this service when deployed
-   */
-  nameOfService?: String;
-  /**
    * Whether ACL checking is enabled.
    */
   aclCheckingEnabled?: boolean;
