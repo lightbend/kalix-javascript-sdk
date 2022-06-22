@@ -29,10 +29,11 @@ object ActionServiceSourceGenerator {
       testSourceDirectory: Path,
       generatedSourceDirectory: Path,
       integrationTestSourceDirectory: Option[Path],
-      indexFilename: String,
-      allProtoSources: Iterable[Path]) = {
+      allProtoSources: Iterable[Path],
+      typescript: Boolean) = {
 
-    val serviceFilename = service.fqn.name.toLowerCase + ".js"
+    val fileExtension = if (typescript) ".ts" else ".js"
+    val serviceFilename = service.fqn.name.toLowerCase + fileExtension
     val sourcePath = sourceDirectory.resolve(serviceFilename)
 
     val typedefFilename = service.fqn.name.toLowerCase + ".d.ts"
@@ -45,7 +46,13 @@ object ActionServiceSourceGenerator {
       val _ = sourcePath.getParent.toFile.mkdirs()
       val _ = Files.write(
         sourcePath,
-        source(allProtoSources, protobufSourceDirectory, sourceDirectory, generatedSourceDirectory, service).layout
+        source(
+          allProtoSources,
+          protobufSourceDirectory,
+          sourceDirectory,
+          generatedSourceDirectory,
+          service,
+          typescript).layout
           .getBytes(Charsets.UTF_8))
       List(sourcePath, typedefSourcePath)
     } else {
@@ -58,7 +65,8 @@ object ActionServiceSourceGenerator {
       protobufSourceDirectory: Path,
       sourceDirectory: Path,
       generatedSourceDirectory: Path,
-      service: ModelBuilder.ActionService): Document = {
+      service: ModelBuilder.ActionService,
+      typescript: Boolean): Document = {
     val typedefPath =
       sourceDirectory.toAbsolutePath
         .relativize(generatedSourceDirectory.toAbsolutePath)
@@ -68,17 +76,25 @@ object ActionServiceSourceGenerator {
     pretty(
       initialisedCodeComment <> line <> line <>
       "import" <+> braces(" Action ") <+> "from" <+> dquotes("@kalix-io/kalix-javascript-sdk") <> semi <> line <>
-      line <>
-      blockComment(Seq[Doc](
-        "Type definitions.",
-        "These types have been generated based on your proto source.",
-        "A TypeScript aware editor such as VS Code will be able to leverage them to provide hinting and validation.",
-        emptyDoc,
-        service.fqn.name <> semi <+> "a strongly typed extension of Action derived from your proto source",
-        typedef("import" <> parens(dquotes(typedefPath)) <> dot <> service.fqn.name, service.fqn.name)): _*) <> line <>
-      line <>
-      blockComment("@type" <+> service.fqn.name) <> line <>
-      "const action" <+> equal <+> "new" <+> "Action" <> parens(
+      (if (typescript) {
+         "import" <+> braces(space <> service.fqn.name <> space) <+> "from" <+> dquotes(typedefPath) <> semi <> line <>
+         line <>
+         "const action: " <> service.fqn.name
+       } else {
+         line <>
+         blockComment(Seq[Doc](
+           "Type definitions.",
+           "These types have been generated based on your proto source.",
+           "A TypeScript aware editor such as VS Code will be able to leverage them to provide hinting and validation.",
+           emptyDoc,
+           service.fqn.name <> semi <+> "a strongly typed extension of Action derived from your proto source",
+           typedef(
+             "import" <> parens(dquotes(typedefPath)) <> dot <> service.fqn.name,
+             service.fqn.name)): _*) <> line <>
+         line <>
+         blockComment("@type" <+> service.fqn.name) <> line <>
+         "const action"
+       }) <+> equal <+> "new" <+> "Action" <> parens(
         nest(
           line <>
           brackets(nest(line <>

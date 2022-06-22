@@ -34,7 +34,12 @@ The code generation tools create a new development project named `my-entity`, th
 . To create the initial codebase, from a command window enter the following:
 +
 [.tabset]
-npm::
+====
+
+JavaScript::
++
+[.tabset]
+npm:::
 +
 --
 [source, command window, subs="attributes"]
@@ -42,7 +47,7 @@ npm::
 npx @kalix-io/create-kalix-entity@latest my-entity
 ----
 --
-yarn::
+yarn:::
 +
 --
 [source, command window, subs="attributes"]
@@ -50,6 +55,30 @@ yarn::
 yarn create @kalix-io/kalix-entity@latest my-entity
 ----
 --
+
+TypeScript::
++
+[.tabset]
+npm:::
++
+--
+[source, command window, subs="attributes"]
+----
+npx @kalix-io/create-kalix-entity@latest my-entity --typescript
+----
+--
+yarn:::
++
+--
+[source, command window, subs="attributes"]
+----
+yarn create @kalix-io/kalix-entity@latest my-entity --typescript
+----
+--
+
+====
++
+NOTE: To generate TypeScript sources add the `--typescript` option.
 
 . Change directories to the newly created folder:
 +

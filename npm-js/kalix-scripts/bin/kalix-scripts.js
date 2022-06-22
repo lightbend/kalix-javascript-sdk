@@ -35,14 +35,28 @@ const getProtoFiles = (directory) =>
     }
   });
 
+function flag(name, value) {
+  return value ? [name] : [];
+}
+
+function option(name, value) {
+  return value ? [name, value] : [];
+}
+
 const scriptHandlers = {
   build({
+    baseDir,
+    mainFile,
+    descriptorSetOutputDir,
+    descriptorSetFile,
     protoSourceDir,
     kalixScriptDir,
     sourceDir,
     testSourceDir,
+    integrationTestSourceDir,
     generatedSourceDir,
     compileDescriptorArgs,
+    typescript,
   }) {
     const protoFiles = getProtoFiles(protoSourceDir);
     fs.mkdirSync(generatedSourceDir, {
@@ -51,10 +65,33 @@ const scriptHandlers = {
     const protoJs = path.resolve(generatedSourceDir, 'proto.js');
     const protoTs = path.resolve(generatedSourceDir, 'proto.d.ts');
 
+    const defaultCompileDescriptorArgs = [];
+
+    if (
+      !compileDescriptorArgs.some((arg) =>
+        arg.startsWith('--descriptor_set_out'),
+      )
+    ) {
+      const descriptorDir = descriptorSetOutputDir || process.cwd();
+      const descriptorName = descriptorSetFile || 'user-function.desc';
+      const descriptorPath = path.resolve(descriptorDir, descriptorName);
+      defaultCompileDescriptorArgs.push(
+        '--descriptor_set_out=' + descriptorPath,
+      );
+    }
+
+    if (!compileDescriptorArgs.includes('--include_source_info')) {
+      defaultCompileDescriptorArgs.push('--include_source_info');
+    }
+
     runOrFail(
       'Compiling protobuf descriptor',
       path.resolve('node_modules', '.bin', 'compile-descriptor'),
-      [...protoFiles, ...compileDescriptorArgs],
+      [
+        ...protoFiles,
+        ...defaultCompileDescriptorArgs,
+        ...compileDescriptorArgs,
+      ],
       { shell: true },
     );
 
@@ -76,14 +113,16 @@ const scriptHandlers = {
       'Invoking Kalix codegen',
       path.resolve(kalixScriptDir, 'bin', 'kalix-codegen-js.bin'),
       [
-        '--proto-source-dir',
-        protoSourceDir,
-        '--source-dir',
-        sourceDir,
-        '--test-source-dir',
-        testSourceDir,
-        '--generated-source-dir',
-        generatedSourceDir,
+        ...flag('--typescript', typescript),
+        ...option('--base-dir', baseDir),
+        ...option('--main-file', mainFile),
+        ...option('--descriptor-set-output-dir', descriptorSetOutputDir),
+        ...option('--descriptor-set-file', descriptorSetFile),
+        ...option('--proto-source-dir', protoSourceDir),
+        ...option('--source-dir', sourceDir),
+        ...option('--generated-source-dir', generatedSourceDir),
+        ...option('--test-source-dir', testSourceDir),
+        ...option('--integration-test-source-dir', integrationTestSourceDir),
       ],
     );
   },

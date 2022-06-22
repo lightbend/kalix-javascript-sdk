@@ -9,7 +9,7 @@ import java.nio.file.Paths
 
 class EntityServiceSourceGeneratorSuite extends munit.FunSuite {
 
-  test("EventSourcedEntity source") {
+  test("EventSourcedEntity JavaScript source") {
     val protoRef = TestData.serviceProto()
     val service = TestData.simpleEntityService(protoRef)
     val entity = TestData.eventSourcedEntity()
@@ -26,7 +26,8 @@ class EntityServiceSourceGeneratorSuite extends munit.FunSuite {
         sourceDirectory,
         generatedSourceDirectory,
         service,
-        entity)
+        entity,
+        typescript = false)
     assertEquals(
       sourceDoc.layout.replace("\\", "/"), // Cope with windows testing
       """/* This code was initialised by Kalix tooling.
@@ -85,7 +86,73 @@ class EntityServiceSourceGeneratorSuite extends munit.FunSuite {
         |""".stripMargin)
   }
 
-  test("ValueEntity source") {
+  test("EventSourcedEntity TypeScript source") {
+    val protoRef = TestData.serviceProto()
+    val service = TestData.simpleEntityService(protoRef)
+    val entity = TestData.eventSourcedEntity()
+
+    val protoSources = List(Paths.get("myentity1.proto"), Paths.get("someother.proto"))
+    val protobufSourceDirectory = Paths.get("./src/proto")
+    val sourceDirectory = Paths.get("./src/ts")
+    val generatedSourceDirectory = Paths.get("./lib/generated")
+
+    val sourceDoc =
+      EntityServiceSourceGenerator.source(
+        protoSources,
+        protobufSourceDirectory,
+        sourceDirectory,
+        generatedSourceDirectory,
+        service,
+        entity,
+        typescript = true)
+    assertEquals(
+      sourceDoc.layout.replace("\\", "/"), // Cope with windows testing
+      """/* This code was initialised by Kalix tooling.
+        | * As long as this file exists it will not be re-generated.
+        | * You are free to make changes to this file.
+        | */
+        |
+        |import { EventSourcedEntity, Reply } from "@kalix-io/kalix-javascript-sdk";
+        |import { MyService } from "../../lib/generated/myentity";
+        |
+        |const entity: MyService = new EventSourcedEntity(
+        |  [
+        |    "myentity1.proto",
+        |    "someother.proto"
+        |  ],
+        |  "com.example.service.MyService",
+        |  "my-eventsourcedentity-persistence",
+        |  {
+        |    includeDirs: ["./src/proto"]
+        |  }
+        |);
+        |
+        |const MyState = entity.lookupType("com.example.service.persistence.MyState");
+        |
+        |entity.setInitial(entityId => MyState.create({}));
+        |
+        |entity.setBehavior(state => ({
+        |  commandHandlers: {
+        |    Set(command, state, ctx) {
+        |      return Reply.failure("The command handler for `Set` is not implemented, yet");
+        |    },
+        |    Get(command, state, ctx) {
+        |      return Reply.failure("The command handler for `Get` is not implemented, yet");
+        |    }
+        |  },
+        |  
+        |  eventHandlers: {
+        |    SetEvent(event, state) {
+        |      return state;
+        |    }
+        |  }
+        |}));
+        |
+        |export default entity;
+        |""".stripMargin)
+  }
+
+  test("ValueEntity JavaScript source") {
     val protoRef = TestData.serviceProto()
     val service = TestData.simpleEntityService(protoRef)
     val entity = TestData.valueEntity()
@@ -102,7 +169,8 @@ class EntityServiceSourceGeneratorSuite extends munit.FunSuite {
         sourceDirectory,
         generatedSourceDirectory,
         service,
-        entity)
+        entity,
+        typescript = false)
     assertEquals(
       sourceDoc.layout.replace("\\", "/"), // Cope with windows testing
       """/* This code was initialised by Kalix tooling.
@@ -125,6 +193,64 @@ class EntityServiceSourceGeneratorSuite extends munit.FunSuite {
         | * @type MyService
         | */
         |const entity = new ValueEntity(
+        |  [
+        |    "myentity1.proto",
+        |    "someother.proto"
+        |  ],
+        |  "com.example.service.MyService",
+        |  "my-valueentity-persistence",
+        |  {
+        |    includeDirs: ["./src/proto"]
+        |  }
+        |);
+        |
+        |const MyState = entity.lookupType("com.example.service.persistence.MyState");
+        |
+        |entity.setInitial(entityId => MyState.create({}));
+        |
+        |entity.setCommandHandlers({
+        |  Set(command, state, ctx) {
+        |    return Reply.failure("The command handler for `Set` is not implemented, yet");
+        |  },
+        |  Get(command, state, ctx) {
+        |    return Reply.failure("The command handler for `Get` is not implemented, yet");
+        |  }
+        |});
+        |
+        |export default entity;
+        |""".stripMargin)
+  }
+
+  test("ValueEntity TypeScript source") {
+    val protoRef = TestData.serviceProto()
+    val service = TestData.simpleEntityService(protoRef)
+    val entity = TestData.valueEntity()
+
+    val protoSources = List(Paths.get("myentity1.proto"), Paths.get("someother.proto"))
+    val protobufSourceDirectory = Paths.get("./src/proto")
+    val sourceDirectory = Paths.get("./src/ts")
+    val generatedSourceDirectory = Paths.get("./lib/generated")
+
+    val sourceDoc =
+      EntityServiceSourceGenerator.source(
+        protoSources,
+        protobufSourceDirectory,
+        sourceDirectory,
+        generatedSourceDirectory,
+        service,
+        entity,
+        typescript = true)
+    assertEquals(
+      sourceDoc.layout.replace("\\", "/"), // Cope with windows testing
+      """/* This code was initialised by Kalix tooling.
+        | * As long as this file exists it will not be re-generated.
+        | * You are free to make changes to this file.
+        | */
+        |
+        |import { ValueEntity, Reply } from "@kalix-io/kalix-javascript-sdk";
+        |import { MyService } from "../../lib/generated/myvalueentity";
+        |
+        |const entity: MyService = new ValueEntity(
         |  [
         |    "myentity1.proto",
         |    "someother.proto"
@@ -277,7 +403,7 @@ class EntityServiceSourceGeneratorSuite extends munit.FunSuite {
         |""".stripMargin)
   }
 
-  test("EventSourcedEntity test source") {
+  test("EventSourcedEntity test JavaScript source") {
     val protoRef = TestData.serviceProto()
     val service = TestData.simpleEntityService(protoRef, "1")
     val entity = TestData.eventSourcedEntity()
@@ -285,7 +411,7 @@ class EntityServiceSourceGeneratorSuite extends munit.FunSuite {
     val testSourceDirectory = Paths.get("./test/js")
     val sourceDirectory = Paths.get("./src/js")
     val sourceDoc =
-      EntityServiceSourceGenerator.testSource(service, entity, testSourceDirectory, sourceDirectory)
+      EntityServiceSourceGenerator.testSource(service, entity, testSourceDirectory, sourceDirectory, typescript = false)
     assertEquals(
       sourceDoc.layout.replace("\\", "/"), // Cope with windows testing
       """/* This code was initialised by Kalix tooling.
@@ -328,7 +454,58 @@ class EntityServiceSourceGeneratorSuite extends munit.FunSuite {
         |});""".stripMargin)
   }
 
-  test("ValueEntity test source") {
+  test("EventSourcedEntity test TypeScript source") {
+    val protoRef = TestData.serviceProto()
+    val service = TestData.simpleEntityService(protoRef, "1")
+    val entity = TestData.eventSourcedEntity()
+
+    val testSourceDirectory = Paths.get("./test/ts")
+    val sourceDirectory = Paths.get("./src/ts")
+    val sourceDoc =
+      EntityServiceSourceGenerator.testSource(service, entity, testSourceDirectory, sourceDirectory, typescript = true)
+    assertEquals(
+      sourceDoc.layout.replace("\\", "/"), // Cope with windows testing
+      """/* This code was initialised by Kalix tooling.
+        | * As long as this file exists it will not be re-generated.
+        | * You are free to make changes to this file.
+        | */
+        |
+        |import { MockEventSourcedEntity } from "@kalix-io/testkit";
+        |import { expect } from "chai";
+        |import myentity from "../../src/ts/myentity";
+        |
+        |describe("MyService1", () => {
+        |  const entityId = "entityId";
+        |  
+        |  describe("Set", () => {
+        |    it("should...", async () => {
+        |      const entity = new MockEventSourcedEntity(myentity, entityId);
+        |      // TODO: you may want to set fields in addition to the entity id
+        |      // const result = await entity.handleCommand("Set", { entityId });
+        |      
+        |      // expect(result).to.deep.equal({});
+        |      // expect(entity.error).to.be.undefined;
+        |      // expect(entity.state).to.deep.equal({});
+        |      // expect(entity.events).to.deep.equal([]);
+        |    });
+        |  });
+        |  
+        |  describe("Get", () => {
+        |    it("should...", async () => {
+        |      const entity = new MockEventSourcedEntity(myentity, entityId);
+        |      // TODO: you may want to set fields in addition to the entity id
+        |      // const result = await entity.handleCommand("Get", { entityId });
+        |      
+        |      // expect(result).to.deep.equal({});
+        |      // expect(entity.error).to.be.undefined;
+        |      // expect(entity.state).to.deep.equal({});
+        |      // expect(entity.events).to.deep.equal([]);
+        |    });
+        |  });
+        |});""".stripMargin)
+  }
+
+  test("ValueEntity test JavaScript source") {
     val protoRef = TestData.serviceProto()
     val service = TestData.simpleEntityService(protoRef, "1")
     val entity = TestData.valueEntity()
@@ -336,7 +513,7 @@ class EntityServiceSourceGeneratorSuite extends munit.FunSuite {
     val testSourceDirectory = Paths.get("./test/js")
     val sourceDirectory = Paths.get("./src/js")
     val sourceDoc =
-      EntityServiceSourceGenerator.testSource(service, entity, testSourceDirectory, sourceDirectory)
+      EntityServiceSourceGenerator.testSource(service, entity, testSourceDirectory, sourceDirectory, typescript = false)
     assertEquals(
       sourceDoc.layout.replace("\\", "/"), // Cope with windows testing
       """/* This code was initialised by Kalix tooling.
@@ -377,7 +554,56 @@ class EntityServiceSourceGeneratorSuite extends munit.FunSuite {
         |});""".stripMargin)
   }
 
-  test("ValueEntity integration test source") {
+  test("ValueEntity test TypeScript source") {
+    val protoRef = TestData.serviceProto()
+    val service = TestData.simpleEntityService(protoRef, "1")
+    val entity = TestData.valueEntity()
+
+    val testSourceDirectory = Paths.get("./test/ts")
+    val sourceDirectory = Paths.get("./src/ts")
+    val sourceDoc =
+      EntityServiceSourceGenerator.testSource(service, entity, testSourceDirectory, sourceDirectory, typescript = true)
+    assertEquals(
+      sourceDoc.layout.replace("\\", "/"), // Cope with windows testing
+      """/* This code was initialised by Kalix tooling.
+        | * As long as this file exists it will not be re-generated.
+        | * You are free to make changes to this file.
+        | */
+        |
+        |import { MockValueEntity } from "@kalix-io/testkit";
+        |import { expect } from "chai";
+        |import myvalueentity from "../../src/ts/myvalueentity";
+        |
+        |describe("MyService1", () => {
+        |  const entityId = "entityId";
+        |  
+        |  describe("Set", () => {
+        |    it("should...", async () => {
+        |      const entity = new MockValueEntity(myvalueentity, entityId);
+        |      // TODO: you may want to set fields in addition to the entity id
+        |      // const result = await entity.handleCommand("Set", { entityId });
+        |      
+        |      // expect(result).to.deep.equal({});
+        |      // expect(entity.error).to.be.undefined;
+        |      // expect(entity.state).to.deep.equal({});
+        |    });
+        |  });
+        |  
+        |  describe("Get", () => {
+        |    it("should...", async () => {
+        |      const entity = new MockValueEntity(myvalueentity, entityId);
+        |      // TODO: you may want to set fields in addition to the entity id
+        |      // const result = await entity.handleCommand("Get", { entityId });
+        |      
+        |      // expect(result).to.deep.equal({});
+        |      // expect(entity.error).to.be.undefined;
+        |      // expect(entity.state).to.deep.equal({});
+        |    });
+        |  });
+        |});""".stripMargin)
+  }
+
+  test("ValueEntity integration test JavaScript source") {
     val protoRef = TestData.serviceProto()
     val service = TestData.simpleEntityService(protoRef, "1")
     val entity = TestData.valueEntity()
@@ -385,7 +611,12 @@ class EntityServiceSourceGeneratorSuite extends munit.FunSuite {
     val testSourceDirectory = Paths.get("./test/js")
     val sourceDirectory = Paths.get("./src/js")
     val sourceDoc =
-      EntityServiceSourceGenerator.integrationTestSource(service, entity, testSourceDirectory, sourceDirectory)
+      EntityServiceSourceGenerator.integrationTestSource(
+        service,
+        entity,
+        testSourceDirectory,
+        sourceDirectory,
+        typescript = false)
     assertEquals(
       sourceDoc.layout.replace("\\", "/"), // Cope with windows testing
       """/* This code was initialised by Kalix tooling.
@@ -396,6 +627,57 @@ class EntityServiceSourceGeneratorSuite extends munit.FunSuite {
         |import { IntegrationTestkit } from "@kalix-io/testkit";
         |import { expect } from "chai";
         |import myvalueentity from "../../src/js/myvalueentity.js";
+        |
+        |const testkit = new IntegrationTestkit();
+        |testkit.addComponent(myvalueentity);
+        |
+        |const client = () => testkit.clients.MyService1;
+        |
+        |describe("MyService1", function() {
+        |  this.timeout(60000);
+        |  
+        |  before(done => testkit.start(done));
+        |  after(done => testkit.shutdown(done));
+        |  
+        |  describe("Set", () => {
+        |    it("should...", async () => {
+        |      // TODO: populate command payload, and provide assertions to match replies
+        |      // const result = await client().set({});
+        |    });
+        |  });
+        |  describe("Get", () => {
+        |    it("should...", async () => {
+        |      // TODO: populate command payload, and provide assertions to match replies
+        |      // const result = await client().get({});
+        |    });
+        |  });
+        |});""".stripMargin)
+  }
+
+  test("ValueEntity integration test TypeScript source") {
+    val protoRef = TestData.serviceProto()
+    val service = TestData.simpleEntityService(protoRef, "1")
+    val entity = TestData.valueEntity()
+
+    val testSourceDirectory = Paths.get("./test/ts")
+    val sourceDirectory = Paths.get("./src/ts")
+    val sourceDoc =
+      EntityServiceSourceGenerator.integrationTestSource(
+        service,
+        entity,
+        testSourceDirectory,
+        sourceDirectory,
+        typescript = true)
+    assertEquals(
+      sourceDoc.layout.replace("\\", "/"), // Cope with windows testing
+      """/* This code was initialised by Kalix tooling.
+        | * As long as this file exists it will not be re-generated.
+        | * You are free to make changes to this file.
+        | */
+        |
+        |import { IntegrationTestkit } from "@kalix-io/testkit";
+        |import { expect } from "chai";
+        |import myvalueentity from "../../src/ts/myvalueentity";
         |
         |const testkit = new IntegrationTestkit();
         |testkit.addComponent(myvalueentity);

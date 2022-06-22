@@ -9,7 +9,7 @@ import java.nio.file.Paths
 
 class ViewServiceSourceGeneratorSuite extends munit.FunSuite {
 
-  test("source") {
+  test("JavaScript source") {
     val protoRef = TestData.serviceProto()
     val service = TestData.simpleViewService(protoRef)
 
@@ -24,7 +24,8 @@ class ViewServiceSourceGeneratorSuite extends munit.FunSuite {
         protobufSourceDirectory,
         sourceDirectory,
         generatedSourceDirectory,
-        service)
+        service,
+        typescript = false)
     assertEquals(
       sourceDoc.layout.replace("\\", "/"), // Cope with windows testing
       """/* This code was initialised by Kalix tooling.
@@ -70,7 +71,60 @@ class ViewServiceSourceGeneratorSuite extends munit.FunSuite {
         |export default view;
         |""".stripMargin)
   }
-  test("source without transformations") {
+
+  test("TypeScript source") {
+    val protoRef = TestData.serviceProto()
+    val service = TestData.simpleViewService(protoRef)
+
+    val protoSources = List(Paths.get("myentity1.proto"), Paths.get("someother.proto"))
+    val protobufSourceDirectory = Paths.get("./src/proto")
+    val sourceDirectory = Paths.get("./src/js")
+    val generatedSourceDirectory = Paths.get("./lib/generated")
+
+    val sourceDoc =
+      ViewServiceSourceGenerator.source(
+        protoSources,
+        protobufSourceDirectory,
+        sourceDirectory,
+        generatedSourceDirectory,
+        service,
+        typescript = true)
+    assertEquals(
+      sourceDoc.layout.replace("\\", "/"), // Cope with windows testing
+      """/* This code was initialised by Kalix tooling.
+        | * As long as this file exists it will not be re-generated.
+        | * You are free to make changes to this file.
+        | */
+        |
+        |import { View } from "@kalix-io/kalix-javascript-sdk";
+        |import { MyService } from "../../lib/generated/myservice";
+        |
+        |const view: MyService = new View(
+        |  [
+        |    "myentity1.proto",
+        |    "someother.proto"
+        |  ],
+        |  "com.example.service.MyService",
+        |  {
+        |    includeDirs: ["./src/proto"],
+        |    viewId: "my-view-id"
+        |  }
+        |);
+        |
+        |view.setUpdateHandlers({
+        |  Created(event, state, ctx) {
+        |    throw new Error("The update handler for `Created` is not implemented, yet");
+        |  },
+        |  Updated(event, state, ctx) {
+        |    throw new Error("The update handler for `Updated` is not implemented, yet");
+        |  }
+        |});
+        |
+        |export default view;
+        |""".stripMargin)
+  }
+
+  test("JavaScript source without transformations") {
     val protoRef = TestData.serviceProto()
     val service = TestData
       .simpleViewService(protoRef)
@@ -87,7 +141,8 @@ class ViewServiceSourceGeneratorSuite extends munit.FunSuite {
         protobufSourceDirectory,
         sourceDirectory,
         generatedSourceDirectory,
-        service)
+        service,
+        typescript = false)
     assertEquals(
       sourceDoc.layout.replace("\\", "/"), // Cope with windows testing
       """/* This code was initialised by Kalix tooling.
@@ -110,6 +165,51 @@ class ViewServiceSourceGeneratorSuite extends munit.FunSuite {
         | * @type MyService
         | */
         |const view = new View(
+        |  [
+        |    "myentity1.proto",
+        |    "someother.proto"
+        |  ],
+        |  "com.example.service.MyService",
+        |  {
+        |    includeDirs: ["./src/proto"],
+        |    viewId: "my-view-id"
+        |  }
+        |);
+        |
+        |export default view;
+        |""".stripMargin)
+  }
+
+  test("TypeScript source without transformations") {
+    val protoRef = TestData.serviceProto()
+    val service = TestData
+      .simpleViewService(protoRef)
+      .copy(transformedUpdates = List.empty)
+
+    val protoSources = List(Paths.get("myentity1.proto"), Paths.get("someother.proto"))
+    val protobufSourceDirectory = Paths.get("./src/proto")
+    val sourceDirectory = Paths.get("./src/js")
+    val generatedSourceDirectory = Paths.get("./lib/generated")
+
+    val sourceDoc =
+      ViewServiceSourceGenerator.source(
+        protoSources,
+        protobufSourceDirectory,
+        sourceDirectory,
+        generatedSourceDirectory,
+        service,
+        typescript = true)
+    assertEquals(
+      sourceDoc.layout.replace("\\", "/"), // Cope with windows testing
+      """/* This code was initialised by Kalix tooling.
+        | * As long as this file exists it will not be re-generated.
+        | * You are free to make changes to this file.
+        | */
+        |
+        |import { View } from "@kalix-io/kalix-javascript-sdk";
+        |import { MyService } from "../../lib/generated/myservice";
+        |
+        |const view: MyService = new View(
         |  [
         |    "myentity1.proto",
         |    "someother.proto"

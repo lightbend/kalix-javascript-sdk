@@ -1,0 +1,35 @@
+{
+  "name": "{{name}}",
+  "version": "0.0.1",
+  "type": "module",
+  "engines": {
+    "node": ">=14.0.0",
+    "npm": ">=6.0.0"
+  },
+  "dependencies": {
+    "@kalix-io/kalix-javascript-sdk": "{{sdkVersion}}"
+  },
+  "devDependencies": {
+    "@kalix-io/kalix-scripts": "{{scriptsVersion}}",
+    "@kalix-io/testkit": "{{testkitVersion}}",
+    "chai": "^4.3.6",
+    "jsdoc": "^3.6.10",
+    "mocha": "^10.0.0",
+    "uglify-js": "^3.16.1"
+  },
+  "config": {
+    "dockerImage": "my-docker-repo/{{name}}",
+    "sourceDir": "./src",
+    "testSourceDir": "./test",
+    "protoSourceDir": "./proto",
+    "generatedSourceDir": "./lib/generated",
+    "compileDescriptorArgs": []
+  },
+  "scripts": {
+    "start": "node src/index.js",
+    "test": "mocha ./test",
+    "build": "kalix-scripts build",
+    "package": "kalix-scripts package",
+    "deploy": "kalix-scripts deploy"
+  }
+}

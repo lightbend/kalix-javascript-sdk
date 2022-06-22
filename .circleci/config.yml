@@ -602,18 +602,57 @@ jobs:
             npm install ../sdk/kalix-io-kalix-javascript-sdk-0.0.0.tgz
             npm pack
       - run:
-          name: "test everything"
+          name: "test generated JavaScript Value Entity"
           working_directory: "~/tmp"
           command: |
             export KALIX_NPMJS_SCRIPTS_VERSION="file:${HOME}/project/npm-js/kalix-scripts/kalix-io-kalix-scripts-1.0.0.tgz"
             export KALIX_NPMJS_SDK_VERSION="file:${HOME}/project/sdk/kalix-io-kalix-javascript-sdk-0.0.0.tgz"
             export KALIX_NPMJS_TESTKIT_VERSION="file:${HOME}/project/testkit/kalix-io-testkit-0.0.0.tgz"
             export KALIX_NPMJS_CODEGEN_BINARY="${HOME}/project/codegen/js-gen-cli/target/native-image/kalix-codegen-js"
-            node "${HOME}/project/npm-js/create-kalix-entity/create-kalix-entity.js" generated-project
-            cd generated-project
-            npm install && \
-              npm run build && \
-              npm run test
+            node "${HOME}/project/npm-js/create-kalix-entity/create-kalix-entity.js" js-value-entity
+            cd js-value-entity
+            npm install
+            npm run build
+            npm test
+      - run:
+          name: "test generated TypeScript Value Entity"
+          working_directory: "~/tmp"
+          command: |
+            export KALIX_NPMJS_SCRIPTS_VERSION="file:${HOME}/project/npm-js/kalix-scripts/kalix-io-kalix-scripts-1.0.0.tgz"
+            export KALIX_NPMJS_SDK_VERSION="file:${HOME}/project/sdk/kalix-io-kalix-javascript-sdk-0.0.0.tgz"
+            export KALIX_NPMJS_TESTKIT_VERSION="file:${HOME}/project/testkit/kalix-io-testkit-0.0.0.tgz"
+            export KALIX_NPMJS_CODEGEN_BINARY="${HOME}/project/codegen/js-gen-cli/target/native-image/kalix-codegen-js"
+            node "${HOME}/project/npm-js/create-kalix-entity/create-kalix-entity.js" ts-value-entity --typescript
+            cd ts-value-entity
+            npm install
+            npm run build
+            npm test
+      - run:
+          name: "test generated JavaScript Event Sourced Entity"
+          working_directory: "~/tmp"
+          command: |
+            export KALIX_NPMJS_SCRIPTS_VERSION="file:${HOME}/project/npm-js/kalix-scripts/kalix-io-kalix-scripts-1.0.0.tgz"
+            export KALIX_NPMJS_SDK_VERSION="file:${HOME}/project/sdk/kalix-io-kalix-javascript-sdk-0.0.0.tgz"
+            export KALIX_NPMJS_TESTKIT_VERSION="file:${HOME}/project/testkit/kalix-io-testkit-0.0.0.tgz"
+            export KALIX_NPMJS_CODEGEN_BINARY="${HOME}/project/codegen/js-gen-cli/target/native-image/kalix-codegen-js"
+            node "${HOME}/project/npm-js/create-kalix-entity/create-kalix-entity.js" js-event-sourced-entity --template event-sourced-entity
+            cd js-event-sourced-entity
+            npm install
+            npm run build
+            npm test
+      - run:
+          name: "test generated TypeScript Event Sourced Entity"
+          working_directory: "~/tmp"
+          command: |
+            export KALIX_NPMJS_SCRIPTS_VERSION="file:${HOME}/project/npm-js/kalix-scripts/kalix-io-kalix-scripts-1.0.0.tgz"
+            export KALIX_NPMJS_SDK_VERSION="file:${HOME}/project/sdk/kalix-io-kalix-javascript-sdk-0.0.0.tgz"
+            export KALIX_NPMJS_TESTKIT_VERSION="file:${HOME}/project/testkit/kalix-io-testkit-0.0.0.tgz"
+            export KALIX_NPMJS_CODEGEN_BINARY="${HOME}/project/codegen/js-gen-cli/target/native-image/kalix-codegen-js"
+            node "${HOME}/project/npm-js/create-kalix-entity/create-kalix-entity.js" ts-event-sourced-entity --typescript --template event-sourced-entity
+            cd ts-event-sourced-entity
+            npm install
+            npm run build
+            npm test
 
   e2e-tests:
     machine:

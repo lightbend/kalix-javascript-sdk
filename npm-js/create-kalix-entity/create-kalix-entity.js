@@ -47,6 +47,7 @@ const args = yargs(hideBin(process.argv))
       });
     },
   )
+  .boolean('typescript')
   .option('template', {
     description: 'Specify a template for the created project',
     choices: ['value-entity', 'event-sourced-entity'],
@@ -71,7 +72,9 @@ const args = yargs(hideBin(process.argv))
     default: `^${package.version}`,
   }).argv;
 
-const baseTemplatePath = path.resolve(__dirname, 'template/base');
+const commonTemplatePath = path.resolve(__dirname, 'template', 'base-common');
+const baseTemplateName = args.typescript ? 'base-ts' : 'base-js';
+const baseTemplatePath = path.resolve(__dirname, 'template', baseTemplateName);
 const templatePath = path.resolve(__dirname, 'template', args.template);
 const targetPath = path.resolve(args.entityName);
 
@@ -104,7 +107,8 @@ const scaffold = new Scaffold({
 console.info(`Generating new Kalix entity '${args.entityName}'`);
 
 scaffold
-  .copy(baseTemplatePath, targetPath)
+  .copy(commonTemplatePath, targetPath)
+  .then(() => scaffold.copy(baseTemplatePath, targetPath))
   .then(() => scaffold.copy(templatePath, targetPath))
   .then(() => {
     console.info('Entity codebase generated successfully. To get started:');
