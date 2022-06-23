@@ -15,9 +15,14 @@ const requiredConfig = [
 
 const kalixScriptDir = path.resolve(__dirname, '..');
 
+const dockerBuildArgs =
+  process.arch === 'arm64'
+    ? ['buildx', 'build', '--platform=linux/amd64']
+    : ['build'];
+
 const dockerBuild = (dockerTag) =>
   runOrFail('Building docker image', 'docker', [
-    'build',
+    ...dockerBuildArgs,
     '--tag',
     dockerTag,
     '.',
