@@ -50,7 +50,7 @@ const args = yargs(hideBin(process.argv))
   .boolean('typescript')
   .option('template', {
     description: 'Specify a template for the created project',
-    choices: ['value-entity', 'event-sourced-entity'],
+    choices: ['basic', 'value-entity', 'event-sourced-entity'],
     default: 'value-entity',
   })
   .option('scriptsVersion', {
@@ -102,6 +102,7 @@ const scaffold = new Scaffold({
     testkitVersion: args.testkitVersion,
   },
   render: mustache.render,
+  backup: false,
 });
 
 console.info(`Generating new Kalix entity '${args.entityName}'`);
