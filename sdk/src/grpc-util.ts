@@ -18,6 +18,8 @@ import * as util from 'util';
 import * as protobuf from 'protobufjs';
 import * as grpc from '@grpc/grpc-js';
 import { ServiceClientConstructor } from '@grpc/grpc-js/build/src/make-client';
+import { IdentificationInfo } from '../types/protocol/discovery';
+import { Func } from 'mocha';
 
 /**
  * gRPC client.
@@ -37,12 +39,12 @@ export interface GrpcClientCreator {
   /**
    * Create a new client for service.
    *
-   * @param address - the address for the service
+   * @param address - the address for the service, or undefined if client is for another component in this Kalix Service
    * @param credentials - the credentials for the connection
    * @returns a new gRPC client for the service
    */
   createClient(
-    address: string,
+    address?: string,
     credentials?: grpc.ChannelCredentials,
   ): GrpcClient;
 }
@@ -56,16 +58,48 @@ export interface GrpcClientLookup {
   [index: string]: GrpcClientLookup | GrpcClientCreator;
 }
 
+/**
+ * @private
+ */
+enum ServiceType {
+  SELF,
+  KALIX_SERVICE,
+  EXTERNAL,
+}
+
 /** @public */
 export class GrpcUtil {
   /**
    * Create gRPC client creators for defined services, with promisified clients.
+   *
+   * @internal
    */
   static clientCreators(
     namespace: protobuf.Namespace,
     grpcObject: grpc.GrpcObject,
+    proxyHostname: string,
+    proxyPort: number,
+    identificationInfo?: IdentificationInfo,
   ): GrpcClientLookup {
     const result: GrpcClientLookup = {};
+    let selfAuthHeaders: grpc.Metadata | undefined;
+    let otherKalixServiceAuthHeaders: grpc.Metadata | undefined;
+    if (identificationInfo?.selfIdentificationHeader) {
+      selfAuthHeaders = new grpc.Metadata();
+      selfAuthHeaders.add(
+        identificationInfo.selfIdentificationHeader!,
+        identificationInfo.selfIdentificationToken!,
+      );
+    }
+    if (identificationInfo?.serviceIdentificationHeader) {
+      // only set for local dev proxy
+      otherKalixServiceAuthHeaders = new grpc.Metadata();
+      otherKalixServiceAuthHeaders.add(
+        identificationInfo.serviceIdentificationHeader!,
+        identificationInfo.selfDeploymentName!,
+      );
+    }
+
     for (const serviceFqn of GrpcUtil.getServiceNames(namespace)) {
       let currentLookup = result;
       let currentGrpc = grpcObject;
@@ -78,15 +112,57 @@ export class GrpcUtil {
         currentGrpc = currentGrpc[packageName] as grpc.GrpcObject;
       }
       const serviceName = nameComponents[nameComponents.length - 1];
-      const serviceClientConstructor = currentGrpc[
-        serviceName
-      ] as ServiceClientConstructor;
       const clientCreator = function (
-        address: string,
+        address?: string,
         credentials?: grpc.ChannelCredentials,
       ) {
         const creds = credentials || grpc.credentials.createInsecure();
-        const client = new serviceClientConstructor(address, creds);
+        let actualAddress: string;
+        let serviceType: ServiceType;
+        if (address) {
+          if (address.indexOf('.') > 0) {
+            serviceType = ServiceType.EXTERNAL;
+            actualAddress = address;
+          } else if (address.startsWith(proxyHostname)) {
+            // FIXME deprecate and warn about creating with manual address?
+            // Note: this is not water tight, when running locally with docker it will likely be 'localhost' for all services
+            serviceType = ServiceType.SELF;
+            actualAddress = address;
+          } else {
+            serviceType = ServiceType.KALIX_SERVICE;
+            if (address.indexOf(':') > 0) {
+              actualAddress = address;
+            } else {
+              // allow users to use only the service name and add the port for them
+              actualAddress = address + ':80';
+            }
+          }
+        } else {
+          // auto set self-host/port
+          serviceType = ServiceType.SELF;
+          actualAddress = proxyHostname + ':' + proxyPort;
+        }
+
+        const serviceClientConstructor = currentGrpc[
+          serviceName
+        ] as ServiceClientConstructor;
+
+        const client = new serviceClientConstructor(actualAddress, creds);
+        if (identificationInfo) {
+          switch (serviceType) {
+            case ServiceType.SELF:
+              if (selfAuthHeaders)
+                GrpcUtil.addHeadersToAllRequests(client, selfAuthHeaders);
+              break;
+            case ServiceType.KALIX_SERVICE:
+              if (otherKalixServiceAuthHeaders)
+                GrpcUtil.addHeadersToAllRequests(
+                  client,
+                  otherKalixServiceAuthHeaders,
+                );
+              break;
+          }
+        }
         return GrpcUtil.promisifyClient(client);
       };
       currentLookup[serviceName] = {
@@ -115,6 +191,41 @@ export class GrpcUtil {
         .reduce((acc, val) => acc.concat(val), []);
     }
     return [];
+  }
+
+  /**
+   * Add default headers/metadata to all request methods
+   */
+  static addHeadersToAllRequests(
+    client: any,
+    metadataWithHeaders: grpc.Metadata,
+  ) {
+    Object.keys(Object.getPrototypeOf(client)).forEach((methodName) => {
+      const originalMethod = client[methodName];
+      // patch methods that are service calls
+      if (originalMethod.requestStream !== undefined) {
+        const patchedMethod: any = function patched() {
+          // service calls has 2-4 parameters, find the metadata parameter if there is one
+          const args = Array.prototype.slice.call(arguments);
+          const indexOfMeta = args.findIndex((p) => p instanceof grpc.Metadata);
+          if (indexOfMeta === -1) {
+            // no metadata present, inject metadata param at position 1
+            args.splice(1, 0, metadataWithHeaders);
+          } else {
+            // metadata present, merge/mutate
+            const existingMeta = args[indexOfMeta];
+            existingMeta.merge(metadataWithHeaders);
+          }
+          // call original method with patched metadata
+          originalMethod.apply(client, args);
+        };
+        // copy fields from original method so that promisify works (sketchy)
+        for (var attr in originalMethod) {
+          patchedMethod[attr] = originalMethod[attr];
+        }
+        client[methodName] = patchedMethod;
+      }
+    });
   }
 
   /**

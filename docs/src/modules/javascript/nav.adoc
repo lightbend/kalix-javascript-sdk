@@ -12,4 +12,5 @@
 *** xref:javascript:actions-publishing-subscribing.adoc[Publishing and Subscribing]
 *** xref:javascript:serialization.adoc[Handling Serialization]
 *** xref:javascript:call-another-service.adoc[Calling other services]
+*** xref:access-control.adoc[Access Control Lists (ACLs)]
 *** xref:javascript:api.adoc[JavaScript API docs]

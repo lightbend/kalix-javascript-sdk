@@ -16,10 +16,14 @@
 
 import * as grpc from '@grpc/grpc-js';
 import {
-  Kalix,
-  settings,
   Component,
   GrpcUtil,
+  Kalix,
+  KalixOptions,
+  LocalServicePrincipal,
+  PredefinedPrincipal,
+  Principal,
+  settings,
 } from '@kalix-io/kalix-javascript-sdk';
 import { GenericContainer, TestContainers, Wait } from 'testcontainers';
 
@@ -46,31 +50,55 @@ export namespace IntegrationTestkit {
 }
 
 /**
+ * @public
+ */
+export interface IntegrationTestKitOptions extends KalixOptions {
+  /**
+   * Whether ACL checking is enabled.
+   */
+  aclCheckingEnabled?: boolean;
+  /**
+   * Docker image to test
+   */
+  dockerImage?: string;
+}
+
+/**
  * Integration Testkit.
  *
  * @public
  */
 export class IntegrationTestkit {
-  private options: any = { dockerImage: defaultDockerImage };
+  private options: IntegrationTestKitOptions;
   private componentClients: { [serviceName: string]: any };
   private kalix: Kalix;
   private proxyContainer: any;
+  private proxyPort?: number;
 
   /**
    * Integration Testkit.
    *
    * @param options - Options for the testkit and Kalix service
    */
-  constructor(options?: any) {
+  constructor(options?: IntegrationTestKitOptions) {
     if (options) {
       this.options = options;
-      if (!options.dockerImage) {
-        this.options.dockerImage = defaultDockerImage;
-      }
+    } else {
+      this.options = {};
+    }
+
+    this.options.delayDiscoveryUntilProxyPortSet = true;
+
+    // sensible defaults for missing values
+    if (!this.options.dockerImage) {
+      this.options.dockerImage = defaultDockerImage;
+    }
+    if (!this.options.serviceName) {
+      this.options.serviceName = 'self';
     }
 
     this.componentClients = {};
-    this.kalix = new Kalix(options);
+    this.kalix = new Kalix(this.options);
   }
 
   /**
@@ -78,6 +106,25 @@ export class IntegrationTestkit {
    */
   get clients(): { [serviceName: string]: any } {
     return this.componentClients;
+  }
+
+  /**
+   * Get promisified gRPC clients, authenticating using the given principal.
+   *
+   * @param principal The principal to authenticate calls to the service as.
+   */
+  clientsForPrincipal(principal: Principal): { [serviceName: string]: any } {
+    var serviceName: string;
+    if (principal == PredefinedPrincipal.Self) {
+      serviceName = this.options.serviceName!;
+    } else if (principal instanceof LocalServicePrincipal) {
+      serviceName = principal.name.toString();
+    } else {
+      throw new Error("Only 'Self' and 'LocalServicePrincipal' is supported");
+    }
+    const metadata = new grpc.Metadata();
+    metadata.add('impersonate-kalix-service', serviceName);
+    return this.createClients(this.proxyPort!, metadata);
   }
 
   /**
@@ -113,24 +160,48 @@ export class IntegrationTestkit {
     const boundPort = await this.kalix.start({ port: 0 });
 
     await TestContainers.exposeHostPorts(boundPort);
-
-    const proxyContainer = await new GenericContainer(this.options.dockerImage)
+    console.log('Starting Kalix Proxy');
+    const proxyContainer = await new GenericContainer(this.options.dockerImage!)
       .withExposedPorts(9000)
       .withEnv('USER_FUNCTION_HOST', 'host.testcontainers.internal')
       .withEnv('USER_FUNCTION_PORT', boundPort.toString())
       .withEnv('HTTP_PORT', '9000')
+      .withEnv('SERVICE_NAME', this.options.serviceName!)
+      .withEnv(
+        'ACL_ENABLED',
+        (this.options.aclCheckingEnabled ?? false).toString(),
+      )
       .withEnv(
         'VERSION_CHECK_ON_STARTUP',
         process.env.VERSION_CHECK_ON_STARTUP || 'true',
       )
-      .withWaitStrategy(Wait.forLogMessage('gRPC proxy started'))
+      .withWaitStrategy(Wait.forLogMessage('Starting Kalix Proxy'))
       .start();
+    this.proxyPort = proxyContainer.getMappedPort(9000);
+    // sdk needs to know how to call itself for cross component calls,
+    // Note: a flag in KalixOptions delays discovery until we have set the port
+    this.kalix.setProxyPort(this.proxyPort!);
 
     this.proxyContainer = proxyContainer;
 
-    const proxyPort = proxyContainer.getMappedPort(9000);
+    // wait for discovery to complete
+    console.log('Proxy started, waiting for discovery to complete');
+    while (!this.kalix.discoveryCompleted) {
+      await new Promise((resolve) => setTimeout(resolve, 300));
+    }
+    // FIXME why is so much time needed here?
+    // wait some more for proxy to complete parsing/starting the discovered services
+    await new Promise((resolve) => setTimeout(resolve, 5000));
 
     // Create clients
+    this.componentClients = this.createClients(this.proxyPort);
+  }
+
+  private createClients(
+    proxyPort: number,
+    additionalRequestMetadata?: grpc.Metadata,
+  ): any {
+    const clients: any = {};
     this.kalix.getComponents().forEach((component: Component) => {
       const parts = component.serviceName
         ? component.serviceName.split('.')
@@ -144,10 +215,16 @@ export class IntegrationTestkit {
           'localhost:' + proxyPort,
           grpc.credentials.createInsecure(),
         );
-        this.componentClients[parts[parts.length - 1]] =
-          GrpcUtil.promisifyClient(client, 'Async');
+        if (additionalRequestMetadata) {
+          GrpcUtil.addHeadersToAllRequests(client, additionalRequestMetadata);
+        }
+        clients[parts[parts.length - 1]] = GrpcUtil.promisifyClient(
+          client,
+          'Async',
+        );
       }
     });
+    return clients;
   }
 
   /**

@@ -22,7 +22,12 @@ import { CommandContext, CommandReply } from './command';
 import { GrpcClientLookup, GrpcUtil } from './grpc-util';
 import { Metadata } from './metadata';
 import { Reply } from './reply';
-import { Component, ComponentOptions, ServiceMap } from './kalix';
+import {
+  Component,
+  ComponentOptions,
+  ServiceMap,
+  PreStartSettings,
+} from './kalix';
 
 const actionSupport = new ActionSupport();
 
@@ -43,7 +48,7 @@ export class Action<
   readonly serviceName: string;
   readonly service: protobuf.Service;
   readonly options: Required<Action.Options>;
-  readonly clients: GrpcClientLookup;
+  clients?: GrpcClientLookup;
 
   /** @internal */ readonly root: protobuf.Root;
   /** @internal */ readonly grpc: grpc.GrpcObject;
@@ -90,9 +95,19 @@ export class Action<
 
     this.grpc = grpc.loadPackageDefinition(packageDefinition);
 
-    this.clients = GrpcUtil.clientCreators(this.root, this.grpc);
+    this.clients = undefined;
 
     this.commandHandlers = {} as CommandHandlers;
+  }
+
+  preStart(settings: PreStartSettings): void {
+    this.clients = GrpcUtil.clientCreators(
+      this.root,
+      this.grpc,
+      settings.proxyHostname,
+      settings.proxyPort,
+      settings.identificationInfo,
+    );
   }
 
   /**

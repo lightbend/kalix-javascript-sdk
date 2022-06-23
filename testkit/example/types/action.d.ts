@@ -42,5 +42,29 @@ export declare namespace ExampleActionService {
   };
 }
 
+export declare namespace ExampleActionWithAclService {
+  type CommandHandlers = {
+    Public: (
+      command: api.In,
+      ctx: Action.UnaryCommandContext<api.IOut>,
+    ) => CommandReply<api.IOut> | Promise<CommandReply<api.IOut>>;
+    OnlyFromOtherService: (
+      command: api.In,
+      ctx: Action.UnaryCommandContext<api.IOut>,
+    ) => CommandReply<api.IOut> | Promise<CommandReply<api.IOut>>;
+    OnlyFromSelf: (
+      command: api.In,
+      ctx: Action.UnaryCommandContext<api.IOut>,
+    ) => CommandReply<api.IOut> | Promise<CommandReply<api.IOut>>;
+    DelegateToSelf: (
+      command: api.In,
+      ctx: Action.UnaryCommandContext<api.IOut>,
+    ) => CommandReply<api.IOut> | Promise<CommandReply<api.IOut>>;
+  };
+}
+
 export declare type ExampleActionService =
   Action<ExampleActionService.CommandHandlers>;
+
+export declare type ExampleActionWithAclService =
+  Action<ExampleActionWithAclService.CommandHandlers>;

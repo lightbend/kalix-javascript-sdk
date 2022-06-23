@@ -18,7 +18,7 @@ import * as protobufHelper from './protobuf-helper';
 import * as grpc from '@grpc/grpc-js';
 import * as protoLoader from '@grpc/proto-loader';
 import EventSourcedEntityServices from './event-sourced-entity-support';
-import { Entity, EntityOptions, ServiceMap } from './kalix';
+import { Entity, EntityOptions, PreStartSettings, ServiceMap } from './kalix';
 import { GrpcClientLookup, GrpcUtil } from './grpc-util';
 import { Serializable } from './serializable';
 import { EntityCommandContext, CommandReply } from './command';
@@ -272,7 +272,7 @@ export class EventSourcedEntity<
   readonly serviceName: string;
   readonly service: protobuf.Service;
   readonly options: Required<EventSourcedEntity.Options>;
-  readonly clients: GrpcClientLookup;
+  clients?: GrpcClientLookup;
 
   /** @internal */ readonly root: protobuf.Root;
   /** @internal */ readonly grpc: grpc.GrpcObject;
@@ -337,7 +337,17 @@ export class EventSourcedEntity<
 
     this.grpc = grpc.loadPackageDefinition(packageDefinition);
 
-    this.clients = GrpcUtil.clientCreators(this.root, this.grpc);
+    this.clients = undefined;
+  }
+
+  preStart(settings: PreStartSettings): void {
+    this.clients = GrpcUtil.clientCreators(
+      this.root,
+      this.grpc,
+      settings.proxyHostname,
+      settings.proxyPort,
+      settings.identificationInfo,
+    );
   }
 
   /** @internal */

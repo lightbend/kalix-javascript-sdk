@@ -18,6 +18,9 @@ import { Cloudevent } from './cloudevent';
 import { JwtClaims } from './jwt-claims';
 import * as protocol from '../types/protocol/commands';
 
+const PrincipalsSource = '_kalix-src';
+const PrincipalsService = '_kalix-src-svc';
+
 /**
  * A metadata value. Can either be a string or a buffer.
  *
@@ -148,6 +151,63 @@ class MetadataMapProxyHandler implements ProxyHandler<MetadataMap> {
     }
     return undefined;
   }
+}
+
+/**
+ * A principal associated with a request.
+ * @public
+ */
+export type Principal = PredefinedPrincipal | LocalServicePrincipal;
+
+/**
+ * Predefined principals
+ * @public
+ */
+export enum PredefinedPrincipal {
+  Internet,
+  Self,
+  Backoffice,
+}
+
+/**
+ * A principal for a request from another service in the same Kalix Project
+ * @public
+ */
+export class LocalServicePrincipal {
+  /**
+   * The name the requesting service is deployed as
+   */
+  readonly name: String;
+  constructor(name: String) {
+    this.name = name;
+  }
+}
+
+/**
+ * The principals associated with a request.
+ * @public
+ */
+export interface Principals {
+  /** Whether this request was from the internet. */
+  isInternet(): boolean;
+  /** Whether this is a self request. */
+  isSelf(): boolean;
+  /** Whether this request is a backoffice request. */
+  isBackoffice(): boolean;
+
+  /**
+   * Whether this request was from a service in the local project.
+   *
+   * @param name The name of the service.
+   */
+  isLocalService(name: string): boolean;
+  /** Whether this request was from any service in the local project. */
+  isAnyLocalService(): boolean;
+  /** Get the service that invoked this call, if any. */
+  getLocalService(): string | undefined;
+
+  /** Get the principals associated with this request. */
+  get(): Array<Principal>;
 }
 
 /**
@@ -372,5 +432,66 @@ export class Metadata {
   clear() {
     this.entries.splice(0, this.entries.length);
     return this;
+  }
+
+  /**
+   * Get the Principals associated with this request.
+   */
+  principals(): Principals {
+    const sourceMeta = this.get(PrincipalsSource);
+    let source: string | undefined = undefined;
+    if (sourceMeta.length > 0) {
+      source = sourceMeta[0] as string;
+    }
+    const serviceMeta = this.get(PrincipalsService);
+    let service: string | undefined = undefined;
+    if (serviceMeta.length > 0) {
+      service = serviceMeta[0] as string;
+    }
+
+    return new (class implements Principals {
+      get(): Array<Principal> {
+        const principals = [];
+        switch (source) {
+          case 'internet':
+            principals.push(PredefinedPrincipal.Internet);
+            break;
+          case 'backoffice':
+            principals.push(PredefinedPrincipal.Backoffice);
+            break;
+          case 'self':
+            principals.push(PredefinedPrincipal.Self);
+            break;
+        }
+        if (service) {
+          principals.push(new LocalServicePrincipal(service));
+        }
+        return principals;
+      }
+
+      getLocalService(): string | undefined {
+        return service;
+      }
+
+      isAnyLocalService(): boolean {
+        return service !== undefined;
+      }
+
+      isBackoffice(): boolean {
+        return source == 'backoffice';
+      }
+
+      isInternet(): boolean {
+        return source == 'internet';
+      }
+
+      isLocalService(name: string): boolean {
+        return service == name;
+      }
+
+      isSelf(): boolean {
+        return source == 'self';
+      }
+    })();
   }
 }

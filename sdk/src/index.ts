@@ -24,6 +24,7 @@ export {
   EntityPassivationStrategy,
   ReplicatedWriteConsistency,
   ServiceBinding,
+  PreStartSettings,
 } from './kalix';
 
 export { Action } from './action';
@@ -52,6 +53,10 @@ export {
   MetadataEntry,
   MetadataMap,
   MetadataValue,
+  Principal,
+  Principals,
+  PredefinedPrincipal,
+  LocalServicePrincipal,
 } from './metadata';
 export { Cloudevent } from './cloudevent';
 export { JwtClaims } from './jwt-claims';

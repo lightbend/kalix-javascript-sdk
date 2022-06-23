@@ -30,7 +30,7 @@
     "mocha": "^10.0.0"
   },
   "scripts": {
-    "build": "compile-descriptor customer_api.proto customer_domain.proto customer_view.proto",
+    "build": "compile-descriptor customer_api.proto customer_domain.proto customer_view.proto kalix_policy.proto",
     "pretest": "npm run build",
     "test": "mocha",
     "preintegration-test": "npm run build",

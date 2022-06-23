@@ -23,6 +23,7 @@ import { GrpcClientLookup, GrpcUtil } from './grpc-util';
 import {
   Entity,
   EntityOptions,
+  PreStartSettings,
   ReplicatedWriteConsistency,
   ServiceMap,
 } from './kalix';
@@ -177,7 +178,7 @@ export class ReplicatedEntity<State extends ReplicatedData = ReplicatedData>
   readonly serviceName: string;
   readonly service: protobuf.Service;
   readonly options: Required<ReplicatedEntity.Options>;
-  readonly clients: GrpcClientLookup;
+  clients?: GrpcClientLookup;
 
   /** @internal */ readonly root: protobuf.Root;
   /** @internal */ readonly grpc: grpc.GrpcObject;
@@ -247,13 +248,23 @@ export class ReplicatedEntity<State extends ReplicatedData = ReplicatedData>
 
     this.grpc = grpc.loadPackageDefinition(packageDefinition);
 
-    this.clients = GrpcUtil.clientCreators(this.root, this.grpc);
+    this.clients = undefined;
 
     this.commandHandlers = {};
 
     this.onStateSet = (_state, _entityId) => undefined;
 
     this.defaultValue = (_entityId) => null;
+  }
+
+  preStart(settings: PreStartSettings): void {
+    this.clients = GrpcUtil.clientCreators(
+      this.root,
+      this.grpc,
+      settings.proxyHostname,
+      settings.proxyPort,
+      settings.identificationInfo,
+    );
   }
 
   /** @internal */
