@@ -528,13 +528,25 @@ jobs:
           name: "publish to npm"
           command: |
             echo "//registry.npmjs.org/:_authToken=$KALIX_IO_NPM_TOKEN" > ~/.npmrc
-            pushd sdk && npm ci && npm publish --access public && popd
+            pushd sdk
+            npm ci
+            npm pack
+            npm publish --access public
+            popd
             git reset --hard HEAD
-            pushd testkit && npm ci && npm publish --access public && popd
+            pushd testkit
+            npm ci
+            npm install --no-save ../sdk/kalix-io-kalix-javascript-sdk-0.0.0.tgz
+            npm publish --access public
+            popd
             git reset --hard HEAD
-            pushd npm-js/create-kalix-entity && npm publish --access public && popd
+            pushd npm-js/create-kalix-entity
+            npm publish --access public
+            popd
             git reset --hard HEAD
-            pushd npm-js/kalix-scripts && npm publish --access public && popd
+            pushd npm-js/kalix-scripts
+            npm publish --access public
+            popd
 
   publish-tck:
     machine:
