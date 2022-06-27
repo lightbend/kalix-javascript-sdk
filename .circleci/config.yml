@@ -733,9 +733,9 @@ jobs:
             # Run the service in background
             npm run start &
             # Test the event-sourced-entity
-            until curl -XPOST localhost:9000/com.example.MyServiceEntity/GetValue -H "Content-Type:application/json" -d '{"entityId":"test"}' -o response.txt; do sleep 5; done
+            until curl -XPOST localhost:9000/com.example.CounterService/GetCurrentCounter -H "Content-Type:application/json" -d '{"counterId":"test"}' -o response.txt; do sleep 5; done
             echo "Validating expected error message"
-            test "$(cat response.txt)" = 'The command handler for `GetValue` is not implemented, yet'
+            test "$(cat response.txt)" = 'The command handler for `GetCurrentCounter` is not implemented, yet'
 
   publish_native_linux:
     machine:
