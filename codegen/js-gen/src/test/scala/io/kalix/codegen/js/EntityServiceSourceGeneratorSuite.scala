@@ -62,6 +62,8 @@ class EntityServiceSourceGeneratorSuite extends munit.FunSuite {
         |);
         |
         |const MyState = entity.lookupType("com.example.service.persistence.MyState");
+        |const EventOne = entity.lookupType("com.example.service.persistence.EventOne");
+        |const EventTwo = entity.lookupType("com.example.service.persistence.EventTwo");
         |
         |entity.setInitial(entityId => MyState.create({}));
         |
@@ -76,7 +78,10 @@ class EntityServiceSourceGeneratorSuite extends munit.FunSuite {
         |  },
         |  
         |  eventHandlers: {
-        |    SetEvent(event, state) {
+        |    EventOne(event, state) {
+        |      return state;
+        |    },
+        |    EventTwo(event, state) {
         |      return state;
         |    }
         |  }
@@ -128,6 +133,8 @@ class EntityServiceSourceGeneratorSuite extends munit.FunSuite {
         |);
         |
         |const MyState = entity.lookupType("com.example.service.persistence.MyState");
+        |const EventOne = entity.lookupType("com.example.service.persistence.EventOne");
+        |const EventTwo = entity.lookupType("com.example.service.persistence.EventTwo");
         |
         |entity.setInitial(entityId => MyState.create({}));
         |
@@ -142,7 +149,10 @@ class EntityServiceSourceGeneratorSuite extends munit.FunSuite {
         |  },
         |  
         |  eventHandlers: {
-        |    SetEvent(event, state) {
+        |    EventOne(event, state) {
+        |      return state;
+        |    },
+        |    EventTwo(event, state) {
         |      return state;
         |    }
         |  }
@@ -307,18 +317,27 @@ class EntityServiceSourceGeneratorSuite extends munit.FunSuite {
         |  type MyState = proto.com.example.service.persistence.IMyState &
         |    protobuf.Message<proto.com.example.service.persistence.IMyState>;
         |  
-        |  type SetEvent = proto.com.example.service.persistence.ISetEvent &
-        |    protobuf.Message<proto.com.example.service.persistence.ISetEvent>;
+        |  type EventOne = proto.com.example.service.persistence.IEventOne &
+        |    protobuf.Message<proto.com.example.service.persistence.IEventOne>;
+        |  
+        |  type EventTwo = proto.com.example.service.persistence.IEventTwo &
+        |    protobuf.Message<proto.com.example.service.persistence.IEventTwo>;
         |}
         |
         |export declare namespace MyService {
         |  type State = domain.MyState;
         |  
-        |  type Events = domain.SetEvent;
+        |  type Events =
+        |    | domain.EventOne
+        |    | domain.EventTwo;
         |  
         |  type EventHandlers = {
-        |    SetEvent: (
-        |      event: domain.SetEvent,
+        |    EventOne: (
+        |      event: domain.EventOne,
+        |      state: State
+        |    ) => State;
+        |    EventTwo: (
+        |      event: domain.EventTwo,
         |      state: State
         |    ) => State;
         |  };

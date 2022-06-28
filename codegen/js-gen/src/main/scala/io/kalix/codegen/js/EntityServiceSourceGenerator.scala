@@ -147,6 +147,16 @@ object EntityServiceSourceGenerator {
       line <>
       "const" <+> entity.state.fqn.name <+> equal <+> "entity.lookupType" <> parens(
         dquotes(entity.state.fqn.fullName)) <> semi <> line <>
+      (entity match {
+        case ModelBuilder.EventSourcedEntity(_, _, _, events) =>
+          ssep(
+            events.toSeq.map { event =>
+              "const" <+> event.fqn.name <+> equal <+> "entity.lookupType" <> parens(
+                dquotes(event.fqn.fullName)) <> semi
+            },
+            line) <> (if (events.isEmpty) emptyDoc else line)
+        case _: ModelBuilder.ValueEntity => emptyDoc
+      }) <>
       line <>
       "entity.setInitial" <> parens(
         "entityId => " <> entity.state.fqn.name <> ".create" <> parens("{}")) <> semi <> line <>
@@ -171,7 +181,7 @@ object EntityServiceSourceGenerator {
                   event.fqn.name <> parens("event, state") <+> braces(nest(line <>
                   "return state") <> semi <> line)
                 },
-                comma)) <> line)) <> line))) <> semi
+                comma <> line)) <> line)) <> line))) <> semi
         case _: ModelBuilder.ValueEntity =>
           "entity.setCommandHandlers" <> parens(
             braces(nest(line <>
