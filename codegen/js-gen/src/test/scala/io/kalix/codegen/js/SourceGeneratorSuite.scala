@@ -234,7 +234,7 @@ class SourceGeneratorSuite extends munit.FunSuite {
         |
         |const server = new Kalix();
         |
-        |// This generatedComponentArray array contains all generated Actions, Views or Entities,
+        |// This generatedComponents array contains all generated Actions, Views or Entities,
         |// and is kept up-to-date with any changes in your protobuf definitions.
         |// If you prefer, you may remove this line and manually register these components.
         |generatedComponents.forEach((component) => {
@@ -262,7 +262,7 @@ class SourceGeneratorSuite extends munit.FunSuite {
         |
         |const server = new Kalix();
         |
-        |// This generatedComponentArray array contains all generated Actions, Views or Entities,
+        |// This generatedComponents array contains all generated Actions, Views or Entities,
         |// and is kept up-to-date with any changes in your protobuf definitions.
         |// If you prefer, you may remove this line and manually register these components.
         |generatedComponents.forEach((component) => {
