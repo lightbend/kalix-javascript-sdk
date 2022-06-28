@@ -17,7 +17,7 @@ const kalixScriptDir = path.resolve(__dirname, '..');
 
 const dockerBuildArgs =
   process.arch === 'arm64'
-    ? ['buildx', 'build', '--platform=linux/amd64']
+    ? ['buildx', 'build', '--platform=linux/amd64', '--load']
     : ['build'];
 
 const dockerBuild = (dockerTag) =>
