@@ -5,11 +5,11 @@ package com.example.domain;
 import "kalix/annotations.proto";
 
 option (kalix.file).value_entity = {
-    name: "Counter"
-    entity_type: "counter"
-    state: "CounterState"
+  name: "Counter"
+  entity_type: "counter"
+  state: "CounterState"
 };
 
 message CounterState {
-    int32 value = 1;
+  int32 value = 1;
 }
