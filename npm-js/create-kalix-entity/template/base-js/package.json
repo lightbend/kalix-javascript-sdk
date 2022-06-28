@@ -13,9 +13,7 @@
     "@kalix-io/kalix-scripts": "{{scriptsVersion}}",
     "@kalix-io/testkit": "{{testkitVersion}}",
     "chai": "^4.3.6",
-    "jsdoc": "^3.6.10",
-    "mocha": "^10.0.0",
-    "uglify-js": "^3.16.1"
+    "mocha": "^10.0.0"
   },
   "config": {
     "dockerImage": "my-docker-repo/{{name}}",
