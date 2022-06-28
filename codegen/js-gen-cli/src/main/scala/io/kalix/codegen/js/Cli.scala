@@ -81,7 +81,7 @@ object Cli {
         val protobufDescriptor =
           config.descriptorSetOutputDirectory.resolve(config.descriptorSetFileName).toFile
         if (protobufDescriptor.exists) {
-          println("Inspecting proto file descriptor for entity generation...")
+          println("Inspecting proto file descriptor for Kalix code generation...")
           val _ = DescriptorSet.fileDescriptors(protobufDescriptor) match {
             case Right(fileDescriptors) =>
               val model =

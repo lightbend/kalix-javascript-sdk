@@ -163,7 +163,7 @@ object SourceGenerator extends PrettyPrinter {
       "import" <+> generatedComponentArray <+> "from" <+> dquotes(generatedComponentIndex) <> semi
       <> line <> line <>
       "const" <+> "server" <+> equal <+> "new" <+> "Kalix" <> parens(emptyDoc) <> semi <> line <> line <>
-      "// This generatedComponentArray array contains all generated Actions, Views or Entities," <> line <>
+      "// This generatedComponents array contains all generated Actions, Views or Entities," <> line <>
       "// and is kept up-to-date with any changes in your protobuf definitions." <> line <>
       "// If you prefer, you may remove this line and manually register these components." <> line <>
       generatedComponentArray <> dot <> "forEach" <> parens(
