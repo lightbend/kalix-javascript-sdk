@@ -1,0 +1,243 @@
+= Quickstart: Customer Registry in JavaScript
+
+include::ROOT:partial$include.adoc[]
+include::javascript:partial$attributes.adoc[]
+
+Learn how to create a customer registry in JavaScript, package it into a container, and run it on Kalix.
+
+== Before you begin
+
+* If you're new to Kalix, https://console.kalix.io[create an account{tab-icon}, window="new"] so you can try it out for free.
+* You'll also need to install the https://docs.kalix.io/kalix/install-kalix.html[Kalix CLI, window="new-doc"] to deploy from a terminal window.
+* For this quickstart, you'll also need
+** https://docs.docker.com/engine/install[Docker {minimum_docker_version} or higher, window="new"]
+** https://nodejs.org/en/download/[Node.js {minimum_node_version}, window="new"]
+** https://github.com/fullstorydev/grpcurl#installation[`grpcurl`, window="new"]
+
+[NOTE]
+====
+If you want to bypass writing code and jump straight to the deployment:
+
+. Download the source code using the Kalix CLI:
++
+[source,command line]
+----
+kalix quickstart download customer-registry-javascript
+----
+
+. Skip to <<Package and deploy your service>>.
+====
+
+== Writing the Customer Registry
+
+. From the command line, create a directory with the basic structure for your project using a template:
++
+[source,command line]
+----
+npx @kalix-io/create-kalix-entity@latest customer-registry --template basic
+----
+
+. Change into the project directory:
++
+[source,command line]
+----
+cd customer-registry
+----
+
+. Download and install project dependencies:
++
+[source,command line]
+----
+npm install
+----
+
+== Define the external API
+
+The Customer Registry service will create or retrieve a customer, including their name, email, and mailing address. The `customer_api.proto` will contain the external API your clients will invoke.
+
+. Create a `proto` directory.
++
+[source,command line]
+----
+mkdir proto
+----
+
+. Create a `customer_api.proto` file and save it in the `proto` directory.
+
+. Add declarations for:
++
+* The protobuf syntax version, `proto3`.
+* The package name, `customer.api`.
+* Import `google/protobuf/empty.proto` and Kalix `kalix/annotations.proto`.
++
+[source,proto,indent=0]
+.proto/customer_api.proto
+----
+include::javascript:example$js-customer-registry-quickstart/proto/customer_api.proto[tag=declarations]
+----
+
+. Add the service endpoint. The service endpoint is annotated with `kalix.codegen` indicating we want to generate a Value Entity for this service.
++
+[source,proto,indent=0]
+.proto/customer_api.proto
+----
+include::javascript:example$js-customer-registry-quickstart/proto/customer_api.proto[tag=service]
+----
+
+. Add messages to define the fields that comprise a `Customer` object (and its compound `Address`):
++
+[source,proto,indent=0]
+.proto/customer_api.proto
+----
+include::javascript:example$js-customer-registry-quickstart/proto/customer_api.proto[tag=messages]
+----
+
+. Add the message that will identify which customer to retrieve for the `GetCustomer` message:
++
+[source,proto,indent=0]
+.proto/customer_api.proto
+----
+include::javascript:example$js-customer-registry-quickstart/proto/customer_api.proto[tag=method-messages]
+----
+
+== Define the domain model
+
+The `customer_domain.proto` contains all the internal data objects (https://docs.kalix.io/reference/glossary.html#entity[Entities, window="new"]). The https://docs.kalix.io/reference/glossary.html#value_entity[Value Entity, window="new"] in this quickstart is a Key/Value store that stores only the latest updates.
+
+. Create a `customer_domain.proto` file and save it in the `proto` directory.
+
+. Add declarations for the proto syntax and domain package.
++
+[source,proto,indent=0]
+.proto/customer_domain.proto
+----
+include::javascript:example$js-customer-registry-quickstart/proto/customer_domain.proto[tag=declarations]
+----
+
+. Add the `CustomerState` message with fields for the customer data, and the `Address` message:
++
+[source,proto,indent=0]
+.proto/customer_domain.proto
+----
+include::javascript:example$js-customer-registry-quickstart/proto/customer_domain.proto[tag=domain]
+----
+
+. Run the `build` script from the project root directory to generate source classes, based on the protobuf definitions, in which you can add the business logic:
++
+[source,command line]
+----
+npm run build
+----
+
+== Create command handlers
+
+Command handlers, as the name suggests, handle incoming requests before persisting them.
+
+. If it's not open already, open the generated `src/customer.js` file for editing.
+
+. Modify the `Create` handler by adding the logic to handle the command. The complete function should include the following:
++
+[source,javascript,indent=0]
+.src/customer.js
+----
+include::example$js-customer-registry-quickstart/src/customer.js[tag=create]
+----
++
+* The incoming message contains the request data from your client and the command handler updates the state of the customer.
+
+. Modify the `GetCustomer` handler as follows to handle the `GetCustomerRequest` command:
++
+[source, javascript, indent=0]
+.src/customer.js
+----
+include::example$js-customer-registry-quickstart/src/customer.js[tag=getCustomer]
+----
++
+* If that customer doesn't exist, processing the command fails.
+* If the customer exists, the reply message contains the customer's information.
+* The conversion between the domain CustomerState and the external API is straightforward, as they have the same fields.
+
+[NOTE]
+====
+The `src/index.js` file already contains the required code to start your service and register it with Kalix.
+====
+
+== Package and deploy your service
+
+To build and publish the container image and then deploy the service, follow these steps:
+
+. If you haven't done so yet, sign in to your Kalix account. If this is your first time using Kalix, this will let you register an account, https://docs.kalix.io/projects/create-project.html[create your first project], and set this project as the default.
++
+[source,command line]
+----
+kalix auth login
+----
+
+. Update the `config.dockerImage` setting in the `package.json` file with your container registry.
+
+. Use the `deploy` script to build the container image, publish it to the container registry as configured in the `package.json` file, and then automatically https://docs.kalix.io/services/deploy-service.html#_deploy[deploy the service] to Kalix using `kalix`:
++
+[source,command line]
+----
+npm run deploy
+----
+
+. You can https://docs.kalix.io/services/deploy-service.html#_verify_service_status[verify the status of the deployed service] using:
++
+[source,command line]
+----
+kalix service list
+----
+
+== Invoke your service
+
+Once the service has started successfully, you can https://docs.kalix.io/services/invoke-service.html#_testing_and_development[start a proxy locally] to access the service:
+
+[source,command line]
+----
+kalix service proxy customer-registry --grpcui
+----
+
+The `--grpcui` option also starts and opens a https://docs.kalix.io/services/invoke-service.html#_using_the_built_in_graphical_client[gRPC web UI] for exploring and invoking the service (available at http://127.0.0.1:8080/ui/).
+
+Or you can use command line gRPC or HTTP clients, such as `grpcurl` or `curl`, to invoke the service through the proxy at `localhost:8080`, using plaintext connections.
+
+A customer can be created using the `Create` method on `CustomerService`, in the gRPC web UI, or with `grpcurl`:
+
+[source,command line]
+----
+grpcurl \
+  -d '{
+    "customer_id": "abc123",
+    "email": "someone@example.com",
+    "name": "Someone",
+    "address": {
+      "street": "123 Some Street",
+      "city": "Somewhere"
+    }
+  }' \
+  --plaintext localhost:8080 \
+  customer.api.CustomerService/Create
+----
+
+The `GetCustomer` method can be used to retrieve this customer, in the gRPC web UI, or with `grpcurl`:
+
+[source,command line]
+----
+grpcurl \
+  -d '{"customer_id": "abc123"}' \
+  --plaintext localhost:8080 \
+  customer.api.CustomerService/GetCustomer
+----
+
+You can https://docs.kalix.io/services/invoke-service.html#_exposing_services_to_the_internet[expose the service to the internet]. A generated hostname will be returned from the expose command:
+
+[source,command line]
+----
+kalix service expose customer-registry
+----
+
+== Next steps
+
+* You can learn more about xref:javascript:value-entity.adoc[Value Entities].
+* Do another https://docs.kalix.io/quickstart/sc-eventsourced-entity-javascript.html[Quickstart] to learn about Event Sourcing and xref:javascript:eventsourced.adoc[Event Sourced Entities].

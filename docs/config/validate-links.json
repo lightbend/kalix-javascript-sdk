@@ -1,6 +1,6 @@
 {
   "ignorePatterns": [
-    { "pattern": "^https://mvnrepository\\.com" },
+    { "pattern": "^http://127.0.0.1:8080" },
     { "pattern": "^https://www.npmjs.com/org/kalix-io", "why": "npmjs having a bad day 2022-06-07" }
   ]
 }

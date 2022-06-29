@@ -223,6 +223,26 @@ jobs:
             npm test
             npm pack
       - run:
+          name: "bundle quickstarts"
+          working_directory: "~/project/docs"
+          command: |
+            make bundles
+      - run:
+          name: "Test quickstart: JS Customer Registry"
+          working_directory: "~/tmp"
+          command: |
+            # use the bundled quickstart to check against what the user will download
+            unzip -d js-customer-registry ~/project/docs/build/src/managed/modules/javascript/attachments/js-customer-registry-quickstart.zip
+            cd js-customer-registry
+            export KALIX_NPMJS_CODEGEN_BINARY="${HOME}/project/codegen/js-gen-cli/target/native-image/kalix-codegen-js"
+            npm install --save \
+              "$HOME/project/sdk/kalix-io-kalix-javascript-sdk-0.0.0.tgz" \
+              "$HOME/project/npm-js/kalix-scripts/kalix-io-kalix-scripts-1.0.0.tgz" \
+              "$HOME/project/testkit/kalix-io-testkit-0.0.0.tgz"
+            npm install
+            npm run build
+            npm test
+      - run:
           name: "Test JS Value Entity Counter sample"
           command: |
             cd samples/js/valueentity-counter
@@ -343,6 +363,29 @@ jobs:
             npm install ../sdk/kalix-io-kalix-javascript-sdk-0.0.0.tgz
             DEBUG='testcontainers*' npm run integration-test
             npm pack
+      - run:
+          name: "bundle quickstarts"
+          working_directory: "~/project/docs"
+          command: |
+            make bundles
+      - run:
+          name: "integration tests: js-customer-registry-quickstart"
+          working_directory: "~/tmp"
+          command: |
+            export VERSION_CHECK_ON_STARTUP=false
+            export KALIX_NPMJS_CODEGEN_BINARY="${HOME}/project/codegen/js-gen-cli/target/native-image/kalix-codegen-js"
+            source /opt/circleci/.nvm/nvm.sh
+            pushd ~/project/sdk && nvm install && popd
+            # use the bundled quickstart to check against what the user will download
+            unzip -d js-customer-registry ~/project/docs/build/src/managed/modules/javascript/attachments/js-customer-registry-quickstart.zip
+            cd js-customer-registry
+            npm install --save \
+              "$HOME/project/sdk/kalix-io-kalix-javascript-sdk-0.0.0.tgz" \
+              "$HOME/project/npm-js/kalix-scripts/kalix-io-kalix-scripts-1.0.0.tgz" \
+              "$HOME/project/testkit/kalix-io-testkit-0.0.0.tgz"
+            npm install
+            npm run build
+            npm run integration-test
       - run:
           name: "integration tests: samples/js/js-customer-registry"
           command: |

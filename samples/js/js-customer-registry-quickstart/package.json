@@ -1,0 +1,35 @@
+{
+  "name": "customer-registry",
+  "version": "0.0.1",
+  "type": "module",
+  "engines": {
+    "node": ">=14.0.0",
+    "npm": ">=6.0.0"
+  },
+  "dependencies": {
+    "@kalix-io/kalix-javascript-sdk": "^1.0.0-M10"
+  },
+  "devDependencies": {
+    "@kalix-io/kalix-scripts": "^1.0.0-M10",
+    "@kalix-io/testkit": "^1.0.0-M10",
+    "chai": "^4.3.6",
+    "mocha": "^10.0.0"
+  },
+  "config": {
+    "dockerImage": "my-docker-repo/customer-registry",
+    "sourceDir": "./src",
+    "testSourceDir": "./test",
+    "integrationTestSourceDir": "./integration-test",
+    "protoSourceDir": "./proto",
+    "generatedSourceDir": "./lib/generated",
+    "compileDescriptorArgs": []
+  },
+  "scripts": {
+    "start": "node src/index.js",
+    "test": "mocha ./test",
+    "integration-test": "mocha ./integration-test",
+    "build": "kalix-scripts build",
+    "package": "kalix-scripts package",
+    "deploy": "kalix-scripts deploy"
+  }
+}
