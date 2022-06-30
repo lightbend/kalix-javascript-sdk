@@ -1,0 +1,10 @@
+{
+  "compilerOptions": {
+    "outDir": "./dist",
+    "strict": true,
+    "strictFunctionTypes": true,
+    "target": "es6",
+    "module": "commonJS"
+  },
+  "include": ["./src/**/*"]
+}
