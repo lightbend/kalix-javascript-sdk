@@ -242,4 +242,4 @@ kalix service expose customer-registry
 == Next steps
 
 * You can learn more about xref:javascript:value-entity.adoc[Value Entities].
-* Do another https://docs.kalix.io/quickstart/sc-eventsourced-entity-javascript.html[Quickstart] to learn about Event Sourcing and xref:javascript:eventsourced.adoc[Event Sourced Entities].
+* Do another xref:javascript:quickstart/sc-eventsourced-entity-javascript.adoc[Quickstart] to learn about Event Sourcing and xref:javascript:eventsourced.adoc[Event Sourced Entities].
