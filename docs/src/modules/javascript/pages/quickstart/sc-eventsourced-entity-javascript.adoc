@@ -1,0 +1,313 @@
+= Quickstart: Shopping Cart in JavaScript
+
+include::ROOT:partial$include.adoc[]
+include::javascript:partial$attributes.adoc[]
+
+Learn how to create a shopping cart in JavaScript, package it into a container, and run it on Kalix.
+
+== Before you begin
+
+* If you're new to Kalix, https://console.kalix.io[create an account{tab-icon}, window="new"] so you can try it out for free.
+* You'll also need to install the https://docs.kalix.io/kalix/install-kalix.html[Kalix CLI, window="new-doc"] to deploy from a terminal window.
+* For this quickstart, you'll also need
+** https://docs.docker.com/engine/install[Docker {minimum_docker_version} or higher, window="new"]
+** https://nodejs.org/en/download/[Node.js {minimum_node_version}, window="new"]
+** https://github.com/fullstorydev/grpcurl#installation[`grpcurl`, window="new"]
+
+[NOTE]
+====
+If you want to bypass writing code and jump straight to the deployment:
+
+. Download the source code using the Kalix CLI:
++
+[source, command line]
+----
+kalix quickstart download shopping-cart-javascript
+----
+
+. Skip to <<Package and deploy your service>>.
+====
+
+== Create the project structure and install dependencies
+
+. From the command line, create a directory with the basic structure for your project using a template:
++
+[source, command line]
+----
+npx @kalix-io/create-kalix-entity@latest shopping-cart --template basic
+----
+
+. Change into the project directory:
++
+[source, command line]
+----
+cd shopping-cart
+----
+
+. Download and install project dependencies:
++
+[source, command line]
+----
+npm install
+----
+
+== Define the external API
+
+The Shopping Cart service will store shopping carts for your customers, including the items in those carts. The `shoppingcart_api.proto` will contain the external API your clients will invoke.
+
+. Create a `proto` directory.
++
+[source, command line]
+----
+mkdir proto
+----
+
+. Create a `shopping_cart_api.proto` file and save it in the `proto` directory.
+
+. Add declarations for:
++
+--
+* The protobuf syntax version, `proto3`.
+* The package name, `shopping.cart.api`.
+* Import `google/api/annotations.proto`, `google/protobuf/empty.proto`, and Kalix `kalix/annotations.proto`.
+--
++
+[source, proto, indent=0]
+.proto/shopping_cart_api.proto
+----
+include::javascript:example$js-shopping-cart-quickstart/proto/shopping_cart_api.proto[tag=declarations]
+----
+
+. Add the service endpoint. The service endpoint is annotated with `kalix.codegen` indicating we want to generate an Event Sourced Entity for this service.
++
+[source, proto, indent=0]
+.proto/shopping_cart_api.proto
+----
+include::javascript:example$js-shopping-cart-quickstart/proto/shopping_cart_api.proto[tag=service]
+----
+
+. Add messages to define the fields that comprise a `Cart` object (and its compound `LineItem`):
++
+[source, proto, indent=0]
+.proto/shopping_cart_api.proto
+----
+include::javascript:example$js-shopping-cart-quickstart/proto/shopping_cart_api.proto[tag=messages]
+----
+
+. Add the messages that are the requests to the shopping cart service:
++
+[source, proto, indent=0]
+.proto/shopping_cart_api.proto
+----
+include::javascript:example$js-shopping-cart-quickstart/proto/shopping_cart_api.proto[tag=method-messages]
+----
+
+== Define the domain model
+
+The `shopping_cart_domain.proto` contains all the internal data objects (https://docs.kalix.io/reference/glossary.html#entity[Entities, window="new"]). The https://docs.kalix.io/reference/glossary.html#event_sourced_entity[Event Sourced Entity, window="new"] in this Quickstart keeps all events sent for a specific shopping cart in a journal.
+
+. Create a `shopping_cart_domain.proto` file and save it in the `proto` directory.
+
+. Add declarations for the proto syntax and domain package.
++
+[source, proto, indent=0]
+.proto/shopping_cart_domain.proto
+----
+include::javascript:example$js-shopping-cart-quickstart/proto/shopping_cart_domain.proto[tag=declarations]
+----
+
+. Add the `CartState` message with fields for entity data and the `LineItem` message that defines the compound line item:
++
+[source, proto, indent=0]
+.proto/shopping_cart_domain.proto
+----
+include::javascript:example$js-shopping-cart-quickstart/proto/shopping_cart_domain.proto[tag=state]
+----
+
+. Event Sourced entities work based on events. Add the events that can occur in this Quickstart:
++
+[source, proto, indent=0]
+----
+include::javascript:example$js-shopping-cart-quickstart/proto/shopping_cart_domain.proto[tag=events]
+----
+
+== Generate JavaScript implementation stubs
+
+Run code generation to build JavaScript implementation stubs from your external API and domain model proto files.
+
+[source, command line]
+----
+npm run build
+----
+
+== Implement shopping cart business logic
+
+Fill in the implementation for the behavior of your shopping cart, which consists of Command Handlers and Event Handlers.
+
+* Command Handlers, as the name suggests, handle incoming API requests. State is not updated directly by command handlers.
+  Instead, if state should be updated, an event is persisted that describes the intended transaction.
+* Event Handlers maintain the state of an entity by sequentially applying the effects of events to the local state.
+
+//
+
+. Open `src/shoppingcart.js`.
+
+. Fill in the implementation for the behavior of your shopping cart, which will be implemented by functions added below:
++
+[source, javascript, indent=0]
+.src/shoppingcart.js
+----
+include::javascript:example$js-shopping-cart-quickstart/src/shoppingcart.js[tag=setBehavior]
+----
+
+. Add the `addItem` function to handle requests to add items to a shopping cart.
++
+--
+* This function will handle an incoming `AddItem` request, and emit an `ItemAdded` event.
+* The current state of the shopping cart is passed to the function but is not used.
+* It fails the command for an invalid quantity (needs to be at least one item).
+* Or it persists an `ItemAdded` event using the context `emit` effect.
+--
++
+[source, javascript, indent=0]
+.src/shoppingcart.js
+----
+include::javascript:example$js-shopping-cart-quickstart/src/shoppingcart.js[tag=addItem]
+----
+
+. Add the `removeItem` function to handle requests to remove items from a shopping cart.
++
+--
+* This function will handle an incoming `RemoveItem` request, and emit an `ItemRemoved` event.
+* The current state of the shopping cart is passed and used to check the item exists.
+* It fails if the item to be removed is not found in the shopping cart.
+* If the item exists, it persists an `ItemRemoved` event using the context `emit` effect.
+--
++
+[source, javascript, indent=0]
+.src/shoppingcart.js
+----
+include::javascript:example$js-shopping-cart-quickstart/src/shoppingcart.js[tag=removeItem]
+----
+
+. Add the `getCart` function to handle requests to retrieve a shopping cart.
++
+--
+* This function takes the current internal state and converts it to the external API model.
+* The conversion between the domain and the external API is straigtforward, as they have the same fields.
+--
++
+[source, javascript, indent=0]
+.src/shoppingcart.js
+----
+include::javascript:example$js-shopping-cart-quickstart/src/shoppingcart.js[tag=getCart]
+----
+
+. Add the `itemAdded` function to update the state for emitted `ItemAdded` events.
++
+--
+* This function first checks for an existing line item for the newly added product.
+* If an existing item is found, its quantity is adjusted.
+* Otherwise, the new item is added directly to the cart.
+* Finally, the updated cart state is returned.
+--
++
+[source, javascript, indent=0]
+.src/shoppingcart.js
+----
+include::javascript:example$js-shopping-cart-quickstart/src/shoppingcart.js[tag=itemAdded]
+----
+
+. Add the `itemRemoved` function to update the state for emitted `ItemRemoved` events.
++
+--
+* This function removes an item from the cart, by filtering it from the cart items.
+* The updated cart state is then returned.
+--
++
+[source, javascript, indent=0]
+.src/shoppingcart.js
+----
+include::javascript:example$js-shopping-cart-quickstart/src/shoppingcart.js[tag=itemRemoved]
+----
+
+[NOTE]
+====
+The `src/index.js` file already contains the required code to start your service and register it with Kalix.
+====
+
+== Package and deploy your service
+
+To build and publish the container image and then deploy the service, follow these steps:
+
+. If you haven't done so yet, sign in to your Kalix account. If this is your first time using Kalix, this will let you register an account, https://docs.kalix.io/projects/create-project.html[create your first project], and set this project as the default.
++
+[source, command line]
+----
+kalix auth login
+----
+
+. Update the `config.dockerImage` setting in the `package.json` file with your container registry.
+
+. Use the `deploy` script to build the container image, publish it to the container registry as configured in the `package.json` file, and then automatically https://docs.kalix.io/services/deploy-service.html#_deploy[deploy the service] to Kalix using `kalix`:
++
+[source, command line]
+----
+npm run deploy
+----
+
+. You can https://docs.kalix.io/services/deploy-service.html#_verify_service_status[verify the status of the deployed service] using:
++
+[source, command line]
+----
+kalix service list
+----
+
+== Invoke your service
+
+Once the service has started successfully, you can https://docs.kalix.io/services/invoke-service.html#_testing_and_development[start a proxy locally] to access the service:
+
+[source, command line]
+----
+kalix service proxy shopping-cart --grpcui
+----
+
+The `--grpcui` option also starts and opens a https://docs.kalix.io/services/invoke-service.html#_using_the_built_in_graphical_client[gRPC web UI] for exploring and invoking the service (available at http://127.0.0.1:8080/ui/).
+
+Or you can use command line gRPC or HTTP clients, such as `grpcurl` or `curl`, to invoke the service through the proxy at `localhost:8080`, using plaintext connections.
+
+Items can be added to a shopping cart using the `AddItem` method on the `ShoppingCart` service, in the gRPC web UI, or with `grpcurl`:
+
+[source, command line]
+----
+grpcurl \
+  -d '{
+    "cart_id": "abc123",
+    "product_id": "AAPL",
+    "name": "Apples",
+    "quantity": 42
+  }' \
+  --plaintext localhost:8080 \
+  shopping.cart.api.ShoppingCart/AddItem
+----
+
+The `GetCart` method can be used to retrieve this cart, in the gRPC web UI, or with `grpcurl`:
+
+[source, command line]
+----
+grpcurl \
+  -d '{"cart_id": "abc123"}' \
+  --plaintext localhost:8080 \
+  shopping.cart.api.ShoppingCart/GetCart
+----
+
+You can https://docs.kalix.io/services/invoke-service.html#_exposing_services_to_the_internet[expose the service to the internet]. A generated hostname will be returned from the expose command:
+
+[source, command line]
+----
+kalix service expose shopping-cart
+----
+
+== Next steps
+
+* You can learn more about xref:javascript:eventsourced.adoc[Event Sourced Entities].

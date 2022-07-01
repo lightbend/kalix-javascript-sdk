@@ -1,0 +1,5 @@
+/lib/generated
+/node_modules
+/user-function.desc
+# test quickstarts without lock file
+/package-lock.json

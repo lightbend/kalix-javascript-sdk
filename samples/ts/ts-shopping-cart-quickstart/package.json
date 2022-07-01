@@ -1,0 +1,40 @@
+{
+  "name": "shopping-cart",
+  "version": "0.0.1",
+  "engines": {
+    "node": ">=14.0.0",
+    "npm": ">=6.0.0"
+  },
+  "dependencies": {
+    "@kalix-io/kalix-javascript-sdk": "^1.0.0-M10"
+  },
+  "devDependencies": {
+    "@kalix-io/kalix-scripts": "^1.0.0-M10",
+    "@kalix-io/testkit": "^1.0.0-M10",
+    "@types/chai": "^4.3.1",
+    "@types/mocha": "^9.1.1",
+    "@types/node": "18.0.0",
+    "chai": "^4.3.6",
+    "mocha": "^10.0.0",
+    "ts-mocha": "^10.0.0",
+    "typescript": "^4.7.4"
+  },
+  "config": {
+    "typescript": true,
+    "dockerImage": "my-docker-repo/shopping-cart",
+    "sourceDir": "./src",
+    "testSourceDir": "./test",
+    "integrationTestSourceDir": "./integration-test",
+    "protoSourceDir": "./proto",
+    "generatedSourceDir": "./lib/generated",
+    "compileDescriptorArgs": []
+  },
+  "scripts": {
+    "start": "node dist/src/index.js",
+    "test": "ts-mocha test/**/*.test.ts",
+    "integration-test": "ts-mocha integration-test/**/*.test.ts",
+    "build": "kalix-scripts build && tsc",
+    "package": "kalix-scripts package",
+    "deploy": "kalix-scripts deploy"
+  }
+}
