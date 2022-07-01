@@ -66,9 +66,11 @@ mkdir proto
 
 . Add declarations for:
 +
+--
 * The protobuf syntax version, `proto3`.
 * The package name, `customer.api`.
 * Import `google/protobuf/empty.proto` and Kalix `kalix/annotations.proto`.
+--
 +
 [source, proto, indent=0]
 .proto/customer_api.proto
