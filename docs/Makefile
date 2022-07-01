@@ -53,6 +53,7 @@ examples:
 	rsync -a --exclude-from=.examplesignore ../samples/js/js-replicated-entity-shopping-cart/ "${managed_examples}/js-replicated-entity-shopping-cart/"
 	rsync -a --exclude-from=.examplesignore ../samples/ts/ts-customer-registry/ "${managed_examples}/ts-customer-registry/"
 	rsync -a --exclude-from=.examplesignore ../samples/ts/ts-customer-registry-quickstart/ "${managed_examples}/ts-customer-registry-quickstart/"
+	rsync -a --exclude-from=.examplesignore ../samples/ts/ts-shopping-cart-quickstart/ "${managed_examples}/ts-shopping-cart-quickstart/"
 	rsync -a --exclude-from=.examplesignore ../samples/ts/ts-valueentity-shopping-cart/ "${managed_examples}/ts-valueentity-shopping-cart/"
 	rsync -a --exclude-from=.examplesignore ../samples/ts/ts-valueentity-counter/ "${managed_examples}/ts-valueentity-counter/"
 	rsync -a --exclude-from=.examplesignore ../samples/ts/ts-eventsourced-shopping-cart/ "${managed_examples}/ts-eventsourced-shopping-cart/"
@@ -62,7 +63,7 @@ bundles:
 	bin/bundle.sh --zip "${managed_attachments}/js-customer-registry-quickstart.zip" ../samples/js/js-customer-registry-quickstart
 	bin/bundle.sh --zip "${managed_attachments}/ts-customer-registry-quickstart.zip" ../samples/ts/ts-customer-registry-quickstart
 	bin/bundle.sh --zip "${managed_attachments}/js-shopping-cart-quickstart.zip" ../samples/js/js-shopping-cart-quickstart
-	bin/bundle.sh --zip "${managed_attachments}/ts-eventsourced-shopping-cart.zip" ../samples/ts/ts-eventsourced-shopping-cart
+	bin/bundle.sh --zip "${managed_attachments}/ts-shopping-cart-quickstart.zip" ../samples/ts/ts-shopping-cart-quickstart
 
 dev: clean managed validate-xrefs dev-html
 
