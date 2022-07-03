@@ -1,0 +1,6 @@
+/README.md
+/dist
+/docker-compose.yml
+/lib/generated
+/node_modules
+/user-function.desc
