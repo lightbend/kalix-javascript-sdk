@@ -237,7 +237,7 @@ jobs:
             export KALIX_NPMJS_CODEGEN_BINARY="${HOME}/project/codegen/js-gen-cli/target/native-image/kalix-codegen-js"
             npm install --save \
               "$HOME/project/sdk/kalix-io-kalix-javascript-sdk-0.0.0.tgz" \
-              "$HOME/project/npm-js/kalix-scripts/kalix-io-kalix-scripts-1.0.0.tgz" \
+              "$HOME/project/npm-js/kalix-scripts/kalix-io-kalix-scripts-0.0.0.tgz" \
               "$HOME/project/testkit/kalix-io-testkit-0.0.0.tgz"
             npm install
             npm run build
@@ -252,7 +252,7 @@ jobs:
             export KALIX_NPMJS_CODEGEN_BINARY="${HOME}/project/codegen/js-gen-cli/target/native-image/kalix-codegen-js"
             npm install --save \
               "$HOME/project/sdk/kalix-io-kalix-javascript-sdk-0.0.0.tgz" \
-              "$HOME/project/npm-js/kalix-scripts/kalix-io-kalix-scripts-1.0.0.tgz" \
+              "$HOME/project/npm-js/kalix-scripts/kalix-io-kalix-scripts-0.0.0.tgz" \
               "$HOME/project/testkit/kalix-io-testkit-0.0.0.tgz"
             npm install
             npm run build
@@ -267,7 +267,7 @@ jobs:
             export KALIX_NPMJS_CODEGEN_BINARY="${HOME}/project/codegen/js-gen-cli/target/native-image/kalix-codegen-js"
             npm install --save \
               "$HOME/project/sdk/kalix-io-kalix-javascript-sdk-0.0.0.tgz" \
-              "$HOME/project/npm-js/kalix-scripts/kalix-io-kalix-scripts-1.0.0.tgz" \
+              "$HOME/project/npm-js/kalix-scripts/kalix-io-kalix-scripts-0.0.0.tgz" \
               "$HOME/project/testkit/kalix-io-testkit-0.0.0.tgz"
             npm install
             npm run build
@@ -282,7 +282,7 @@ jobs:
             export KALIX_NPMJS_CODEGEN_BINARY="${HOME}/project/codegen/js-gen-cli/target/native-image/kalix-codegen-js"
             npm install --save \
               "$HOME/project/sdk/kalix-io-kalix-javascript-sdk-0.0.0.tgz" \
-              "$HOME/project/npm-js/kalix-scripts/kalix-io-kalix-scripts-1.0.0.tgz" \
+              "$HOME/project/npm-js/kalix-scripts/kalix-io-kalix-scripts-0.0.0.tgz" \
               "$HOME/project/testkit/kalix-io-testkit-0.0.0.tgz"
             npm install
             npm run build
@@ -295,7 +295,7 @@ jobs:
             export KALIX_NPMJS_CODEGEN_BINARY="${HOME}/project/codegen/js-gen-cli/target/native-image/kalix-codegen-js"
             npm install --save \
               ../../../sdk/kalix-io-kalix-javascript-sdk-0.0.0.tgz \
-              ../../../npm-js/kalix-scripts/kalix-io-kalix-scripts-1.0.0.tgz \
+              ../../../npm-js/kalix-scripts/kalix-io-kalix-scripts-0.0.0.tgz \
               ../../../testkit/kalix-io-testkit-0.0.0.tgz
             npm install 
             npm run build  
@@ -308,7 +308,7 @@ jobs:
             export KALIX_NPMJS_CODEGEN_BINARY="${HOME}/project/codegen/js-gen-cli/target/native-image/kalix-codegen-js"
             npm install --save \
               ../../../sdk/kalix-io-kalix-javascript-sdk-0.0.0.tgz \
-              ../../../npm-js/kalix-scripts/kalix-io-kalix-scripts-1.0.0.tgz \
+              ../../../npm-js/kalix-scripts/kalix-io-kalix-scripts-0.0.0.tgz \
               ../../../testkit/kalix-io-testkit-0.0.0.tgz
             npm install 
             npm run build  
@@ -321,7 +321,7 @@ jobs:
             export KALIX_NPMJS_CODEGEN_BINARY="${HOME}/project/codegen/js-gen-cli/target/native-image/kalix-codegen-js"
             npm install --save \
               ../../../sdk/kalix-io-kalix-javascript-sdk-0.0.0.tgz \
-              ../../../npm-js/kalix-scripts/kalix-io-kalix-scripts-1.0.0.tgz \
+              ../../../npm-js/kalix-scripts/kalix-io-kalix-scripts-0.0.0.tgz \
               ../../../testkit/kalix-io-testkit-0.0.0.tgz
             npm install 
             npm run build  
@@ -334,7 +334,7 @@ jobs:
             export KALIX_NPMJS_CODEGEN_BINARY="${HOME}/project/codegen/js-gen-cli/target/native-image/kalix-codegen-js"
             npm install --save \
               ../../../sdk/kalix-io-kalix-javascript-sdk-0.0.0.tgz \
-              ../../../npm-js/kalix-scripts/kalix-io-kalix-scripts-1.0.0.tgz \
+              ../../../npm-js/kalix-scripts/kalix-io-kalix-scripts-0.0.0.tgz \
               ../../../testkit/kalix-io-testkit-0.0.0.tgz
             npm install 
             npm run build  
@@ -347,7 +347,7 @@ jobs:
             export KALIX_NPMJS_CODEGEN_BINARY="${HOME}/project/codegen/js-gen-cli/target/native-image/kalix-codegen-js"
             npm install --save \
               ../../../sdk/kalix-io-kalix-javascript-sdk-0.0.0.tgz \
-              ../../../npm-js/kalix-scripts/kalix-io-kalix-scripts-1.0.0.tgz \
+              ../../../npm-js/kalix-scripts/kalix-io-kalix-scripts-0.0.0.tgz \
               ../../../testkit/kalix-io-testkit-0.0.0.tgz
             npm install 
             npm run build  
@@ -360,7 +360,7 @@ jobs:
             export KALIX_NPMJS_CODEGEN_BINARY="${HOME}/project/codegen/js-gen-cli/target/native-image/kalix-codegen-js"
             npm install --save \
               ../../../sdk/kalix-io-kalix-javascript-sdk-0.0.0.tgz \
-              ../../../npm-js/kalix-scripts/kalix-io-kalix-scripts-1.0.0.tgz \
+              ../../../npm-js/kalix-scripts/kalix-io-kalix-scripts-0.0.0.tgz \
               ../../../testkit/kalix-io-testkit-0.0.0.tgz
             npm install 
             npm run build  
@@ -426,7 +426,7 @@ jobs:
             cd js-customer-registry
             npm install --save \
               "$HOME/project/sdk/kalix-io-kalix-javascript-sdk-0.0.0.tgz" \
-              "$HOME/project/npm-js/kalix-scripts/kalix-io-kalix-scripts-1.0.0.tgz" \
+              "$HOME/project/npm-js/kalix-scripts/kalix-io-kalix-scripts-0.0.0.tgz" \
               "$HOME/project/testkit/kalix-io-testkit-0.0.0.tgz"
             npm install
             npm run build
@@ -444,7 +444,7 @@ jobs:
             cd js-shopping-cart
             npm install --save \
               "$HOME/project/sdk/kalix-io-kalix-javascript-sdk-0.0.0.tgz" \
-              "$HOME/project/npm-js/kalix-scripts/kalix-io-kalix-scripts-1.0.0.tgz" \
+              "$HOME/project/npm-js/kalix-scripts/kalix-io-kalix-scripts-0.0.0.tgz" \
               "$HOME/project/testkit/kalix-io-testkit-0.0.0.tgz"
             npm install
             npm run build
@@ -462,7 +462,7 @@ jobs:
             cd ts-customer-registry
             npm install --save \
               "$HOME/project/sdk/kalix-io-kalix-javascript-sdk-0.0.0.tgz" \
-              "$HOME/project/npm-js/kalix-scripts/kalix-io-kalix-scripts-1.0.0.tgz" \
+              "$HOME/project/npm-js/kalix-scripts/kalix-io-kalix-scripts-0.0.0.tgz" \
               "$HOME/project/testkit/kalix-io-testkit-0.0.0.tgz"
             npm install
             npm run build
@@ -480,7 +480,7 @@ jobs:
             cd ts-shopping-cart
             npm install --save \
               "$HOME/project/sdk/kalix-io-kalix-javascript-sdk-0.0.0.tgz" \
-              "$HOME/project/npm-js/kalix-scripts/kalix-io-kalix-scripts-1.0.0.tgz" \
+              "$HOME/project/npm-js/kalix-scripts/kalix-io-kalix-scripts-0.0.0.tgz" \
               "$HOME/project/testkit/kalix-io-testkit-0.0.0.tgz"
             npm install
             npm run build
@@ -495,7 +495,7 @@ jobs:
             cd samples/js/js-customer-registry
             npm install --save \
               ../../../sdk/kalix-io-kalix-javascript-sdk-0.0.0.tgz \
-              ../../../npm-js/kalix-scripts/kalix-io-kalix-scripts-1.0.0.tgz \
+              ../../../npm-js/kalix-scripts/kalix-io-kalix-scripts-0.0.0.tgz \
               ../../../testkit/kalix-io-testkit-0.0.0.tgz
             npm install
             npm run integration-test
@@ -509,7 +509,7 @@ jobs:
             cd samples/js/valueentity-counter
             npm install --save \
               ../../../sdk/kalix-io-kalix-javascript-sdk-0.0.0.tgz \
-              ../../../npm-js/kalix-scripts/kalix-io-kalix-scripts-1.0.0.tgz \
+              ../../../npm-js/kalix-scripts/kalix-io-kalix-scripts-0.0.0.tgz \
               ../../../testkit/kalix-io-testkit-0.0.0.tgz
             npm install
             npm run build
@@ -524,7 +524,7 @@ jobs:
             cd samples/js/js-valueentity-shopping-cart
             npm install --save \
               ../../../sdk/kalix-io-kalix-javascript-sdk-0.0.0.tgz \
-              ../../../npm-js/kalix-scripts/kalix-io-kalix-scripts-1.0.0.tgz \
+              ../../../npm-js/kalix-scripts/kalix-io-kalix-scripts-0.0.0.tgz \
               ../../../testkit/kalix-io-testkit-0.0.0.tgz
             npm install
             npm run build
@@ -539,7 +539,7 @@ jobs:
             cd samples/js/js-eventsourced-shopping-cart
             npm install --save \
               ../../../sdk/kalix-io-kalix-javascript-sdk-0.0.0.tgz \
-              ../../../npm-js/kalix-scripts/kalix-io-kalix-scripts-1.0.0.tgz \
+              ../../../npm-js/kalix-scripts/kalix-io-kalix-scripts-0.0.0.tgz \
               ../../../testkit/kalix-io-testkit-0.0.0.tgz
             npm install
             npm run build
@@ -554,7 +554,7 @@ jobs:
             cd samples/js/js-replicated-entity-shopping-cart
             npm install --save \
               ../../../sdk/kalix-io-kalix-javascript-sdk-0.0.0.tgz \
-              ../../../npm-js/kalix-scripts/kalix-io-kalix-scripts-1.0.0.tgz \
+              ../../../npm-js/kalix-scripts/kalix-io-kalix-scripts-0.0.0.tgz \
               ../../../testkit/kalix-io-testkit-0.0.0.tgz
             npm install
             npm run build
@@ -569,7 +569,7 @@ jobs:
             cd samples/ts/ts-customer-registry
             npm install --save \
               ../../../sdk/kalix-io-kalix-javascript-sdk-0.0.0.tgz \
-              ../../../npm-js/kalix-scripts/kalix-io-kalix-scripts-1.0.0.tgz \
+              ../../../npm-js/kalix-scripts/kalix-io-kalix-scripts-0.0.0.tgz \
               ../../../testkit/kalix-io-testkit-0.0.0.tgz
             npm install
             npm run integration-test
@@ -583,7 +583,7 @@ jobs:
             cd samples/ts/ts-valueentity-counter
             npm install --save \
               ../../../sdk/kalix-io-kalix-javascript-sdk-0.0.0.tgz \
-              ../../../npm-js/kalix-scripts/kalix-io-kalix-scripts-1.0.0.tgz \
+              ../../../npm-js/kalix-scripts/kalix-io-kalix-scripts-0.0.0.tgz \
               ../../../testkit/kalix-io-testkit-0.0.0.tgz
             npm install
             npm run build
@@ -598,7 +598,7 @@ jobs:
             cd samples/ts/ts-valueentity-shopping-cart
             npm install --save \
               ../../../sdk/kalix-io-kalix-javascript-sdk-0.0.0.tgz \
-              ../../../npm-js/kalix-scripts/kalix-io-kalix-scripts-1.0.0.tgz \
+              ../../../npm-js/kalix-scripts/kalix-io-kalix-scripts-0.0.0.tgz \
               ../../../testkit/kalix-io-testkit-0.0.0.tgz
             npm install
             npm run build
@@ -613,7 +613,7 @@ jobs:
             cd samples/ts/ts-eventsourced-shopping-cart
             npm install --save \
               ../../../sdk/kalix-io-kalix-javascript-sdk-0.0.0.tgz \
-              ../../../npm-js/kalix-scripts/kalix-io-kalix-scripts-1.0.0.tgz \
+              ../../../npm-js/kalix-scripts/kalix-io-kalix-scripts-0.0.0.tgz \
               ../../../testkit/kalix-io-testkit-0.0.0.tgz
             npm install
             npm run build
@@ -628,7 +628,7 @@ jobs:
             cd samples/ts/ts-replicated-entity-shopping-cart
             npm install --save \
               ../../../sdk/kalix-io-kalix-javascript-sdk-0.0.0.tgz \
-              ../../../npm-js/kalix-scripts/kalix-io-kalix-scripts-1.0.0.tgz \
+              ../../../npm-js/kalix-scripts/kalix-io-kalix-scripts-0.0.0.tgz \
               ../../../testkit/kalix-io-testkit-0.0.0.tgz
             npm install
             npm run build
@@ -759,7 +759,7 @@ jobs:
           name: "test generated JavaScript Value Entity"
           working_directory: "~/tmp"
           command: |
-            export KALIX_NPMJS_SCRIPTS_VERSION="file:${HOME}/project/npm-js/kalix-scripts/kalix-io-kalix-scripts-1.0.0.tgz"
+            export KALIX_NPMJS_SCRIPTS_VERSION="file:${HOME}/project/npm-js/kalix-scripts/kalix-io-kalix-scripts-0.0.0.tgz"
             export KALIX_NPMJS_SDK_VERSION="file:${HOME}/project/sdk/kalix-io-kalix-javascript-sdk-0.0.0.tgz"
             export KALIX_NPMJS_TESTKIT_VERSION="file:${HOME}/project/testkit/kalix-io-testkit-0.0.0.tgz"
             export KALIX_NPMJS_CODEGEN_BINARY="${HOME}/project/codegen/js-gen-cli/target/native-image/kalix-codegen-js"
@@ -772,7 +772,7 @@ jobs:
           name: "test generated TypeScript Value Entity"
           working_directory: "~/tmp"
           command: |
-            export KALIX_NPMJS_SCRIPTS_VERSION="file:${HOME}/project/npm-js/kalix-scripts/kalix-io-kalix-scripts-1.0.0.tgz"
+            export KALIX_NPMJS_SCRIPTS_VERSION="file:${HOME}/project/npm-js/kalix-scripts/kalix-io-kalix-scripts-0.0.0.tgz"
             export KALIX_NPMJS_SDK_VERSION="file:${HOME}/project/sdk/kalix-io-kalix-javascript-sdk-0.0.0.tgz"
             export KALIX_NPMJS_TESTKIT_VERSION="file:${HOME}/project/testkit/kalix-io-testkit-0.0.0.tgz"
             export KALIX_NPMJS_CODEGEN_BINARY="${HOME}/project/codegen/js-gen-cli/target/native-image/kalix-codegen-js"
@@ -785,7 +785,7 @@ jobs:
           name: "test generated JavaScript Event Sourced Entity"
           working_directory: "~/tmp"
           command: |
-            export KALIX_NPMJS_SCRIPTS_VERSION="file:${HOME}/project/npm-js/kalix-scripts/kalix-io-kalix-scripts-1.0.0.tgz"
+            export KALIX_NPMJS_SCRIPTS_VERSION="file:${HOME}/project/npm-js/kalix-scripts/kalix-io-kalix-scripts-0.0.0.tgz"
             export KALIX_NPMJS_SDK_VERSION="file:${HOME}/project/sdk/kalix-io-kalix-javascript-sdk-0.0.0.tgz"
             export KALIX_NPMJS_TESTKIT_VERSION="file:${HOME}/project/testkit/kalix-io-testkit-0.0.0.tgz"
             export KALIX_NPMJS_CODEGEN_BINARY="${HOME}/project/codegen/js-gen-cli/target/native-image/kalix-codegen-js"
@@ -798,7 +798,7 @@ jobs:
           name: "test generated TypeScript Event Sourced Entity"
           working_directory: "~/tmp"
           command: |
-            export KALIX_NPMJS_SCRIPTS_VERSION="file:${HOME}/project/npm-js/kalix-scripts/kalix-io-kalix-scripts-1.0.0.tgz"
+            export KALIX_NPMJS_SCRIPTS_VERSION="file:${HOME}/project/npm-js/kalix-scripts/kalix-io-kalix-scripts-0.0.0.tgz"
             export KALIX_NPMJS_SDK_VERSION="file:${HOME}/project/sdk/kalix-io-kalix-javascript-sdk-0.0.0.tgz"
             export KALIX_NPMJS_TESTKIT_VERSION="file:${HOME}/project/testkit/kalix-io-testkit-0.0.0.tgz"
             export KALIX_NPMJS_CODEGEN_BINARY="${HOME}/project/codegen/js-gen-cli/target/native-image/kalix-codegen-js"
@@ -857,7 +857,7 @@ jobs:
           command: |
             source /opt/circleci/.nvm/nvm.sh
             nvm install v14
-            export KALIX_NPMJS_SCRIPTS_VERSION="file:${HOME}/project/npm-js/kalix-scripts/kalix-io-kalix-scripts-1.0.0.tgz"
+            export KALIX_NPMJS_SCRIPTS_VERSION="file:${HOME}/project/npm-js/kalix-scripts/kalix-io-kalix-scripts-0.0.0.tgz"
             export KALIX_NPMJS_SDK_VERSION="file:${HOME}/project/sdk/kalix-io-kalix-javascript-sdk-0.0.0.tgz"
             export KALIX_NPMJS_TESTKIT_VERSION="file:${HOME}/project/testkit/kalix-io-testkit-0.0.0.tgz"
             node "${HOME}/project/npm-js/create-kalix-entity/create-kalix-entity.js" generated-project --template event-sourced-entity
