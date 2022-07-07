@@ -179,7 +179,7 @@ jobs:
 
   tests:
     machine:
-      image: ubuntu-2004:202104-01
+      image: ubuntu-2204:2022.04.2
     description: "tests"
     steps:
       - checkout-and-merge-to-main
@@ -205,12 +205,16 @@ jobs:
           working_directory: "~/project/npm-js/kalix-scripts"
           command: |
             export KALIX_NPMJS_CODEGEN_BINARY="${HOME}/project/codegen/js-gen-cli/target/native-image/kalix-codegen-js"
+            source /opt/circleci/.nvm/nvm.sh
+            nvm install
             npm ci
             npm pack
       - run:
           name: "build sdk"
           working_directory: "~/project/sdk"
           command: |
+            source /opt/circleci/.nvm/nvm.sh
+            nvm install
             npm ci
             npm test
             npm pack
@@ -218,6 +222,8 @@ jobs:
           name: "build testkit"
           working_directory: "~/project/testkit"
           command: |
+            source /opt/circleci/.nvm/nvm.sh
+            nvm install
             npm ci
             npm install ../sdk/kalix-io-kalix-javascript-sdk-0.0.0.tgz
             npm test
@@ -231,6 +237,8 @@ jobs:
           name: "Test quickstart: JS Customer Registry"
           working_directory: "~/tmp"
           command: |
+            source /opt/circleci/.nvm/nvm.sh
+            pushd ~/project/sdk && nvm install && popd
             # use the bundled quickstart to check against what the user will download
             unzip -d js-customer-registry ~/project/docs/build/src/managed/modules/javascript/attachments/js-customer-registry-quickstart.zip
             cd js-customer-registry
@@ -246,6 +254,8 @@ jobs:
           name: "Test quickstart: JS Shopping Cart"
           working_directory: "~/tmp"
           command: |
+            source /opt/circleci/.nvm/nvm.sh
+            pushd ~/project/sdk && nvm install && popd
             # use the bundled quickstart to check against what the user will download
             unzip -d js-shopping-cart ~/project/docs/build/src/managed/modules/javascript/attachments/js-shopping-cart-quickstart.zip
             cd js-shopping-cart
@@ -261,6 +271,8 @@ jobs:
           name: "Test quickstart: TS Customer Registry"
           working_directory: "~/tmp"
           command: |
+            source /opt/circleci/.nvm/nvm.sh
+            pushd ~/project/sdk && nvm install && popd
             # use the bundled quickstart to check against what the user will download
             unzip -d ts-customer-registry ~/project/docs/build/src/managed/modules/javascript/attachments/ts-customer-registry-quickstart.zip
             cd ts-customer-registry
@@ -276,6 +288,8 @@ jobs:
           name: "Test quickstart: TS Shopping Cart"
           working_directory: "~/tmp"
           command: |
+            source /opt/circleci/.nvm/nvm.sh
+            pushd ~/project/sdk && nvm install && popd
             # use the bundled quickstart to check against what the user will download
             unzip -d ts-shopping-cart ~/project/docs/build/src/managed/modules/javascript/attachments/ts-shopping-cart-quickstart.zip
             cd ts-shopping-cart
@@ -290,6 +304,8 @@ jobs:
       - run:
           name: "Test JS Value Entity Counter sample"
           command: |
+            source /opt/circleci/.nvm/nvm.sh
+            pushd ~/project/sdk && nvm install && popd
             cd samples/js/valueentity-counter
             # don't download, use the one we built
             export KALIX_NPMJS_CODEGEN_BINARY="${HOME}/project/codegen/js-gen-cli/target/native-image/kalix-codegen-js"
@@ -303,6 +319,8 @@ jobs:
       - run:
           name: "Test JS Value Entity Shopping Cart sample"
           command: |
+            source /opt/circleci/.nvm/nvm.sh
+            pushd ~/project/sdk && nvm install && popd
             cd samples/js/js-valueentity-shopping-cart
             # don't download, use the one we built
             export KALIX_NPMJS_CODEGEN_BINARY="${HOME}/project/codegen/js-gen-cli/target/native-image/kalix-codegen-js"
@@ -316,6 +334,8 @@ jobs:
       - run:
           name: "Test JS Event Sourced Entity Shopping Cart sample"
           command: |
+            source /opt/circleci/.nvm/nvm.sh
+            pushd ~/project/sdk && nvm install && popd
             cd samples/js/js-eventsourced-shopping-cart
             # don't download, use the one we built
             export KALIX_NPMJS_CODEGEN_BINARY="${HOME}/project/codegen/js-gen-cli/target/native-image/kalix-codegen-js"
@@ -329,6 +349,8 @@ jobs:
       - run:
           name: "Test TS Value Entity Counter sample"
           command: |
+            source /opt/circleci/.nvm/nvm.sh
+            pushd ~/project/sdk && nvm install && popd
             cd samples/ts/ts-valueentity-counter
             # don't download, use the one we built
             export KALIX_NPMJS_CODEGEN_BINARY="${HOME}/project/codegen/js-gen-cli/target/native-image/kalix-codegen-js"
@@ -342,6 +364,8 @@ jobs:
       - run:
           name: "Test TS Value Entity Shopping Cart sample"
           command: |
+            source /opt/circleci/.nvm/nvm.sh
+            pushd ~/project/sdk && nvm install && popd
             cd samples/ts/ts-valueentity-shopping-cart
             # don't download, use the one we built
             export KALIX_NPMJS_CODEGEN_BINARY="${HOME}/project/codegen/js-gen-cli/target/native-image/kalix-codegen-js"
@@ -355,6 +379,8 @@ jobs:
       - run:
           name: "Test TS Event Sourced Entity Shopping Cart sample"
           command: |
+            source /opt/circleci/.nvm/nvm.sh
+            pushd ~/project/sdk && nvm install && popd
             cd samples/ts/ts-eventsourced-shopping-cart
             # don't download, use the one we built
             export KALIX_NPMJS_CODEGEN_BINARY="${HOME}/project/codegen/js-gen-cli/target/native-image/kalix-codegen-js"
@@ -368,7 +394,7 @@ jobs:
 
   integration-tests:
     machine:
-      image: ubuntu-2004:202104-01
+      image: ubuntu-2204:2022.04.2
     description: "integration tests"
     steps:
       - checkout-and-merge-to-main
@@ -636,7 +662,7 @@ jobs:
 
   tck-tests:
     machine:
-      image: ubuntu-2004:202104-01
+      image: ubuntu-2204:2022.04.2
     description: "TCK tests"
     steps:
       - checkout-and-merge-to-main
@@ -649,7 +675,7 @@ jobs:
 
   validate-docs:
     machine:
-      image: ubuntu-2004:202104-01
+      image: ubuntu-2204:2022.04.2
     description: "validate docs"
     steps:
       - checkout-and-merge-to-main
@@ -692,7 +718,7 @@ jobs:
 
   publish-tck:
     machine:
-      image: ubuntu-2004:202104-01
+      image: ubuntu-2204:2022.04.2
     description: "publish TCK"
     steps:
       - checkout
@@ -705,7 +731,7 @@ jobs:
 
   publish-docs:
     machine:
-      image: ubuntu-2004:202104-01
+      image: ubuntu-2204:2022.04.2
     description: "publish docs"
     steps:
       - checkout
@@ -810,7 +836,7 @@ jobs:
 
   e2e-tests:
     machine:
-      image: ubuntu-2004:202104-01
+      image: ubuntu-2204:2022.04.2
     description: "e2e-tests"
     steps:
       - checkout-and-merge-to-main
@@ -893,7 +919,7 @@ jobs:
 
   publish_native_linux:
     machine:
-      image: ubuntu-2004:202104-01
+      image: ubuntu-2204:2022.04.2
     description: "Build Native image on Linux"
     steps:
       - checkout
