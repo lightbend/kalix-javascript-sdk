@@ -179,7 +179,7 @@ jobs:
 
   tests:
     machine:
-      image: ubuntu-2004:202104-01
+      image: ubuntu-2204:2022.04.2
     description: "tests"
     steps:
       - checkout-and-merge-to-main
@@ -368,7 +368,7 @@ jobs:
 
   integration-tests:
     machine:
-      image: ubuntu-2004:202104-01
+      image: ubuntu-2204:2022.04.2
     description: "integration tests"
     steps:
       - checkout-and-merge-to-main
@@ -636,7 +636,7 @@ jobs:
 
   tck-tests:
     machine:
-      image: ubuntu-2004:202104-01
+      image: ubuntu-2204:2022.04.2
     description: "TCK tests"
     steps:
       - checkout-and-merge-to-main
@@ -649,7 +649,7 @@ jobs:
 
   validate-docs:
     machine:
-      image: ubuntu-2004:202104-01
+      image: ubuntu-2204:2022.04.2
     description: "validate docs"
     steps:
       - checkout-and-merge-to-main
@@ -692,7 +692,7 @@ jobs:
 
   publish-tck:
     machine:
-      image: ubuntu-2004:202104-01
+      image: ubuntu-2204:2022.04.2
     description: "publish TCK"
     steps:
       - checkout
@@ -705,7 +705,7 @@ jobs:
 
   publish-docs:
     machine:
-      image: ubuntu-2004:202104-01
+      image: ubuntu-2204:2022.04.2
     description: "publish docs"
     steps:
       - checkout
@@ -810,7 +810,7 @@ jobs:
 
   e2e-tests:
     machine:
-      image: ubuntu-2004:202104-01
+      image: ubuntu-2204:2022.04.2
     description: "e2e-tests"
     steps:
       - checkout-and-merge-to-main
@@ -893,7 +893,7 @@ jobs:
 
   publish_native_linux:
     machine:
-      image: ubuntu-2004:202104-01
+      image: ubuntu-2204:2022.04.2
     description: "Build Native image on Linux"
     steps:
       - checkout
