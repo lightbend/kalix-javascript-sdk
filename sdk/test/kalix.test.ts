@@ -112,6 +112,7 @@ describe('Kalix', () => {
       detail: 'test details',
       message: 'test message',
       sourceLocations: [location],
+      severity: discovery.Severity.ERROR,
     };
 
     const errorMsg = kalix.reportErrorLogic(
