@@ -279,6 +279,14 @@ export interface ServiceMap {
 }
 
 /** @internal */
+enum UserFunctionErrorSeverity {
+  UNSPECIFIED = 0,
+  ERROR = 1,
+  WARNING = 2,
+  INFO = 3,
+}
+
+/** @internal */
 class DocLink {
   private specificCodes: Map<string, string> = new Map([
     ['KLX-00112', 'javascript/views.html#changing'],
@@ -608,9 +616,9 @@ export class Kalix {
       error.sourceLocations,
       error.severity,
     );
-    switch (error.severity) {
-      case discovery.Severity.INFO:
-      case discovery.Severity.WARNING:
+    switch (error.severity as number) {
+      case UserFunctionErrorSeverity.INFO:
+      case UserFunctionErrorSeverity.WARNING:
         console.log(msg);
         break;
       default:
@@ -628,11 +636,11 @@ export class Kalix {
   ): string {
     let messageType = 'Error';
 
-    switch (severity) {
-      case discovery.Severity.INFO:
+    switch (severity as number) {
+      case UserFunctionErrorSeverity.INFO:
         messageType = 'Message';
         break;
-      case discovery.Severity.WARNING:
+      case UserFunctionErrorSeverity.WARNING:
         messageType = 'Warning';
         break;
     }
