@@ -62,7 +62,8 @@ export interface GrpcClientLookup {
  * @private
  */
 enum ServiceType {
-  LOCAL,
+  SELF,
+  KALIX_SERVICE,
   EXTERNAL,
 }
 
@@ -81,11 +82,11 @@ export class GrpcUtil {
     identificationInfo?: IdentificationInfo,
   ): GrpcClientLookup {
     const result: GrpcClientLookup = {};
-    let sameKalixServiceAuthHeaders: grpc.Metadata | undefined;
+    let selfAuthHeaders: grpc.Metadata | undefined;
     let otherKalixServiceAuthHeaders: grpc.Metadata | undefined;
     if (identificationInfo?.selfIdentificationHeader) {
-      sameKalixServiceAuthHeaders = new grpc.Metadata();
-      sameKalixServiceAuthHeaders.add(
+      selfAuthHeaders = new grpc.Metadata();
+      selfAuthHeaders.add(
         identificationInfo.selfIdentificationHeader!,
         identificationInfo.selfIdentificationToken!,
       );
@@ -118,11 +119,27 @@ export class GrpcUtil {
         const creds = credentials || grpc.credentials.createInsecure();
         let actualAddress: string;
         let serviceType: ServiceType;
-        if (address.indexOf('.') > 0) {
-          serviceType = ServiceType.EXTERNAL;
-          actualAddress = address;
+        if (address) {
+          if (address.indexOf('.') > 0) {
+            serviceType = ServiceType.EXTERNAL;
+            actualAddress = address;
+          } else if (address.startsWith(proxyHostname)) {
+            // FIXME deprecate and warn about creating with manual address?
+            // Note: this is not water tight, when running locally with docker it will likely be 'localhost' for all services
+            serviceType = ServiceType.SELF;
+            actualAddress = address;
+          } else {
+            serviceType = ServiceType.KALIX_SERVICE;
+            if (address.indexOf(':') > 0) {
+              actualAddress = address;
+            } else {
+              // allow users to use only the service name and add the port for them
+              actualAddress = address + ':80';
+            }
+          }
         } else {
-          serviceType = ServiceType.LOCAL;
+          // auto set self-host/port
+          serviceType = ServiceType.SELF;
           actualAddress = proxyHostname + ':' + proxyPort;
         }
 
@@ -133,11 +150,11 @@ export class GrpcUtil {
         const client = new serviceClientConstructor(actualAddress, creds);
         if (identificationInfo) {
           switch (serviceType) {
-            case ServiceType.LOCAL:
-              if (sameKalixServiceAuthHeaders)
-                GrpcUtil.addHeadersToAllRequests(client, sameKalixServiceAuthHeaders);
+            case ServiceType.SELF:
+              if (selfAuthHeaders)
+                GrpcUtil.addHeadersToAllRequests(client, selfAuthHeaders);
               break;
-            case ServiceType.EXTERNAL:
+            case ServiceType.KALIX_SERVICE:
               if (otherKalixServiceAuthHeaders)
                 GrpcUtil.addHeadersToAllRequests(
                   client,
