@@ -1,6 +1,8 @@
-const fetch = require('node-fetch');
+const axios = require('axios').default;
 const fs = require('fs');
 const path = require('path');
+const stream = require('stream');
+const util = require('util');
 const packageConfig = require('../package.json');
 
 /**
@@ -44,20 +46,27 @@ if (localBinary) {
       ? `https://repo.lightbend.com/raw/kalix/versions/${kalixCodegenVersion}/${releases[release]}.exe`
       : `https://repo.lightbend.com/raw/kalix/versions/${kalixCodegenVersion}/${releases[release]}`;
   console.info(`Fetching kalix-codegen-js from ${url}`);
-  fetch(url).then((response) => {
-    if (!response.ok) {
-      throw new Error(
-        `Error fetching Kalix codegen tool from [${url}]: ${response.statusText}.`,
-      );
-    }
-    console.debug(`Saving to ${targetFile}`);
-    if (!fs.existsSync(binDir)) {
-      fs.mkdirSync(binDir);
-    }
 
-    const fileWriter = fs.createWriteStream(targetFile, { mode: 0o755 });
-    response.body.pipe(fileWriter);
-  });
+  axios
+    .get(url, { responseType: 'stream' })
+    .then((response) => {
+      console.debug(`Saving to ${targetFile}`);
+      if (!fs.existsSync(binDir)) {
+        fs.mkdirSync(binDir);
+      }
+
+      const streamPipeline = util.promisify(stream.pipeline);
+      const fileWriter = fs.createWriteStream(targetFile, { mode: 0o755 });
+      return streamPipeline(response.data, fileWriter);
+    })
+    .catch((error) => {
+      const failure = error.isAxiosError ? error.response.statusText : error;
+      console.error('Failed to download Kalix codegen binary:', failure);
+      if (fs.existsSync(targetFile)) {
+        fs.rmSync(targetFile);
+      }
+      process.exit(1);
+    });
 } else {
   throw new Error(
     'Unsupported platform. No prebuilt version of the Kalix codegen tool exists for this platform.',
