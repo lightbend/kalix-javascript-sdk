@@ -1,3 +1,8 @@
+#!/usr/bin/env bash
+## This script sets the dependencies for the `samples` so you can
+## modify in local the SDK and test it on a sample.
+## It can also include your local kalix-proxy if PROXY_SNAPSHOT_DIRECTORY is set
+
  if [[ "${PROXY_SNAPSHOT_DIRECTORY}" ]]; then
     echo "PROXY_SNAPSHOT_DIRECTORY is set to [${PROXY_SNAPSHOT_DIRECTORY}]"
     echo "using your local kalix-proxy project to generate the SDK"
