@@ -17,9 +17,12 @@
 import { Kalix, Component, ComponentServices, ServiceMap } from '../src/kalix';
 import * as discovery from '../types/protocol/discovery';
 import * as fs from 'fs';
-import { should } from 'chai';
 import { PreStartSettings } from '../src/kalix';
-should();
+import chai from 'chai';
+import sinon from 'sinon';
+import sinonChai from 'sinon-chai';
+chai.use(sinonChai);
+chai.should();
 
 const proxyInfo: discovery.ProxyInfo = {
   protocolMajorVersion: 1,
@@ -120,6 +123,7 @@ describe('Kalix', () => {
       userError.message,
       userError.detail,
       userError.sourceLocations,
+      userError.severity,
     );
 
     const result = `Error reported from Kalix system: KLX-00112 test message
@@ -131,6 +135,87 @@ At package.test.json:2:4:
   "name": "some-name",
   "version": "some-version"`;
     errorMsg.should.equal(result);
+  });
+
+  it('report user function errors with error severity with console.error', () => {
+    sinon.stub(console, 'info');
+    sinon.stub(console, 'warn');
+    sinon.stub(console, 'error');
+
+    const kalix = new Kalix({
+      descriptorSetPath: 'test/generated/user-function.desc',
+    });
+
+    kalix.reportError({
+      code: 'KLX-00001',
+      detail: '',
+      message: 'Some error message',
+      sourceLocations: [],
+      severity: discovery.Severity.ERROR,
+    });
+
+    console.error.should.have.been.calledOnceWith(
+      'Error reported from Kalix system: KLX-00001 Some error message',
+    );
+
+    console.info.should.not.have.been.called;
+    console.warn.should.not.have.been.called;
+
+    sinon.restore();
+  });
+
+  it('report user function errors with warning severity with console.warn', () => {
+    sinon.stub(console, 'info');
+    sinon.stub(console, 'warn');
+    sinon.stub(console, 'error');
+
+    const kalix = new Kalix({
+      descriptorSetPath: 'test/generated/user-function.desc',
+    });
+
+    kalix.reportError({
+      code: 'KLX-00002',
+      detail: '',
+      message: 'Some warning message',
+      sourceLocations: [],
+      severity: discovery.Severity.WARNING,
+    });
+
+    console.warn.should.have.been.calledOnceWith(
+      'Warning reported from Kalix system: KLX-00002 Some warning message',
+    );
+
+    console.info.should.not.have.been.called;
+    console.error.should.not.have.been.called;
+
+    sinon.restore();
+  });
+
+  it('report user function errors with info severity with console.info', () => {
+    sinon.stub(console, 'info');
+    sinon.stub(console, 'warn');
+    sinon.stub(console, 'error');
+
+    const kalix = new Kalix({
+      descriptorSetPath: 'test/generated/user-function.desc',
+    });
+
+    kalix.reportError({
+      code: 'KLX-00003',
+      detail: '',
+      message: 'Some info message',
+      sourceLocations: [],
+      severity: discovery.Severity.INFO,
+    });
+
+    console.info.should.have.been.calledOnceWith(
+      'Message reported from Kalix system: KLX-00003 Some info message',
+    );
+
+    console.warn.should.not.have.been.called;
+    console.error.should.not.have.been.called;
+
+    sinon.restore();
   });
 
   it('discovery service should return correct service info', () => {

@@ -279,6 +279,14 @@ export interface ServiceMap {
 }
 
 /** @internal */
+enum UserFunctionErrorSeverity {
+  UNSPECIFIED = 0,
+  ERROR = 1,
+  WARNING = 2,
+  INFO = 3,
+}
+
+/** @internal */
 class DocLink {
   private specificCodes: Map<string, string> = new Map([
     ['KLX-00112', 'javascript/views.html#changing'],
@@ -560,13 +568,7 @@ export class Kalix {
         }
       },
       ReportError(call, callback) {
-        const msg = self.reportErrorLogic(
-          call.request.code,
-          call.request.message,
-          call.request.detail,
-          call.request.sourceLocations,
-        );
-        console.error(msg);
+        self.reportError(call.request);
         callback(null, {});
       },
       ProxyTerminated(_call, callback) {
@@ -606,13 +608,47 @@ export class Kalix {
   }
 
   /** @internal */
+  reportError(error: discovery.UserFunctionError): void {
+    const msg = this.reportErrorLogic(
+      error.code,
+      error.message,
+      error.detail,
+      error.sourceLocations,
+      error.severity,
+    );
+    switch (error.severity as number) {
+      case UserFunctionErrorSeverity.INFO:
+        console.info(msg);
+        break;
+      case UserFunctionErrorSeverity.WARNING:
+        console.warn(msg);
+        break;
+      default:
+        console.error(msg);
+    }
+  }
+
+  /** @internal */
   reportErrorLogic(
-    code?: string,
-    message?: string,
-    detail?: string,
-    locations?: Array<discovery.SourceLocation>,
-  ) {
-    let msg = `Error reported from Kalix system: ${code} ${message}`;
+    code: string,
+    message: string,
+    detail: string,
+    locations: Array<discovery.SourceLocation>,
+    severity: discovery.Severity,
+  ): string {
+    let messageType = 'Error';
+
+    switch (severity as number) {
+      case UserFunctionErrorSeverity.INFO:
+        messageType = 'Message';
+        break;
+      case UserFunctionErrorSeverity.WARNING:
+        messageType = 'Warning';
+        break;
+    }
+
+    let msg = `${messageType} reported from Kalix system: ${code} ${message}`;
+
     if (detail) {
       msg += `\n\n${detail}`;
     }
@@ -620,7 +656,7 @@ export class Kalix {
     if (code) {
       const docLink = this.docLink.getLink(code);
       if (docLink.length > 0) msg += `\nSee documentation: ${docLink}`;
-      for (const location of locations || []) {
+      for (const location of locations) {
         msg += `\n\n${this.formatSource(location)}`;
       }
     }
