@@ -618,8 +618,10 @@ export class Kalix {
     );
     switch (error.severity as number) {
       case UserFunctionErrorSeverity.INFO:
+        console.info(msg);
+        break;
       case UserFunctionErrorSeverity.WARNING:
-        console.log(msg);
+        console.warn(msg);
         break;
       default:
         console.error(msg);

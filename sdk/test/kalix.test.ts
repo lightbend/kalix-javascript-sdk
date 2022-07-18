@@ -137,8 +137,9 @@ At package.test.json:2:4:
     errorMsg.should.equal(result);
   });
 
-  it('report user function errors with error severity on stderr', () => {
-    sinon.stub(console, 'log');
+  it('report user function errors with error severity with console.error', () => {
+    sinon.stub(console, 'info');
+    sinon.stub(console, 'warn');
     sinon.stub(console, 'error');
 
     const kalix = new Kalix({
@@ -157,13 +158,15 @@ At package.test.json:2:4:
       'Error reported from Kalix system: KLX-00001 Some error message',
     );
 
-    console.log.should.not.have.been.called;
+    console.info.should.not.have.been.called;
+    console.warn.should.not.have.been.called;
 
     sinon.restore();
   });
 
-  it('report user function errors with warning severity on stdout', () => {
-    sinon.stub(console, 'log');
+  it('report user function errors with warning severity with console.warn', () => {
+    sinon.stub(console, 'info');
+    sinon.stub(console, 'warn');
     sinon.stub(console, 'error');
 
     const kalix = new Kalix({
@@ -178,17 +181,19 @@ At package.test.json:2:4:
       severity: discovery.Severity.WARNING,
     });
 
-    console.log.should.have.been.calledOnceWith(
+    console.warn.should.have.been.calledOnceWith(
       'Warning reported from Kalix system: KLX-00002 Some warning message',
     );
 
+    console.info.should.not.have.been.called;
     console.error.should.not.have.been.called;
 
     sinon.restore();
   });
 
-  it('report user function errors with info severity on stdout', () => {
-    sinon.stub(console, 'log');
+  it('report user function errors with info severity with console.info', () => {
+    sinon.stub(console, 'info');
+    sinon.stub(console, 'warn');
     sinon.stub(console, 'error');
 
     const kalix = new Kalix({
@@ -203,10 +208,11 @@ At package.test.json:2:4:
       severity: discovery.Severity.INFO,
     });
 
-    console.log.should.have.been.calledOnceWith(
+    console.info.should.have.been.calledOnceWith(
       'Message reported from Kalix system: KLX-00003 Some info message',
     );
 
+    console.warn.should.not.have.been.called;
     console.error.should.not.have.been.called;
 
     sinon.restore();
