@@ -714,7 +714,7 @@ export class Kalix {
       );
 
       const preStartSettings: PreStartSettings = {
-        proxyHostname: proxyInfo.proxyHostname,
+        proxyHostname: proxyInfo.internalProxyHostname,
         proxyPort: proxyInfo.proxyPort,
         identificationInfo: proxyInfo.identificationInfo || undefined,
       };
