@@ -27,6 +27,7 @@ npm pack
 # generate sdk kalix-io-kalix-javascript-sdk-0.0.0.tgz
 cd ${KALIXJSSDK}/sdk
 nvm use 14
+npm run clean
 npm run prepare # note tha bin/prepare.sh has * in lines 29 and 30. that is not working in iOS
 npm install
 npm pack
