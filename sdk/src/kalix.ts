@@ -701,7 +701,7 @@ export class Kalix {
         'Received discovery call from [%s %s] at [%s]:[%s] supporting Kalix protocol %s.%s',
         proxyInfo.proxyName,
         proxyInfo.proxyVersion,
-        proxyInfo.proxyHostname,
+        proxyInfo.internalProxyHostname,
         proxyInfo.proxyPort,
         proxyInfo.protocolMajorVersion,
         proxyInfo.protocolMinorVersion,
