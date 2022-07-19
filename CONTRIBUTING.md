@@ -46,7 +46,7 @@ To use the local SDK to be tested in local you can run the following.
     ./create-local-dependencies.sh
 
 and then add those to any sample. For example, go to samples/js/js-valueentity-shopping-cart and execute the following.
-
+    nvm use 14
     npm install --save \
                   "$KALIXJSSDK/sdk/kalix-io-kalix-javascript-sdk-0.0.0.tgz" \
                   "$KALIXJSSDK/npm-js/kalix-scripts/kalix-io-kalix-scripts-0.0.0.tgz" \
