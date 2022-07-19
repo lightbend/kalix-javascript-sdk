@@ -36,12 +36,3 @@ cd ${KALIXJSSDK}/testkit
 nvm use 14
 npm install ${KALIXJSSDK}/sdk/kalix-io-kalix-javascript-sdk-0.0.0.tgz
 npm pack
-
-# run a `samples` application using these local dependencies. 
-## For example, go to samples/js/js-valueentity-shopping-cart and execute the following.
-npm install --save \
-              "$KALIXJSSDK/sdk/kalix-io-kalix-javascript-sdk-0.0.0.tgz" \
-              "$KALIXJSSDK/npm-js/kalix-scripts/kalix-io-kalix-scripts-0.0.0.tgz" \
-              "$KALIXJSSDK/testkit/kalix-io-testkit-0.0.0.tgz"
-npm install
-npm run build
