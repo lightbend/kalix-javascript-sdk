@@ -41,9 +41,9 @@ Auto-update formatting with:
 
 ## Local development
 
-To use the local SDK to be tested in local you can run the following.
+To use the local SDK to be tested in local you can run the following from the root directory of this project. Please look at known issues first.
 
-    ./create-local-dependencies.sh
+    ./bin/create-local-dependencies.sh
 
 and then add those to any sample. For example, go to samples/js/js-valueentity-shopping-cart and execute the following. Bear in mind $KALIXJSSDK needs to point to `kalix-javascript-sdk` folder.
     
@@ -65,12 +65,12 @@ if you set PROXY_SNAPSHOT_DIRECTORY pointing to your local proxy then you can us
     Inspecting proto file descriptor for Kalix code generation...
     Exception in thread "main" java.lang.NoClassDefFoundError: kalix.Annotations
 
-This probably mean that you have generated the proxy with Java 17. 
+This happens when you generate the codegen with Java 17 instead of 11 and then you run `npm run build` on one of the `samples`.
 
     npm ERR! code 1
     npm ERR! path /Users/francisco/Git/kalix-javascript-sdk/sdk
     npm ERR! command failed
     npm ERR! command sh -c bin/prepare.sh
 
-This means that your sdk/bin/prepare.sh has `*` when "Using snapshot of proxy and sdk protocols from". In iOS you need to remove the two. 
+This can happens when you run `./bin/create-local-dependencies`. This is because `sdk/bin/prepare.sh` has `*` after `echo "Using snapshot of proxy and sdk protocols from '$PROXY_SNAPSHOT_DIRECTORY'"`. In iOS you need to remove the asteriscs in the two lines below.  
 
