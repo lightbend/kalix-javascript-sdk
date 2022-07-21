@@ -712,10 +712,13 @@ export class Kalix {
         proxyInfo,
         this.components.length,
       );
-
+      // references to proxyHostname are for backward compatibility with proxy 1.0.14 and older
       const preStartSettings: PreStartSettings = {
-        proxyHostname: proxyInfo.internalProxyHostname,
-        proxyPort: proxyInfo.proxyPort,
+        proxyHostname:
+          proxyInfo.internalProxyHostname ?? proxyInfo.proxyHostname,
+        proxyPort:
+          proxyInfo.proxyPort ??
+          (proxyInfo.proxyHostname == 'localhost' ? 9000 : 80),
         identificationInfo: proxyInfo.identificationInfo || undefined,
       };
 
