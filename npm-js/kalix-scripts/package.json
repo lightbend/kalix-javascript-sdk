@@ -11,8 +11,8 @@
     "npm": ">=6.0.0"
   },
   "dependencies": {
-    "cross-spawn": "^7.0.3",
-    "node-fetch": "^2.6.1"
+    "axios": "^0.27.2",
+    "cross-spawn": "^7.0.3"
   },
   "bin": {
     "kalix-scripts": "./bin/kalix-scripts.js"
