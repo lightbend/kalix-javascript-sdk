@@ -33,6 +33,8 @@ const proxyInfo: discovery.ProxyInfo = {
   devMode: false,
   proxyHostname: 'localhost',
   identificationInfo: null, // FIXME
+  internalProxyHostname: 'localhost',
+  proxyPort: 9000,
 };
 
 describe('Kalix', () => {
