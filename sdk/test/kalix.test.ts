@@ -32,7 +32,7 @@ const proxyInfo: discovery.ProxyInfo = {
   supportedEntityTypes: [],
   devMode: false,
   proxyHostname: 'localhost',
-  identificationInfo: null, // FIXME,
+  identificationInfo: null, // FIXME
   internalProxyHostname: 'localhost',
   proxyPort: 9000,
 };
