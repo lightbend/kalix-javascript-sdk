@@ -102,28 +102,14 @@ const scriptHandlers = {
 
     runOrFail(
       'Building static Javascript definitions from proto',
-      path.resolve(
-        'node_modules',
-        '@grpc',
-        'proto-loader',
-        'node_modules',
-        '.bin',
-        'pbjs',
-      ),
+      path.resolve('node_modules', 'protobufjs', 'bin', 'pbjs'),
       [...protoFiles, '-t', 'static-module', '-o', protoJs],
       { shell: true },
     );
 
     runOrFail(
       'Building Typescript definitions from static JS',
-      path.resolve(
-        'node_modules',
-        '@grpc',
-        'proto-loader',
-        'node_modules',
-        '.bin',
-        'pbts',
-      ),
+      path.resolve('node_modules', 'protobufjs', 'bin', 'pbts'),
       [protoJs, '-o', protoTs],
       { shell: true },
     );
