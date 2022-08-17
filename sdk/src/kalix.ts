@@ -719,7 +719,7 @@ export class Kalix {
         proxyPort:
           this.proxyPort ??
           (proxyInfo.proxyPort ||
-          (proxyInfo.proxyHostname == 'localhost' ? 9000 : 80)),
+            (proxyInfo.proxyHostname == 'localhost' ? 9000 : 80)),
         identificationInfo: proxyInfo.identificationInfo || undefined,
       };
 
