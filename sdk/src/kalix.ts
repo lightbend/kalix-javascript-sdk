@@ -698,10 +698,11 @@ export class Kalix {
       this.proxyHasTerminated = false;
 
       console.log(
-        'Received discovery call from [%s %s] at [%s] supporting Kalix protocol %s.%s',
+        'Received discovery call from [%s %s] at [%s]:[%s] supporting Kalix protocol %s.%s',
         proxyInfo.proxyName,
         proxyInfo.proxyVersion,
-        proxyInfo.proxyHostname,
+        proxyInfo.internalProxyHostname,
+        proxyInfo.proxyPort,
         proxyInfo.protocolMajorVersion,
         proxyInfo.protocolMinorVersion,
       );
@@ -711,9 +712,10 @@ export class Kalix {
         proxyInfo,
         this.components.length,
       );
-
+      // references to proxyHostname are for backward compatibility with proxy 1.0.14 and older
       const preStartSettings: PreStartSettings = {
-        proxyHostname: proxyInfo.proxyHostname,
+        proxyHostname:
+          proxyInfo.internalProxyHostname ?? proxyInfo.proxyHostname,
         proxyPort:
           this.proxyPort ??
           (proxyInfo.proxyHostname == 'localhost' ? 9000 : 80),
