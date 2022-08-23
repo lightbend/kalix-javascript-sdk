@@ -273,6 +273,8 @@ export interface PreStartSettings {
 
 /**
  * Settings for the gRPC channel used to communicate with the Kalix proxy
+ *
+ * @public
  */
 export interface ChannelSettings {
   /**
