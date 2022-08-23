@@ -148,7 +148,7 @@ object SourceGenerator extends PrettyPrinter {
    * Relative paths in the generated .ts or .js are used by node.js and not by the underlying file system. Therefore,
    * the path separator needs to be changed to a Unix path on Windows.
    */
-  private def useUnixSeparator(path: String): String = s"""$path""".replace("\\", "/")
+  private def useUnixSeparator(path: String): String = path.replace("\\", "/")
 
   private[codegen] def indexSource(
       sourceDirectory: Path,
