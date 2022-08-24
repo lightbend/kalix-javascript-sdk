@@ -144,14 +144,21 @@ object SourceGenerator extends PrettyPrinter {
     if (lastDotIndex >= 0) name.substring(0, lastDotIndex) else name
   }
 
+  /**
+   * Relative paths in the generated .ts or .js are used by node.js and not by the underlying file system. Therefore,
+   * the path separator needs to be changed to a Unix path on Windows.
+   */
+  private def useUnixSeparator(path: String): String = path.replace("\\", "/")
+
   private[codegen] def indexSource(
       sourceDirectory: Path,
       generatedComponentIndexPath: Path,
       typescript: Boolean): Document = {
     val generatedComponentIndexFilename =
-      sourceDirectory.toAbsolutePath
-        .relativize(generatedComponentIndexPath.toAbsolutePath)
-        .toString
+      useUnixSeparator(
+        sourceDirectory.toAbsolutePath
+          .relativize(generatedComponentIndexPath.toAbsolutePath)
+          .toString)
 
     val generatedComponentArray = "generatedComponents"
     val generatedComponentIndex =
@@ -178,35 +185,39 @@ object SourceGenerator extends PrettyPrinter {
       sourceDirectory: Path,
       typescript: Boolean): Document = {
     val fileExtension = if (typescript) "" else ".js"
+
     val components = model.services.values.flatMap {
       case ModelBuilder.EntityService(_, _, componentFullName) =>
         model.entities.get(componentFullName).map { entity: ModelBuilder.Entity =>
           val entityName = entity.fqn.name.toLowerCase
           (
             entityName,
-            generatedSourceDirectory.toAbsolutePath
-              .relativize(sourceDirectory.toAbsolutePath)
-              .resolve(entityName + fileExtension)
-              .toString)
+            useUnixSeparator(
+              generatedSourceDirectory.toAbsolutePath
+                .relativize(sourceDirectory.toAbsolutePath)
+                .resolve(entityName + fileExtension)
+                .toString))
         }
       case ModelBuilder.ViewService(fqn, _, _, transformedUpdates, _) if transformedUpdates.nonEmpty =>
         val serviceName = fqn.name.toLowerCase
         Some(
           (
             serviceName,
-            generatedSourceDirectory.toAbsolutePath
-              .relativize(sourceDirectory.toAbsolutePath)
-              .resolve(serviceName + fileExtension)
-              .toString))
+            useUnixSeparator(
+              generatedSourceDirectory.toAbsolutePath
+                .relativize(sourceDirectory.toAbsolutePath)
+                .resolve(serviceName + fileExtension)
+                .toString)))
       case ModelBuilder.ActionService(fqn, _, _) =>
         val serviceName = fqn.name.toLowerCase
         Some(
           (
             serviceName,
-            generatedSourceDirectory.toAbsolutePath
-              .relativize(sourceDirectory.toAbsolutePath)
-              .resolve(serviceName + fileExtension)
-              .toString))
+            useUnixSeparator(
+              generatedSourceDirectory.toAbsolutePath
+                .relativize(sourceDirectory.toAbsolutePath)
+                .resolve(serviceName + fileExtension)
+                .toString)))
       case _ => None
     }
     pretty(
