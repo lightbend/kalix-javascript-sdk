@@ -8,7 +8,7 @@ You can see the proxy version on prod [on grafana](https://lightbendcloud.grafan
 
 ### Cutting the release
 
-- [ ] Edit the [draft release notes](https://github.com/lightbend/kalix-javascript-sdk/releases) and create the appropriate tag
+- [ ] Edit the [draft release notes](https://github.com/lightbend/kalix-javascript-sdk/releases) and publish with the appropriate tag.
     - CircleCI will automatically publish the [@kalix-io/kalix-javascript-sdk package](https://www.npmjs.com/package/@kalix-io/kalix-javascript-sdk) to the npm registry based on the tag
     - CI will update the docs/kalix-current branch
 
@@ -21,7 +21,7 @@ You can see the proxy version on prod [on grafana](https://lightbendcloud.grafan
 
 - [ ] If relevant, update the [supported version in the main docs](https://github.com/lightbend/kalix-docs/blob/main/docs/modules/ROOT/partials/include.adoc#L20) (affects [Supported Versions](https://docs.kalix.io/setting-up/index.html#_supported_languages))
 - [ ] Add an item to the [Release Notes](https://github.com/lightbend/kalix-docs/blob/main/docs/modules/release-notes/pages/index.adoc) in the documentation
-- [ ] Release the Kalix documentation to get the SDK docs updates published
+- [ ] [Release](https://github.com/lightbend/kalix-docs/blob/main/RELEASING.md#general--sdk-docs) the Kalix documentation to get the SDK docs updates published. After running the commands in the previous link the release is [automated](https://github.com/lightbend/kalix-docs/blob/main/RELEASING.md#automated-releasing). 
 
 ### Update to the latest version
 
