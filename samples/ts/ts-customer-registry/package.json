@@ -24,10 +24,10 @@
   "//": "https://npm.community/t/npm-install-does-not-install-transitive-dependencies-of-local-dependency/2264",
   "main": "dist/index.js",
   "dependencies": {
-    "@kalix-io/kalix-javascript-sdk": "1.0.2"
+    "@kalix-io/kalix-javascript-sdk": "1.0.3"
   },
   "devDependencies": {
-    "@kalix-io/testkit": "1.0.2",
+    "@kalix-io/testkit": "1.0.3",
     "@types/chai": "^4.3.1",
     "@types/mocha": "^9.1.1",
     "@types/node": "18.0.0",
