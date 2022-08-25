@@ -29,7 +29,7 @@ include::example$valueentity-counter/proto/counter_domain.proto[]
 
 <1> Any classes generated from this protobuf file will be nested in the package heirarchy of: `com.example.domain`.
 <2> Import the Kalix protobuf annotations, or options.
-<3> The protobuf option `(kalix.file).value_entity` is specific to code-generation as provided by the Kalix plugin.
+<3> The protobuf option `(kalix.codegen).value_entity` is specific to code-generation as provided by the Kalix plugin.
 <4> `name` denotes the base name for the Value entity, the code-generation will create initial sources `CounterImpl`, `CounterTest` and `CounterIntegrationTest`. Once these files exist, they are not overwritten, so you can freely add logic to them.
 <5> `enity_type` is a unique identifier of the "state storage". The entity name may be changed even after data has been created, the `entity_type` can't. This value shows in the `@ValueEnity` annotation of your entity implementation.
 <6> `state` points to the protobuf message representing the Value entity's state which is kept by Kalix
