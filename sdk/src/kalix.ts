@@ -66,6 +66,11 @@ export interface KalixOptions {
    * Delay completing discovery until proxyPort has been set by the testkit.
    */
   delayDiscoveryUntilProxyPortSet?: boolean;
+
+  /**
+   * Channel settings.
+   */
+  channelSettings?: ChannelSettings;
 }
 
 /** @internal */
@@ -267,6 +272,22 @@ export interface PreStartSettings {
 }
 
 /**
+ * Settings for the gRPC channel used to communicate with the Kalix proxy
+ *
+ * @public
+ */
+export interface ChannelSettings {
+  /**
+   * The maximum number of bytes a gRPC message may be when receiving
+   */
+  maxReceiveMessageLength?: number;
+  /**
+   * The maximum number of bytes a gRPC message may be when sending
+   */
+  maxSendMessageLength?: number;
+}
+
+/**
  * Kalix Entity.
  *
  * @public
@@ -430,7 +451,9 @@ export class Kalix {
       );
     }
 
-    this.server = new grpc.Server();
+    this.server = new grpc.Server(
+      this.channelSettingsToGrpcChannelOptions(options?.channelSettings),
+    );
   }
 
   /**
@@ -781,6 +804,21 @@ export class Kalix {
 
     this.discoveryCompleted = true;
     return spec;
+  }
+
+  private channelSettingsToGrpcChannelOptions(
+    settings?: ChannelSettings,
+  ): grpc.ChannelOptions {
+    const opts = {
+      'grpc.max_receive_message_length': settings?.maxReceiveMessageLength,
+      'grpc.max_send_message_length': settings?.maxSendMessageLength,
+    };
+    if (!opts['grpc.max_receive_message_length']) {
+      // Default to 12 mb
+      opts['grpc.max_receive_message_length'] = 12 * 1024 * 1024;
+    }
+
+    return opts;
   }
 
   private proxyTerminatedLogic() {

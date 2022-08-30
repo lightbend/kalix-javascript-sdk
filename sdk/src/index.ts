@@ -25,6 +25,7 @@ export {
   ReplicatedWriteConsistency,
   ServiceBinding,
   PreStartSettings,
+  ChannelSettings,
 } from './kalix';
 
 export { Action } from './action';
