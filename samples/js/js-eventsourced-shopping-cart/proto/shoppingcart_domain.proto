@@ -23,7 +23,7 @@ import "kalix/annotations.proto";
 // end::declarations[]
 // tag::proto_state[]
 // Describes how this domain relates to an event sourced entity
-option (kalix.file).event_sourced_entity = {
+option (kalix.codegen).event_sourced_entity = {
   name: "ShoppingCart"
   entity_type: "eventsourced-shopping-cart"
   state: "Cart"

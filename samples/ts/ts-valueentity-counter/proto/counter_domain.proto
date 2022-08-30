@@ -4,7 +4,7 @@ package com.example.domain; // <1>
 
 import "kalix/annotations.proto"; // <2>
 
-option (kalix.file).value_entity = { // <3>
+option (kalix.codegen).value_entity = { // <3>
     name: "Counter" // <4>
     entity_type: "counter" // <5>
     state: "CounterState" // <6>
