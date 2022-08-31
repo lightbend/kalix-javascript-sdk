@@ -22,10 +22,10 @@
     "directory": "samples/js/js-customer-registry"
   },
   "dependencies": {
-    "@kalix-io/kalix-javascript-sdk": "1.0.2"
+    "@kalix-io/kalix-javascript-sdk": "1.0.3"
   },
   "devDependencies": {
-    "@kalix-io/testkit": "1.0.2",
+    "@kalix-io/testkit": "1.0.3",
     "chai": "4.3.6",
     "mocha": "^10.0.0"
   },
