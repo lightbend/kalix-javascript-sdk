@@ -53,6 +53,18 @@ message GetShoppingCart {
 // end::messages2[]
 // tag::service[]
 service ShoppingCartService {
+// end::service[]
+  // tag::proto_state[]
+  // This entity is related to the domain by `state` and `events`
+  option (kalix.codegen).event_sourced_entity = {
+    name: "ShoppingCart"
+    entity_type: "eventsourced-shopping-cart"
+    state: "Cart"
+    events: "ItemAdded"
+    events: "ItemRemoved"
+  };
+  // end::proto_state[]
+// tag::service[]
   option (kalix.service) = {
     type: SERVICE_TYPE_ENTITY
     component: ".domain.ShoppingCart"
