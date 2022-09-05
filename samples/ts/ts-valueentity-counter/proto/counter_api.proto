@@ -7,15 +7,8 @@ import "google/api/annotations.proto";// <2>
 
 package com.example; // <3>
 
-
-option (kalix.file).value_entity = { // <4>
-    name: "Counter" // <5>
-    entity_type: "counter" // <6>
-    state: "CounterState" // <7>
-};
-
-message IncreaseValue { // <8>
-    string counter_id = 1 [(kalix.field).entity_key = true]; // <9>
+message IncreaseValue { // <4>
+    string counter_id = 1 [(kalix.field).entity_key = true]; // <5>
     int32 value = 2;
 }
 
@@ -32,14 +25,19 @@ message GetCounter {
     string counter_id = 1 [(kalix.field).entity_key = true];
 }
 
-message CurrentCounter { // <10>
+message CurrentCounter { // <6>
     int32 value = 1;
 }
 
-service CounterService { // <11>
+service CounterService { // <7>
+    option (kalix.codegen).value_entity = { // <8>
+        name: "Counter" // <9>
+        entity_type: "counter" // <10>
+        state: ".domain.CounterState" // <11>
+    };
     option (kalix.service) = { // <12>
         type : SERVICE_TYPE_ENTITY
-        component : ".domain.Counter"
+        component : "Counter"
     };
 
     rpc Increase(IncreaseValue) returns (google.protobuf.Empty);
