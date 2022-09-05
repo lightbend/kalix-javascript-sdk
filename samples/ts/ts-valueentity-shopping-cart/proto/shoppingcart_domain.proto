@@ -20,19 +20,6 @@ syntax = "proto3";
 
 package com.example.shoppingcart.domain;
 
-// tag::proto_imports[]
-import "kalix/annotations.proto";
-// end::proto_imports[]
-
-// tag::proto_state[]
-// Describes how this domain relates to a value entity
-option (kalix.codegen).value_entity = {
-  name: "ShoppingCart"
-  entity_type: "shopping-cart"
-  state: "Cart"
-};
-// end::proto_state[]
-
 // tag::proto_messages[]
 message LineItem {
   string productId = 1;

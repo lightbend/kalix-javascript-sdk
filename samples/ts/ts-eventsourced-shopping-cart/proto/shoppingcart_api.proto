@@ -22,6 +22,17 @@ import "google/api/annotations.proto";
 import "google/protobuf/empty.proto";
 import "kalix/annotations.proto";
 
+// tag::proto_state[]
+// Describes how this domain relates to an event sourced entity
+option (kalix.codegen).event_sourced_entity = {
+  name: "ShoppingCart"
+  entity_type: "eventsourced-shopping-cart"
+  state: "Cart"
+  events: "ItemAdded"
+  events: "ItemRemoved"
+};
+// end::proto_state[]
+
 message AddLineItem {
   string cart_id = 1 [(kalix.field).entity_key = true];
   string product_id = 2;

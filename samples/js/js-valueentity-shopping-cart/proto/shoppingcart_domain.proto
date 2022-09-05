@@ -20,9 +20,6 @@ syntax = "proto3";
 
 package com.example.shoppingcart.domain;
 
-// tag::proto_imports[]
-import "kalix/annotations.proto";
-// end::proto_imports[]
 // tag::proto_messages[]
 message LineItem {
   string productId = 1;

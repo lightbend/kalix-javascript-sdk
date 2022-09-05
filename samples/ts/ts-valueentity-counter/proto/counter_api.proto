@@ -3,12 +3,19 @@ syntax = "proto3";
 
 import "google/protobuf/empty.proto";
 import "kalix/annotations.proto"; // <1>
-import "google/api/annotations.proto";
+import "google/api/annotations.proto";// <2>
 
-package com.example; // <2>
+package com.example; // <3>
 
-message IncreaseValue { // <3>
-    string counter_id = 1 [(kalix.field).entity_key = true]; // <4>
+
+option (kalix.file).value_entity = { // <4>
+    name: "Counter" // <5>
+    entity_type: "counter" // <6>
+    state: "CounterState" // <7>
+};
+
+message IncreaseValue { // <8>
+    string counter_id = 1 [(kalix.field).entity_key = true]; // <9>
     int32 value = 2;
 }
 
@@ -25,12 +32,12 @@ message GetCounter {
     string counter_id = 1 [(kalix.field).entity_key = true];
 }
 
-message CurrentCounter { // <5>
+message CurrentCounter { // <10>
     int32 value = 1;
 }
 
-service CounterService { // <6>
-    option (kalix.service) = { // <7>
+service CounterService { // <11>
+    option (kalix.service) = { // <12>
         type : SERVICE_TYPE_ENTITY
         component : ".domain.Counter"
     };
