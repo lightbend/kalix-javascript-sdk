@@ -3,6 +3,7 @@
     "outDir": "./dist",
     "strict": true,
     "strictFunctionTypes": true,
+    "skipLibCheck": true, //TODO consider https://classic.yarnpkg.com/en/docs/selective-version-resolutions/
     "target": "es6",
     "module": "commonJS"
   },
