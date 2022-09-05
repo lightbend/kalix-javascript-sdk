@@ -7,14 +7,8 @@ import "google/api/annotations.proto";
 
 package com.example; // <2>
 
-option (kalix.codegen).value_entity = { // <3>
-  name: "Counter" // <4>
-  entity_type: "counter" // <5>
-  state: ".domain.CounterState" // <6>
-};
-
-message IncreaseValue { // <7>
-  string counter_id = 1 [(kalix.field).entity_key = true]; // <8>
+message IncreaseValue { // <3>
+  string counter_id = 1 [(kalix.field).entity_key = true]; // <4>
   int32 value = 2;
 }
 
@@ -31,11 +25,16 @@ message GetCounter {
   string counter_id = 1 [(kalix.field).entity_key = true];
 }
 
-message CurrentCounter { // <9>
+message CurrentCounter { // <5>
   int32 value = 1;
 }
 
-service CounterService { // <10>
+service CounterService { // <6>
+  option (kalix.codegen).value_entity = { // <7>
+    name: "Counter" // <8>
+    entity_type: "counter" // <9>
+    state: ".domain.CounterState" // <10>
+  };
   option (kalix.service) = { // <11>
     type : SERVICE_TYPE_ENTITY
     component : ".domain.Counter"
