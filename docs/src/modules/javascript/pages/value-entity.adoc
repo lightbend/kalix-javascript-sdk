@@ -47,7 +47,6 @@ include::example$valueentity-counter/proto/counter_api.proto[]
 <8> `name` denotes the base name for the Value entity, the code-generation will create initial sources `CounterImpl`, `CounterTest` and `CounterIntegrationTest`. Once these files exist, they are not overwritten, so you can freely add logic to them.
 <9> `entity_type` is a unique identifier of the "state storage". The entity name may be changed even after data has been created, the `entity_type` can't. This value shows in the `@ValueEnity` annotation of your entity implementation.
 <10> `state` points to the protobuf message representing the Value entity's state which is kept by Kalix
-<11> The protobuf option `(kalix.service)` is specific to code-generation as provided by Kalix and points to the protobuf definition `Counter` shown above (in `com.example.domain`).
 
 == Creating an Entity
 
