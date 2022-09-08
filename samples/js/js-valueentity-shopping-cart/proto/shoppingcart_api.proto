@@ -70,10 +70,6 @@ service ShoppingCartService {
     state: "Cart"
   };
 // end::proto_state[]
-  option (kalix.service) = {
-    type: SERVICE_TYPE_ENTITY
-    component: ".domain.ShoppingCart"
-  };
 
   rpc AddItem (AddLineItem) returns (google.protobuf.Empty) {
     option (google.api.http) = { // <1>

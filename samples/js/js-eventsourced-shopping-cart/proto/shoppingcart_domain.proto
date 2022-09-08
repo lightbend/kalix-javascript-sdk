@@ -19,7 +19,6 @@ syntax = "proto3";
 
 package com.example.shoppingcart.domain;
 
-import "kalix/annotations.proto";
 // end::declarations[]
 // tag::events[]
 // The item added event.

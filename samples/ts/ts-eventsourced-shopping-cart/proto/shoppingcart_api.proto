@@ -57,14 +57,10 @@ service ShoppingCartService {
     name: "ShoppingCart"
     entity_type: "eventsourced-shopping-cart"
     state: "Cart"
-    events: ".domain.ItemAdded"
-    events: ".domain.ItemRemoved"
+    events: "com.example.shoppingcart.domain.ItemAdded"
+    events: "com.example.shoppingcart.domain.ItemRemoved"
   };
 // end::proto_state[]
-  option (kalix.service) = {
-    type: SERVICE_TYPE_ENTITY
-    component: ".domain.ShoppingCart"
-  };
 
   rpc AddItem(AddLineItem) returns (google.protobuf.Empty) {
     option (google.api.http) = {

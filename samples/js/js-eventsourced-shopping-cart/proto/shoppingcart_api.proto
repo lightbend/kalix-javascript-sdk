@@ -60,8 +60,8 @@ option (kalix.codegen).event_sourced_entity = {
     name: "ShoppingCart"
     entity_type: "eventsourced-shopping-cart"
     state: "Cart"
-    events: ".domain.ItemAdded"
-    events: ".domain.ItemRemoved"
+    events: "com.example.shoppingcart.domain.ItemAdded"
+    events: "com.example.shoppingcart.domain.ItemRemoved"
 };
   // end::proto_state[]
 

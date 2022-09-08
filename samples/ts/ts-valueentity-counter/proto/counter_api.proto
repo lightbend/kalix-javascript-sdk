@@ -33,11 +33,7 @@ service CounterService { // <7>
     option (kalix.codegen).value_entity = { // <8>
         name: "Counter" // <9>
         entity_type: "counter" // <10>
-        state: ".domain.CounterState" // <11>
-    };
-    option (kalix.service) = { // <12>
-        type : SERVICE_TYPE_ENTITY
-        component : "Counter"
+        state: "com.example.domain.CounterState" // <11>
     };
 
     rpc Increase(IncreaseValue) returns (google.protobuf.Empty);
