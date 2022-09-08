@@ -2,17 +2,6 @@ syntax = "proto3";
 
 package com.example.domain;
 
-import "kalix/annotations.proto";
-
-option (kalix.file).event_sourced_entity = {
-  name: "Counter"
-  entity_type: "counter"
-  state: "CounterState"
-  events: "ValueIncreased"
-  events: "ValueDecreased"
-  events: "ValueReset"
-};
-
 message CounterState {
   int32 value = 1;
 }

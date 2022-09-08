@@ -53,10 +53,17 @@ message GetShoppingCart {
 // end::messages2[]
 // tag::service[]
 service ShoppingCartService {
-  option (kalix.service) = {
-    type: SERVICE_TYPE_ENTITY
-    component: ".domain.ShoppingCart"
-  };
+// end::service[]
+// tag::proto_state[]
+  // This entity is related to the domain by `state` and `events`
+option (kalix.codegen).event_sourced_entity = {
+    name: "ShoppingCart"
+    entity_type: "eventsourced-shopping-cart"
+    state: "Cart"
+    events: "com.example.shoppingcart.domain.ItemAdded"
+    events: "com.example.shoppingcart.domain.ItemRemoved"
+};
+  // end::proto_state[]
 
   rpc AddItem(AddLineItem) returns (google.protobuf.Empty) {
     option (google.api.http) = {

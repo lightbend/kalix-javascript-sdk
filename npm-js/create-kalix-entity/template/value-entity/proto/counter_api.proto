@@ -30,10 +30,11 @@ message CurrentCounter {
 }
 
 service CounterService {
-  option (kalix.service) = {
-    type : SERVICE_TYPE_ENTITY
-    component : ".domain.Counter"
-  };
+  option (kalix.codegen).value_entity = {
+  name: "Counter"
+  entity_type: "counter"
+  state: ".domain.CounterState"
+};
 
   rpc Increase(IncreaseValue) returns (google.protobuf.Empty);
   rpc Decrease(DecreaseValue) returns (google.protobuf.Empty);

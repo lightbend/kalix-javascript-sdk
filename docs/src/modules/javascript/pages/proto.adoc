@@ -13,7 +13,7 @@ Event Sourced Entity::
 --
 [source, proto]
 ----
-include::example$js-eventsourced-shopping-cart/proto/shoppingcart_domain.proto[tag=proto_state]
+include::example$js-eventsourced-shopping-cart/proto/shoppingcart_api.proto[tag=proto_state]
 ----
 --
 Value Entity::
@@ -21,7 +21,7 @@ Value Entity::
 --
 [source, proto]
 ----
-include::example$js-valueentity-shopping-cart/proto/shoppingcart_domain.proto[tag=proto_state]
+include::example$js-valueentity-shopping-cart/proto/shoppingcart_api.proto[tag=proto_state]
 ----
 --
 
@@ -93,7 +93,7 @@ It will often be necessary to access the generated entity key from inside the en
 
 === Service
 
-This section of the `.proto` file declares the API of the service itself, along with each function or method and their parameters and return types. When a command is received for a given Entity key, Kalix will establish a gRPC streamed call to the service implementation using that Entity's type's protocol--if one isn't already established. Any commands received for the Entity key will be sent through that call.
+This section of the `.proto` file declares the entity and the API of the service itself, along with each function or method and their parameters and return types. When a command is received for a given Entity key, Kalix will establish a gRPC streamed call to the service implementation using that Entity's type's protocol--if one isn't already established. Any commands received for the Entity key will be sent through that call.
 
 The `AddItem` and `RemoveItem` methods have no return value (the `Empty` type).
 
@@ -118,23 +118,7 @@ The `shoppingcart_domain.proto` file specifies the state and messages for an Eve
 include::example$js-valueentity-shopping-cart/proto/shoppingcart_domain.proto[tag=proto_syntax]
 ----
 
-It only needs to include the import for `kalix/annotations.proto`:
-
-.proto/shoppingcart_domain.proto
-[source,proto]
-----
-include::example$js-valueentity-shopping-cart/proto/shoppingcart_domain.proto[tag=proto_imports]
-----
-
-The following defines the `ShoppingCart` Entity state:
-
-.proto/shoppingcart_domain.proto
-[source,proto]
-----
-include::example$js-valueentity-shopping-cart/proto/shoppingcart_domain.proto[tag=proto_state]
-----
-
-It includes the messages that define the entity state:
+The following defines the messages that define the entity state:
 
 .proto/shoppingcart_domain.proto
 [source,proto]
