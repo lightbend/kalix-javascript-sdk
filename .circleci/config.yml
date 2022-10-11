@@ -113,12 +113,12 @@ commands:
 
   restore_deps_cache:
     description: "Restore sbt caches"
-    - restore_cache:
-        # https://circleci.com/docs/caching#restoring-cache
-        keys:
-          # new cache if sbt version changed
-          - sbt-cache-v3-{{ checksum "codegen/project/build.properties" }}-
     steps:
+      - restore_cache:
+          # https://circleci.com/docs/caching#restoring-cache
+          keys:
+            # new cache if sbt version changed
+            - sbt-cache-v3-{{ checksum "codegen/project/build.properties" }}-
       - restore_cache:
           key: sbt-dependencies-v1-{{ checksum "codegen/build.sbt" }}-
 
