@@ -1,12 +1,8 @@
-// *****************************************************************************
-// Projects
-// *****************************************************************************
-
 lazy val `kalix-codegen` =
   project
     .in(file("."))
     .enablePlugins(AutomateHeaderPlugin)
-    .settings(commonSettings ++ Seq(skip in publish := true))
+    .settings(commonSettings ++ Seq(publish / skip := true))
     .aggregate(`kalix-codegen-core`, `kalix-codegen-js`, `kalix-codegen-js-cli`)
 
 lazy val `kalix-codegen-core` =
@@ -48,7 +44,7 @@ lazy val `kalix-codegen-js-cli` =
     .settings(
       buildInfoKeys := Seq[BuildInfoKey](version),
       buildInfoPackage := "io.kalix.codegen.js",
-      name in NativeImage := "kalix-codegen-js",
+      NativeImage / name := "kalix-codegen-js",
       nativeImageVersion := "22.1.0",
       /**
        * Due to limitations of the Windows command prompt/PowerShell, with a the native-image command fails with a long
@@ -57,7 +53,7 @@ lazy val `kalix-codegen-js-cli` =
        *
        * This has been raised as an issue against the plugin: https://github.com/scalameta/sbt-native-image/issues/26
        */
-      fullClasspath in Compile := Seq(Attributed(assembly.value)(AttributeMap.empty)),
+      Compile / fullClasspath := Seq(Attributed(assembly.value)(AttributeMap.empty)),
       cachedNativeImage := Def.taskDyn {
         import sbt.util.CacheImplicits._
 
@@ -79,10 +75,10 @@ lazy val `kalix-codegen-js-cli` =
       nativeImageAgentMerge := true,
       nativeImageOptions ++= Seq(
         "--no-fallback",
-        "-H:JNIConfigurationFiles=" + (resourceDirectory in Compile).value / "jni-config.json",
-        "-H:DynamicProxyConfigurationFiles=" + (resourceDirectory in Compile).value / "proxy-config.json",
-        "-H:ReflectionConfigurationFiles=" + (resourceDirectory in Compile).value / "reflect-config.json",
-        "-H:ResourceConfigurationFiles=" + (resourceDirectory in Compile).value / "resource-config.json"),
+        "-H:JNIConfigurationFiles=" + (Compile / resourceDirectory).value / "jni-config.json",
+        "-H:DynamicProxyConfigurationFiles=" + (Compile / resourceDirectory).value / "proxy-config.json",
+        "-H:ReflectionConfigurationFiles=" + (Compile / resourceDirectory).value / "reflect-config.json",
+        "-H:ResourceConfigurationFiles=" + (Compile / resourceDirectory).value / "resource-config.json"),
       libraryDependencies ++= Seq(
         library.scopt,
         library.munit % "it,test",
@@ -91,8 +87,8 @@ lazy val `kalix-codegen-js-cli` =
         library.requests % "it",
         library.testcontainers % "it",
         library.typesafeConfig % "it"),
-      testOptions in IntegrationTest += Tests.Argument(s"-Djs-codegen-cli.native-image=${cachedNativeImage.value}"),
-      skip in publish := true)
+      IntegrationTest / testOptions += Tests.Argument(s"-Djs-codegen-cli.native-image=${cachedNativeImage.value}"),
+      publish / skip := true)
     .dependsOn(`kalix-codegen-js`)
 
 // *****************************************************************************
@@ -155,7 +151,7 @@ lazy val commonSettings =
       sys.env.getOrElse("CLOUDSMITH_USER", ""),
       sys.env.getOrElse("CLOUDSMITH_PASS", "")),
     // Assembly
-    assemblyMergeStrategy in assembly := {
+    assembly / assemblyMergeStrategy := {
       case s if s.endsWith(".proto") =>
         MergeStrategy.first
       case "module-info.class" => MergeStrategy.discard
