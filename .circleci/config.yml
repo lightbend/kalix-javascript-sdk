@@ -54,7 +54,7 @@ commands:
     parameters:
       version:
         type: string
-        default: "1.4.9"
+        default: "1.7.2"
     steps:
       - install-java-11
       - run:
@@ -84,7 +84,7 @@ commands:
     parameters:
       version:
         type: string
-        default: "1.4.9"
+        default: "1.7.2"
     steps:
       - install-java-11-win
       - run:
@@ -99,20 +99,28 @@ commands:
           curl -H 'Cache-Control: no-cache' https://raw.githubusercontent.com/fossas/fossa-cli/master/install-latest.sh | bash
 
   save_deps_cache:
-    description: "Save dependency cache"
+    description: "Save sbt caches"
     steps:
       - save_cache:
-          key: deps-cache-01
+          key: sbt-cache-v3-{{ checksum "codegen/project/build.properties" }}-
+          paths:
+            - "~/.sbt"
+      - save_cache:
+          key: sbt-dependencies-v1-{{ checksum "codegen/build.sbt" }}-
           paths:
             - "~/.ivy2/cache"
-            - "~/.sbt"
             - "~/.cache/coursier"
 
   restore_deps_cache:
-    description: "Restore dependency cache"
+    description: "Restore sbt caches"
     steps:
       - restore_cache:
-          key: deps-cache-01
+          # https://circleci.com/docs/caching#restoring-cache
+          keys:
+            # new cache if sbt version changed
+            - sbt-cache-v3-{{ checksum "codegen/project/build.properties" }}-
+      - restore_cache:
+          key: sbt-dependencies-v1-{{ checksum "codegen/build.sbt" }}-
 
   publish_to_cloudsmith:
     parameters:
