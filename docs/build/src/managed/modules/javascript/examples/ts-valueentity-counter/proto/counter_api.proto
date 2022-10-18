@@ -3,12 +3,12 @@ syntax = "proto3";
 
 import "google/protobuf/empty.proto";
 import "kalix/annotations.proto"; // <1>
-import "google/api/annotations.proto";
+import "google/api/annotations.proto";// <2>
 
-package com.example; // <2>
+package com.example; // <3>
 
-message IncreaseValue { // <3>
-    string counter_id = 1 [(kalix.field).entity_key = true]; // <4>
+message IncreaseValue { // <4>
+    string counter_id = 1 [(kalix.field).entity_key = true]; // <5>
     int32 value = 2;
 }
 
@@ -25,14 +25,15 @@ message GetCounter {
     string counter_id = 1 [(kalix.field).entity_key = true];
 }
 
-message CurrentCounter { // <5>
+message CurrentCounter { // <6>
     int32 value = 1;
 }
 
-service CounterService { // <6>
-    option (kalix.service) = { // <7>
-        type : SERVICE_TYPE_ENTITY
-        component : ".domain.Counter"
+service CounterService { // <7>
+    option (kalix.codegen).value_entity = { // <8>
+        name: "Counter" // <9>
+        entity_type: "counter" // <10>
+        state: "com.example.domain.CounterState" // <11>
     };
 
     rpc Increase(IncreaseValue) returns (google.protobuf.Empty);

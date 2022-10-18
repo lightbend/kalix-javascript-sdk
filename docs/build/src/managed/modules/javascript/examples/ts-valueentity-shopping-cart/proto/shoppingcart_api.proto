@@ -62,10 +62,14 @@ message Cart {
 
 // tag::proto_service[]
 service ShoppingCartService {
-  option (kalix.service) = {
-    type: SERVICE_TYPE_ENTITY
-    component: ".domain.ShoppingCart"
+// tag::proto_state[]
+  // Describes how this domain relates to a value entity
+  option (kalix.codegen).value_entity = {
+    name: "ShoppingCart"
+    entity_type: "shopping-cart"
+    state: "Cart"
   };
+// end::proto_state[]
 
   rpc AddItem (AddLineItem) returns (google.protobuf.Empty) {
     option (google.api.http) = { // <1>

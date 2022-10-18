@@ -22,6 +22,8 @@ import "google/api/annotations.proto";
 import "google/protobuf/empty.proto";
 import "kalix/annotations.proto";
 
+
+
 message AddLineItem {
   string cart_id = 1 [(kalix.field).entity_key = true];
   string product_id = 2;
@@ -49,10 +51,16 @@ message Cart {
 }
 
 service ShoppingCartService {
-  option (kalix.service) = {
-    type: SERVICE_TYPE_ENTITY
-    component: ".domain.ShoppingCart"
+// tag::proto_state[]
+  // Describes how this domain relates to an event sourced entity
+  option (kalix.codegen).event_sourced_entity = {
+    name: "ShoppingCart"
+    entity_type: "eventsourced-shopping-cart"
+    state: "Cart"
+    events: "com.example.shoppingcart.domain.ItemAdded"
+    events: "com.example.shoppingcart.domain.ItemRemoved"
   };
+// end::proto_state[]
 
   rpc AddItem(AddLineItem) returns (google.protobuf.Empty) {
     option (google.api.http) = {
