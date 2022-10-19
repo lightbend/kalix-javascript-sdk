@@ -7,11 +7,11 @@
     "npm": ">=6.0.0"
   },
   "dependencies": {
-    "@kalix-io/kalix-javascript-sdk": "1.0.3"
+    "@kalix-io/kalix-javascript-sdk": "1.0.4"
   },
   "devDependencies": {
-    "@kalix-io/kalix-scripts": "1.0.3",
-    "@kalix-io/testkit": "1.0.3",
+    "@kalix-io/kalix-scripts": "1.0.4",
+    "@kalix-io/testkit": "1.0.4",
     "chai": "^4.3.6",
     "jsdoc": "^3.6.10",
     "mocha": "^10.0.0",
