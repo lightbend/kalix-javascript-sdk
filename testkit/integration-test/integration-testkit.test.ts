@@ -29,7 +29,7 @@ type Out = proto.com.example.IOut;
 
 const testkit = new IntegrationTestkit({
   descriptorSetPath: 'example/generated/user-function.desc',
-  aclCheckingEnabled: false,
+  aclCheckingEnabled: true,
 });
 
 testkit.addComponent(action);
