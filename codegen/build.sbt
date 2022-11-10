@@ -131,7 +131,7 @@ lazy val library =
 
 lazy val commonSettings =
   Seq(
-    scalaVersion := "2.13.4",
+    scalaVersion := "2.13.10",
     organization := "io.kalix",
     organizationName := "Lightbend Inc",
     startYear := Some(2021),
