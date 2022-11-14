@@ -137,6 +137,7 @@ commands:
             -u "${CLOUDSMITH_API_USERNAME}:${CLOUDSMITH_API_PASSWORD}" \
             https://upload.cloudsmith.io/lightbend/kalix/<<parameters.fileName>> | jq -r '.identifier')
           curl -X POST -H "Content-Type: application/json" \
+            --fail-with-body \
             -u "${CLOUDSMITH_API_USERNAME}:${CLOUDSMITH_API_PASSWORD}" \
             -d "{\"package_file\": \"$id\", \"version\": \"<<parameters.version>>\"}" \
             https://api-prd.cloudsmith.io/v1/packages/lightbend/kalix/upload/raw/
@@ -159,6 +160,7 @@ commands:
               -u "${CLOUDSMITH_API_USERNAME}:${CLOUDSMITH_API_PASSWORD}" \
               https://upload.cloudsmith.io/lightbend/kalix/<<parameters.fileName>> | jq -r '.identifier')
             curl -X POST -H "Content-Type: application/json" \
+              --fail-with-body \
               -u "${CLOUDSMITH_API_USERNAME}:${CLOUDSMITH_API_PASSWORD}" \
               -d "{\"package_file\": \"$id\", \"version\": \"<<parameters.version>>\"}" \
               https://api-prd.cloudsmith.io/v1/packages/lightbend/kalix/upload/raw/
