@@ -137,6 +137,7 @@ commands:
             -u "${CLOUDSMITH_API_USERNAME}:${CLOUDSMITH_API_PASSWORD}" \
             https://upload.cloudsmith.io/lightbend/kalix/<<parameters.fileName>> | jq -r '.identifier')
           curl -X POST -H "Content-Type: application/json" \
+            --fail-with-body \
             -u "${CLOUDSMITH_API_USERNAME}:${CLOUDSMITH_API_PASSWORD}" \
             -d "{\"package_file\": \"$id\", \"version\": \"<<parameters.version>>\"}" \
             https://api-prd.cloudsmith.io/v1/packages/lightbend/kalix/upload/raw/
@@ -159,6 +160,7 @@ commands:
               -u "${CLOUDSMITH_API_USERNAME}:${CLOUDSMITH_API_PASSWORD}" \
               https://upload.cloudsmith.io/lightbend/kalix/<<parameters.fileName>> | jq -r '.identifier')
             curl -X POST -H "Content-Type: application/json" \
+              --fail-with-body \
               -u "${CLOUDSMITH_API_USERNAME}:${CLOUDSMITH_API_PASSWORD}" \
               -d "{\"package_file\": \"$id\", \"version\": \"<<parameters.version>>\"}" \
               https://api-prd.cloudsmith.io/v1/packages/lightbend/kalix/upload/raw/
@@ -193,7 +195,7 @@ jobs:
 
   tests:
     machine:
-      image: ubuntu-2004:2022.07.1
+      image: ubuntu-2204:2022.10.2
     description: "tests"
     steps:
       - checkout-and-merge-to-main
@@ -408,7 +410,7 @@ jobs:
 
   integration-tests:
     machine:
-      image: ubuntu-2004:2022.07.1
+      image: ubuntu-2204:2022.10.2
     description: "integration tests"
     steps:
       - checkout-and-merge-to-main
@@ -676,7 +678,7 @@ jobs:
 
   tck-tests:
     machine:
-      image: ubuntu-2004:2022.07.1
+      image: ubuntu-2204:2022.10.2
     description: "TCK tests"
     steps:
       - checkout-and-merge-to-main
@@ -689,7 +691,7 @@ jobs:
 
   validate-docs:
     machine:
-      image: ubuntu-2004:2022.07.1
+      image: ubuntu-2204:2022.10.2
     description: "validate docs"
     steps:
       - checkout-and-merge-to-main
@@ -732,7 +734,7 @@ jobs:
 
   publish-tck:
     machine:
-      image: ubuntu-2004:2022.07.1
+      image: ubuntu-2204:2022.10.2
     description: "publish TCK"
     steps:
       - checkout
@@ -745,7 +747,7 @@ jobs:
 
   publish-docs:
     machine:
-      image: ubuntu-2004:2022.07.1
+      image: ubuntu-2204:2022.10.2
     description: "publish docs"
     steps:
       - checkout
@@ -850,7 +852,7 @@ jobs:
 
   e2e-tests:
     machine:
-      image: ubuntu-2004:2022.07.1
+      image: ubuntu-2204:2022.10.2
     description: "e2e-tests"
     steps:
       - checkout-and-merge-to-main
@@ -933,7 +935,7 @@ jobs:
 
   publish_native_linux:
     machine:
-      image: ubuntu-2004:2022.07.1
+      image: ubuntu-2204:2022.10.2
     description: "Build Native image on Linux"
     steps:
       - checkout
