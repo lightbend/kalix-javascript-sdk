@@ -90,7 +90,12 @@ class ServiceInfo {
 
   private loadFromPkg(filename: string = userPkgJson) {
     const json = loadJson(filename);
-    this.pkgName = json.name;
+    // try to detect if ts or js through process starting points
+    if (process.argv.find((arg: string) => arg.endsWith('.ts'))) {
+      this.pkgName = json.name.replace('javascript', 'typescript');
+    } else {
+      this.pkgName = json.name;
+    }
     this.pkgVersion = json.version;
   }
 }
