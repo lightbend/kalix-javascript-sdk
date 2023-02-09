@@ -168,7 +168,7 @@ object EntityServiceSourceGenerator {
               braces(nest(line <>
               "commandHandlers" <> colon <+> braces(nest(line <>
               ssep(
-                service.commands.toSeq.map { command =>
+                service.commands.toSeq.filterNot(_.ignore).map { command =>
                   command.fqn.name <> parens("command, state, ctx") <+> braces(nest(line <>
                   "return Reply.failure(\"The command handler for `" <> command.fqn.name <> "` is not implemented, yet\")" <> semi) <> line)
                 },

@@ -110,7 +110,7 @@ object ActionServiceSourceGenerator {
       "action.commandHandlers" <+> equal <+> braces(
         nest(line <>
         ssep(
-          service.commands.toSeq.map { command =>
+          service.commands.toSeq.filterNot(_.ignore).map { command =>
             command.fqn.name <> parens(if (command.streamedInput) "ctx" else "request, ctx") <+> braces(nest(line <>
             "throw new Error" <> parens(
               dquotes("The command handler for `" <> command.fqn.name <> "` is not implemented, yet")) <> semi) <> line)
@@ -133,7 +133,7 @@ object ActionServiceSourceGenerator {
         nest(line <>
         "type CommandHandlers" <+> equal <+> braces(nest(line <>
         ssep(
-          service.commands.toSeq.map { command =>
+          service.commands.filterNot(_.ignore).toSeq.map { command =>
             command.fqn.name <> colon <+> parens(nest(line <>
             (if (command.streamedInput) emptyDoc
              else {

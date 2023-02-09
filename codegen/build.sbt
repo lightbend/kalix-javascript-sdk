@@ -98,7 +98,7 @@ lazy val `kalix-codegen-js-cli` =
 lazy val library =
   new {
     object Version {
-      val kalix = "1.0.10"
+      val kalix = "1.1.0" // FIXME pick up supported protocol/proxy version from node project?
       val commonsIo = "2.8.0"
       val kiama = "2.4.0"
       val logback = "1.2.3"
