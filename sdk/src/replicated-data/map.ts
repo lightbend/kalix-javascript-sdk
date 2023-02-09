@@ -209,16 +209,16 @@ export class ReplicatedMap<
   private asObjectProxy = new Proxy(
     {},
     {
-      get: (target: {}, key: string): any => this.untyped.get(key),
-      set: (target: {}, key: string, value: any): boolean => {
+      get: (target: any, key: string): any => this.untyped.get(key),
+      set: (target: any, key: string, value: any): boolean => {
         this.untyped.set(key, value);
         return true;
       },
-      deleteProperty: (target: {}, key: string): boolean => {
+      deleteProperty: (target: any, key: string): boolean => {
         this.untyped.delete(key);
         return true;
       },
-      ownKeys: (target: {}): ArrayLike<string> => {
+      ownKeys: (target: any): ArrayLike<string> => {
         const keys: string[] = [];
         this.forEach((value, key) => {
           if (typeof key === 'string') {
@@ -227,14 +227,14 @@ export class ReplicatedMap<
         });
         return keys;
       },
-      has: (target: {}, key: string): boolean => this.untyped.has(key),
+      has: (target: any, key: string): boolean => this.untyped.has(key),
       defineProperty: (): boolean => {
         throw new Error(
           'ReplicatedMap.asObject does not support defining properties',
         );
       },
       getOwnPropertyDescriptor: (
-        target: {},
+        target: any,
         key: string,
       ): PropertyDescriptor | undefined => {
         const value = this.untyped.get(key);

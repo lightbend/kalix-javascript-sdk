@@ -220,7 +220,7 @@ export class GrpcUtil {
           originalMethod.apply(client, args);
         };
         // copy fields from original method so that promisify works (sketchy)
-        for (var attr in originalMethod) {
+        for (const attr in originalMethod) {
           patchedMethod[attr] = originalMethod[attr];
         }
         client[methodName] = patchedMethod;
@@ -231,7 +231,7 @@ export class GrpcUtil {
   /**
    * add async versions of unary request methods, suffixed with the given suffix
    */
-  static promisifyClient(client: any, suffix: String = '') {
+  static promisifyClient(client: any, suffix: string = '') {
     Object.keys(Object.getPrototypeOf(client)).forEach((methodName) => {
       const methodFunction = client[methodName];
       if (

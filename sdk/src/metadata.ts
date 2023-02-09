@@ -129,6 +129,7 @@ class MetadataMapProxyHandler implements ProxyHandler<MetadataMap> {
     target: MetadataMap,
     key: string | symbol,
   ): PropertyDescriptor | undefined {
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
     const superThis = this;
     if (typeof key === 'string') {
       const v = this.get(target, key as string, null);
@@ -177,8 +178,8 @@ export class LocalServicePrincipal {
   /**
    * The name the requesting service is deployed as
    */
-  readonly name: String;
-  constructor(name: String) {
+  readonly name: string;
+  constructor(name: string) {
     this.name = name;
   }
 }

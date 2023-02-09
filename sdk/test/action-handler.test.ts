@@ -639,7 +639,7 @@ describe('ActionHandler', () => {
   });
 
   it('should reply with Kalix JSON for unary methods returning Any', () => {
-    let expectedReply = { arbitrary: 'object' };
+    const expectedReply = { arbitrary: 'object' };
     return callPublishJsonToTopic(
       createAction((_message: In) => {
         return replies.message(expectedReply);

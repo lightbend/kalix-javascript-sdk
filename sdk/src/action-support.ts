@@ -168,10 +168,11 @@ class ActionHandler {
     } else if (reply.getMessage()) {
       ctx.write(reply.getMessage(), reply.getMetadata());
     } else if (reply.getForward() && reply.getForward()?.getMethod()) {
+      const forward = reply.getForward()!;
       ctx.forward(
-        reply.getForward()?.getMethod()!,
-        reply.getForward()?.getMessage(),
-        reply.getForward()?.getMetadata(),
+        forward.getMethod()!,
+        forward.getMessage(),
+        forward.getMetadata(),
         true,
       );
     } else {
@@ -261,7 +262,7 @@ class ActionHandler {
   }
 
   private serializeResponse(grpcMethod: protobuf.Method, message: any): any {
-    let resolvedResponseType = grpcMethod.resolvedResponseType!;
+    const resolvedResponseType = grpcMethod.resolvedResponseType!;
     if (resolvedResponseType.fullName === '.google.protobuf.Any') {
       // special handling to emit JSON to topics by defining return type as proto Any
       return AnySupport.serialize(message, false, true);
@@ -317,7 +318,7 @@ class ActionHandler {
       this.streamDebug('Sending reply');
       ctx.alreadyReplied = true;
       if (message != null) {
-        let replyPayload = this.serializeResponse(this.grpcMethod!, message);
+        const replyPayload = this.serializeResponse(this.grpcMethod!, message);
         let replyMetadata = null;
         if (metadata && metadata.entries) {
           replyMetadata = {
@@ -435,7 +436,7 @@ class ActionHandler {
       this.ensureNotCancelled();
       this.streamDebug('Sending reply');
       if (message != null) {
-        let replyPayload = this.serializeResponse(this.grpcMethod!, message);
+        const replyPayload = this.serializeResponse(this.grpcMethod!, message);
         let replyMetadata = null;
         if (metadata && metadata.entries) {
           replyMetadata = {
@@ -542,7 +543,7 @@ class ActionHandler {
     ...args: any[]
   ): any {
     try {
-      return callback.apply(null, args);
+      return callback(...args);
     } catch (err) {
       const error = 'Error handling ' + callbackName;
       this.streamDebug(error);

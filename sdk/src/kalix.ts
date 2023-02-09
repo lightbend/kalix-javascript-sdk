@@ -584,6 +584,7 @@ export class Kalix {
   }
 
   private createDiscoveryHandlers() {
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
     const self = this;
     const discoveryHandlers: discovery.Handlers = {
       Discover(call, callback) {

@@ -114,7 +114,7 @@ export default class AnySupport {
       (KalixPrimitiveFieldNumberEncoded | protobuf.types.basic[type]) >>> 0,
     );
     // Now write the primitive
-    (writer[type] as Function)(obj);
+    (writer[type] as (...args: any[]) => any)(obj);
     return writer.finish();
   }
 
@@ -256,7 +256,7 @@ export default class AnySupport {
       type = url.substring(idx + 1);
     }
 
-    let bytes = any.value || EmptyArray;
+    const bytes = any.value || EmptyArray;
 
     if (hostName === KalixPrimitive) {
       return AnySupport.deserializePrimitive(bytes, type);
