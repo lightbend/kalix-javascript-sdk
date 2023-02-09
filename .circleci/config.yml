@@ -706,7 +706,7 @@ jobs:
 
   publish:
     docker:
-      - image: cimg/node:14.16.1
+      - image: cimg/node:18.13.0
     steps:
       - checkout
       - run:
@@ -765,7 +765,7 @@ jobs:
 
   npm-js-tests:
     docker:
-      - image: cimg/node:14.16.1
+      - image: cimg/node:18.13.0
     description: "npm-js-tests"
     steps:
       - checkout-and-merge-to-main
