@@ -31,7 +31,9 @@ export function loadSync(
       try {
         fs.accessSync(fullPath, fs.constants.R_OK);
         return fullPath;
-      } catch (err) {}
+      } catch (err) {
+        // ignore
+      }
     }
     return null;
   };

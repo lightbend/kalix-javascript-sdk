@@ -182,7 +182,9 @@ export class JwtClaims {
         if (typeof parsed === 'object') {
           return parsed;
         }
-      } catch (e) {}
+      } catch (e) {
+        // error parsing, return undefined
+      }
     }
     return undefined;
   }
@@ -255,7 +257,9 @@ export class JwtClaims {
           }
           return parsed as Array<T>;
         }
-      } catch (e) {}
+      } catch (e) {
+        // error parsing, return undefined
+      }
     }
     return undefined;
   }

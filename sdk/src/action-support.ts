@@ -543,7 +543,7 @@ class ActionHandler {
     ...args: any[]
   ): any {
     try {
-      return callback(null, ...args);
+      return callback(...args);
     } catch (err) {
       const error = 'Error handling ' + callbackName;
       this.streamDebug(error);

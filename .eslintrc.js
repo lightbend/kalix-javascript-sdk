@@ -26,7 +26,6 @@ module.exports = {
     '@typescript-eslint/no-inferrable-types': 1,
     '@typescript-eslint/ban-types': 1,
     '@typescript-eslint/no-this-alias': 1,
-    'no-empty': 1,
     // strict js does not allow ...arguments
     'prefer-rest-params': 1,
   },
