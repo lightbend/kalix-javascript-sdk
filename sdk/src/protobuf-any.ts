@@ -256,7 +256,7 @@ export default class AnySupport {
       type = url.substring(idx + 1);
     }
 
-    let bytes = any.value || EmptyArray;
+    const bytes = any.value || EmptyArray;
 
     if (hostName === KalixPrimitive) {
       return AnySupport.deserializePrimitive(bytes, type);

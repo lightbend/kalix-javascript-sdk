@@ -22,7 +22,6 @@ module.exports = {
     '@typescript-eslint/no-empty-interface': 1,
     '@typescript-eslint/no-var-requires': 1,
     '@typescript-eslint/no-empty-function': 1,
-    'prefer-const': 1,
     'no-prototype-builtins': 1,
     '@typescript-eslint/no-inferrable-types': 1,
     '@typescript-eslint/ban-types': 1,

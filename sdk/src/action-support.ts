@@ -261,7 +261,7 @@ class ActionHandler {
   }
 
   private serializeResponse(grpcMethod: protobuf.Method, message: any): any {
-    let resolvedResponseType = grpcMethod.resolvedResponseType!;
+    const resolvedResponseType = grpcMethod.resolvedResponseType!;
     if (resolvedResponseType.fullName === '.google.protobuf.Any') {
       // special handling to emit JSON to topics by defining return type as proto Any
       return AnySupport.serialize(message, false, true);
@@ -317,7 +317,7 @@ class ActionHandler {
       this.streamDebug('Sending reply');
       ctx.alreadyReplied = true;
       if (message != null) {
-        let replyPayload = this.serializeResponse(this.grpcMethod!, message);
+        const replyPayload = this.serializeResponse(this.grpcMethod!, message);
         let replyMetadata = null;
         if (metadata && metadata.entries) {
           replyMetadata = {
@@ -435,7 +435,7 @@ class ActionHandler {
       this.ensureNotCancelled();
       this.streamDebug('Sending reply');
       if (message != null) {
-        let replyPayload = this.serializeResponse(this.grpcMethod!, message);
+        const replyPayload = this.serializeResponse(this.grpcMethod!, message);
         let replyMetadata = null;
         if (metadata && metadata.entries) {
           replyMetadata = {
