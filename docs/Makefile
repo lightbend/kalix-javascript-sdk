@@ -7,6 +7,7 @@ sources  := src build/src/managed
 
 src_managed := build/src/managed
 managed_attachments := ${src_managed}/modules/${module}/attachments
+managed_ts_attachments := ${src_managed}/modules/typescript/attachments
 managed_examples := ${src_managed}/modules/${module}/examples
 managed_partials := ${src_managed}/modules/${module}/partials
 
@@ -38,8 +39,10 @@ attributes:
 apidocs:
 	cd ../sdk && npm ci && npm run typedoc
 	mkdir -p "${managed_attachments}"
+	mkdir -p "${managed_ts_attachments}"
 	rsync -a ../sdk/apidocs/ "${managed_attachments}/api/"
 	bin/version.sh > "${managed_attachments}/latest-version.txt"
+	cp "${managed_attachments}/latest-version.txt" "${managed_ts_attachments}/latest-version.txt"
 
 examples:
 	mkdir -p "${managed_examples}"
