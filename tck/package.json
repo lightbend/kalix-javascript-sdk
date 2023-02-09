@@ -10,9 +10,9 @@
     "@kalix-io/kalix-javascript-sdk": "file:../sdk/kalix-io-kalix-javascript-sdk-0.0.0.tgz"
   },
   "devDependencies": {
+    "protobufjs": "6.11.3",
     "testcontainers": "7.10.0",
-    "typescript": "4.3.4",
-    "protobufjs": "6.11.3"
+    "typescript": "4.3.4"
   },
   "scripts": {
     "clean": "rimraf ./proto ./generated ./dist",
