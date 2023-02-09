@@ -114,7 +114,7 @@ export default class AnySupport {
       (KalixPrimitiveFieldNumberEncoded | protobuf.types.basic[type]) >>> 0,
     );
     // Now write the primitive
-    (writer[type] as Function)(obj);
+    (writer[type] as (...args: any[]) => any)(obj);
     return writer.finish();
   }
 
