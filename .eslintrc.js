@@ -28,7 +28,6 @@ module.exports = {
     '@typescript-eslint/no-this-alias': 1,
     'no-empty': 1,
     'prefer-rest-params': 1,
-    'no-var': 1,
     '@typescript-eslint/no-non-null-asserted-optional-chain': 1,
     'prefer-spread': 1,
   },
