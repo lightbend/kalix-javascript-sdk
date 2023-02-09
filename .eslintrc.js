@@ -29,6 +29,5 @@ module.exports = {
     'no-empty': 1,
     // strict js does not allow ...arguments
     'prefer-rest-params': 1,
-    'prefer-spread': 1,
   },
 };
