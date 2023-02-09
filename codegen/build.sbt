@@ -138,7 +138,6 @@ lazy val commonSettings =
     scalacOptions ++= Seq("-unchecked", "-deprecation", "-language:_", "-encoding", "UTF-8", "-Ywarn-unused:imports"),
     testFrameworks += new TestFramework("munit.Framework"),
     scalafmtOnCompile := true,
-    Compile / compile / wartremoverWarnings ++= Warts.unsafe,
     headerLicense := Some(HeaderLicense.Custom("""|Copyright (c) Lightbend Inc. 2021
            |
            |""".stripMargin)),
