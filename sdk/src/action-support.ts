@@ -168,10 +168,11 @@ class ActionHandler {
     } else if (reply.getMessage()) {
       ctx.write(reply.getMessage(), reply.getMetadata());
     } else if (reply.getForward() && reply.getForward()?.getMethod()) {
+      const forward = reply.getForward()!;
       ctx.forward(
-        reply.getForward()?.getMethod()!,
-        reply.getForward()?.getMessage(),
-        reply.getForward()?.getMetadata(),
+        forward.getMethod()!,
+        forward.getMessage(),
+        forward.getMetadata(),
         true,
       );
     } else {
