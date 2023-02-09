@@ -747,8 +747,15 @@ export class Kalix {
       };
 
       const components = this.components.map((component) => {
-        component.preStart(preStartSettings);
-
+        try {
+          component.preStart(preStartSettings);
+        } catch (e) {
+          console.log(
+            'Could not invoke a preStart method on %s, cross component calls may not work. Error: %s',
+            component.serviceName,
+            e,
+          );
+        }
         const res: discovery.Component = {
           serviceName: component.serviceName,
           componentType: component.componentType(),
