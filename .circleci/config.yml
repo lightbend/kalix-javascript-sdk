@@ -899,7 +899,7 @@ jobs:
           working_directory: "~/tmp"
           command: |
             source /opt/circleci/.nvm/nvm.sh
-            nvm install v14
+            nvm install v18
             export KALIX_NPMJS_SCRIPTS_VERSION="file:${HOME}/project/npm-js/kalix-scripts/kalix-io-kalix-scripts-0.0.0.tgz"
             export KALIX_NPMJS_SDK_VERSION="file:${HOME}/project/sdk/kalix-io-kalix-javascript-sdk-0.0.0.tgz"
             export KALIX_NPMJS_TESTKIT_VERSION="file:${HOME}/project/testkit/kalix-io-testkit-0.0.0.tgz"
@@ -910,7 +910,7 @@ jobs:
           command: |
             source /opt/circleci/.nvm/nvm.sh
             export KALIX_NPMJS_CODEGEN_BINARY="${HOME}/project/codegen/js-gen-cli/target/native-image/kalix-codegen-js"
-            nvm install v14
+            nvm install v18
             npm install && \
               npm run build && \
               npm run test
@@ -923,7 +923,7 @@ jobs:
           shell: /bin/bash
           command: |
             source /opt/circleci/.nvm/nvm.sh
-            nvm install v14
+            nvm install v18
             # Run proxy in background
             sed -i docker-compose.yml -e "s/environment:/environment:\n      VERSION_CHECK_ON_STARTUP: \"false\"/"
             docker-compose up -d
