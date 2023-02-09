@@ -3,7 +3,7 @@
   "version": "0.0.2",
   "type": "module",
   "engines": {
-    "node": ">=14.0.0",
+    "node": "~18",
     "npm": ">=6.0.0"
   },
   "dependencies": {

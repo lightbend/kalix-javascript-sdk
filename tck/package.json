@@ -4,7 +4,7 @@
   "description": "Kalix TCK implementation for JavaScript SDK",
   "engineStrict": true,
   "engines": {
-    "node": "~14"
+    "node": "~18"
   },
   "dependencies": {
     "@kalix-io/kalix-javascript-sdk": "file:../sdk/kalix-io-kalix-javascript-sdk-0.0.0.tgz"

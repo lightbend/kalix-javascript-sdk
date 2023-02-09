@@ -4,7 +4,7 @@
   "description": "Kalix JavaScript SDK example that demonstrates views",
   "engineStrict": true,
   "engines": {
-    "node": "~14"
+    "node": "~18"
   },
   "homepage": "https://github.com/lightbend/kalix-javascript-sdk",
   "bugs": {

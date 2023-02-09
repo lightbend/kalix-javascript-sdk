@@ -2,7 +2,7 @@
   "name": "customer-registry",
   "version": "0.0.1",
   "engines": {
-    "node": ">=14.0.0",
+    "node": "~18",
     "npm": ">=6.0.0"
   },
   "dependencies": {
