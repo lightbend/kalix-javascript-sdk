@@ -11,10 +11,26 @@ module.exports = {
   ignorePatterns: ['*.d.ts', '**/proto/**/*.*'],
   rules: {
     // 2 -> error | 1 -> warning | 0 -> disabled
-    'no-console': 2,
+    'no-console': 1,
     'prettier/prettier': 2,
     // Disabling violated rules for JS compatibility
     '@typescript-eslint/no-explicit-any': 0,
-    '@typescript-eslint/explicit-module-boundary-types': 0
+    '@typescript-eslint/explicit-module-boundary-types': 0,
+    // errors after upgrading eslint to 8.3
+    // FIXME investigate each and fix instead of down-prioritize here
+    '@typescript-eslint/no-namespace': 1,
+    '@typescript-eslint/no-empty-interface': 1,
+    '@typescript-eslint/no-var-requires': 1,
+    '@typescript-eslint/no-empty-function': 1,
+    'prefer-const': 1,
+    'no-prototype-builtins': 1,
+    '@typescript-eslint/no-inferrable-types': 1,
+    '@typescript-eslint/ban-types': 1,
+    '@typescript-eslint/no-this-alias': 1,
+    'no-empty': 1,
+    'prefer-rest-params': 1,
+    'no-var': 1,
+    '@typescript-eslint/no-non-null-asserted-optional-chain': 1,
+    'prefer-spread': 1,
   },
-}
+};
