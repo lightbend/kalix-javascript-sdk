@@ -235,7 +235,7 @@ At package.test.json:2:4:
     result.proto?.should.deep.equal(expectedProto);
     result.components?.length.should.equal(0);
     serviceInfo?.protocolMajorVersion?.should.equal(1);
-    serviceInfo?.protocolMinorVersion?.should.equal(0);
+    serviceInfo?.protocolMinorVersion?.should.equal(1);
     serviceInfo?.serviceName?.should.equal('my-service');
     serviceInfo?.serviceVersion?.should.equal('1.2.3');
     serviceInfo?.serviceRuntime?.should.contains('node v');
