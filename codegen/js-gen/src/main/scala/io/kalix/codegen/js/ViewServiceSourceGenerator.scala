@@ -109,7 +109,7 @@ object ViewServiceSourceGenerator {
       line <> service.transformedUpdates.headOption.fold(emptyDoc)(_ =>
         "view.setUpdateHandlers" <> parens(braces(nest(line <>
         ssep(
-          service.transformedUpdates.toSeq.map { update =>
+          service.transformedUpdates.toSeq.filterNot(_.ignore).map { update =>
             update.fqn.name <> parens("event, state, ctx") <+> braces(nest(line <>
             "throw new Error" <> parens(
               dquotes("The update handler for `" <> update.fqn.name <> "` is not implemented, yet")) <> semi) <> line)

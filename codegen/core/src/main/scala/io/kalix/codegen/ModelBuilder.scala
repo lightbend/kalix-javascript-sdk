@@ -113,15 +113,20 @@ object ModelBuilder {
       inputType: FullyQualifiedName,
       outputType: FullyQualifiedName,
       streamedInput: Boolean,
-      streamedOutput: Boolean)
+      streamedOutput: Boolean,
+      ignore: Boolean)
 
   object Command {
-    def from(method: Descriptors.MethodDescriptor): Command = Command(
-      FullyQualifiedName.from(method),
-      FullyQualifiedName.from(method.getInputType),
-      FullyQualifiedName.from(method.getOutputType),
-      streamedInput = method.isClientStreaming,
-      streamedOutput = method.isServerStreaming)
+    def from(method: Descriptors.MethodDescriptor): Command = {
+      val eventing = method.getOptions.getExtension(kalix.Annotations.method).getEventing
+      Command(
+        FullyQualifiedName.from(method),
+        FullyQualifiedName.from(method.getInputType),
+        FullyQualifiedName.from(method.getOutputType),
+        streamedInput = method.isClientStreaming,
+        streamedOutput = method.isServerStreaming,
+        ignore = eventing.hasIn && eventing.getIn.getIgnore)
+    }
   }
 
   /**

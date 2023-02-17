@@ -52,8 +52,9 @@ object ModelBuilderSuite {
       inputType: FullyQualifiedName,
       outputType: FullyQualifiedName,
       streamedInput: Boolean = false,
-      streamedOutput: Boolean = false): ModelBuilder.Command =
-    ModelBuilder.Command(fqn, inputType, outputType, streamedInput, streamedOutput)
+      streamedOutput: Boolean = false,
+      ignore: Boolean = false): ModelBuilder.Command =
+    ModelBuilder.Command(fqn, inputType, outputType, streamedInput, streamedOutput, ignore)
 }
 
 abstract class ModelBuilderSuite(val config: ModelBuilderSuite.Config) extends munit.FunSuite {

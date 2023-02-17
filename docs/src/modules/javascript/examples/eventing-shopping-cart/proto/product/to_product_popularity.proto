@@ -59,9 +59,10 @@ service ToProductPopularityService {
 
   // tag::catchOthers[]
   // handle other events which are not managed above
-  rpc CatchOthers(google.protobuf.Any) returns (google.protobuf.Empty) {
-    option (kalix.method).eventing.in = {
+  rpc Ignore(google.protobuf.Any) returns (google.protobuf.Empty) {
+    option (kalix.method).eventing.in = { // <1>
       event_sourced_entity:  "eventsourced-shopping-cart"
+      ignore: true // <2>
     };
   }
   // end::catchOthers[]

@@ -37,13 +37,15 @@ object TestData {
           FullyQualifiedName("SetValue", proto),
           FullyQualifiedName("Empty", knownGoogleProto),
           streamedInput = false,
-          streamedOutput = false),
+          streamedOutput = false,
+          ignore = false),
         ModelBuilder.Command(
           FullyQualifiedName("Get", proto),
           FullyQualifiedName("GetValue", proto),
           FullyQualifiedName("MyState", proto),
           streamedInput = false,
-          streamedOutput = false)),
+          streamedOutput = false,
+          ignore = false)),
       s"com.example.Entity$suffix")
 
   def simpleViewService(proto: PackageNaming = serviceProto(), suffix: String = ""): ModelBuilder.ViewService =
@@ -55,19 +57,22 @@ object TestData {
           FullyQualifiedName("EntityCreated", domainProto(suffix)),
           FullyQualifiedName("ViewState", proto),
           streamedInput = false,
-          streamedOutput = false),
+          streamedOutput = false,
+          ignore = false),
         ModelBuilder.Command(
           FullyQualifiedName("Updated", proto),
           FullyQualifiedName("EntityUpdated", domainProto(suffix)),
           FullyQualifiedName("ViewState", proto),
           streamedInput = false,
-          streamedOutput = false),
+          streamedOutput = false,
+          ignore = false),
         ModelBuilder.Command(
           FullyQualifiedName("MyQuery", proto),
           FullyQualifiedName("QueryRequest", proto),
           FullyQualifiedName("ViewState", proto),
           streamedInput = false,
-          streamedOutput = false)),
+          streamedOutput = false,
+          ignore = false)),
       s"my-view-id$suffix",
       List(
         ModelBuilder.Command(
@@ -75,13 +80,15 @@ object TestData {
           FullyQualifiedName("EntityCreated", domainProto(suffix)),
           FullyQualifiedName("ViewState", proto),
           streamedInput = false,
-          streamedOutput = false),
+          streamedOutput = false,
+          ignore = false),
         ModelBuilder.Command(
           FullyQualifiedName("Updated", proto),
           FullyQualifiedName("EntityUpdated", domainProto(suffix)),
           FullyQualifiedName("ViewState", proto),
           streamedInput = false,
-          streamedOutput = false)),
+          streamedOutput = false,
+          ignore = false)),
       None)
 
   def simpleActionService(proto: PackageNaming = serviceProto(), suffix: String = ""): ModelBuilder.ActionService =
@@ -93,25 +100,36 @@ object TestData {
           FullyQualifiedName("Request", domainProto(suffix)),
           FullyQualifiedName("Response", proto),
           streamedInput = false,
-          streamedOutput = false),
+          streamedOutput = false,
+          ignore = false),
         ModelBuilder.Command(
           FullyQualifiedName("StreamedIn", proto),
           FullyQualifiedName("Request", domainProto(suffix)),
           FullyQualifiedName("Response", proto),
           streamedInput = true,
-          streamedOutput = false),
+          streamedOutput = false,
+          ignore = false),
         ModelBuilder.Command(
           FullyQualifiedName("StreamedOut", proto),
           FullyQualifiedName("Request", domainProto(suffix)),
           FullyQualifiedName("Response", proto),
           streamedInput = false,
-          streamedOutput = true),
+          streamedOutput = true,
+          ignore = false),
         ModelBuilder.Command(
           FullyQualifiedName("FullyStreamed", proto),
           FullyQualifiedName("Request", domainProto(suffix)),
           FullyQualifiedName("Response", proto),
           streamedInput = true,
-          streamedOutput = true)),
+          streamedOutput = true,
+          ignore = false),
+        ModelBuilder.Command(
+          FullyQualifiedName("IgnoredEventHandler", proto),
+          FullyQualifiedName("Request", domainProto(suffix)),
+          FullyQualifiedName("Response", proto),
+          streamedInput = false,
+          streamedOutput = false,
+          ignore = true)),
       None)
 
   def eventSourcedEntity(suffix: String = ""): ModelBuilder.EventSourcedEntity =
