@@ -1,4 +1,4 @@
-= Developing with JavaScript
+= JavaScript/TypeScript Protobuf SDK
 :page-supergroup-javascript-typescript: Language
 
 include::ROOT:partial$include.adoc[]
