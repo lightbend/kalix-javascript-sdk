@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Lightbend Inc.
+ * Copyright 2019-2023 Lightbend Inc.
  */
 
 const Action = require("@lightbend/kalix-javascript-sdk").Action
