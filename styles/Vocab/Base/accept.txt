@@ -13,6 +13,7 @@ async
 backoffice
 Backoffice
 boolean
+Boolean
 brokerless
 Buildah
 CA's
@@ -28,6 +29,7 @@ Ctrl
 deserialize
 dev
 Dockerfile
+entityId
 failover
 github
 GitHub
@@ -86,6 +88,7 @@ tokenid
 tokenization
 transcoded
 transcoding
+Transcoding
 unary
 unexpose
 Unexpose
