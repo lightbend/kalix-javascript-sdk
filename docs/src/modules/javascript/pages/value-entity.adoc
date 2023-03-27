@@ -27,7 +27,7 @@ The following `counter_domain.proto` file defines a "Counter" Value Entity. The 
 include::example$valueentity-counter/proto/counter_domain.proto[]
 ----
 
-<1> Any classes generated from this protobuf file will be nested in the package heirarchy of: `com.example.domain`.
+<1> Any classes generated from this protobuf file will be nested in the package hierarchy of: `com.example.domain`.
 <2> The `CounterState` protobuf message is what Kalix stores for this entity.
 
 The `counter_api.proto` file defines the commands we can send to the Counter service to manipulate or access the Counter`s state. They make up the service API:
@@ -37,7 +37,7 @@ The `counter_api.proto` file defines the commands we can send to the Counter ser
 include::example$valueentity-counter/proto/counter_api.proto[]
 ----
 <1> Import the Kalix protobuf annotations, or options.
-<2> Any classes generated from this protobuf file will be be nested in the package heirarchy: `com.example`.
+<2> Any classes generated from this protobuf file will be be nested in the package hierarchy: `com.example`.
 
 <3> Protobuf messages describe the Commands that the service handles. They may contain other messages to represent structured data.
 <4> Every Command must contain a `string` field that contains the entity ID and is marked with the `(kalix.field).entity_key` option.
@@ -45,7 +45,7 @@ include::example$valueentity-counter/proto/counter_api.proto[]
 <6> The service descriptor shows the API of the entity. It lists the methods a client can use to issue Commands to the entity.
 <7> The protobuf option `(kalix.codegen).value_entity` is specific to code-generation as provided by the Kalix plugin.
 <8> `name` denotes the base name for the Value entity, the code-generation will create initial sources `CounterImpl`, `CounterTest` and `CounterIntegrationTest`. Once these files exist, they are not overwritten, so you can freely add logic to them.
-<9> `entity_type` is a unique identifier of the "state storage". The entity name may be changed even after data has been created, the `entity_type` can't. This value shows in the `@ValueEnity` annotation of your entity implementation.
+<9> `entity_type` is a unique identifier of the "state storage." The entity name may be changed even after data has been created, the `entity_type` can't. This value shows in the `@ValueEnity` annotation of your entity implementation.
 <10> `state` points to the protobuf message representing the Value entity's state which is kept by Kalix
 
 == Creating an Entity
@@ -74,7 +74,7 @@ include::example$ts-valueentity-counter/src/counter.ts[tag=entity-class]
 
 == Using protobuf types
 
-When passing state to Kalix  the persisted data must be serialized and accessable.  To request state types, lookup the protobuf type then use the `create` method.
+When passing state to Kalix  the persisted data must be serialized and accessible.  To request state types, lookup the protobuf type then use the `create` method.
 
 Use the `ValueEntity` link:{attachmentsdir}/api/classes/ValueEntity.html#lookupType[`lookupType`{tab-icon}, window="new"] helper to look up these types so we can use them later.
 

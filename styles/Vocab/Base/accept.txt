@@ -18,6 +18,7 @@ Buildah
 CA's
 chatbots
 Chatbots
+Chai
 classname
 codegen
 config
@@ -46,6 +47,7 @@ Lightbend
 matchers
 namespace
 newname
+npm
 npx
 onboarding
 passivates
@@ -65,6 +67,7 @@ scala
 Scala
 SDKs
 SREs
+serializable
 serverless
 Serverless
 sharding

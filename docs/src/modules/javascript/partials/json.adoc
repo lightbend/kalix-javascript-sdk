@@ -25,11 +25,11 @@ service ShoppingCartTopicService {
 
 == Publishing JSON messages to a topic
 
-By default when publishig a message to a topic, the protobuf message is serialized to bytes and published with the `content-type`/`ce-datacontenttype` `application/protobuf`, and will also contain the metadata entry `ce-type` specifying the specific protobuf message type.
+By default, when publishing a message to a topic, the protobuf message is serialized to bytes and published with the `content-type`/`ce-datacontenttype` `application/protobuf`, and will also contain the metadata entry `ce-type` specifying the specific protobuf message type.
 
 This is convenient when the consumer is another Kalix service that can handle protobuf messages.
 
-In many cases the consumer may be an external service though, and in such a case another serialization format for the messages can make sense. For such a use case the Kalix Javascript SDK supports emitting JSON messages.
+In many cases the consumer may be an external service though, and in such a case another serialization format for the messages can make sense. For such a use case the Kalix JavaScript SDK supports emitting JSON messages.
 
 To publish JSON messages to a topic, mark the return type of the message as `google.protobuf.Any`. The object returned with `replies.message()` will be serialized to string format and published to the topic with content type `Content-Type` attribute stating `application/json`.
 

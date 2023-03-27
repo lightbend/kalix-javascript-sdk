@@ -33,7 +33,7 @@ In our delegating service implementation:
 include::example$js-doc-snippets/src/delegatingservice.js[tag=delegating-action]
 ----
 <1> Include the `proto` file of the other service in the action service descriptors.
-<2> Create the client using the provided creators to get async methods. Defaults to a cleartext connection as TLS is handled transparently for us.
+<2> Create the client using the provided creators to get async methods. Defaults to a clear text connection as TLS is handled transparently for us.
 <3> Use the name that the other Kalix service was deployed as, in this case `counter`.
 <4> We can now call the various methods on the other service with their method names directly on the client. The calls return promises so we can use `await/async` to interact with them.
 
@@ -41,7 +41,7 @@ NOTE: The client can only be created once the service has been started by Kalix,
 
 == External gRPC services
 
-Calling a Kalix service in another project, or an arbitrary external gRPC service is done the same way as described above, with the difference that it will use the full public hostname of the service and TLS/HTTPS to encrypt the connection.
+Calling a Kalix service in another project, or an arbitrary external gRPC service is done the same way as described above, with the difference that it will use the full public hostname of the service and TLS/https to encrypt the connection.
 
 [source,javascript,indent=0]
 .src/main/java/com/example/delegatingservice.js
