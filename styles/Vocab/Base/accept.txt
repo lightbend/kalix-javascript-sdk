@@ -27,6 +27,7 @@ CRDTs
 Ctrl
 deserialize
 dev
+Dockerfile
 failover
 github
 GitHub
@@ -38,6 +39,7 @@ hostnames
 https
 interconnectivity
 iss
+iterable
 jwts
 JWTs
 kafka
@@ -81,6 +83,7 @@ telemedicine
 Telemedicine
 Tink
 tokenid
+tokenization
 transcoded
 transcoding
 unary
@@ -88,6 +91,8 @@ unexpose
 Unexpose
 unnested
 userid
+UUID
+UUIDs
 zsh
 Zsh
 dev

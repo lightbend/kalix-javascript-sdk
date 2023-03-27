@@ -51,4 +51,4 @@ include::example$js-doc-snippets/src/delegatingservice.js[tag=public-grpc]
 <1> Import `grpc-js`, to provide credentials when creating the client.
 <2> Create the client using the provided creators to get async methods.
 <3> Use the full public hostname of the service.
-<4> Enable TLS/HTTPS to encrypt the connection.
+<4> Enable TLS/https to encrypt the connection.
