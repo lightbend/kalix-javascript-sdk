@@ -12,6 +12,7 @@
     "**/*.yml",
     "samples/*/*/lib/generated",
     "sdk/test/*.desc",
+    "styles/Vocab/Base/",
     "tck/generated",
     "testkit/integration-test/proto.*"
   ],
