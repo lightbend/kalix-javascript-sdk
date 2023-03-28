@@ -25,7 +25,7 @@ To achieve this, create an xref:actions.adoc[Action] that subscribes to a journa
 
 .Use case: external calls
 ****
-A service might need to trigger other systems when certain events happened to an Entity. An Action can be connected to the Entity's journal and react on certain events to issue calls (eg. via HTTP or gRPC).
+A service might need to trigger other systems when certain events happened to an Entity. An Action can be connected to the Entity's journal and react on certain events to issue calls (e.g. via HTTP or gRPC).
 To achieve this, create an xref:actions.adoc[Action] that subscribes to a journal and let the implementation call other services.
 ****
 
@@ -56,7 +56,7 @@ include::example$eventing-shopping-cart/proto/cart/shopping_cart_analytics.proto
 <1> annotate the Protobuf rpc method with `(kalix.method).eventing`
 <2> use `in` and `topic` to subscribe to a topic
 
-There is nothing specific required in the implementation of `ProcessAdded`. The implementation will in most cases be an Action and forward a converted message to a different component (eg. an Event Sourced Entity).
+There is nothing specific required in the implementation of `ProcessAdded`. The implementation will in most cases be an Action and forward a converted message to a different component (e.g. an Event Sourced Entity).
 
 == Receiving messages from an external Topic
 

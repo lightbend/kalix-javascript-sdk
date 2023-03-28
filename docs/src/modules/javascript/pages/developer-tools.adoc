@@ -1,6 +1,6 @@
 = Developer Tools
 
-The Javascript tooling is published to the npm registry under the https://www.npmjs.com/org/kalix-io[`@kalix-io` organisation].
+The JavaScript tooling is published to the npm registry under the https://www.npmjs.com/org/kalix-io[`@kalix-io` organisation].
 
 == Kickstart
 

@@ -6,7 +6,7 @@ In some cases it is useful to call a component in another service, for example i
 
 Calling other Kalix services in the same project from an Action is done by invoking them over gRPC much like how an external client would. The service is however identified only by the name it has been deployed as, Kalix takes care of routing requests to the service and keeping the data safe by encrypting the connection for us.
 
-In this sample we will show an action that does two sequential calls to the xref:value-entity.adoc[Value Entity Counter] service, deployed with the service name "counter".
+In this sample we will show an action that does two sequential calls to the xref:value-entity.adoc[Value Entity Counter] service, deployed with the service name "counter."
 
 We start by adding the public API of the counter to the `src/main/proto` directory of our project.
 
@@ -33,7 +33,7 @@ In our delegating service implementation:
 include::example$js-doc-snippets/src/delegatingservice.js[tag=delegating-action]
 ----
 <1> Include the `proto` file of the other service in the action service descriptors.
-<2> Create the client using the provided creators to get async methods. Defaults to a cleartext connection as TLS is handled transparently for us.
+<2> Create the client using the provided creators to get async methods. Defaults to a clear text connection as TLS is handled transparently for us.
 <3> Use the name that the other Kalix service was deployed as, in this case `counter`.
 <4> We can now call the various methods on the other service with their method names directly on the client. The calls return promises so we can use `await/async` to interact with them.
 
@@ -41,7 +41,7 @@ NOTE: The client can only be created once the service has been started by Kalix,
 
 == External gRPC services
 
-Calling a Kalix service in another project, or an arbitrary external gRPC service is done the same way as described above, with the difference that it will use the full public hostname of the service and TLS/HTTPS to encrypt the connection.
+Calling a Kalix service in another project, or an arbitrary external gRPC service is done the same way as described above, with the difference that it will use the full public hostname of the service and TLS/https to encrypt the connection.
 
 [source,javascript,indent=0]
 .src/main/java/com/example/delegatingservice.js
@@ -51,4 +51,4 @@ include::example$js-doc-snippets/src/delegatingservice.js[tag=public-grpc]
 <1> Import `grpc-js`, to provide credentials when creating the client.
 <2> Create the client using the provided creators to get async methods.
 <3> Use the full public hostname of the service.
-<4> Enable TLS/HTTPS to encrypt the connection.
+<4> Enable TLS/https to encrypt the connection.

@@ -4,7 +4,7 @@
 include::ROOT:partial$include.adoc[]
 include::partial$serialization.adoc[]
 
-As a JavaScript developer, JSON is likely more familiar to you. When creating Event Sourced Entities, you can configure serialization for primitives or for Json, using `serializeAllowPrimitives` or `serializeFallbacktoJson`, respectively.
+As a JavaScript developer, JSON is likely more familiar to you. When creating Event Sourced Entities, you can configure serialization for primitives or for JSON, using `serializeAllowPrimitives` or `serializeFallbacktoJson`, respectively.
 
 == Setting the serialization flag
 

@@ -97,5 +97,5 @@ for more information on how to make your docker image available to Kalix.
 
 Finally you can or use the [Kalix Console](https://console.kalix.io)
 to create a project and then deploy your service into the project either by using `npm run deploy`,
-through the `kalix` CLI or via the web interface. When using `npm run deploy`, NPM will also
+through the `kalix` CLI or via the web interface. When using `npm run deploy`, npm will also
 conveniently package and publish your docker image prior to deployment.
