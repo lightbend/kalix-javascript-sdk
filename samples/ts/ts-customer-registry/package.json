@@ -4,7 +4,7 @@
   "description": "Kalix TypeScript SDK sample application for customer registry",
   "engineStrict": true,
   "engines": {
-    "node": "~14"
+    "node": "~18"
   },
   "homepage": "https://github.com/lightbend/kalix-javascript-sdk",
   "bugs": {
@@ -24,13 +24,13 @@
   "//": "https://npm.community/t/npm-install-does-not-install-transitive-dependencies-of-local-dependency/2264",
   "main": "dist/index.js",
   "dependencies": {
-    "@kalix-io/kalix-javascript-sdk": "1.0.6"
+    "@kalix-io/kalix-javascript-sdk": "1.0.7"
   },
   "devDependencies": {
-    "@kalix-io/testkit": "1.0.6",
+    "@kalix-io/testkit": "1.0.7",
     "@types/chai": "^4.3.1",
     "@types/mocha": "^9.1.1",
-    "@types/node": "^18.0.0",
+    "@types/node": "^18.13.0",
     "@typescript-eslint/eslint-plugin": "^5.29.0",
     "@typescript-eslint/parser": "^5.29.0",
     "chai": "^4.3.6",

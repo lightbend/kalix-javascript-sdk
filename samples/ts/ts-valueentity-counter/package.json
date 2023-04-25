@@ -2,18 +2,18 @@
   "name": "valueentity-counter",
   "version": "0.0.1",
   "engines": {
-    "node": ">=13.0.0",
+    "node": "~18",
     "npm": ">=6.0.0"
   },
   "main": "dist/index.js",
   "dependencies": {
-    "@kalix-io/kalix-javascript-sdk": "1.0.6"
+    "@kalix-io/kalix-javascript-sdk": "1.0.7"
   },
   "devDependencies": {
-    "@kalix-io/kalix-scripts": "1.0.6",
-    "@kalix-io/testkit": "1.0.6",
+    "@kalix-io/kalix-scripts": "1.0.7",
+    "@kalix-io/testkit": "1.0.7",
     "@types/mocha": "^9.1.1",
-    "@types/node": "^18.0.0",
+    "@types/node": "^18.13.0",
     "@typescript-eslint/eslint-plugin": "^5.29.0",
     "@typescript-eslint/parser": "^5.29.0",
     "chai": "^4.3.6",
