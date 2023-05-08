@@ -99,26 +99,18 @@ lazy val library =
   new {
     object Version {
       val kalix = "1.1.0" // FIXME pick up supported protocol/proxy version from node project?
-      val commonsIo = "2.8.0"
-      val kiama = "2.4.0"
-      val logback = "1.2.3"
-      val munit = "0.7.20"
-      val protobufJava = "3.13.0"
-      val requests = "0.6.5"
-      val scopt = "4.0.0"
-      val testcontainers = "1.15.3"
-      val typesafeConfig = "1.4.1"
+      val munit = "0.7.29"
     }
-    val commonsIo = "commons-io" % "commons-io" % Version.commonsIo
-    val kiama = "org.bitbucket.inkytonik.kiama" %% "kiama" % Version.kiama
-    val logback = "ch.qos.logback" % "logback-classic" % Version.logback
+    val commonsIo = "commons-io" % "commons-io" % "2.11.0"
+    val kiama = "org.bitbucket.inkytonik.kiama" %% "kiama" % "2.4.0"
+    val logback = "ch.qos.logback" % "logback-classic" % "1.2.12"
     val munit = "org.scalameta" %% "munit" % Version.munit
     val munitScalaCheck = "org.scalameta" %% "munit-scalacheck" % Version.munit
-    val protobufJava = "com.google.protobuf" % "protobuf-java" % Version.protobufJava
-    val requests = "com.lihaoyi" %% "requests" % Version.requests
-    val scopt = "com.github.scopt" %% "scopt" % Version.scopt
-    val testcontainers = "org.testcontainers" % "testcontainers" % Version.testcontainers
-    val typesafeConfig = "com.typesafe" % "config" % Version.typesafeConfig
+    val protobufJava = "com.google.protobuf" % "protobuf-java" % "3.22.4"
+    val requests = "com.lihaoyi" %% "requests" % "0.6.9"
+    val scopt = "com.github.scopt" %% "scopt" % "4.1.0"
+    val testcontainers = "org.testcontainers" % "testcontainers" % "1.15.3"
+    val typesafeConfig = "com.typesafe" % "config" % "1.4.2"
     val kalixSdkProtocol =
       "io.kalix" % "kalix-sdk-protocol" % Version.kalix
     val scalapbRuntime =
