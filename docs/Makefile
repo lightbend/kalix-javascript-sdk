@@ -12,7 +12,7 @@ managed_examples := ${src_managed}/modules/${module}/examples
 managed_partials := ${src_managed}/modules/${module}/partials
 
 antora_docker_image := gcr.io/kalix-public/kalix-docbuilder
-antora_docker_image_tag := 0.0.5
+antora_docker_image_tag := 0.0.6
 root_dir := $(shell git rev-parse --show-toplevel)
 base_path := $(shell git rev-parse --show-prefix)
 
