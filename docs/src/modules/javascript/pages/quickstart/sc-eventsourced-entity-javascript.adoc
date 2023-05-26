@@ -22,7 +22,7 @@ If you want to bypass writing code and jump straight to the deployment:
 +
 [source, command line]
 ----
-kalix quickstart download shopping-cart-javascript
+kalix quickstart download shopping-cart-javascript-protobuf
 ----
 
 . Skip to <<Package and deploy your service>>.
