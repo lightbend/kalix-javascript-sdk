@@ -1,6 +1,5 @@
 # Developing the JavaScript SDK
 
-
 ## Prerequisites
 
 The JavaScript SDK requires Node.js 14.
@@ -8,7 +7,6 @@ The JavaScript SDK requires Node.js 14.
 It can be useful to install `nvm` and run `nvm use` to select the right node version if you have multiple node versions installed.
 
 Install package dependencies with `npm install`.
-
 
 ## Tests
 
@@ -18,20 +16,17 @@ Run integration tests with `npm run integration-test` (in the `sdk` directory, r
 
 See [.circleci/config.yml] for all tests that run for CI.
 
-
 ## Samples
 
 Each sample under `samples` can be run locally. See their READMEs for details.
-
 
 ## TCK
 
 To run the Kalix TCK, see [tck/README.md].
 
-
 ## Docs
 
-Build docs in the `doc/` directory with `make`. Note that it requires a docker daemon running.
+Build docs in the `docs/` directory with `make`. Note that it requires a docker daemon running.
 
 ## Formatting
 
@@ -44,35 +39,42 @@ Auto-update formatting with:
 ### Create app with local SDK to run it locally
 
 To use the local SDK to be tested in local you can run the following from the root directory of this project. Please look at known issues first.
-    
-    nvm use 14
+
+    ```
+    nvm use 18
     ./bin/create-local-dependencies.sh
+    ```
 
 and then add those to any sample. For example, go to samples/js/js-valueentity-shopping-cart and execute the following. Bear in mind `$KALIXJSSDK` needs to point to `kalix-javascript-sdk` folder.
-    
+
+    ```
     export KALIX_NPMJS_CODEGEN_BINARY="$KALIXJSSDK/codegen/js-gen-cli/target/native-image/kalix-codegen-js"
-    nvm use 14
+    nvm use 18
     npm install --save \
-                  "$KALIXJSSDK/sdk/kalix-io-kalix-javascript-sdk-0.0.0.tgz" \
-                  "$KALIXJSSDK/npm-js/kalix-scripts/kalix-io-kalix-scripts-0.0.0.tgz" \
-                  "$KALIXJSSDK/testkit/kalix-io-testkit-0.0.0.tgz"
+                "$KALIXJSSDK/sdk/kalix-io-kalix-javascript-sdk-0.0.0.tgz" \
+                "$KALIXJSSDK/npm-js/kalix-scripts/kalix-io-kalix-scripts-0.0.0.tgz" \
+                "$KALIXJSSDK/testkit/kalix-io-testkit-0.0.0.tgz"
     npm install
     npm run build
+    ```
 
 if you set PROXY_SNAPSHOT_DIRECTORY pointing to your local kalix-proxy then you can use your proxy.
-    
+
+    ```
     export PROXY_SNAPSHOT_DIRECTORY="/path/to/my/kalix-proxy"
+    ```
 
 Otherwise of the default that is downloaded from https://repo1.maven.org/maven2/io/kalix/kalix-$module-protocol/$framework_version/kalix-$module-protocol-$framework_version.zip
 
-
-### Create docker image with local SDK to run it in Kubernetes 
+### Create docker image with local SDK to run it in Kubernetes
 
 To create a Docker image of a sample app using your local SDK you need the following. 
 First, you need to create the local SDK with its dependencies. You can do this as follows. Please look at known issues first.
-    
-    nvm use 14
+
+    ```
+    nvm use 18
     ./bin/create-local-dependencies.sh
+    ```
 
 Once these are generated - SDK, testkit and kalix-scripts - you need to add them to the Docker image. That is, to the Dockerfile. For example, go to samples/js/js-valueentity-shopping-cart and change the Dockerfile from line 9 to 16 as follow. 
 
@@ -101,8 +103,10 @@ These changes use the published codegen client, that is, `kalix-codegen-js.bin`.
     cp "$KALIXJSSDK/testkit/kalix-io-testkit-0.0.0.tgz" .
 
 Now you can create the Docker image of an app and deploy it to your kalix project. Don't forget that you need to be logged in to your kalix project first.  
-    
+
+    ```
     npm run deploy
+    ```
 
 ### Known issues
 
@@ -117,5 +121,4 @@ This happens when you generate the codegen with Java 17 instead of 11 and then y
     npm ERR! command failed
     npm ERR! command sh -c bin/prepare.sh
 
-This can happens when you run `./bin/create-local-dependencies`. This is because `sdk/bin/prepare.sh` has `*` after `echo "Using snapshot of proxy and sdk protocols from '$PROXY_SNAPSHOT_DIRECTORY'"`. In iOS you need to remove the asteriscs in the two lines below.  
-
+This can happens when you run `./bin/create-local-dependencies`. This is because `sdk/bin/prepare.sh` has `*` after `echo "Using snapshot of proxy and sdk protocols from '$PROXY_SNAPSHOT_DIRECTORY'"`. In iOS you need to remove the asteriscs in the two lines below.
