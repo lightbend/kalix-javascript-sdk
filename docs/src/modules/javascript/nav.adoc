@@ -14,3 +14,4 @@
 *** xref:javascript:call-another-service.adoc[Calling other services]
 *** xref:access-control.adoc[Access Control Lists (ACLs)]
 *** xref:javascript:api.adoc[JavaScript API docs]
+*** xref:javascript:running-locally.adoc[Run a service locally]
