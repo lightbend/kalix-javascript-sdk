@@ -18,7 +18,7 @@ The samples provided with the Kalix SDKs all have `docker-compose` files preconf
 
 == Starting your service
 
-To start the proxy, run the following command from the directory with the `docker-compose.yml` file:
+To start the proxy, run the following command from the directory containing the `docker-compose.yml` file:
 
 . Start the proxy
 +
@@ -154,7 +154,7 @@ See below how to do such configuration.
 
 === Run user function on a custom port
 
-When using the defaults, the Kalix proxy connects to the user function on 8080. However, if you're looking to have 2 services running at the same time, the second service will need to be run at a different port (e.g. 8081).
+When using the defaults, the Kalix proxy connects to the user function on port 8080. However, if you're looking to have 2 services running at the same time, the second service will need to be run at a different port (e.g. 8081).
 
 --
 [source,command line]
@@ -162,7 +162,7 @@ When using the defaults, the Kalix proxy connects to the user function on 8080. 
 export PORT=8081 <1>
 npm start
 ----
-<1> Setting this user function as to be run on `8081`.
+<1> Setting this user function to run on port `8081`.
 --
 
 
@@ -187,4 +187,4 @@ kalix-proxy: <1>
 
 <1> This name has to be unique in your docker compose file (docker compose uses this name to uniquely identify the running container).
 <2> The host port ("900x") in the port mapping must be unique for each proxy instance. Note that the internal proxy port should also be changed hence the extra `-Dkalix.proxy.http-port=900x` option.
-<3> The user function port must be unique for each service you start. See previous section for how to define one.
+<3> The user function port must be unique for each service you start. See the previous section for how to define this.
