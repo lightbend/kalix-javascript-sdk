@@ -3,6 +3,7 @@
 *** xref:developing:development-process-js.adoc[]
 *** xref:javascript:kickstart.adoc[]
 *** xref:javascript:proto.adoc[]
+*** xref:javascript:running-locally.adoc[Running a service locally]
 *** xref:javascript:value-entity.adoc[Implementing Value Entities]
 *** xref:javascript:eventsourced.adoc[Implementing Event Sourced Entities]
 *** xref:javascript:replicated-entity.adoc[Implementing Replicated Entities]
@@ -14,4 +15,3 @@
 *** xref:javascript:call-another-service.adoc[Calling other services]
 *** xref:access-control.adoc[Access Control Lists (ACLs)]
 *** xref:javascript:api.adoc[JavaScript API docs]
-*** xref:javascript:running-locally.adoc[Run a service locally]
