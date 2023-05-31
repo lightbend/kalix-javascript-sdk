@@ -746,10 +746,10 @@ jobs:
     description: "publish docs"
     steps:
       - checkout
-      # deploy key for pushing docs to branch
+      # "CircleCI write access for docs" created 2023-05-31
       - add_ssh_keys:
           fingerprints:
-            - "d1:35:c0:f1:89:8c:45:06:6f:f9:7e:a3:b5:57:18:87"
+            - "57:09:4e:87:6c:d8:ec:97:0b:7a:ed:77:71:50:72:f2"
       - run:
           name: "publish docs"
           command: |
