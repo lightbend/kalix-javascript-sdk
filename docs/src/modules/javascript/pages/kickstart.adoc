@@ -189,7 +189,7 @@ yarn start
 ----
 --
 
-TIP: For more details see https://docs.kalix.io/services/running-locally.html[Run a service locally].
+TIP: For more details see xref:running-locally.adoc[Run a service locally].
 
 ifdef::todo[TODO: we need to add how to exercise the counter with gRPC or HTTP.]
 

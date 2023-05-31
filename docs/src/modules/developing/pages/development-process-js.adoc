@@ -73,8 +73,7 @@ Use a Docker image to package your service and any of its dependencies. See the 
 [#_run_locally]
 == Run locally
 
-You can test and debug your services by
-https://docs.kalix.io/services/running-locally.html[running them locally] before deploying to Kalix.
+You can test and debug your services by xref:javascript:running-locally.adoc[running them locally] before deploying to Kalix.
 
 == Deploy to Kalix
 
