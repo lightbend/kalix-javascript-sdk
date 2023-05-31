@@ -22,7 +22,7 @@ If you want to bypass writing code and jump straight to the deployment:
 +
 [source, command line]
 ----
-kalix quickstart download customer-registry-typescript
+kalix quickstart download customer-registry-typescript-protobuf
 ----
 
 . Skip to <<Package and deploy your service>>.

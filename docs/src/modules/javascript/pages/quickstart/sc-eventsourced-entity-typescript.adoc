@@ -22,7 +22,7 @@ If you want to bypass writing code and jump straight to the deployment:
 +
 [source, command line]
 ----
-kalix quickstart download shopping-cart-typescript
+kalix quickstart download shopping-cart-typescript-protobuf
 ----
 
 . Skip to <<Package and deploy your service>>.
@@ -202,7 +202,7 @@ include::javascript:example$ts-shopping-cart-quickstart/src/shoppingcart.ts[tag=
 +
 --
 * This function takes the current internal state and converts it to the external API model.
-* The conversion between the domain and the external API is straigtforward, as they have the same fields.
+* The conversion between the domain and the external API is straightforward, as they have the same fields.
 --
 +
 [source, typescript, indent=0]

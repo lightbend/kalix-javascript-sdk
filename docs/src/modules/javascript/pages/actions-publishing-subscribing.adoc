@@ -25,7 +25,7 @@ To achieve this, create an xref:actions.adoc[Action] that subscribes to a journa
 
 .Use case: external calls
 ****
-A service might need to trigger other systems when certain events happened to an Entity. An Action can be connected to the Entity's journal and react on certain events to issue calls (eg. via HTTP or gRPC).
+A service might need to trigger other systems when certain events happened to an Entity. An Action can be connected to the Entity's journal and react on certain events to issue calls (e.g. via HTTP or gRPC).
 To achieve this, create an xref:actions.adoc[Action] that subscribes to a journal and let the implementation call other services.
 ****
 
@@ -56,7 +56,7 @@ include::example$eventing-shopping-cart/proto/cart/shopping_cart_analytics.proto
 <1> annotate the Protobuf rpc method with `(kalix.method).eventing`
 <2> use `in` and `topic` to subscribe to a topic
 
-There is nothing specific required in the implementation of `ProcessAdded`. The implementation will in most cases be an Action and forward a converted message to a different component (eg. an Event Sourced Entity).
+There is nothing specific required in the implementation of `ProcessAdded`. The implementation will in most cases be an Action and forward a converted message to a different component (e.g. an Event Sourced Entity).
 
 == Receiving messages from an external Topic
 
@@ -84,11 +84,15 @@ context.metadata().asCloudEvent().subject()
 
 == Ignoring events
 
-When listening to an event log, **all** events emitted by the Event Sourced entity must be matched by a Protobuf service method. In case your component is interested only in certain events, you may declare a method to receive all events that are not received by the other methods.
+When consuming events, each event must be matched by a Protobuf service method. In case your component is only interested in certain events, you may declare a method to receive all events that are not received by the other methods. If an event type is not handled, the Action will fail. Actions are designed to restart, but since the handler is missing, it will fail again. Therefore, it's important to define methods for all events or define a catch-all method in case you want to discard some events.
 
 [source,protobuf,indent=2]
 ----
 include::example$eventing-shopping-cart/proto/product/to_product_popularity.proto[tag=catchOthers]
 ----
+<1> We must annotate it with a `(kalix.method).eventing.in`.
+<2> Set `ignore: true` option.
 
-The corresponding implementation must exist in the component.
+The `Ignore` method here is defined as a catch-all because it has input type `Any`. Instead of using a catch-all it can be better to define concrete methods for all known event types that should be ignored because then there is no risk of accidentally ignoring events that are added in later evolution of the service.
+
+When adding the `ignore: true` annotation the corresponding implementation is not needed in the component. It is more efficient to use `ignore: true` than implementing the method with an immediate reply.

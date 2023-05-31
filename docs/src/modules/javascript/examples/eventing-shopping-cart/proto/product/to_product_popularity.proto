@@ -1,4 +1,4 @@
-// Copyright 2021 Lightbend Inc.
+// Copyright 2021-2023 Lightbend Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -59,9 +59,10 @@ service ToProductPopularityService {
 
   // tag::catchOthers[]
   // handle other events which are not managed above
-  rpc CatchOthers(google.protobuf.Any) returns (google.protobuf.Empty) {
-    option (kalix.method).eventing.in = {
+  rpc Ignore(google.protobuf.Any) returns (google.protobuf.Empty) {
+    option (kalix.method).eventing.in = { // <1>
       event_sourced_entity:  "eventsourced-shopping-cart"
+      ignore: true // <2>
     };
   }
   // end::catchOthers[]

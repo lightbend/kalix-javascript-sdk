@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Lightbend Inc.
+ * Copyright 2021-2023 Lightbend Inc.
  */
 
 // tag::entity-class[]

@@ -1,4 +1,4 @@
-= Developing with JavaScript
+= JavaScript/TypeScript Protobuf SDK
 :page-supergroup-javascript-typescript: Language
 
 include::ROOT:partial$include.adoc[]
@@ -69,9 +69,9 @@ The following shows a minimal `package.json` configuration for a shopping cart s
 
 Descriptors for gRPC are defined in `protobuf` files. You can place `protobuf` files in your project wherever you like, for example, in the root directory, or in a directory named `protos`. In the `package.json` example, above we've placed the service descriptor in a file in the root folder called `shoppingcart.proto`. See xref:proto.adoc[] for more details.
 
-=== Precompile the protobuf descriptor set
+=== Pre-compile the protobuf descriptor set
 
-The gRPC descriptor is serialized to binary using the Protobuf https://developers.google.com/protocol-buffers/docs/techniques#self-description[`FileDescriptorSet` message type]. Kalix requires that you precompile this descriptor using `protoc`. We provide a utility that does this for you. It downloads the `protoc` binary for your platform, and runs it with the necessary arguments and include paths. You can run the utility manually, or we recommend adding it as a script to the build.
+The gRPC descriptor is serialized to binary using the Protobuf https://developers.google.com/protocol-buffers/docs/techniques#self-description[`FileDescriptorSet` message type]. Kalix requires that you pre-compile this descriptor using `protoc`. We provide a utility that does this for you. It downloads the `protoc` binary for your platform, and runs it with the necessary arguments and include paths. You can run the utility manually, or we recommend adding it as a script to the build.
 
 To run the utility manually, invoke `node_modules/@kalix-io/kalix-javascript-sdk/bin/compile-descriptor.js`.
 
