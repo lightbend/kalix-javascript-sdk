@@ -31,7 +31,7 @@ attributes:
 	mkdir -p "${managed_partials}"
 	bin/version.sh | xargs -0  printf ":kalix-javascript-sdk-version: %s" \
 		> "${managed_partials}/attributes.adoc"
-	echo ":minimum_node_version: 14" \
+	echo ":minimum_node_version: 18" \
 		>> "${managed_partials}/attributes.adoc"
 	echo ":javascript_minimum_sdk_version: 0.31.0" \
 		>> "${managed_partials}/attributes.adoc"
