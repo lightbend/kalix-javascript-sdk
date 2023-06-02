@@ -34,6 +34,7 @@
     "@kalix-io/kalix-javascript-sdk": "1.x"
   },
   "dependencies": {
+    "test": "^3.3.0",
     "testcontainers": "^8.10.1"
   },
   "devDependencies": {

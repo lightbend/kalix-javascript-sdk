@@ -23,5 +23,8 @@
       "node": true,
       "mocha": true
     }
+  },
+  "dependencies": {
+    "test": "^3.3.0"
   }
 }
