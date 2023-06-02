@@ -2,7 +2,7 @@
 
 ## Prerequisites
 
-The JavaScript SDK requires Node.js 14.
+The JavaScript SDK requires Node.js 18.
 
 It can be useful to install `nvm` and run `nvm use` to select the right node version if you have multiple node versions installed.
 
