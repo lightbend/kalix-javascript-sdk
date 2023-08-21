@@ -59,7 +59,7 @@
     "mocha": "^10.0.0",
     "npm-watch": "^0.11.0",
     "nyc": "^15.1.0",
-    "protobufjs": "6.11.3",
+    "protobufjs": "6.11.4",
     "sinon": "^14.0.0",
     "sinon-chai": "^3.7.0",
     "ts-node": "^10.8.0",
