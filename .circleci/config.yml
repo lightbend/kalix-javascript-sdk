@@ -203,7 +203,7 @@ jobs:
       - run:
           name: "check vulnerabilities in transitive dependencies"
           working_directory: "~/project/sdk"
-          command: npm audit --production
+          command: npm audit --omit=dev
       # build/run these sample tests with local version of kalix-scripts
       - setup_sbt
       - restore_deps_cache
