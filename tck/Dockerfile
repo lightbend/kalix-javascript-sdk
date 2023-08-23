@@ -1,4 +1,4 @@
-FROM node:14-buster-slim AS builder
+FROM node:18-bookworm-slim AS builder
 RUN apt-get update && apt-get install -y curl unzip
 WORKDIR /home/node
 USER node
@@ -12,7 +12,7 @@ COPY --chown=node tck tck
 RUN cd tck && npm run build
 RUN cd tck && npm prune --production
 
-FROM node:14-buster-slim
+FROM node:18-bookworm-slim
 COPY --from=builder --chown=node /home/node /home/node
 WORKDIR /home/node/tck
 USER node

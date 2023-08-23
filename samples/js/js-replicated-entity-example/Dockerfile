@@ -1,4 +1,4 @@
-FROM node:14-buster-slim AS builder
+FROM node:18-bookworm-slim AS builder
 WORKDIR /home/node
 RUN apt-get update && apt-get install -y curl unzip
 COPY sdk sdk
@@ -10,7 +10,7 @@ COPY samples/js/js-replicated-entity-example samples/js/js-replicated-entity-exa
 RUN cd samples/js/js-replicated-entity-example && npm run build
 RUN cd samples/js/js-replicated-entity-example && npm prune --production
 
-FROM node:14-buster-slim
+FROM node:18-bookworm-slim
 COPY --from=builder --chown=node /home/node /home/node
 WORKDIR /home/node/samples/js/js-replicated-entity-example
 USER node
