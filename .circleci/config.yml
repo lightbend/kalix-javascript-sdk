@@ -760,6 +760,7 @@ jobs:
   npm-js-tests:
     docker:
       - image: cimg/node:18.16.0
+    resource_class: large
     description: "npm-js-tests"
     steps:
       - checkout-and-merge-to-main
