@@ -919,7 +919,7 @@ jobs:
           command: |
             source /opt/circleci/.nvm/nvm.sh
             nvm install v18
-            # Run proxy in background
+            # Run Kalix Runtime in background
             sed -i docker-compose.yml -e "s/environment:/environment:\n      VERSION_CHECK_ON_STARTUP: \"false\"/"
             docker-compose up -d
             # Run the service in background
