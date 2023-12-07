@@ -27,7 +27,7 @@ import {
 } from '@kalix-io/kalix-javascript-sdk';
 import { GenericContainer, TestContainers, Wait } from 'testcontainers';
 
-const defaultDockerImage = `gcr.io/kalix-public/kalix-proxy:${settings.frameworkVersion.replace(
+const defaultDockerImage = `gcr.io/kalix-public/kalix-runtime:${settings.frameworkVersion.replace(
   '-SNAPSHOT',
   '',
 )}`;

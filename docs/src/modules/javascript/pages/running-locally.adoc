@@ -173,7 +173,7 @@ To update the docker compose file to run multiple proxy instances, add the snipp
 [source, yaml]
 ----
 kalix-proxy: <1>
-  image: gcr.io/kalix-public/kalix-proxy:latest
+  image: gcr.io/kalix-public/kalix-runtime:latest
   ports:
     - "900x:900x" <2>
   JAVA_TOOL_OPTIONS: >
