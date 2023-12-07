@@ -160,7 +160,7 @@ export class IntegrationTestkit {
     const boundPort = await this.kalix.start({ port: 0 });
 
     await TestContainers.exposeHostPorts(boundPort);
-    console.log('Starting Kalix Proxy');
+    console.log('Starting Kalix Runtime');
     const proxyContainer = await new GenericContainer(this.options.dockerImage!)
       .withExposedPorts(9000)
       .withEnv('USER_FUNCTION_HOST', 'host.testcontainers.internal')
@@ -175,7 +175,7 @@ export class IntegrationTestkit {
         'VERSION_CHECK_ON_STARTUP',
         process.env.VERSION_CHECK_ON_STARTUP || 'true',
       )
-      .withWaitStrategy(Wait.forLogMessage('Starting Kalix Proxy'))
+      .withWaitStrategy(Wait.forLogMessage('Kalix Runtime started'))
       .start();
     this.proxyPort = proxyContainer.getMappedPort(9000);
     // sdk needs to know how to call itself for cross component calls,
@@ -185,7 +185,7 @@ export class IntegrationTestkit {
     this.proxyContainer = proxyContainer;
 
     // wait for discovery to complete
-    console.log('Proxy started, waiting for discovery to complete');
+    console.log('Kalix Runtime started, waiting for discovery to complete');
     while (!this.kalix.discoveryCompleted) {
       await new Promise((resolve) => setTimeout(resolve, 300));
     }
