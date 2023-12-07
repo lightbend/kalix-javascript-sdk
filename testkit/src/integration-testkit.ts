@@ -180,6 +180,7 @@ export class IntegrationTestkit {
     this.proxyPort = proxyContainer.getMappedPort(9000);
     // sdk needs to know how to call itself for cross component calls,
     // Note: a flag in KalixOptions delays discovery until we have set the port
+    console.log('Setting Kalix Runtime port to ' + this.proxyPort);
     this.kalix.setProxyPort(this.proxyPort!);
 
     this.proxyContainer = proxyContainer;
