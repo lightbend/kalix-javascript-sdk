@@ -34,6 +34,7 @@ const proxyInfo: discovery.ProxyInfo = {
   proxyHostname: 'localhost',
   identificationInfo: null, // FIXME
   internalProxyHostname: 'localhost',
+  tracingCollectorEndpoint: '',
   proxyPort: 9000,
 };
 
