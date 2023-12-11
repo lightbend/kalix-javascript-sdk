@@ -175,7 +175,8 @@ export class IntegrationTestkit {
         'VERSION_CHECK_ON_STARTUP',
         process.env.VERSION_CHECK_ON_STARTUP || 'true',
       )
-      .withWaitStrategy(Wait.forLogMessage('Starting Kalix Proxy'))
+      // https://github.com/lightbend/kalix-runtime/blob/4136a07e203e3ebb5b03777aefbe9d72549fe859/proxy/core/src/main/scala/kalix/proxy/KalixRuntimeMain.scala#L77
+      .withWaitStrategy(Wait.forLogMessage('Starting Kalix '))
       .start();
     this.proxyPort = proxyContainer.getMappedPort(9000);
     // sdk needs to know how to call itself for cross component calls,
