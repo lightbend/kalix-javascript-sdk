@@ -33,10 +33,10 @@ else
   rm -rf "$proto_dir"
   mkdir -p "$proto_dir"
 
-  if [ -n "$PROXY_SNAPSHOT_DIRECTORY" ]; then
-    # Use local sources by pointing PROXY_SNAPSHOTS_DIRECTORY to local framework directory
-    echo "Using snapshot of TCK protocols from '$PROXY_SNAPSHOT_DIRECTORY'"
-    cp -f $PROXY_SNAPSHOT_DIRECTORY/protocols/tck/src/main/protobuf/kalix/tck/model/*/*.proto "$proto_dir"
+  if [ -n "$RUNTIME_SNAPSHOT_DIRECTORY" ]; then
+    # Use local sources by pointing RUNTIME_SNAPSHOT_DIRECTORY to local framework directory
+    echo "Using snapshot of TCK protocols from '$RUNTIME_SNAPSHOT_DIRECTORY'"
+    cp -f $RUNTIME_SNAPSHOT_DIRECTORY/protocols/tck/src/main/protobuf/kalix/tck/model/*/*.proto "$proto_dir"
   else
     # Download and unzip the TCK protocols to the proto directory
     artifact_url="https://repo1.maven.org/maven2/io/kalix/kalix-tck-protocol/$framework_version/kalix-tck-protocol-$framework_version.zip"

@@ -3,7 +3,7 @@
 Create a release issue (using the [GitHub CLI](https://cli.github.com/))
 
 ```
-gh issue create --title 'Release Kalix JavaScript SDK' --label kalix-proxy --body-file .github/release-issue-template.md -w
+gh issue create --title 'Release Kalix JavaScript SDK' --label kalix-runtime --body-file .github/release-issue-template.md -w
 ````
 
 and follow the instructions.

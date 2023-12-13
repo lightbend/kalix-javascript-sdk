@@ -19,12 +19,12 @@ PROJS=$(find . -type f -name "docker-compose.yml")
 for i in ${PROJS[@]}
 do
   echo "Updating Dockerfile for: $i"
-  sed -i.bak "s/gcr.io\/kalix-public\/kalix-proxy:\(.*\)/gcr.io\/kalix-public\/kalix-proxy:$PROXY_VERSION/" $i
+  sed -i.bak "s/gcr.io\/kalix-public\/kalix-runtime:\(.*\)/gcr.io\/kalix-public\/kalix-runtime:$PROXY_VERSION/" $i
   rm $i.bak
 done
 
 echo ">>> Updating application.conf"
-sed -i.bak "s/gcr.io\/kalix-public\/kalix-proxy:\(.*\)\"/gcr.io\/kalix-public\/kalix-proxy:$PROXY_VERSION\"/" ./codegen/js-gen-cli/src/it/resources/application.conf
+sed -i.bak "s/gcr.io\/kalix-public\/kalix-runtime:\(.*\)\"/gcr.io\/kalix-public\/kalix-runtime:$PROXY_VERSION\"/" ./codegen/js-gen-cli/src/it/resources/application.conf
 rm ./codegen/js-gen-cli/src/it/resources/application.conf.bak
 
 echo ">>> Updating config.json"

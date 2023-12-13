@@ -30,6 +30,6 @@ components may break as a result of changes made to codegen. Therefore, the inte
 are provided as a tool to understand in advance what may break.
 
 To be able to truly validate generated code, each language has a full integration test to generate and test the result in a dockerised environment.
-These tests spin up a generated entity alongside the Kalix proxy in a Docker network, and then validate against the published service. These tests can take several minutes to run due to the overhead of installing dependencies in a containerised environment, so will only be run when necessary.
+These tests spin up a generated entity alongside the Kalix Runtime in a Docker network, and then validate against the published service. These tests can take several minutes to run due to the overhead of installing dependencies in a containerised environment, so will only be run when necessary.
 
 These tests are invoked with the `it:test` SBT task, either on the root project or within one of the subprojects that implements an integration test.
