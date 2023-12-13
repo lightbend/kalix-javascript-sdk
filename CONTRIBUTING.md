@@ -58,10 +58,10 @@ and then add those to any sample. For example, go to samples/js/js-valueentity-s
     npm run build
     ```
 
-if you set PROXY_SNAPSHOT_DIRECTORY pointing to your local kalix-proxy then you can use your proxy.
+if you set RUNTIME_SNAPSHOT_DIRECTORY pointing to your local kalix-proxy then you can use your proxy.
 
     ```
-    export PROXY_SNAPSHOT_DIRECTORY="/path/to/my/kalix-proxy"
+    export RUNTIME_SNAPSHOT_DIRECTORY="/path/to/my/kalix-runtime"
     ```
 
 Otherwise of the default that is downloaded from https://repo1.maven.org/maven2/io/kalix/kalix-$module-protocol/$framework_version/kalix-$module-protocol-$framework_version.zip
@@ -121,4 +121,4 @@ This happens when you generate the codegen with Java 17 instead of 11 and then y
     npm ERR! command failed
     npm ERR! command sh -c bin/prepare.sh
 
-This can happens when you run `./bin/create-local-dependencies`. This is because `sdk/bin/prepare.sh` has `*` after `echo "Using snapshot of proxy and sdk protocols from '$PROXY_SNAPSHOT_DIRECTORY'"`. In iOS you need to remove the asteriscs in the two lines below.
+This can happens when you run `./bin/create-local-dependencies`. This is because `sdk/bin/prepare.sh` has `*` after `echo "Using snapshot of proxy and sdk protocols from '$RUNTIME_SNAPSHOT_DIRECTORY'"`. In iOS you need to remove the asteriscs in the two lines below.
