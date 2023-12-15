@@ -46,12 +46,12 @@ These tests leverage the mock entity classes provided by `@kalix-io/testkit`. Th
 
 ## Running Locally
 
-To run your application locally, you must run the Kalix proxy. The included `docker-compose` file contains the configuration required to run the proxy for a locally running application. It also contains the configuration to start a local Google Pub/Sub emulator that the Kalix proxy will connect to.
+To run your application locally, you must run the Kalix Runtime. The included `docker-compose` file contains the configuration required to run the Runtime for a locally running application. It also contains the configuration to start a local Google Pub/Sub emulator that the Kalix Runtime will connect to.
 
-To start the proxy, run the following command from this directory:
+To start the Kalix Runtime, run the following command from this directory:
 
-```
-docker-compose up
+```shell
+docker compose up
 ```
 
 To start the application locally, use the following commands:
@@ -62,7 +62,7 @@ To start the application locally, use the following commands:
 npm run build && npm run start
 ```
 
-With both the proxy and your application running, any defined endpoints should be available at `http://localhost:9000`. In addition to the defined gRPC interface, each method has a corresponding HTTP endpoint. Unless configured otherwise (see [Transcoding HTTP](https://docs.kalix.io/javascript/proto.html#_transcoding_http)), this endpoint accepts POST requests at the path `/[package].[entity name]/[method]`. For example, using `curl`:
+With both the Kalix Runtime and your application running, any defined endpoints should be available at `http://localhost:9000`. In addition to the defined gRPC interface, each method has a corresponding HTTP endpoint. Unless configured otherwise (see [Transcoding HTTP](https://docs.kalix.io/javascript/proto.html#_transcoding_http)), this endpoint accepts POST requests at the path `/[package].[entity name]/[method]`. For example, using `curl`:
 
 ```shell
 > curl -XPOST -H "Content-Type: application/json" localhost:9000/com.example.shoppingcart.ShoppingCartService/AddItem -d '{"entityId": "foo"}'

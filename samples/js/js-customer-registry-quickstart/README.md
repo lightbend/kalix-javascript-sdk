@@ -49,27 +49,27 @@ npm run integration-test
 
 ## Running Locally
 
-To run the example locally, you must run the Kalix proxy. The included `docker-compose` file
-contains the configuration required to run the proxy for a locally running application. It also
-contains the configuration to start a local Google Pub/Sub emulator that the Kalix proxy will
-connect to. To start the proxy, run the following command from this directory:
+To run the example locally, you must run the Kalix Runtime. The included `docker-compose` file
+contains the configuration required to run the Runtime for a locally running application. It also
+contains the configuration to start a local Google Pub/Sub emulator that the Kalix Runtime will
+connect to. To start the Kalix Runtime, run the following command from this directory:
 
-```
-docker-compose up
+```shell
+docker compose up
 ```
 
 To start the application locally, use the following command:
 
-```
+```shell
 npm start
 ```
 
-With both the proxy and your application running, the defined endpoints should be available at
+With both the Kalix Runtime and your application running, the defined endpoints should be available at
 `http://localhost:9000`. In addition to the defined gRPC interface, each method has a corresponding
 HTTP endpoint. Example calls using [grpcurl](https://github.com/fullstorydev/grpcurl):
 
 * Create a customer:
-  ```
+  ```shell
   grpcurl \
     -d '{
       "customer_id": "abc123",
@@ -85,7 +85,7 @@ HTTP endpoint. Example calls using [grpcurl](https://github.com/fullstorydev/grp
   ```
 
 * Retrieve the customer:
-  ```
+  ```shell
   grpcurl \
     -d '{"customer_id": "abc123"}' \
     --plaintext localhost:9000 \
@@ -93,7 +93,7 @@ HTTP endpoint. Example calls using [grpcurl](https://github.com/fullstorydev/grp
   ```
 
 * Change the customer's name:
-  ```
+  ```shell
   grpcurl \
     -d '{
       "customer_id": "abc123",
@@ -104,7 +104,7 @@ HTTP endpoint. Example calls using [grpcurl](https://github.com/fullstorydev/grp
   ```
 
 * Change the customer's address:
-  ```
+  ```shell
   grpcurl \
     -d '{
       "customer_id": "abc123",
