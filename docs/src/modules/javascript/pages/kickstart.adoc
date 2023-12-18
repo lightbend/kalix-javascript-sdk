@@ -127,7 +127,7 @@ yarn build
 You should now see the following source files in your project:
 
 * `src/counter.js` - the implementation of the `counter` Value Entity.
-* `src/index.js` - a convenience file that starts the Kalix proxy for running locally
+* `src/index.js` - a convenience file that starts the Kalix Runtime for running locally
 * `test/counter.test.js` - a test for the `counter` Value Entity.
 
 NOTE: The `lib/generated` directory contains files used by the tools. Any changes made to files in this folder are overwritten on the next build.
@@ -155,9 +155,9 @@ The mock entity used by `counter.test.js` is provided by the `@kalix-io/testkit`
 
 == Run locally
 
-You can run your services locally and test them manually with HTTP or gRPC requests. To run locally, you need to initiate the Kalix https://docs.kalix.io/reference/glossary.html#proxy[proxy]. The `docker-compose` file contains the configuration required to run the proxy.
+You can run your services locally and test them manually with HTTP or gRPC requests. To run locally, you need to initiate the Kalix https://docs.kalix.io/reference/glossary.html#runtime[Runtime]. The `docker-compose` file contains the configuration required to run the Kalix Runtime.
 
-. To start the proxy, run the following command from the top-level project directory:
+. To start the Kalix Runtime, run the following command from the top-level project directory:
 
 +
 +

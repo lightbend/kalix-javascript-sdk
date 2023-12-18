@@ -52,7 +52,7 @@ include::example$valueentity-counter/proto/counter_api.proto[]
 
 The following code creates the Value Entity with the link:{attachmentsdir}/api/classes/ValueEntity.html[`ValueEntity`{tab-icon}, window="new"] class. It passes in:
 
-* The protobuf files, `counter_api.proto` and `counter_domain.proto`, define the service and the domain protocol. Kalix uses the service protobuf file to load and read the service. It uses the definitions in `counter_domain.proto` to serialize state it receives from the https://docs.kalix.io/reference/glossary.html#proxy[proxy].
+* The protobuf files, `counter_api.proto` and `counter_domain.proto`, define the service and the domain protocol. Kalix uses the service protobuf file to load and read the service. It uses the definitions in `counter_domain.proto` to serialize state it receives from the Kalix https://docs.kalix.io/reference/glossary.html#runtime[Runtime].
 
 * The fully qualified name of the service the Value Entity implements, `com.example.CounterService`. The `entityType` is used to namespace the state in the journal.
 
