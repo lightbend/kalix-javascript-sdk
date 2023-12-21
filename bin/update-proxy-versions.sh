@@ -6,7 +6,7 @@
 # this script is meant to be used after a new Proxy version is out
 # to facilitate the update of all the places where we usually depend on the latest version
 
-# provide the new proxy version you want the project to be updated to
+# provide the new Kalix Runtime version you want the project to be updated to
 if [[ -z "$RUNTIME_VERSION" ]]; then
     echo "Must provide RUNTIME_VERSION in environment" 1>&2
     exit 1
