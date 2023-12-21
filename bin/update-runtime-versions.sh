@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # USAGE:
-# > RUNTIME_VERSION=1.0.31 ./update-proxy-versions.sh
+# > RUNTIME_VERSION=1.0.31 ./bin/update-proxy-versions.sh
 
 # this script is meant to be used after a new Proxy version is out
 # to facilitate the update of all the places where we usually depend on the latest version
@@ -11,8 +11,6 @@ if [[ -z "${RUNTIME_VERSION}" ]]; then
     echo "Must provide RUNTIME_VERSION in environment" 1>&2
     exit 1
 fi
-
-cd ..
 
 echo ">>> Updating docker image versions to ${RUNTIME_VERSION}"
 PROJS=$(find . -type f -name "docker-compose.yml")
