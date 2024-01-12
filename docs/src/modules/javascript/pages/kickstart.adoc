@@ -23,7 +23,7 @@ Before running the code generation tools, make sure that you have the following:
 * Docker >= {minimum_docker_version} (to run locally)
 * The https://docs.kalix.io/getting-started/set-up-development-env.html#_kalix_cli[`kalix` CLI downloaded]
 * A https://docs.kalix.io/projects/container-registries.html[configured Docker Registry]
-* A https://docs.kalix.io/setting-up/index.html#_kalix_account[Kalix account]
+* A https://console.kalix.io[Kalix account]
 * A https://docs.kalix.io/projects/index.html[Kalix project]
 
 :sectnums:
