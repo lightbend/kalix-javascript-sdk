@@ -66,7 +66,7 @@ It is good practice to write unit tests as you implement your services. The Java
 
 Use a Docker image to package your service and any of its dependencies. See the following pages for more information:
 
-* https://docs.kalix.io/setting-up/index.html#_containers[Installing Docker]
+* https://docs.docker.com/get-docker/[Installing Docker]
 * xref:javascript:quickstart/cr-value-entity-javascript.adoc#_package_and_deploy_your_service[Packaging with Docker]
 * https://docs.kalix.io/projects/container-registries.html[Configuring registries]
 
