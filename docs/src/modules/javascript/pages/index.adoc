@@ -18,7 +18,7 @@ The following are required to develop services in JavaScript:
 
 Node:: Kalix requires at least Node {minimum_node_version}. You will find links to download Node https://nodejs.org/dist/latest-v14.x/[here {tab-icon}, window="new"].
 
-Build tool:: Kalix does not require any particular build tool, you can select your own but out-of-the-box experience is provided in conjunction with npm and Yarn.
+Build tool:: Kalix does not require a specific build tool. However, for a seamless out-of-the-box experience, npm and Yarn are recommended, though you have the flexibility to choose your preferred tool.
 
 Docker:: Kalix requires https://docs.docker.com/get-docker/[Docker {tab-icon}, window="new"] {minimum_docker_version} for building your service images. Most popular build tools have plugins that assist in building Docker images.
 
