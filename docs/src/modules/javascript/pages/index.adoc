@@ -28,7 +28,7 @@ Since Kalix is based on gRPC, you need a protoc compiler to compile gRPC protobu
 
 == Development project requirements
 
-The following examples show how to install the SDK to build your services with npm or Yarn. The code generation tools include a Kalix xref:kickstart.adoc[code generation tools] that generates the recommended project structure, including a `package.json` file with the necessary references.
+The following examples show how to install the SDK to build your services with npm or Yarn. The Kalix xref:kickstart.adoc[code generation tools] generate the recommended project structure, including a `package.json` file with the necessary references.
 
 NOTE: The code generation tools do more than just provide a starter project, after you modify a `.proto` file, they will generate code stubs for the elements you changed or added.
 
