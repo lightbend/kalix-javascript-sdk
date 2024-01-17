@@ -90,8 +90,7 @@ grpcurl --plaintext -d '{"cart_id": "cart1"}' localhost:9000 com.example.shoppin
 
 ## Deploying
 
-To deploy your service, install the `kalix` CLI as documented in [Setting up a local development
-environment](https://docs.kalix.io/getting-started/set-up-development-env.html) and
+To deploy your service, install the `kalix` CLI as documented in [Install Kalix](https://docs.kalix.io/kalix/install-kalix.html) and
 configure a Docker Registry to upload your docker image to.
 
 You will need to update the `config.dockerImage` property in the `package.json` and refer to [Configuring
