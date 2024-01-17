@@ -39,7 +39,7 @@ Actions are stateless functions that can be triggered by gRPC or HTTP calls. The
 
 === Entities
 
-Stateful services encapsulate business logic in in Value Entities, Event Sourced Entities, or Replicated Entities. At runtime, command messages invoke operations on Entities. A command may only act on one Entity at a time.
+Stateful services encapsulate business logic in Value Entities, Event Sourced Entities, or Replicated Entities. At runtime, command messages invoke operations on Entities. A command may only act on one Entity at a time.
 
 TIP: To learn more about Kalix entities see xref:javascript:value-entity.adoc[Implement a Value Entity], xref:javascript:eventsourced.adoc[Implement an Event Sourced Entity], and xref:javascript:replicated-entity.adoc[Implement a Replicated Entity].
 

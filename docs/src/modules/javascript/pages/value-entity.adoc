@@ -37,7 +37,7 @@ The `counter_api.proto` file defines the commands we can send to the Counter ser
 include::example$valueentity-counter/proto/counter_api.proto[]
 ----
 <1> Import the Kalix protobuf annotations, or options.
-<2> Any classes generated from this protobuf file will be be nested in the package hierarchy: `com.example`.
+<2> Any classes generated from this protobuf file will be nested in the package hierarchy: `com.example`.
 
 <3> Protobuf messages describe the Commands that the service handles. They may contain other messages to represent structured data.
 <4> Every Command must contain a `string` field that contains the entity ID and is marked with the `(kalix.field).entity_key` option.
