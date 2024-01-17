@@ -6,9 +6,7 @@ While designing your service it is useful to read [designing services](https://d
 
 ## Developing
 
-This project has a bare-bones skeleton service ready to go, but in order to adapt and
-extend it it may be useful to read up on [developing services](https://docs.kalix.io/developing/index.html)
-and in particular the [JavaScript section](https://docs.kalix.io/javascript/index.html)
+This project has a bare-bones skeleton service ready to go, but to adapt and extend it, reading up on [developing services](https://docs.kalix.io/developing/index.html), especially the [JavaScript section](https://docs.kalix.io/javascript/index.html), may be useful.
 
 ## Prerequisites
 

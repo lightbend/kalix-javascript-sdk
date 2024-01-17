@@ -17,7 +17,7 @@ The following shows an example shopping cart definition in a `domain.proto` file
 include::example$domain.proto[]
 ----
 
-In this file, the `Cart` message represents the state snapshot, while `ItemAdded` and `ItemRemoved` are events. Note the event names are in past tense--events are facts, indisputable things that happened in the past. A fact never becomes false: after an item has been added to a shopping cart, it never becomes untrue that that item was added to the cart. It can be removed, but that doesn't change the fact that it was added, it only changes the current state of the cart. The names of events should always be in past tense to reflect the indisputable fact that they represent.
+In this file, the `Cart` message represents the state snapshot, while `ItemAdded` and `ItemRemoved` are events. Note the event names are in past tense--events are facts, indisputable things that happened in the past. A fact never becomes false: after an item has been added to a shopping cart, it never becomes untrue that the item was added to the cart. It can be removed, but that doesn't change the fact that it was added, it only changes the current state of the cart. The names of events should always be in past tense to reflect the indisputable fact that they represent.
 
 == Creating an entity
 
