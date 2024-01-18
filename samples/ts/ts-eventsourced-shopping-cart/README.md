@@ -90,7 +90,7 @@ grpcurl --plaintext -d '{"cart_id": "cart1", "product_id": "kalix-tshirt"}' loca
 
 ## Deploying to Kalix
 
-To deploy your service, install the `kalix` CLI as documented in [Setting up a local development environment](https://docs.kalix.io/getting-started/set-up-development-env.html) and configure a Docker Registry to upload your docker image to.
+To deploy your service, install the `kalix` CLI as documented in [Install Kalix](https://docs.kalix.io/kalix/install-kalix.html) and configure a Docker Registry to upload your docker image to.
 
 You will need to update the `config.dockerImage` property in the `package.json` and refer to [Configuring registries](https://docs.kalix.io/projects/container-registries.html) for more information on how to make your docker image available to Kalix.
 

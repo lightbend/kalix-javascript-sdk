@@ -21,7 +21,7 @@ Before running the code generation tools, make sure that you have the following:
 * Node >= {minimum_node_version}
 * `npm` or `yarn`
 * Docker >= {minimum_docker_version} (to run locally)
-* The https://docs.kalix.io/getting-started/set-up-development-env.html#_kalix_cli[`kalix` CLI downloaded]
+* The https://docs.kalix.io/kalix/install-kalix.html[`kalix` CLI installed]
 * A https://docs.kalix.io/projects/container-registries.html[configured Docker Registry]
 * A https://console.kalix.io/register[Kalix account]
 * A https://docs.kalix.io/projects/index.html[Kalix project]

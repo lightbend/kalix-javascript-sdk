@@ -19,7 +19,7 @@ You can see the Runtime version on prod [on grafana](https://lightbendcloud.graf
 
 ### Fix and publish docs
 
-- [ ] If relevant, update the [supported version in the main docs](https://github.com/lightbend/kalix-docs/blob/main/docs/modules/ROOT/partials/include.adoc#L20) (affects [Supported Versions](https://docs.kalix.io/setting-up/index.html#_supported_languages))
+- [ ] If relevant, update the [supported version in the main docs](https://github.com/lightbend/kalix-docs/blob/main/docs/modules/ROOT/partials/include.adoc#L20) (affects [SDK Support table](https://docs.kalix.io/sdks/index.html#_sdk_support))
 - [ ] Add an item to the [Release Notes](https://github.com/lightbend/kalix-docs/blob/main/docs/modules/release-notes/pages/index.adoc) in the documentation
 - [ ] [Release](https://github.com/lightbend/kalix-docs/blob/main/RELEASING.md#general--sdk-docs) the Kalix documentation to get the SDK docs updates published. After running the commands in the previous link the release is [automated](https://github.com/lightbend/kalix-docs/blob/main/RELEASING.md#automated-releasing). 
 
