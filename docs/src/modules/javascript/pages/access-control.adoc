@@ -8,7 +8,7 @@ include::ROOT:partial$grpc/using-acls.adoc[]
 
 If no ACLs are defined at all in a Kalix service, Kalix will allow requests from both other services and the internet to all components of the Kalix service.
 
-The Kalix quickstarts include a less permissive ACL for the entire service, to not accidentally make services available to the public internet, just like the one described in the next section.
+The Kalix samples include a less permissive ACL for the entire service, to not accidentally make services available to the public internet, just like the one described in the next section.
 
 == Defining an ACL for the entire Kalix Service
 
@@ -22,7 +22,7 @@ include::example$js-doc-snippets/proto/com/example/kalix_policy.proto[tag=defaul
 <1> Import the needed Kalix annotations from `kalix/annotations.proto`
 <2> Allow access from all other services, but not the public internet
 
-This is the default ACL included in the quickstarts and project templates, it allows calls from any other Kalix service deployed in the same project, but denies access from the internet.
+This is the default ACL included in the samples and project templates. It allows calls from any other Kalix service deployed in the same project, but denies access from the internet.
 
 == Inspecting the principal inside a service
 
