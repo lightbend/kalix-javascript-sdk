@@ -19,7 +19,7 @@ npm start
 Start the Kalix Runtime:
 
 ```shell
-docker run --rm -e USER_FUNCTION_HOST=host.docker.internal -p 9000:9000 gcr.io/kalix-public/kalix-runtime
+docker run --rm -e USER_SERVICE_HOST=host.docker.internal -p 9000:9000 gcr.io/kalix-public/kalix-runtime
 ```
 
 Create a customer:

@@ -46,7 +46,7 @@ npm run integration-test
 
 ## Running Locally
 
-In order to run your application locally, you must run the Kalix Runtime. The included `docker-compose` file contains the configuration required to run the proxy for a locally running application.
+In order to run your application locally, you must run the Kalix Runtime. The included `docker-compose` file contains the configuration required to run the Kalix Runtime for a locally running application.
 It also contains the configuration to start a local Google Pub/Sub emulator that the Kalix Runtime will connect to.
 
 To start the Kalix Runtime, run the following command from this directory:
