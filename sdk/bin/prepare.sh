@@ -24,11 +24,11 @@ else
   if [ -n "$RUNTIME_SNAPSHOT_DIRECTORY" ]; then
      # Use local runtime and sdk sources, useful for development, point RUNTIME_SNAPSHOT_DIRECTORY to the local
      # runtime project source directory
-     echo "Using snapshot of proxy and sdk protocols from '$RUNTIME_SNAPSHOT_DIRECTORY'"
+     echo "Using snapshot of Kalix Runtime and SDK protocols from '$RUNTIME_SNAPSHOT_DIRECTORY'"
      cp -rf $RUNTIME_SNAPSHOT_DIRECTORY/protocols/proxy/src/main/protobuf/* ./proto/
      cp -rf $RUNTIME_SNAPSHOT_DIRECTORY/protocols/sdk/src/main/protobuf/* ./proto/
    else
-     # Download and unzip the proxy and SDK protocols to the proto directory
+     # Download and unzip the Runtime and SDK protocols to the proto directory
      download_protocol proxy
      download_protocol sdk
    fi
