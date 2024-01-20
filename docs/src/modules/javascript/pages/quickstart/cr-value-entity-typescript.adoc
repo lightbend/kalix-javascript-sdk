@@ -1,4 +1,4 @@
-= Quickstart: Customer Registry in TypeScript
+= Customer Registry in TypeScript
 
 include::ROOT:partial$include.adoc[]
 include::javascript:partial$attributes.adoc[]
@@ -8,8 +8,8 @@ Learn how to create a customer registry in TypeScript, package it into a contain
 == Before you begin
 
 * If you're new to Kalix, https://console.kalix.io[create an account{tab-icon}, window="new"] so you can try it out for free.
-* You'll also need to install the https://docs.kalix.io/kalix/install-kalix.html[Kalix CLI, window="new-doc"] to deploy from a terminal window.
-* For this quickstart, you'll also need
+* You'll need to install the https://docs.kalix.io/kalix/install-kalix.html[Kalix CLI, window="new-doc"] to deploy from a terminal window.
+* You'll also need
 ** https://docs.docker.com/engine/install[Docker {minimum_docker_version} or higher, window="new"]
 ** https://nodejs.org/en/download/[Node.js {minimum_node_version}, window="new"]
 ** https://github.com/fullstorydev/grpcurl#installation[`grpcurl`, window="new"]
@@ -104,7 +104,7 @@ include::javascript:example$ts-customer-registry-quickstart/proto/customer_api.p
 
 == Define the domain model
 
-The `customer_domain.proto` contains all the internal data objects (https://docs.kalix.io/reference/glossary.html#entity[Entities, window="new"]). The https://docs.kalix.io/reference/glossary.html#value_entity[Value Entity, window="new"] in this quickstart is a Key/Value store that stores only the latest updates.
+The `customer_domain.proto` contains all the internal data objects (https://docs.kalix.io/reference/glossary.html#entity[Entities, window="new"]). The https://docs.kalix.io/reference/glossary.html#value_entity[Value Entity, window="new"] in this sample is a Key/Value store that stores only the latest updates.
 
 . Create a `customer_domain.proto` file and save it in the `proto` directory.
 
@@ -242,4 +242,4 @@ kalix service expose customer-registry
 == Next steps
 
 * You can learn more about xref:javascript:value-entity.adoc[Value Entities].
-* Do another xref:javascript:quickstart/sc-eventsourced-entity-typescript.adoc[Quickstart] to learn about Event Sourcing and xref:javascript:eventsourced.adoc[Event Sourced Entities].
+* Look at another xref:javascript:quickstart/sc-eventsourced-entity-typescript.adoc[sample] to learn about Event Sourcing and xref:javascript:eventsourced.adoc[Event Sourced Entities].
