@@ -7,9 +7,10 @@ const path = require('path');
 const fs = require('fs');
 const rimraf = require('rimraf');
 
+// https://github.com/protocolbuffers/protobuf/releases/download/v3.25.2/protoc-3.25.2-linux-x86_64.zip
 const downloadUrlPrefix =
   'https://github.com/protocolbuffers/protobuf/releases/download/v';
-const protocVersion = '3.25.2';
+const protocVersion = '25.2';
 function makeDownloadFile(platformArch) {
   return 'protoc-' + protocVersion + '-' + platformArch + '.zip';
 }
