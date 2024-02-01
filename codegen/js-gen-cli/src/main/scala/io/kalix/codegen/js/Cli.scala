@@ -85,7 +85,7 @@ object Cli {
           val _ = DescriptorSet.fileDescriptors(protobufDescriptor) match {
             case Right(fileDescriptors) =>
               val model =
-                ModelBuilder.introspectProtobufClasses(fileDescriptors.map {
+                ModelBuilder.introspectProtobufClasses(fileDescriptors match {
                   case Right(fileDescriptor) => fileDescriptor
                   case Left(e) =>
                     System.err.println("There was a problem building the file descriptor from its protobuf:")
