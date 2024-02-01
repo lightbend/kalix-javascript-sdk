@@ -82,7 +82,7 @@ object Cli {
           config.descriptorSetOutputDirectory.resolve(config.descriptorSetFileName).toFile
         if (protobufDescriptor.exists) {
           println("Inspecting proto file descriptor for Kalix code generation...")
-          val _ = DescriptorSet2.fileDescriptors(protobufDescriptor) match {
+          val _ = DescriptorSet.fileDescriptors(protobufDescriptor) match {
             case Right(fileDescriptors) =>
               val model =
                 ModelBuilder.introspectProtobufClasses(fileDescriptors match {
@@ -109,7 +109,7 @@ object Cli {
                   println("Generated: " + absBaseDir.relativize(p.toAbsolutePath).toString)
                 }
 
-            case Left(DescriptorSet2.CannotOpen(e)) =>
+            case Left(DescriptorSet.CannotOpen(e)) =>
               System.err.println("There was a problem opening the protobuf descriptor file:")
               System.err.println(e.toString)
               sys.exit(1)
